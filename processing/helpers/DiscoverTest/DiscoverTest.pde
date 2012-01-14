@@ -1,6 +1,5 @@
 import processing.serial.*;
 import xbee.*;
-import controlP5.*;
 
 XBeeManager xbeeManager;
 

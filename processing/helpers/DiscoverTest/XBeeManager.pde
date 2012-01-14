@@ -6,31 +6,15 @@ public class XBeeManager implements Runnable {
   boolean done;
    
   boolean initialized;
-  //String[] initPorts;
-  //int initPortIndex;
-  //long initLastCheck;
   boolean initFound;
   String initNodeId;
   
   final String XBEE_PORTS_FILE = "xbees.lst";
   final int XBEE_BAUDRATE = 115200;
   final int XBEE_RESPONSE_TIMEOUT = 5000;
-
-  final int XBEE_WIDTH = 200;
-  final int XBEE_NEXT_WIDTH = 50;
-  final int XBEE_NEXT_HEIGHT = 20;
-  final int XBEE_SCAN_WIDTH = 50;
-  final int XBEE_SCAN_HEIGHT = 20; 
-  final int XBEE_NEXT_ID = 1;
-  final int XBEE_SCAN_ID = 2;
-  
-  ControlP5 controlP5;  
-  Button plNextButton;
-  Button plScanButton;
   
   public XBeeManager(PApplet p) {
     parent = p;
-    controlP5 = new ControlP5(p);
     done = false;
     ports = new HashMap();
     initialized = false;
@@ -38,17 +22,6 @@ public class XBeeManager implements Runnable {
   }
   
   public void init() {
-    //create button to add new players
-    plScanButton = controlP5.addButton("SCAN", 0,
-                                       width/2 + 60, height/2 + 50,
-                                       XBEE_SCAN_WIDTH, XBEE_SCAN_HEIGHT);
-    plScanButton.setId(XBEE_SCAN_ID);
-  
-    //create next button
-    plNextButton = controlP5.addButton("NEXT", 0,
-                                       width/2 + 60 + XBEE_SCAN_WIDTH + 10, height/2 + 50,
-                                       XBEE_NEXT_WIDTH, XBEE_NEXT_HEIGHT);
-    plNextButton.setId(XBEE_NEXT_ID);
     
     //load from file if it exists
     if (new File(dataPath(XBEE_PORTS_FILE)).exists()) {
@@ -197,23 +170,4 @@ public class XBeeManager implements Runnable {
   
   public boolean isDone() { return done; }
   
-  public void dispose() {
-    if (controlP5 != null) {
-      controlP5.dispose();
-      controlP5 = null;
-    }
-  }
-  
-  public void controlEvent(ControlEvent theEvent) {
-    switch(theEvent.controller().id()) {
-      case(XBEE_NEXT_ID):
-        if (!initialized) return;        
-        save();
-        done = true;
-        break;
-      case(XBEE_SCAN_ID):
-        scan();
-        break;
-    }
-  }
 }

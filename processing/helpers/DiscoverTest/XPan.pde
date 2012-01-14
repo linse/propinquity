@@ -66,25 +66,13 @@ public class XPan {
   
   void broadcastProxConfig(int stepLength) { println("broadcasting prox config"); broadcast(getProxConfigPacket(stepLength)); }
   void broadcastVibe(int value) { broadcast(getVibePacket(value)); }
-  void broadcastStep(int stepNum, Step step1, Step step2, Step step3, Step step4) {
-    broadcast(getStepPacket(stepNum, step1, step2, step3, step4));
-  }
+
   
   private int[] getProxConfigPacket(int stepLength) {
     int[] packet = new int[CONFIG_OUT_PACKET_LENGTH];
     packet[0] = CONFIG_OUT_PACKET_TYPE;
     packet[1] = (stepLength >> 8) & 0xFF;
     packet[2] = stepLength & 0xFF;
-    return packet;
-  }
-  
-  private int[] getStepPacket(int stepNum, Step step1, Step step2, Step step3, Step step4) {
-    int[] packet = new int[PROX_OUT_PACKET_LENGTH];
-    packet[0] = PROX_OUT_PACKET_TYPE;
-    packet[1] = (stepNum >> 8) & 0xFF;
-    packet[2] = stepNum & 0xFF;
-    packet[3] = ((step1 == null ? 0 : step1.getPacketComponent()) << 4) | (step2 == null ? 0 : step2.getPacketComponent());
-    packet[4] = ((step3 == null ? 0 : step3.getPacketComponent()) << 4) | (step4 == null ? 0 : step4.getPacketComponent());
     return packet;
   }
   
