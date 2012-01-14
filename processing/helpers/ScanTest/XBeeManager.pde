@@ -8,7 +8,7 @@ public class XBeeManager implements Runnable {
   
   Thread thread;
   String nodeID;
-  boolean haveNI;
+  boolean hasNI;
   
   PApplet parent;
   HashMap nodeIDAndSerialPort;
@@ -17,7 +17,8 @@ public class XBeeManager implements Runnable {
     parent = p;
     nodeIDAndSerialPort = new HashMap();
     
-    if (thread != null) return;
+    if (thread != null) 
+      return;
     thread = new Thread(this);
     thread.start();
   }
@@ -47,7 +48,7 @@ public class XBeeManager implements Runnable {
       Serial serial = new Serial(parent, port, XBEE_BAUDRATE); 
       
       // get node identifier from local xbee
-      haveNI = false;  
+      hasNI = false;  
       XBeeReader localXbee = new XBeeReader(parent, serial);
       // the following lines give us debugging output of the xbee library - TODO
       localXbee.startXBee();      
@@ -55,14 +56,14 @@ public class XBeeManager implements Runnable {
       
       // wait for xbee event until timeout, break if we got it
       int start = millis();
-      while (!haveNI && millis() < start+XBEE_RESPONSE_TIMEOUT) { 
+      while (!hasNI && millis() < start+XBEE_RESPONSE_TIMEOUT) { 
         try { 
           Thread.sleep(1);
         }
         catch(InterruptedException ie) {
           ie.printStackTrace(); 
         }  
-        if (haveNI) {
+        if (hasNI) {
           println(nodeID);
           nodeIDAndSerialPort.put(nodeID, port);
           break;
@@ -72,8 +73,8 @@ public class XBeeManager implements Runnable {
       //clean up      
       localXbee.stopXBee();
       
-      // Stop program if we still have no xbee after timeout
-      if (!haveNI) {
+      // Stop program if we still has no xbee after timeout
+      if (!hasNI) {
         println("Timeout and no local XBee found.");
         exit();
       }
@@ -96,7 +97,7 @@ public class XBeeManager implements Runnable {
     nodeID = "";
     for (int i = 0; i < buffer.length; i++)
       nodeID += (char)buffer[i];
-    haveNI = true;
+    hasNI = true;
   }  
   
   public String getNodeIDs() {

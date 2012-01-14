@@ -1,81 +1,74 @@
 import processing.serial.*;
 import xbee.*;
 
-XBeeManager xbeeManager;
-
-ArrayList foundProxPatches;
-ArrayList foundVibePatches;
-ArrayList foundAccelPatches;
-ArrayList foundUndefPatches;
-
-void setup() {
-  this.foundProxPatches = new ArrayList();
-  this.foundVibePatches = new ArrayList();
-  this.foundAccelPatches = new ArrayList();
-  this.foundUndefPatches = new ArrayList();
-
-  xbeeManager = new XBeeManager(this);
-  xbeeManager.debug = false;
-  xbeeManager.init();
-  String msg = xbeeManager.listToString();
-  if (msg.isEmpty()) {
-    if (xbeeManager.isScanning()) msg = "Scanning...";
-    else msg = "No Xbee found.";
-  }
-  else if (!xbeeManager.isScanning())
-    msg += ".";
-
-  println(msg);
-}
-
 int mode = 0;
 
-final String[] XBEE_PROX_1_NI = {"P1_PROX1", "P2_PROX1"};
-final String[] XBEE_PROX_2_NI = {"P1_PROX2", "P2_PROX2"};
-final String[] XBEE_ACCEL_NI = {"P1_ACCEL", "P2_ACCEL"};
-final String[] XBEE_VIBE_NI = {"P1_VIBE", "P2_VIBE"};
+XBeeManager xbeeManager;
 
-Boolean discoversent = false;
+boolean discoversent = false;
+Player[] players;
+ArrayList foundProxs;
+ArrayList foundVibes;
+ArrayList foundAccels;
+ArrayList foundUndefs;
 
-Player[] players = null;
+void setup() {
+  foundProxs = new ArrayList();
+  foundVibes = new ArrayList();
+  foundAccels = new ArrayList();
+  foundUndefs = new ArrayList();
 
-void draw()
-{
-  if (mode == 0 && xbeeManager.isInitialized()) {
+  // 1. scan test for local xbees 
+  xbeeManager = new XBeeManager(this);
+
+  // 2. discover test for remote xbees
+  players = new Player[2];
+  players[0] = new Player(this);
+  players[1] = new Player(this);
+  discoversent = false;
+}
+
+//
+//
+//Boolean discoversent = false;
+//Player[] players = null;
+
+void draw() {
+  // scan test for local xbees
+  if (mode == 0 && xbeeManager.hasAllNIs()) {
+    println("Local XBees found: " + xbeeManager.getNodeIDs() + ".");
     mode++;
-    String msg = xbeeManager.listToString();
-    println("XBee masters found: " + msg);
-    players = new Player[2];
-    players[0] = new Player(this);
-    players[1] = new Player(this);
   }
-  else if (mode == 1) {
-    if (!discoversent) {
-      foundProxPatches.clear();
-      foundVibePatches.clear();
-      foundAccelPatches.clear();
-      foundUndefPatches.clear();
+  // discover test for remote xbees
+  else if (mode == 1 && !discoversent) {
+      foundProxs.clear();
+      foundVibes.clear();
+      foundAccels.clear();
+      foundUndefs.clear();
       
       initPlayer(0);
       initPlayer(1);
       discoversent = true;
-    }
   }
 }
 
-void initPlayer(int player)
-{
+void initPlayer(int player) {
   println("Discovering...");
   
+  // TODO: hard coded, we want to have this from xbee manager
+  final String[] XBEE_PROX_1_NI = {"P1_PROX1", "P2_PROX1"};
+  final String[] XBEE_PROX_2_NI = {"P1_PROX2", "P2_PROX2"};
+  final String[] XBEE_ACCEL_NI = {"P1_ACCEL", "P2_ACCEL"};
+  final String[] XBEE_VIBE_NI = {"P1_VIBE", "P2_VIBE"};
+
   players[player].initProxComm(XBEE_PROX_1_NI[player], XBEE_PROX_2_NI[player]);
   players[player].initAccelComm(XBEE_ACCEL_NI[player]);
   players[player].initVibeComm(XBEE_VIBE_NI[player]); 
   
-  players[player].discoverPatches();
+  players[player].discoverRemoteXbees();
 }
 
-void xBeeDiscoverEvent(XBeeReader xbee)
-{
+void xBeeDiscoverEvent(XBeeReader xbee) {
     XBeeDataFrame data = xbee.getXBeeReading();
     data.parseXBeeRX16Frame();
     
@@ -92,66 +85,26 @@ void xBeeDiscoverEvent(XBeeReader xbee)
       
       switch (buffer[11]) {
         case 'P':
-          foundProxPatches.add(serial);
+          foundProxs.add(serial);
           println(" Found proximity patch: " + name + " (" + serial + ")");
           break;
         case 'V':
-          foundVibePatches.add(serial);
+          foundVibes.add(serial);
           println(" Found vibration patch: " + name + " (" + serial + ")");
           break;
         case 'A':
-          foundAccelPatches.add(serial);
+          foundAccels.add(serial);
           println(" Found acceleration patch: " + name + " (" + serial + ")");
           break;
         default:
-          foundUndefPatches.add(serial);
+          foundUndefs.add(serial);
           println(" Found undefined patch: " + name + " (" + serial + ")");
           break;
       }
     }
-      
-    // else if (buffer.length == XPan.CONFIG_ACK_LENGTH && buffer[0] == XPan.CONFIG_ACK_PACKET_TYPE)
-    // {
-    //   int myTurnLength = ((buffer[2] & 0xFF) << 8) | (buffer[3] & 0xFF); 
-    //   numConfigAcks++;
-    //   println("Config Ack Received in Level Select, Turn Length is " + myTurnLength);
-    // }
-    
-    // else if (buffer.length == XPan.VIBE_IN_PACKET_LENGTH && buffer[0] == XPan.VIBE_IN_PACKET_TYPE)
-    // {
-    //   int p = buffer[1];
-    //   int direction = buffer[2];
-    //   if (p<=8 && (state == LEVEL_SELECT_P1 || state == LEVEL_SELECT_SONG)) {
-    //     switch (direction) {
-    //       case 1:
-    //         moveLeft();
-    //         break;
-    //       case 2:
-    //         moveRight();
-    //         break;
-    //       default:
-    //         doSelect();
-    //         break;
-    //     }
-    //   }
-    //   else if (p>8 && state == LEVEL_SELECT_P2) {
-    //    switch (direction) {
-    //       case 1:
-    //         moveLeft();
-    //         break;
-    //       case 2:
-    //         moveRight();
-    //         break;
-    //       default:
-    //         doSelect();
-    //         break;
-    //    } 
-    //   }
-    // }
 }
 
-void xBeeEvent(XBeeReader xbee)
-{
+void xBeeEvent(XBeeReader xbee) {
   if (mode == 0) {
     xbeeManager.xBeeEvent(xbee);
   }

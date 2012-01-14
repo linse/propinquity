@@ -1,27 +1,29 @@
+
 public class Player {
-  final int XPAN_PROX_BASES = 1; //2;
-  final int XPAN_ACCEL_BASES = 1;
-  final int XPAN_VIBE_BASES = 1;
+  
+  final int PROX = 0;
+  final int ACCEL = 1;
+  final int VIBE = 2;
+  
+  // number of local xbees in prox, accel, vibe xpan of this player
+  final int[] XPANS_LOCAL_XBEES = {1,1,1};
+  final String[] XPAN_NAMES = {"proximity", "acceleration", "vibration"};
 
   PApplet parent;
 
   XPan[] xpansProx;
   XPan[] xpansAccel;
   XPan[] xpansVibe;
-  int numPatches;
 
-  public Player(PApplet p)
-  {
-    this.parent = p;
-    this.xpansProx = new XPan[XPAN_PROX_BASES];
-    this.xpansAccel = new XPan[XPAN_ACCEL_BASES];
-    this.xpansVibe = new XPan[XPAN_VIBE_BASES];
-    this.numPatches = 0;
+  public Player(PApplet p) {
+    parent = p;
+    xpansProx = new XPan[XPANS_LOCAL_XBEES[PROX]];
+    xpansAccel = new XPan[XPANS_LOCAL_XBEES[ACCEL]];
+    xpansVibe = new XPan[XPANS_LOCAL_XBEES[VIBE]];
   }
 
 
-  void initProxComm(String ni1, String ni2)
-  {
+  void initProxComm(String ni1, String ni2) {
     //TODO load bases using their serial number...?
     if (ni1 != null) {
       XBeeReader xbee = xbeeManager.reader(ni1);
@@ -43,18 +45,9 @@ public class Player {
         System.err.println("Could not initialize Xbee for proximity #2: " + ni2);
       }
     }
-
-    //create the data packet that requests proximity values
-    //outdata = new int[XPan.PROX_OUT_PACKET_LENGTH];
-    //outdata[0] = XPan.PROX_OUT_PACKET_TYPE;
-    //for (int i=1; i < outdata.length; i++)
-    //  outdata[i] = 0;
   }
 
-  XPan[] getProxXPans() { return xpansProx; }
-
-  void initAccelComm(String ni)
-  {
+  void initAccelComm(String ni) {
     if (ni == null) return;
 
     XBeeReader xbee = xbeeManager.reader(ni);
@@ -67,8 +60,7 @@ public class Player {
     }
   }
 
-  void initVibeComm(String ni)
-  {
+  void initVibeComm(String ni) {
     if (ni == null) return;
 
     XBeeReader xbee = xbeeManager.reader(ni);
@@ -84,21 +76,21 @@ public class Player {
 
   //TODO replace this with configPatches to pass the step length
   //at the same time as detecting which ones respond.
-  public void discoverPatches() {
+  public void discoverRemoteXbees() {
     println("Discover patches...");
-    for(int i = 0; i < XPAN_PROX_BASES; i++)
+    for (int i = 0; i < XPANS_LOCAL_XBEES[PROX]; i++)
       if (xpansProx[i] != null) {
         println("Discover proximity " + (i+1));
         xpansProx[i].nodeDiscover();
       }
 
-    for(int i = 0; i < XPAN_ACCEL_BASES; i++)
+    for (int i = 0; i < XPANS_LOCAL_XBEES[ACCEL]; i++)
       if (xpansAccel[i] != null) {
         println("Discover acceleration " + (i+1));
         xpansAccel[i].nodeDiscover();
       }
 
-    for(int i = 0; i < XPAN_VIBE_BASES; i++)
+    for (int i = 0; i < XPANS_LOCAL_XBEES[VIBE]; i++)
       if (xpansVibe[i] != null) {
         println("Discover vibration " + (i+1));
         xpansVibe[i].nodeDiscover();
