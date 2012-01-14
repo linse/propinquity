@@ -1,3 +1,6 @@
+// extra class to use multithreading:
+// stop thread to wait for xbee response
+
 public class XBeeManager implements Runnable {
   
   final int XBEE_BAUDRATE = 115200;

@@ -4,7 +4,6 @@ import xbee.*;
 XBeeManager xbeeManager;
 
 void setup() {
-  // build and init xbee manager
   xbeeManager = new XBeeManager(this);
 }
 
