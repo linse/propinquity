@@ -4,7 +4,7 @@
 public class XBeeManager implements Runnable {
 
   final int XBEE_BAUDRATE = 115200;
-  final int XBEE_RESPONSE_TIMEOUT = 5000;
+  final int XBEE_SERIAL_RESPONSE_TIMEOUT = 5 * 1000; // 5 sec
   
   Thread thread;
   String nodeID;
@@ -61,9 +61,10 @@ public class XBeeManager implements Runnable {
       
       // wait for xbee event until timeout, break if we got it
       int start = millis();
-      while (!hasNI && millis() < start+XBEE_RESPONSE_TIMEOUT) { 
+      while (!hasNI && millis() < start+XBEE_SERIAL_RESPONSE_TIMEOUT) { 
         try { 
           Thread.sleep(1);
+          //print(".");
         }
         catch(InterruptedException ie) {
           ie.printStackTrace(); 
@@ -80,7 +81,7 @@ public class XBeeManager implements Runnable {
       
       // Stop program if we still has no xbee after timeout
       if (!hasNI) {
-        println("Timeout and no local XBee found.");
+        println("Serial timeout and no local XBee found.");
         exit();
       }
   }  

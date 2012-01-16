@@ -1,17 +1,18 @@
 import processing.serial.*;
 import xbee.*;
 
-final int MODE_CHECK_SERIAL = 0;//,
+final int MODE_CHECK_SERIAL = 0;
 final int MODE_CHECK_XPAN = 1;
-final int MODE_CHECK_REMOTE = 2;
+final int MODE_SEND_DISCOVER = 2;
+final int MODE_RECEIVE_DISCOVER = 3;
+final int MODE_CHECKS_DONE = 4;
 int mode = MODE_CHECK_SERIAL;
 
-XBeeManager xbeeManager;
+final int XBEE_DISCOVER_TIMEOUT = 5 * 1000; // 5 sec
 
-boolean initPlayers = false;
+XBeeManager xbeeManager;
 Player[] players;
 
-boolean discoversent = false;
 ArrayList foundProxs;
 ArrayList foundVibes;
 ArrayList foundAccels;
@@ -27,33 +28,63 @@ void setup() {
   foundVibes = new ArrayList();
   foundAccels = new ArrayList();
   foundUndefs = new ArrayList();
-  initPlayers = false;
-  discoversent = false;
 }
 
 
 void draw() {
+  int startDiscover = 0; // time when discover package is sent
+  
   // scan test for local xbees via serial
   if (mode == MODE_CHECK_SERIAL && xbeeManager.hasAllNIs()) {
     //println("Local XBees found: " + xbeeManager.getNodeIDs() + ".");
     mode++;
   }
   // set up networks for all local xbees
-  else if (mode == MODE_CHECK_XPAN && !initPlayers && !discoversent) {
+  else if (mode == MODE_CHECK_XPAN) {
     initPlayers();
-    initPlayers = true;
-    println("hallo");
     mode++;
   }
   // discover remote xbees
-  else if (mode == MODE_CHECK_REMOTE && !discoversent) {
+  else if (mode == MODE_SEND_DISCOVER) {
     println("Scanning for remote xbees...");
     println("Player 1:");
     players[0].discoverRemoteXbees();
     println("Player 2:");
     players[1].discoverRemoteXbees();
-    discoversent = true;
+    startDiscover = millis();
+    mode++;
   }
+  else if (mode == MODE_RECEIVE_DISCOVER) {
+    if (millis()-startDiscover <= XBEE_DISCOVER_TIMEOUT) {
+      print(".");
+      delay(1000); // 1 sec
+    }
+    else {
+      mode++;
+      // TODO: record - which xbees have we??
+    }
+  }
+  else if (mode == MODE_CHECKS_DONE) {
+    println("");
+    println("Checks done");
+    printDiscovered();
+    exit();
+  }
+}
+
+void printDiscovered() {
+  println("Discovered proximity patches");
+  for(int i=0; i<foundProxs.size() ; i++)
+    println(foundProxs.get(i));
+  println("Discovered vibration gloves");
+  for(int i=0; i<foundVibes.size() ; i++)
+    println(foundVibes.get(i));
+  println("Discovered accelerometer anklets");
+  for(int i=0; i<foundAccels.size() ; i++)
+    println(foundAccels.get(i));
+  println("Discovered undefined remote xbee senders");
+  for(int i=0; i<foundUndefs.size() ; i++)
+    println(foundUndefs.get(i));
 }
 
 void initPlayers() {
@@ -123,7 +154,7 @@ void xBeeEvent(XBeeReader xbee) {
   if (mode == MODE_CHECK_SERIAL) {
     xbeeManager.xBeeEvent(xbee);
   }
-  else if (mode == MODE_CHECK_REMOTE) {
+  else if (mode == MODE_RECEIVE_DISCOVER) {
     xBeeDiscoverEvent(xbee);
   }
 }
