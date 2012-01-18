@@ -1,12 +1,13 @@
 import processing.serial.*;
 import xbee.*;
 
-final int MODE_CHECK_SERIAL = 0;
-final int MODE_CHECK_XPAN = 1;
-final int MODE_SEND_DISCOVER = 2;
-final int MODE_RECEIVE_DISCOVER = 3;
-final int MODE_CHECKS_DONE = 4;
-int mode = MODE_CHECK_SERIAL;
+final int GAME_STATE_INITIAL = 0;
+final int GAME_STATE_CHECK_SERIAL = 1;
+final int GAME_STATE_CHECK_XPAN = 2;
+final int GAME_STATE_SEND_DISCOVER = 3;
+final int GAME_STATE_RECEIVE_DISCOVER = 4;
+final int GAME_STATE_CHECKS_DONE = 5;
+int gameState = GAME_STATE_CHECK_SERIAL;
 
 final int XBEE_DISCOVER_TIMEOUT = 5 * 1000; // 5 sec
 
@@ -35,36 +36,36 @@ void draw() {
   int startDiscover = 0; // time when discover package is sent
   
   // scan test for local xbees via serial
-  if (mode == MODE_CHECK_SERIAL && xbeeManager.hasAllNIs()) {
+  if (gameState == GAME_STATE_CHECK_SERIAL && xbeeManager.hasAllNIs()) {
     //println("Local XBees found: " + xbeeManager.getNodeIDs() + ".");
-    mode++;
+    gameState++;
   }
   // set up networks for all local xbees
-  else if (mode == MODE_CHECK_XPAN) {
+  else if (gameState == GAME_STATE_CHECK_XPAN) {
     initPlayers();
-    mode++;
+    gameState++;
   }
   // discover remote xbees
-  else if (mode == MODE_SEND_DISCOVER) {
+  else if (gameState == GAME_STATE_SEND_DISCOVER) {
     println("Scanning for remote xbees...");
     println("Player 1:");
     players[0].discoverRemoteXbees();
     println("Player 2:");
     players[1].discoverRemoteXbees();
     startDiscover = millis();
-    mode++;
+    gameState++;
   }
-  else if (mode == MODE_RECEIVE_DISCOVER) {
+  else if (gameState == GAME_STATE_RECEIVE_DISCOVER) {
     if (millis()-startDiscover <= XBEE_DISCOVER_TIMEOUT) {
       print(".");
       delay(1000); // 1 sec
     }
     else {
-      mode++;
+      gameState++;
       // TODO: record - which xbees have we??
     }
   }
-  else if (mode == MODE_CHECKS_DONE) {
+  else if (gameState == GAME_STATE_CHECKS_DONE) {
     println("");
     println("Checks done");
     printDiscovered();
@@ -151,10 +152,10 @@ void xBeeDiscoverEvent(XBeeReader xbee) {
 }
 
 void xBeeEvent(XBeeReader xbee) {
-  if (mode == MODE_CHECK_SERIAL) {
+  if (gameState == GAME_STATE_CHECK_SERIAL) {
     xbeeManager.xBeeEvent(xbee);
   }
-  else if (mode == MODE_RECEIVE_DISCOVER) {
+  else if (gameState == GAME_STATE_RECEIVE_DISCOVER) {
     xBeeDiscoverEvent(xbee);
   }
 }

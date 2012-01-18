@@ -18,7 +18,6 @@ public class XPan {
   }
   
   void nodeDiscover() { 
-    //println("Discovering remote xbees from xbee personal area network (XPAN)."); 
     xbee.nodeDiscover(); 
   }
   
