@@ -91,6 +91,9 @@ int seqNum;
 int turnSeqNum;
 int turnNum;
 
+int maxProx = 0; // MIN analog read
+int minProx = 1023; // MAX analog read
+
 // Scheduling
 const int DEFAULT_TURN_LENGTH = 1900;
 
@@ -212,10 +215,17 @@ void loop() {
 //  if (running) {
 //    // Turned off capacitive sensing. kintel 20111013.
 //    //    readCapSense();
-    dataInterval=1000;
+    // TODO calc average over several measurements
+    dataInterval=20;
+    readProx();
     if (millis() - prevDataMillis > dataInterval) {
-      readProx();
-      send_data();
+      send_data();  
+      if (testing) {
+        Serial.println("Min");
+        Serial.println((int) minProx);
+        Serial.println("Max");
+        Serial.println((int) maxProx);
+      }
       prevDataMillis = millis();
     }
 //    if (blinking) {
@@ -248,12 +258,24 @@ void checkXbee() {
 
 void readProx() {
   proxReading = analogRead(proxPin);
+  
+//  if (proxReading < 0) proxReading = 0;
+//  if (proxReading > 1023) proxReading = 1023;
+  
+  if (proxReading < minProx) minProx = proxReading;
+  if (proxReading > maxProx) maxProx = proxReading;
+  
   if (proxReading < proxBaseline) proxReading = 0;
   else proxReading -= proxBaseline;
   doVibe();
+  if (testing) {
+    Serial.println("Prox reading");
+    Serial.println((int) proxReading);
+  }
 }
 
 // TODO: rescale?
+// prox readings go from approx 60 - 720
 void doVibe() {
   if (proxReading > 400) {
     analogWrite(vibePin, 255);
@@ -319,12 +341,12 @@ void send_data() {
   outPacket[5] = uint8_t(proxReading);
   tx = Tx16Request(base_address, outPacket, g_outPacketSize);
   if (testing) {
-    Serial.print((int)millis()+"\t");
-    Serial.print(turnNum+"\t");
-    Serial.print((int)outPacket[1]+"\t");
-    Serial.print(touched+"\t");
-    Serial.println("Prox reading");
-    Serial.println((int)proxReading);
+//    Serial.print((int)millis()+"\t");
+//    Serial.print(turnNum+"\t");
+//    Serial.print((int)outPacket[1]+"\t");
+//    Serial.print(touched+"\t");
+//    Serial.println("Prox reading");
+//    Serial.println((int)proxReading);
   }
 //  xbee.send(tx);
   touched = false;
