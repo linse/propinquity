@@ -102,7 +102,8 @@ long prevDataMillis = 0;
 long xCheckInterval = 20; // 50 Hz
 long prevCheckMillis = 0;
 long blinkInterval = 100; // 10 Hz
-long prevBlinkMillis = 0;
+long prevBlinkVibeMillis = 0;
+int blinkVibeInterval = 0;
 long turnLength; // will have to be set by config message
 long prevTurnMillis = 0;
 unsigned long currentMillis = 0;
@@ -124,11 +125,12 @@ boolean touched = false;
 int redLedPin = 9; //D11, 15 of 20
 int blueLedPin = 10; //D10, 14 of 20
 int greenLedPin = 11; //D9, 13 of 20
-int vibePin = 6; //D6, 7 of 20
+int vibePin = 6; //D6, 7 of 20 // ohh no, pin 5 and 6 are controlled by timer 0 => side effects on millis()
 int onboardLEDPin = 8; // D8, red LED on seeduino film
 
 //LED handling
 int ledState;
+boolean vibeState = LOW;
 
 //debug
 boolean testing = true; // actually it's specifically testing sensors
@@ -137,8 +139,9 @@ boolean testingLights = false;
 void setup() {
   initOutputs();
   // blink every color, buzz
-  debugCycle();
-  prevCheckMillis = prevTurnMillis = prevDataMillis = prevBlinkMillis = millis();
+  //debugCycle();
+
+  prevCheckMillis = prevTurnMillis = prevDataMillis = prevBlinkVibeMillis = millis();
 
   turnLength = DEFAULT_TURN_LENGTH;
   xbee.begin(9600);
@@ -215,23 +218,26 @@ void loop() {
 //  if (running) {
 //    // Turned off capacitive sensing. kintel 20111013.
 //    //    readCapSense();
+
+
     // TODO calc average over several measurements
     dataInterval=20;
     readProx();
     if (millis() - prevDataMillis > dataInterval) {
       send_data();  
       if (testing) {
-        Serial.println("Min");
-        Serial.println((int) minProx);
-        Serial.println("Max");
-        Serial.println((int) maxProx);
+//        Serial.println("Min");
+//        Serial.println((int) minProx);
+//        Serial.println("Max");
+//        Serial.println((int) maxProx);
       }
       prevDataMillis = millis();
     }
+    
 //    if (blinking) {
-//      if (millis() - prevBlinkMillis > blinkInterval) {
+//      if (millis() - prevBlinkVibeMillis > blinkInterval) {
 //        doBlink(); 
-//        prevBlinkMillis = millis();
+//        prevBlinkVibeMillis = millis();
 //      }
 //    }
 //    if (millis() - prevTurnMillis > turnLength) {
@@ -249,6 +255,36 @@ void loop() {
 //  }
 }
 
+void blinkVibe(int *onOffSequence, int len) {
+  if (len % 2 != 0) {
+    Serial.println("We need an even number of on/off time intervals.");
+    debugCycle();
+  }
+  else {
+    for(int i = 0; i < len; i+=2) {
+      int millisOff = onOffSequence[i];
+      int millisOn = onOffSequence[i+1];
+      blinkVibe(millisOff, millisOn);
+    }
+  }
+}
+
+void blinkVibe(int millisOff, int millisOn) {
+  if (millis() - prevBlinkVibeMillis > blinkVibeInterval) {
+    prevBlinkVibeMillis = millis();
+    if (vibeState == HIGH) {
+      vibeState = LOW;
+      analogWrite(vibePin, 0);
+      blinkVibeInterval = millisOff;
+    } 
+    else if (vibeState == LOW) {
+      vibeState = HIGH;
+      analogWrite(vibePin, 255);
+      blinkVibeInterval = millisOn;
+    } 
+  }  
+}
+  
 void checkXbee() {
   xbee.readPacket();
   if (xbee.getResponse().isAvailable()) {
@@ -258,39 +294,48 @@ void checkXbee() {
 
 void readProx() {
   proxReading = analogRead(proxPin);
-  
-//  if (proxReading < 0) proxReading = 0;
-//  if (proxReading > 1023) proxReading = 1023;
-  
-  if (proxReading < minProx) minProx = proxReading;
+  if (proxReading < minProx) minProx = proxReading; // is between 0 and 1023
   if (proxReading > maxProx) maxProx = proxReading;
   
   if (proxReading < proxBaseline) proxReading = 0;
   else proxReading -= proxBaseline;
   doVibe();
   if (testing) {
-    Serial.println("Prox reading");
-    Serial.println((int) proxReading);
+//    Serial.println("Prox reading");
+//    Serial.println((int) proxReading);
   }
 }
 
 // TODO: rescale?
 // prox readings go from approx 60 - 720
 void doVibe() {
-  if (proxReading > 400) {
-    analogWrite(vibePin, 255);
+  if (proxReading > 200) {
+    //analogWrite(vibePin, 255);
+    int len = 6;
+    int onOffSequence[] = { 100, 100, 300, 300, 500, 500 };
+    blinkVibe(onOffSequence, 6);
+    //blinkVibe(250, 250); // the motor cannot do faster than 300 
   }
-  else if (proxReading > 300) {
-    analogWrite(vibePin, 200);
+  else if (proxReading > 300) {;
+    int len = 6;
+    int onOffSequence[] = { 100, 100, 300, 300, 700, 400 };
+    blinkVibe(onOffSequence, 6);
+    //analogWrite(vibePin, 200);
   }
-  else if (proxReading > 200) {
-    analogWrite(vibePin, 150);
+  else if (proxReading > 200) {;
+    int len = 6;
+    int onOffSequence[] = { 100, 100, 300, 300, 800, 300 };
+    blinkVibe(onOffSequence, 6);
+    //analogWrite(vibePin, 150);
   }
-  else if (proxReading > 100) {
-    analogWrite(vibePin, 100); 
+  else if (proxReading > 100) {;
+    int len = 6;
+    int onOffSequence[] = { 100, 100, 300, 300, 900, 200 };
+    blinkVibe(onOffSequence, 6);
+    //analogWrite(vibePin, 100); 
   }
   else {
-    analogWrite(vibePin, 0); 
+    //analogWrite(vibePin, 0); 
   }
 }
 
