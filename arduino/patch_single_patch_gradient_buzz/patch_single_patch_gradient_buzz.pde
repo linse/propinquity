@@ -309,7 +309,7 @@ void readProx() {
 // TODO: rescale?
 // prox readings go from approx 60 - 720
 void doVibe() {
-  if (proxReading > 200) {
+  if (proxReading > 400) {
     //analogWrite(vibePin, 255);
     int len = 6;
     int onOffSequence[] = { 100, 100, 300, 300, 500, 500 };
@@ -335,7 +335,7 @@ void doVibe() {
     //analogWrite(vibePin, 100); 
   }
   else {
-    //analogWrite(vibePin, 0); 
+    analogWrite(vibePin, 0); 
   }
 }
 
