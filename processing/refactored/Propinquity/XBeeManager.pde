@@ -1,5 +1,6 @@
 // extra class to use multithreading:
-// stop thread to wait for xbee response
+// stop thread to wait for xbee response via serial
+// so far deals only with _local_ xbees connected via serial
 
 public class XBeeManager implements Runnable {
 

@@ -54,7 +54,7 @@ public class Player {
     for (int xpanType = PROX; xpanType <= VIBE; xpanType++) {
       for (int i = 0; i < XPANS_LOCAL_XBEES[xpanType]; i++){
         if (xpans.get(xpanType)[i] != null) {
-          println("Discover " + XPAN_NAMES[xpanType]+ " " + (i+1) +" at "+millis()+":");
+          println("Discover remote xbees in xpan " + XPAN_NAMES[xpanType]+ " " + (i+1) +" at "+millis()+":");
           xpans.get(xpanType)[i].nodeDiscover();
         }
       }

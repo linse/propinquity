@@ -10,7 +10,7 @@ final int GAME_STATE_CHECKS_DONE = 5;
 final int GAME_STATE_COMMUNICATE = 6;
 int gameState = GAME_STATE_CHECK_SERIAL;
 
-final int XBEE_DISCOVER_TIMEOUT = 5 * 1000; // 5 sec
+final int XBEE_DISCOVER_TIMEOUT = 6 * 1000; // 6 sec - too short if we have other USB devices
 
 XBeeManager xbeeManager;
 Player[] players;
@@ -19,6 +19,9 @@ ArrayList foundProxs;
 ArrayList foundVibes;
 ArrayList foundAccels;
 ArrayList foundUndefs;
+
+// No other USB devices please
+// Unplug and replug if other devices were plugged in!
 
 void setup() {
 
@@ -38,7 +41,6 @@ void draw() {
   
   // scan test for local xbees via serial
   if (gameState == GAME_STATE_CHECK_SERIAL && xbeeManager.hasAllNIs()) {
-    //println("Local XBees found: " + xbeeManager.getNodeIDs() + ".");
     gameState++;
   }
   // set up networks for all local xbees
@@ -57,18 +59,12 @@ void draw() {
     gameState++;
   }
   else if (gameState == GAME_STATE_RECEIVE_DISCOVER) {
-    if (millis()-startDiscover <= XBEE_DISCOVER_TIMEOUT) {
-      print(".");
-      delay(1000); // 1 sec
-    }
-    else {
+    // TODO: if all remote xbees are found OR timeout
+    if (millis()-startDiscover > XBEE_DISCOVER_TIMEOUT) {
       gameState++;
-      // TODO: record - which xbees have we??
     }
   }
   else if (gameState == GAME_STATE_CHECKS_DONE) {
-    println("");
-    println("Checks done");
     printDiscovered();
     gameState++;
   }
@@ -77,18 +73,27 @@ void draw() {
 }
 
 void printDiscovered() {
-  println("Discovered proximity patches");
-  for(int i=0; i<foundProxs.size() ; i++)
-    println(foundProxs.get(i));
-  println("Discovered vibration gloves");
-  for(int i=0; i<foundVibes.size() ; i++)
-    println(foundVibes.get(i));
-  println("Discovered accelerometer anklets");
-  for(int i=0; i<foundAccels.size() ; i++)
-    println(foundAccels.get(i));
-  println("Discovered undefined remote xbee senders");
-  for(int i=0; i<foundUndefs.size() ; i++)
-    println(foundUndefs.get(i));
+  if (!foundProxs.isEmpty() 
+  &&  !foundVibes.isEmpty() 
+  && !foundAccels.isEmpty()
+  && !foundUndefs.isEmpty()) {
+    println("No remote xbees found");
+    exit();
+  }
+  else {
+    printDiscovered(foundProxs, "proximity patch");
+    printDiscovered(foundVibes, "vibration glove");
+    printDiscovered(foundAccels, "accelerometer anklet");
+    printDiscovered(foundUndefs, "undefined");
+  }
+}
+
+void printDiscovered(ArrayList discovered, String kind) {
+  if (!discovered.isEmpty()) {
+    println("Discovered "+kind+" remote xbee senders");
+    for(int i=0; i<discovered.size() ; i++)
+      println(discovered.get(i));
+  }
 }
 
 void initPlayers() {
@@ -155,15 +160,51 @@ void xBeeDiscoverEvent(XBeeReader xbee) {
 }
 
 void xBeeEvent(XBeeReader xbee) {
-  if (gameState == GAME_STATE_CHECK_SERIAL) {
-    xbeeManager.xBeeEvent(xbee);
-  }
-  else if (gameState == GAME_STATE_RECEIVE_DISCOVER) {
-    xBeeDiscoverEvent(xbee);
-  }
-  else if (gameState == GAME_STATE_COMMUNICATE) {
-    println("The xbee talked data to me!"); // NOT YET
-    exit();
+  switch (gameState) {
+    case GAME_STATE_CHECK_SERIAL:
+      xbeeManager.xBeeEvent(xbee);
+      break;
+    case GAME_STATE_RECEIVE_DISCOVER:
+      xBeeDiscoverEvent(xbee);
+      break;
+    case GAME_STATE_COMMUNICATE:
+      XBeeDataFrame data = xbee.getXBeeReading();
+      if (data.getApiID() == xbee.SERIES1_RX16PACKET) {
+        int[] packet = data.getBytes();
+        parsePacket(packet);
+      }
+      else {
+        println("Bad packet received by game frontend.");
+      }
+      break;
+    default:
+      break;
   }
 }
 
+void parsePacket(int[] packet) {
+  if (packet.length == XPan.PROX_IN_PACKET_LENGTH 
+       && packet[0] == XPan.PROX_IN_PACKET_TYPE) { 
+    int patch = (packet[1] >> 1);                
+    int player = getPlayerIndexForPatch(patch);
+    
+    if (player != -1) {
+      // TODO packet[1] contains boolean touched, which is obsolete
+      int step = ((packet[2] & 0xFF) << 8) | (packet[3] & 0xFF);
+      //println(step);
+      int proximity = ((packet[4] & 0xFF) << 8) | (packet[5] & 0xFF);
+      println("Player "+player+" sent prox "+proximity);
+      //processProxReading(new ProxData(player, patch, step, touched, proximity));
+    }
+    else
+      System.err.println("Error: received a packet from patch '"+ patch + 
+      "', which is not assigned to a player");
+  }
+}
+
+// TODO hard coded
+public int getPlayerIndexForPatch(int patch) {
+  if (patch >= 1 && patch <= 4) return 0;
+  else if (patch >= 9 && patch <= 16) return 1;
+  else return -1;
+}

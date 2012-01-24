@@ -1,5 +1,9 @@
 #include <XBee.h>
 
+// Board for Seeeduino: 
+// Arduino Pro or Pro Mini (3.3V, 8 mHz) with Atmega 168
+// Take out xbee for programming!
+
 //Communication Type Constants
 const int PROX_OUT_PACKET_TYPE = 1; //listening for this
 const int PROX_IN_PACKET_TYPE = 2; //sending this
@@ -393,7 +397,7 @@ void send_data() {
 //    Serial.println("Prox reading");
 //    Serial.println((int)proxReading);
   }
-//  xbee.send(tx);
+  xbee.send(tx);
 }
 
 void ack_config() {
