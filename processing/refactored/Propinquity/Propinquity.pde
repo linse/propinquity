@@ -7,6 +7,7 @@ final int GAME_STATE_CHECK_XPAN = 2;
 final int GAME_STATE_SEND_DISCOVER = 3;
 final int GAME_STATE_RECEIVE_DISCOVER = 4;
 final int GAME_STATE_CHECKS_DONE = 5;
+final int GAME_STATE_COMMUNICATE = 6;
 int gameState = GAME_STATE_CHECK_SERIAL;
 
 final int XBEE_DISCOVER_TIMEOUT = 5 * 1000; // 5 sec
@@ -69,7 +70,9 @@ void draw() {
     println("");
     println("Checks done");
     printDiscovered();
-    exit();
+    gameState++;
+  }
+  else if (gameState == GAME_STATE_COMMUNICATE) {
   }
 }
 
@@ -157,6 +160,10 @@ void xBeeEvent(XBeeReader xbee) {
   }
   else if (gameState == GAME_STATE_RECEIVE_DISCOVER) {
     xBeeDiscoverEvent(xbee);
+  }
+  else if (gameState == GAME_STATE_COMMUNICATE) {
+    println("The xbee talked data to me!"); // NOT YET
+    exit();
   }
 }
 

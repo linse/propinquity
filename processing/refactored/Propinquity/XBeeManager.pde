@@ -82,7 +82,7 @@ public class XBeeManager implements Runnable {
       // Stop program if we still has no xbee after timeout
       if (!hasNI) {
         println("Serial timeout and no local XBee found.");
-        exit();
+        //exit();
       }
   }  
   
