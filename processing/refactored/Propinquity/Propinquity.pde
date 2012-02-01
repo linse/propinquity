@@ -160,6 +160,7 @@ void xBeeDiscoverEvent(XBeeReader xbee) {
 }
 
 void xBeeEvent(XBeeReader xbee) {
+  println("rec. packet");
   switch (gameState) {
     case GAME_STATE_CHECK_SERIAL:
       xbeeManager.xBeeEvent(xbee);
