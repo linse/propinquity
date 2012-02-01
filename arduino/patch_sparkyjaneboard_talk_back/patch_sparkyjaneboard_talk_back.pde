@@ -1,5 +1,17 @@
 #include <XBee.h>
 
+// Board for SparkJaneBoard: 
+// Arduino Pro or Pro Mini (3.3V, 8 mHz) with Atmega 328
+
+int onboardLedPin = 7; 
+int redLedPin = 8; 
+int greenLedPin = 9; 
+int blueLedPin = 10;
+int vibePin = 6; 
+int proxPin = A4; 
+
+int proxReading = 0;
+
 //Communication Type Constants
 const int PROX_OUT_PACKET_TYPE = 1; //listening for this
 const int PROX_IN_PACKET_TYPE = 2; //sending this
@@ -29,49 +41,33 @@ static int initialDelay = 10; //for staggering messages from sensors to avoid pa
 static int ledFilter1 = 0x40; //128, 64, 32, and 16 -- for higher order bits
 static int ledFilter2 = 0x04; //8, 4, 2, and 1 -- for lower order bits
 
-// Ordering
-int turnNum;
-
 // Scheduling
 long dataInterval = 20; // 20 Hz
 long prevDataMillis = 0;
-
-// Board for SparkJaneBoard: 
-// Arduino Pro or Pro Mini (3.3V, 8 mHz) with Atmega 328
-
-// all +1 compared to previous version
-int onboardLedPin = 7; 
-int redLedPin = 8; 
-int greenLedPin = 9; 
-int blueLedPin = 10;
-int vibePin = 6; 
-int proxPin = A4; 
-
-int proxReading = 0;
+int turnNum;
 
 
 void setup() {
-  prevDataMillis = millis();
-  xbee.begin(9600);
-  
   pinMode(onboardLedPin, OUTPUT);
   pinMode(redLedPin, OUTPUT);
   pinMode(greenLedPin, OUTPUT);
-  pinMode(blueLedPin, OUTPUT);
-  
+  pinMode(blueLedPin, OUTPUT);  
   pinMode(vibePin, OUTPUT);
-  
   pinMode(proxPin, INPUT);
 
+  prevDataMillis = millis();
+  xbee.begin(9600);
   Serial.begin(9600);
   color(0,0,0);
   analogWrite(vibePin, 0);
 }
 
+
 void loop() {
   //blinkRed(1000);
   readAndSendProxViaXbee();
 }
+
 
 void blinkRed(int pause) {
   color(0,0,0);
@@ -79,6 +75,7 @@ void blinkRed(int pause) {
   color(255,0,0);
   delay(pause);
 }
+
 
 void blinkLEDsAndVibe() {
   analogWrite(redLedPin, 255);
@@ -90,6 +87,7 @@ void blinkLEDsAndVibe() {
   color(255, 255, 0);
 }
 
+
 void readAndSendProxViaSerial() {
   analogRead(proxPin);
   delay(20);
@@ -99,6 +97,7 @@ void readAndSendProxViaSerial() {
   delay(20);
 }
 
+
 void readAndSendProxViaXbee() {
   // TODO calc average over several measurements?
   readProx();
@@ -107,6 +106,7 @@ void readAndSendProxViaXbee() {
     prevDataMillis = millis();
   }
 }
+
 
 void readProx() {
   proxReading = analogRead(proxPin);
