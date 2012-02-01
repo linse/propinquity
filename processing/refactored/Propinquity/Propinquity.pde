@@ -1,5 +1,5 @@
 import processing.serial.*;
-import xbee.*;
+import xbee.*; // xbee library by shiffman & faludi, version 1.5
 
 final int GAME_STATE_INITIAL = 0;
 final int GAME_STATE_CHECK_SERIAL = 1;
@@ -59,7 +59,7 @@ void draw() {
     gameState++;
   }
   else if (gameState == GAME_STATE_RECEIVE_DISCOVER) {
-    // TODO: if all remote xbees are found OR timeout
+    // TODO: if all remote xbees are found OR timeout OR user input
     if (millis()-startDiscover > XBEE_DISCOVER_TIMEOUT) {
       gameState++;
     }
@@ -193,7 +193,7 @@ void parsePacket(int[] packet) {
       int step = ((packet[2] & 0xFF) << 8) | (packet[3] & 0xFF);
       //println(step);
       int proximity = ((packet[4] & 0xFF) << 8) | (packet[5] & 0xFF);
-      println("Player "+player+" sent prox "+proximity);
+      println("Patch "+patch+" player "+player+" sent prox "+proximity);
       //processProxReading(new ProxData(player, patch, step, touched, proximity));
     }
     else

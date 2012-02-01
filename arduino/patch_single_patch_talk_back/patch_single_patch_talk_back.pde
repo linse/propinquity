@@ -18,9 +18,9 @@ const int g_outPacketSize = 6;
 const int g_inPacketSize = 5;
 const int g_configPacketSize = 3;
 const int g_configAckSize = 4;
-static uint8_t inPacket[g_inPacketSize];
-static uint8_t outPacket[g_outPacketSize];
-static uint8_t configPacket[g_configPacketSize];
+static byte inPacket[g_inPacketSize];
+static byte outPacket[g_outPacketSize];
+static byte configPacket[g_configPacketSize];
 static int packet_cnt;
 
 XBee xbee = XBee();
@@ -125,7 +125,7 @@ int touchThreshold = 1250;
 //might need to establish running average for capsense and look for spikes
 
 //Feedback
-int redLedPin = 9; //D11, 15 of 20
+int redLedPin = 9; //D11, 15 of 20 // seeeduino
 int blueLedPin = 10; //D10, 14 of 20
 int greenLedPin = 11; //D9, 13 of 20
 int vibePin = 6; //D6, 7 of 20 // ohh no, pin 5 and 6 are controlled by timer 0 => side effects on millis()
@@ -141,8 +141,8 @@ boolean testingLights = false;
 
 void setup() {
   initOutputs();
-  // blink every color, buzz
-  //debugCycle();
+  //blink every color, buzz
+  debugCycle();
 
   prevCheckMillis = prevTurnMillis = prevDataMillis = prevBlinkVibeMillis = millis();
 
@@ -172,6 +172,7 @@ void initOutputs() {
 }
 
 void debugCycle() {
+  
   // Red + debug
   color(255,0,0);
   digitalWrite(onboardLEDPin, 1);
@@ -288,12 +289,12 @@ void blinkVibe(int millisOff, int millisOn) {
   }  
 }
   
-void checkXbee() {
-  xbee.readPacket();
-  if (xbee.getResponse().isAvailable()) {
-     get_data(); 
-  }
-}
+//void checkXbee() {
+//  xbee.readPacket();
+//  if (xbee.getResponse().isAvailable()) {
+//     get_data(); 
+//  }
+//}
 
 void readProx() {
   proxReading = analogRead(proxPin);
@@ -357,37 +358,37 @@ void doBlink() {
   }
 }
 
-void setLeds(int firstbyte, int secondbyte) {
-  if (firstbyte & ledFilter1) {
-    //start blinking and sensing.
-    color(255, 255, 255);
-    ledState = HIGH;
-    blinking = true;
-    waiting = true;
-    //if (testingLights) Serial.println("sensing now.");
-  }
-  // Temporarily disabled "warning" lights for patches becoming active 
-  // next turns. kintel 20111013
-  else {
-    //nothing anytime soon
-    color(0,0,0);
-    ledState = LOW;
-    blinking = false;
-    running = false;
-    waiting = false;
-    //if (testingLights) Serial.println("sensing in three or more turns.");
-  }
-  if (testing) running = true;
-}
+//void setLeds(int firstbyte, int secondbyte) {
+//  if (firstbyte & ledFilter1) {
+//    //start blinking and sensing.
+//    color(255, 255, 255);
+//    ledState = HIGH;
+//    blinking = true;
+//    waiting = true;
+//    //if (testingLights) Serial.println("sensing now.");
+//  }
+//  // Temporarily disabled "warning" lights for patches becoming active 
+//  // next turns. kintel 20111013
+//  else {
+//    //nothing anytime soon
+//    color(0,0,0);
+//    ledState = LOW;
+//    blinking = false;
+//    running = false;
+//    waiting = false;
+//    //if (testingLights) Serial.println("sensing in three or more turns.");
+//  }
+//  if (testing) running = true;
+//}
 
 void send_data() {
   outPacket[0] = PROX_IN_PACKET_TYPE;
-  //outPacket[1] = uint8_t(myAddress << 1 | (int)touched);
-  outPacket[1] = uint8_t(myAddress << 1);
-  outPacket[2] = uint8_t(turnNum >> 8);
-  outPacket[3] = uint8_t(turnNum);
-  outPacket[4] = uint8_t(proxReading >> 8);
-  outPacket[5] = uint8_t(proxReading);
+  //outPacket[1] = byte(myAddress << 1 | (int)touched);
+  outPacket[1] = byte(myAddress << 1);
+  outPacket[2] = byte(turnNum >> 8);
+  outPacket[3] = byte(turnNum);
+  outPacket[4] = byte(proxReading >> 8);
+  outPacket[5] = byte(proxReading);
   tx = Tx16Request(base_address, outPacket, g_outPacketSize);
   if (testing) {
 //    Serial.print((int)millis()+"\t");
@@ -401,11 +402,11 @@ void send_data() {
 }
 
 void ack_config() {
-  static uint8_t configAck[g_configAckSize];
+  static byte configAck[g_configAckSize];
   configAck[0] = CONFIG_ACK_PACKET_TYPE;
-  configAck[1] = uint8_t(myAddress);
-  configAck[2] = uint8_t(turnLength >> 8);
-  configAck[3] = uint8_t(turnLength);
+  configAck[1] = byte(myAddress);
+  configAck[2] = byte(turnLength >> 8); // turn length is a long
+  configAck[3] = byte(turnLength);
   tx = Tx16Request(base_address, configAck, g_configAckSize);
   if (testing) {
     //Serial.print("Turn length \t");
@@ -415,29 +416,29 @@ void ack_config() {
   digitalWrite(onboardLEDPin, 1);
 }
 
-void get_data() {
-  if (xbee.getResponse().getApiId() == RX_16_RESPONSE) {
-    int packet_cnt = 0;
-    xbee.getResponse().getRx16Response(rx);
-    if (rx.getData(0) == PROX_OUT_PACKET_TYPE) {
-      while (packet_cnt < g_inPacketSize) {
-        inPacket[packet_cnt] = rx.getData(packet_cnt++);
-      }
-      setLeds(inPacket[3], inPacket[4]);
-      turnNum = inPacket[1] << 8 | inPacket[2];
-      turnSeqNum = 0;
-      prevTurnMillis = millis();
-    }
-    else if (rx.getData(0) == CONFIG_OUT_PACKET_TYPE) {
-      while (packet_cnt < g_configPacketSize) {
-        configPacket[packet_cnt] = rx.getData(packet_cnt++);
-      }
-      int stepLength = configPacket[1] << 8 | configPacket[2];
-      turnLength = stepLength-10;
-      ack_config();
-    }
-  }
-}
+//void get_data() {
+//  if (xbee.getResponse().getApiId() == RX_16_RESPONSE) {
+//    int packet_cnt = 0;
+//    xbee.getResponse().getRx16Response(rx);
+//    if (rx.getData(0) == PROX_OUT_PACKET_TYPE) {
+//      while (packet_cnt < g_inPacketSize) {
+//        inPacket[packet_cnt] = rx.getData(packet_cnt++);
+//      }
+//      setLeds(inPacket[3], inPacket[4]);
+//      turnNum = inPacket[1] << 8 | inPacket[2];
+//      turnSeqNum = 0;
+//      prevTurnMillis = millis();
+//    }
+//    else if (rx.getData(0) == CONFIG_OUT_PACKET_TYPE) {
+//      while (packet_cnt < g_configPacketSize) {
+//        configPacket[packet_cnt] = rx.getData(packet_cnt++);
+//      }
+//      int stepLength = configPacket[1] << 8 | configPacket[2];
+//      turnLength = stepLength-10;
+//      ack_config();
+//    }
+//  }
+//}
 
 void color(unsigned char red, unsigned char green, unsigned char blue) {
   analogWrite(redLedPin, 255-red);	 
