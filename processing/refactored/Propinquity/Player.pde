@@ -61,5 +61,9 @@ public class Player {
     }
 
   }
+  
+  void broadcastVibe() {
+    xpans.get(VIBE)[0].broadcastVibe(500);
+  }
 }
 

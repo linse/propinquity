@@ -36,5 +36,30 @@ public class XPan {
     xbee.stopXBee(); 
   }
   
+  void broadcastVibe(int value) { 
+    broadcast(getVibePacket(value)); 
+  }
+  
+  void broadcast(int[] data) {
+    sendOutgoing(BROADCAST_ADDR, data);
+  }
+  
+  void sendOutgoing(int adl, int[] data, int turnNum, int baseNum) {
+   println("SEND OUTGOING: " + xbee + " ");
+   int[] myData = data;
+   data[1] = turnNum; 
+   xbee.sendDataString16(adl, myData);
+  }
+  
+  void sendOutgoing(int adl, int[] data) {
+     int[] myData = data;
+     xbee.sendDataString16(adl, myData);
+  }
+  
+  private int[] getVibePacket(int value) {
+    int[] packet = { VIBE_OUT_PACKET_TYPE, value };
+    return packet;
+  }
+  
 }
 
