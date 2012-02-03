@@ -96,10 +96,6 @@ void printDiscovered(ArrayList discovered, String kind) {
   }
 }
 
-void broadcastVibe() {
-  players[0].broadcastVibe();
-}
-
 void initPlayers() {
   players = new Player[2];
   players[0] = new Player(this);
@@ -196,11 +192,9 @@ void parsePacket(int[] packet) {
     if (player != -1) {
       // TODO packet[1] contains boolean touched, which is obsolete
       int step = ((packet[2] & 0xFF) << 8) | (packet[3] & 0xFF);
-      //println(step);
       int proximity = ((packet[4] & 0xFF) << 8) | (packet[5] & 0xFF);
       println("Patch "+patch+" player "+player+" sent prox "+proximity);
-      //processProxReading(new ProxData(player, patch, step, touched, proximity));
-      broadcastVibe();
+      players[0].broadcastVibe();
     }
     else
       System.err.println("Error: received a packet from patch '"+ patch + 
