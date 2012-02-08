@@ -66,6 +66,7 @@ void setup() {
 void loop() {
   //blinkRed(1000);
   readAndSendProxViaXbee();
+  //blinkLEDsAndVibe();
 }
 
 

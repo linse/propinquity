@@ -40,8 +40,10 @@ void draw() {
   int startDiscover = 0; // time when discover package is sent
   
   // scan test for local xbees via serial
-  if (gameState == GAME_STATE_CHECK_SERIAL && xbeeManager.hasAllNIs()) {
-    gameState++;
+  if (gameState == GAME_STATE_CHECK_SERIAL) {
+    if (xbeeManager.hasAllLocalNIs()) {
+      gameState++;
+    }
   }
   // set up networks for all local xbees
   else if (gameState == GAME_STATE_CHECK_XPAN) {
@@ -51,10 +53,10 @@ void draw() {
   // discover remote xbees
   else if (gameState == GAME_STATE_SEND_DISCOVER) {
     println("Scanning for remote xbees...");
-    println("Player 1:");
-    players[0].discoverRemoteXbees();
-    println("Player 2:");
-    players[1].discoverRemoteXbees();
+    for (int i=0; i<=1; i++) {
+      println("Player "+i+":");
+      players[i].discoverRemoteXbees();
+    }
     startDiscover = millis();
     gameState++;
   }
@@ -123,55 +125,24 @@ void initPlayers() {
   players[1].init(NIS_PLAYER2);
 }
 
-void xBeeDiscoverEvent(XBeeReader xbee) {
-    XBeeDataFrame data = xbee.getXBeeReading();
-    data.parseXBeeRX16Frame();
-    
-    int[] buffer = data.getBytes();
-    
-    if (buffer.length > 11) {
-      //check first letter of NI parameter
-      String serial = "";
-      for(int i = 3; i < 11; i++)
-        serial += hex(buffer[i], 2);
-      String name = "";
-      for(int i = 11; i < buffer.length; i++)
-        name += char(buffer[i]);
-      
-      switch (buffer[11]) {
-        case 'P':
-          foundProxs.add(serial);
-          println(" Found proximity patch: " + name + " (" + serial + ") at "+millis());
-          break;
-        case 'V':
-          foundVibes.add(serial);
-          println(" Found vibration patch: " + name + " (" + serial + ") at "+millis());
-          break;
-        case 'A':
-          foundAccels.add(serial);
-          println(" Found acceleration patch: " + name + " (" + serial + ") at "+millis());
-          break;
-        default:
-          foundUndefs.add(serial);
-          println(" Found undefined patch: " + name + " (" + serial + ") at "+millis());
-          break;
-      }
-    }
-}
 
 void xBeeEvent(XBeeReader xbee) {
-  println("rec. packet");
+  //print(".");
   switch (gameState) {
     case GAME_STATE_CHECK_SERIAL:
-      xbeeManager.xBeeEvent(xbee);
+      xbeeManager.foundLocalXbeeEvent(xbee);
       break;
     case GAME_STATE_RECEIVE_DISCOVER:
-      xBeeDiscoverEvent(xbee);
+      xbeeManager.foundRemoteXbeeEvent(xbee);
       break;
     case GAME_STATE_COMMUNICATE:
       XBeeDataFrame data = xbee.getXBeeReading();
       if (data.getApiID() == xbee.SERIES1_RX16PACKET) {
         int[] packet = data.getBytes();
+        int addr = data.getAddress16();
+        int rssi = data.getRSSI(); // received signal strength
+        println("Addr "+binary(addr,16)+" rssi "+rssi);
+        exit();
         parsePacket(packet);
       }
       else {
@@ -192,6 +163,7 @@ void parsePacket(int[] packet) {
     if (player != -1) {
       // TODO packet[1] contains boolean touched, which is obsolete
       int step = ((packet[2] & 0xFF) << 8) | (packet[3] & 0xFF);
+      //println(step);
       int proximity = ((packet[4] & 0xFF) << 8) | (packet[5] & 0xFF);
       println("Patch "+patch+" player "+player+" sent prox "+proximity);
       players[0].broadcastVibe();

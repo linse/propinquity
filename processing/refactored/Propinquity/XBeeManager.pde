@@ -4,13 +4,13 @@
 
 public class XBeeManager implements Runnable {
 
-  final int XBEE_BAUDRATE = 115200;
-  final int XBEE_SERIAL_RESPONSE_TIMEOUT = 5 * 1000; // 5 sec
+  final int XBEE_SERIAL_BAUDRATE = 115200; // bits/s
+  final int XBEE_SERIAL_RESPONSE_TIMEOUT = 5000; // 5 sec
   
   Thread thread;
   String nodeID;
   boolean hasNI;
-  boolean hasAllNIs;
+  boolean hasAllLocalNIs;
   
   PApplet parent;
   HashMap nodeIDAndSerialPort;
@@ -39,19 +39,19 @@ public class XBeeManager implements Runnable {
       readSerialPort(serialPortList[i]);
 
     }
-    hasAllNIs = true;
+    hasAllLocalNIs = true;
     
     //clear thread
     thread = null; 
   }
   
-  public boolean hasAllNIs() {
-    return hasAllNIs;
+  public boolean hasAllLocalNIs() {
+    return hasAllLocalNIs;
   }
   
   public void readSerialPort(String port) {
       println(" Connecting to port: " + port);
-      Serial serial = new Serial(parent, port, XBEE_BAUDRATE); 
+      Serial serial = new Serial(parent, port, XBEE_SERIAL_BAUDRATE); 
       
       // get node identifier from local xbee
       hasNI = false;  
@@ -92,11 +92,11 @@ public class XBeeManager implements Runnable {
     String serialPort = (String) nodeIDAndSerialPort.get(ni);
     if (serialPort == null) 
       return null;
-    XBeeReader xbee = new XBeeReader(parent, new Serial(parent, serialPort, XBEE_BAUDRATE));
+    XBeeReader xbee = new XBeeReader(parent, new Serial(parent, serialPort, XBEE_SERIAL_BAUDRATE));
     return xbee;
   }
   
-  public void xBeeEvent(XBeeReader xbee) { 
+  public void foundLocalXbeeEvent(XBeeReader xbee) { 
     XBeeDataFrame data = xbee.getXBeeReading();
     data.parseXBeeRX16Frame();
     
@@ -108,6 +108,43 @@ public class XBeeManager implements Runnable {
     
     hasNI = true;
   }  
+  
+  
+void foundRemoteXbeeEvent(XBeeReader xbee) {
+    XBeeDataFrame data = xbee.getXBeeReading();
+    data.parseXBeeRX16Frame();
+    
+    int[] buffer = data.getBytes();
+    
+    if (buffer.length > 11) {
+      //check first letter of NI parameter
+      String serial = "";
+      for(int i = 3; i < 11; i++)
+        serial += hex(buffer[i], 2);
+      String name = "";
+      for(int i = 11; i < buffer.length; i++)
+        name += char(buffer[i]);
+      
+      switch (buffer[11]) {
+        case 'P':
+          foundProxs.add(serial);
+          println(" Found proximity patch: " + name + " (" + serial + ") at "+millis());
+          break;
+        case 'V':
+          foundVibes.add(serial);
+          println(" Found vibration patch: " + name + " (" + serial + ") at "+millis());
+          break;
+        case 'A':
+          foundAccels.add(serial);
+          println(" Found acceleration patch: " + name + " (" + serial + ") at "+millis());
+          break;
+        default:
+          foundUndefs.add(serial);
+          println(" Found undefined patch: " + name + " (" + serial + ") at "+millis());
+          break;
+      }
+    }
+}
    
   public String getNodeIDs() {
     Set nodeIDs = nodeIDAndSerialPort.keySet();

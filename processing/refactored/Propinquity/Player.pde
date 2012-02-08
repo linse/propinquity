@@ -31,6 +31,7 @@ public class Player {
     }
   }
   
+  // init xbee network if local xbee is found at serial port
   void initXPAN(String localXbeeNI, int xpanType, int xpanNumber) {
     if (localXbeeNI == null) 
       return;
@@ -42,8 +43,9 @@ public class Player {
       + localXbeeNI + " connected.");
     }
     else {
-      System.err.println("No Xbee network for " + XPAN_NAMES[xpanType] + ": " 
-      + localXbeeNI + " not there (yet).");
+      xpans.get(xpanType)[xpanNumber] = null;
+      System.err.println("No Xbee network for " + XPAN_NAMES[xpanType] + ": local Xbee " 
+      + localXbeeNI + " not there.");
     }
   }
 
