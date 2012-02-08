@@ -6,6 +6,8 @@ public class XBeeManager implements Runnable {
 
   final int XBEE_SERIAL_BAUDRATE = 115200; // bits/s
   final int XBEE_SERIAL_RESPONSE_TIMEOUT = 5000; // 5 sec
+  final int LOCAL_XBEES = 4;
+  final int REMOTE_XBEES = 1;
   
   Thread thread;
   String nodeID;
@@ -14,6 +16,9 @@ public class XBeeManager implements Runnable {
   
   PApplet parent;
   HashMap nodeIDAndSerialPort;
+  
+  int localXbees = 0;
+  int remoteXbees = 0;
   
   public XBeeManager(PApplet p) {
     parent = p;
@@ -45,8 +50,14 @@ public class XBeeManager implements Runnable {
     thread = null; 
   }
   
-  public boolean hasAllLocalNIs() {
-    return hasAllLocalNIs;
+  public boolean hasAllLocalXbees() {
+    return (localXbees==LOCAL_XBEES);
+  }
+  
+  public boolean hasAllRemoteXbees() {
+    return (remoteXbees==REMOTE_XBEES);
+    //println("rem xbees"+remoteXbees);
+    //return false;
   }
   
   public void readSerialPort(String port) {
@@ -107,6 +118,7 @@ public class XBeeManager implements Runnable {
     }
     
     hasNI = true;
+    localXbees++;
   }  
   
   
@@ -115,6 +127,19 @@ void foundRemoteXbeeEvent(XBeeReader xbee) {
     data.parseXBeeRX16Frame();
     
     int[] buffer = data.getBytes();
+    
+    // 88 - at response
+    // 81 - rx16 response
+    
+    //if (data.getApiID() == 88) { // AT RESPONSE
+      println("remote "+buffer.length);
+      println("apiid "+hex(data.getApiID()));
+    //}
+//    String bufferstring = "";
+//    for(int i = 0; i < buffer.length; i++) {
+//      print(hex( buffer[i]));
+//    }
+//    println("");
     
     if (buffer.length > 11) {
       //check first letter of NI parameter
@@ -143,6 +168,7 @@ void foundRemoteXbeeEvent(XBeeReader xbee) {
           println(" Found undefined patch: " + name + " (" + serial + ") at "+millis());
           break;
       }
+      remoteXbees++;
     }
 }
    

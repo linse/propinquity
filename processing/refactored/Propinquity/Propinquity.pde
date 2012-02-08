@@ -1,6 +1,8 @@
 import processing.serial.*;
 import xbee.*; // xbee library by shiffman & faludi, version 1.5
 
+
+
 final int GAME_STATE_INITIAL = 0;
 final int GAME_STATE_CHECK_SERIAL = 1;
 final int GAME_STATE_CHECK_XPAN = 2;
@@ -10,7 +12,7 @@ final int GAME_STATE_CHECKS_DONE = 5;
 final int GAME_STATE_COMMUNICATE = 6;
 int gameState = GAME_STATE_CHECK_SERIAL;
 
-final int XBEE_DISCOVER_TIMEOUT = 6 * 1000; // 6 sec - too short if we have other USB devices
+final int XBEE_DISCOVER_TIMEOUT = 10000; // 10 sec - too short if we have other USB devices
 
 XBeeManager xbeeManager;
 Player[] players;
@@ -41,7 +43,7 @@ void draw() {
   
   // scan test for local xbees via serial
   if (gameState == GAME_STATE_CHECK_SERIAL) {
-    if (xbeeManager.hasAllLocalNIs()) {
+    if (xbeeManager.hasAllLocalXbees()) {
       gameState++;
     }
   }
@@ -62,8 +64,14 @@ void draw() {
   }
   else if (gameState == GAME_STATE_RECEIVE_DISCOVER) {
     // TODO: if all remote xbees are found OR timeout OR user input
-    if (millis()-startDiscover > XBEE_DISCOVER_TIMEOUT) {
-      gameState++;
+    if (millis()-startDiscover < XBEE_DISCOVER_TIMEOUT) {
+      if (xbeeManager.hasAllRemoteXbees()) {
+        gameState++;
+      }
+    }
+    else {
+      println("Not all remote xbees found");
+      exit();
     }
   }
   else if (gameState == GAME_STATE_CHECKS_DONE) {
@@ -127,7 +135,7 @@ void initPlayers() {
 
 
 void xBeeEvent(XBeeReader xbee) {
-  //print(".");
+  print(".");
   switch (gameState) {
     case GAME_STATE_CHECK_SERIAL:
       xbeeManager.foundLocalXbeeEvent(xbee);
@@ -140,13 +148,14 @@ void xBeeEvent(XBeeReader xbee) {
       if (data.getApiID() == xbee.SERIES1_RX16PACKET) {
         int[] packet = data.getBytes();
         int addr = data.getAddress16();
-        int rssi = data.getRSSI(); // received signal strength
+        int rssi = data.getRSSI(); // received signal strength in dBM
         println("Addr "+binary(addr,16)+" rssi "+rssi);
         exit();
         parsePacket(packet);
       }
       else {
         println("Bad packet received by game frontend.");
+        exit();
       }
       break;
     default:

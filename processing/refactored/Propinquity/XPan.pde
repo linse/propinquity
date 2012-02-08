@@ -29,7 +29,8 @@ public class XPan {
   }
   
   void nodeDiscover() { 
-    xbee.nodeDiscover(); 
+    xbee.nodeDiscover();
+    //xbee.sendAsynchronous(new AtCommand("ND"));
   }
   
   void stop() { 
