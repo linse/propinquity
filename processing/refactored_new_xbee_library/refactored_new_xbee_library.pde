@@ -6,49 +6,85 @@ import com.rapplogic.xbee.api.ApiId;
 import com.rapplogic.xbee.api.PacketListener;
 import com.rapplogic.xbee.api.XBee;
 import com.rapplogic.xbee.api.XBeeResponse;
-import com.rapplogic.xbee.api.zigbee.ZNetRxIoSampleResponse;
-import com.rapplogic.xbee.api.wpan.NodeDiscover;
+//import com.rapplogic.xbee.api.zigbee.ZNetRxIoSampleResponse;
+//import com.rapplogic.xbee.api.wpan.NodeDiscover;
 import java.util.concurrent.*;
 
 String version = "0.9";
 
 Xpan xpan;
 
-int error=0;
+//int error=0;
+static final int NUM_PLAYERS=2;
+static final int XPANS_PER_PLAYER=3;
+static final int LOCAL_XBEES=6;
+static final int SERIAL_BAUDRATE=115200;
 
 // make an array list of thermometer objects for display
-ArrayList thermometers = new ArrayList();
+//ArrayList thermometers = new ArrayList();
 // create a font for display
 PFont font;
+Player[] players;
 
 void setup() {
   size(800, 600); // screen size
   smooth(); // anti-aliasing for graphic display
-
-  // You’ll need to generate a font before you can run this sketch.
-  // Click the Tools menu and choose Create Font. Click Sans Serif,
-  // choose a size of 10, and click OK.
   font =  loadFont("SansSerif-10.vlw");
   textFont(font); // use the font for text
+  players = new Player[NUM_PLAYERS];
 
-  // The log4j.properties file is required by the xbee api library, and 
-  // needs to be in your data folder. You can find this file in the xbee
-  // api library you downloaded earlier
+  // required by the xbee api library, needs to be in your data folder. 
   PropertyConfigurator.configure(dataPath("")+"log4j.properties"); 
-  // Print a list in case the selected one doesn't work out
   
   ArrayList serialPorts = getLocalXbeeSerialPorts();
-  println("Xbee serial ports:");
-  println(serialPorts);
-  
-  for (int i=0; i<serialPorts.size(); i++) {
-    String port = serialPorts.get(i).toString();
-    xpan = new Xpan(port);
+  if (serialPorts.size()==0) {
+    println("No local Xbees found. ");
+  }
+  else {
+    println("Xbee serial ports:");
+    println(serialPorts);
+    
+    HashMap niToPortMap = geNIToPortMap(serialPorts);
+    if (niToPortMap.size()!=LOCAL_XBEES) {
+      println("Not all local xbees found! Are they plugged in?");
+      return;
+    }
+    else {
+      println("Local xbees: "+niToPortMap);
+      initPlayers(niToPortMap);
+    }
+    
+//    for (int i=0; i<serialPorts.size(); i++) {
+//      String port = serialPorts.get(i).toString();
+//      xpan = new Xpan(port);
+//    }
   }
 }
 
 
-// TODO return string[]??
+void initPlayers(HashMap niToPortMap) {
+  Object[] keys = niToPortMap.keySet().toArray();
+  Arrays.sort(keys);
+  if (keys.length!=NUM_PLAYERS*XPANS_PER_PLAYER) {
+    println("Number of local Xbees does not fit to number of players and networks (xpans) per player!");
+    exit();
+  }
+  // make xpans for players from NI / serial port pairs
+  int player = 0;
+  int xpan = 0;
+  players[player] = new Player();
+  for (int i = 0; i < keys.length && xpan < XPANS_PER_PLAYER && player < NUM_PLAYERS; i++) {
+    players[player].xpans[xpan++] = new Xpan((String)niToPortMap.get(keys[i]));
+    if (xpan==XPANS_PER_PLAYER && player!=NUM_PLAYERS-1) {// if player has all xpans and is not last player
+      player++;
+      players[player] = new Player();
+      xpan = 0;
+    }
+  }
+  
+}
+
+
 ArrayList getLocalXbeeSerialPorts() {
   
   String[] allSerialPorts = Serial.list();
@@ -68,6 +104,35 @@ ArrayList getLocalXbeeSerialPorts() {
     exit();
   }
   return localXbeeSerialPorts;
+}
+
+
+// map NI to serial port so that we can assign 
+// ports to players!
+HashMap geNIToPortMap(ArrayList serialPorts) {
+  HashMap niToPortMap = new HashMap();
+  try{
+    for (int i=0; i<serialPorts.size(); i++) {
+      String port = serialPorts.get(i).toString();
+      XBee xbee = new XBee();
+      xbee.open(port, SERIAL_BAUDRATE);
+      AtCommandResponse response = (AtCommandResponse) xbee.sendSynchronous(new AtCommand("NI"), 10000);   
+      if (response.isOk()) {
+        int[] bytes = response.getValue();
+        StringBuffer buffer = new StringBuffer();
+        for (int b=0; b<bytes.length; b++) {
+          buffer.append((char)bytes[b]);
+        }
+        String NI = buffer.toString();
+        niToPortMap.put(NI,port);
+      }
+      xbee.close();
+    }
+  }
+  catch (XBeeException e) {
+    println("Could not open serial port: "+e);
+  }
+  return niToPortMap;
 }
 
 
