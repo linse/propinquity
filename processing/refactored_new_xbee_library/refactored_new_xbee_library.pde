@@ -6,15 +6,11 @@ import com.rapplogic.xbee.api.ApiId;
 import com.rapplogic.xbee.api.PacketListener;
 import com.rapplogic.xbee.api.XBee;
 import com.rapplogic.xbee.api.XBeeResponse;
-//import com.rapplogic.xbee.api.zigbee.ZNetRxIoSampleResponse;
-//import com.rapplogic.xbee.api.wpan.NodeDiscover;
 import java.util.concurrent.*;
+import processing.opengl.*;
 
 String version = "0.9";
 
-Xpan xpan;
-
-//int error=0;
 static final int NUM_PLAYERS=2;
 static final int XPANS_PER_PLAYER=3;
 static final int LOCAL_XBEES=6;
@@ -27,7 +23,8 @@ PFont font;
 Player[] players;
 
 void setup() {
-  size(800, 600); // screen size
+  //size(800, 600); // screen size
+  size(1024, 768, OPENGL);
   smooth(); // anti-aliasing for graphic display
   font =  loadFont("SansSerif-10.vlw");
   textFont(font); // use the font for text
@@ -61,28 +58,6 @@ void setup() {
   }
 }
 
-
-void initPlayers(HashMap niToPortMap) {
-  Object[] keys = niToPortMap.keySet().toArray();
-  Arrays.sort(keys);
-  if (keys.length!=NUM_PLAYERS*XPANS_PER_PLAYER) {
-    println("Number of local Xbees does not fit to number of players and networks (xpans) per player!");
-    exit();
-  }
-  // make xpans for players from NI / serial port pairs
-  int player = 0;
-  int xpan = 0;
-  players[player] = new Player();
-  for (int i = 0; i < keys.length && xpan < XPANS_PER_PLAYER && player < NUM_PLAYERS; i++) {
-    players[player].xpans[xpan++] = new Xpan((String)niToPortMap.get(keys[i]));
-    if (xpan==XPANS_PER_PLAYER && player!=NUM_PLAYERS-1) {// if player has all xpans and is not last player
-      player++;
-      players[player] = new Player();
-      xpan = 0;
-    }
-  }
-  
-}
 
 
 ArrayList getLocalXbeeSerialPorts() {
@@ -135,6 +110,37 @@ HashMap geNIToPortMap(ArrayList serialPorts) {
   return niToPortMap;
 }
 
+// init players without known port map - makes no sense
+//void initPlayers() {
+//  for (int p=0; p<NUM_PLAYERS) {
+//    players[p] = new Player();
+//  }
+//}
+
+// init players according to serial port map
+// TODO too generic ;-)
+void initPlayers(HashMap niToPortMap) {
+  Object[] keys = niToPortMap.keySet().toArray();
+  Arrays.sort(keys);
+  if (keys.length!=NUM_PLAYERS*XPANS_PER_PLAYER) {
+    println("Number of local Xbees does not fit to number of players and networks (xpans) per player!");
+    exit();
+  }
+  // make xpans for players from NI / serial port pairs
+  int player = 0;
+  int xpan = 0;
+  players[player] = new Player();
+  for (int i = 0; i < keys.length && xpan < XPANS_PER_PLAYER && player < NUM_PLAYERS; i++) {
+    players[player].xpans[xpan++] = new Xpan((String)niToPortMap.get(keys[i]));
+    if (xpan==XPANS_PER_PLAYER && player!=NUM_PLAYERS-1) {// if player has all xpans and is not last player
+      player++;
+      players[player] = new Player();
+      xpan = 0;
+    }
+  }
+  
+}
+
 
 // defines the data object
 class ProximityData {
@@ -145,14 +151,14 @@ class ProximityData {
 
 void draw() {
   ProximityData data = new ProximityData(); // create a data object
-  data = getData(); // put data into the data object  
+  data = getProximityData(); // put data into the data object  
 }
 
 
 
-//// queries the XBee for incoming I/O data frames 
+//// queries the XBee for incoming proximity data frames 
 //// and parses them into a data object
-ProximityData getData() {
+ProximityData getProximityData() {
 
   ProximityData data = new ProximityData();
 //  int value = -1;      // returns an impossible value if there's an error
@@ -198,6 +204,25 @@ ProximityData getData() {
 //    else {
 //      println("Got non-i/o data frame");
 //    }
+
+//  if (packet.length == XPan.PROX_IN_PACKET_LENGTH 
+//       && packet[0] == XPan.PROX_IN_PACKET_TYPE) { 
+//    int patch = (packet[1] >> 1);                
+//    int player = getPlayerIndexForPatch(patch);
+//    
+//    if (player != -1) {
+//      // TODO packet[1] contains boolean touched, which is obsolete
+//      int step = ((packet[2] & 0xFF) << 8) | (packet[3] & 0xFF);
+//      //println(step);
+//      int proximity = ((packet[4] & 0xFF) << 8) | (packet[5] & 0xFF);
+//      println("Patch "+patch+" player "+player+" sent prox "+proximity);
+//      //players[0].broadcastVibe();
+//    }
+//    else
+//      System.err.println("Error: received a packet from patch '"+ patch + 
+//      "', which is not assigned to a player");
+//  }
+
   }
 //  catch (XBeeException e) {
 //    println("Error receiving response: " + e);
@@ -209,7 +234,10 @@ ProximityData getData() {
 
 
 
-
+// TODO do we need this? was originally hard coded anyway
+public int getPlayerIndexForPatch(int patch) {
+  return 0;
+}
 
 
 
