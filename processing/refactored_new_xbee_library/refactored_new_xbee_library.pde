@@ -155,8 +155,8 @@ void draw() {
   ProximityData data = new ProximityData(); // create a data object
   data = getProximityData(); // put data into the data object  
   if (millis() > 10000) {
-  //players[1].broadcastVibe(); 
-  //players[2].broadcastVibe();
+  players[1].broadcastVibe(); 
+  //players[0].broadcastVibe();
   }
 }
 
