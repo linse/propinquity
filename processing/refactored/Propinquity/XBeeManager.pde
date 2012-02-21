@@ -5,8 +5,8 @@
 public class XBeeManager implements Runnable {
 
   final int XBEE_SERIAL_BAUDRATE = 115200; // bits/s
-  final int XBEE_SERIAL_RESPONSE_TIMEOUT = 5000; // 5 sec
-  final int LOCAL_XBEES = 4;
+  final int XBEE_SERIAL_RESPONSE_TIMEOUT = 10000; // miliseconds
+  final int LOCAL_XBEES = 1; // TODO output prominently
   final int REMOTE_XBEES = 1;
   
   Thread thread;
@@ -132,8 +132,8 @@ void foundRemoteXbeeEvent(XBeeReader xbee) {
     // 81 - rx16 response
     
     //if (data.getApiID() == 88) { // AT RESPONSE
-      println("remote "+buffer.length);
-      println("apiid "+hex(data.getApiID()));
+//      println("remote "+buffer.length);
+//      println("apiid "+hex(data.getApiID()));
     //}
 //    String bufferstring = "";
 //    for(int i = 0; i < buffer.length; i++) {

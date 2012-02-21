@@ -150,12 +150,13 @@ void xBeeEvent(XBeeReader xbee) {
         int addr = data.getAddress16();
         int rssi = data.getRSSI(); // received signal strength in dBM
         println("Addr "+binary(addr,16)+" rssi "+rssi);
-        exit();
+        //exit();
         parsePacket(packet);
       }
       else {
         println("Bad packet received by game frontend.");
-        exit();
+        println("apiid "+data.getApiID());
+        //exit();
       }
       break;
     default:
@@ -175,7 +176,7 @@ void parsePacket(int[] packet) {
       //println(step);
       int proximity = ((packet[4] & 0xFF) << 8) | (packet[5] & 0xFF);
       println("Patch "+patch+" player "+player+" sent prox "+proximity);
-      players[0].broadcastVibe();
+      //players[0].broadcastVibe();
     }
     else
       System.err.println("Error: received a packet from patch '"+ patch + 
