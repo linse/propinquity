@@ -41,7 +41,7 @@ void setup() {
     println("Xbee serial ports:");
     println(serialPorts);
     
-    HashMap niToPortMap = geNIToPortMap(serialPorts);
+    HashMap niToPortMap = getNIToPortMap(serialPorts);
     if (niToPortMap.size()!=LOCAL_XBEES) {
       println("Not all local xbees found! Are they plugged in?");
       return;
@@ -84,28 +84,30 @@ ArrayList getLocalXbeeSerialPorts() {
 
 // map NI to serial port so that we can assign 
 // ports to players!
-HashMap geNIToPortMap(ArrayList serialPorts) {
+HashMap getNIToPortMap(ArrayList serialPorts) {
   HashMap niToPortMap = new HashMap();
-  try{
+  try {
     for (int i=0; i<serialPorts.size(); i++) {
       String port = serialPorts.get(i).toString();
       XBee xbee = new XBee();
       xbee.open(port, SERIAL_BAUDRATE);
-      AtCommandResponse response = (AtCommandResponse) xbee.sendSynchronous(new AtCommand("NI"), 10000);   
+      // Timeout 70000 if no other devices and not chained.
+      AtCommandResponse response = (AtCommandResponse) xbee.sendSynchronous(new AtCommand("NI"), 70000);   
       if (response.isOk()) {
         int[] bytes = response.getValue();
         StringBuffer buffer = new StringBuffer();
-        for (int b=0; b<bytes.length; b++) {
-          buffer.append((char)bytes[b]);
+        for (int b : bytes) {
+          buffer.append((char) b);
         }
         String NI = buffer.toString();
         niToPortMap.put(NI,port);
+        println(NI+":"+port);
       }
       xbee.close();
     }
   }
   catch (XBeeException e) {
-    println("Could not open serial port: "+e);
+    //println("Could not open serial port: "+e);
   }
   return niToPortMap;
 }
@@ -152,6 +154,10 @@ class ProximityData {
 void draw() {
   ProximityData data = new ProximityData(); // create a data object
   data = getProximityData(); // put data into the data object  
+  if (millis() > 10000) {
+  //players[1].broadcastVibe(); 
+  //players[2].broadcastVibe();
+  }
 }
 
 

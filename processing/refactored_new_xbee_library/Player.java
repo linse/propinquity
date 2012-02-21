@@ -15,8 +15,8 @@ public class Player extends PApplet {
     this.xpans = new Xpan[XPANS_PER_PLAYER];
   }
   
-  void boradcastVibe() {
-    this.xpans[VIBE].broadcastVibe(500);
+  void broadcastVibe() {
+    this.xpans[VIBE].broadcastVibe(200);
   }
   
 }

@@ -9,11 +9,12 @@ import com.rapplogic.xbee.api.*;
 import com.rapplogic.xbee.api.CollectTerminator;
 import java.util.List;
 
-public class Xpan extends PApplet {
+public class Xpan extends PApplet implements Runnable {
   
-  static final int SERIAL_BAUDRATE = 115200;
+  static final int SERIAL_BAUDRATE=115200;
   static final int VIBE_OUT_PACKET_TYPE = 3;
   
+  Thread thread;
   XBee localXbee;
   Queue<WpanNodeDiscover> discoveredNodes;
 
@@ -22,10 +23,20 @@ public class Xpan extends PApplet {
     this.localXbee = new XBee();
     this.discoveredNodes = new ConcurrentLinkedQueue<WpanNodeDiscover>();
     this.localXbee = localXbeeFromPort(serialPort);
-    discoverRemoteNodes(this.localXbee);
-    printRemoteNodes();
+    
+    if (thread != null) 
+      return;
+    thread = new Thread(this);
+    thread.start();
   }
 
+  public void run() {
+    discoverRemoteNodes(this.localXbee);
+    printRemoteNodes();
+    
+    //clear thread
+    thread = null; 
+  }
 
   // opens serial port
   XBee localXbeeFromPort(String serialPort) {
@@ -34,9 +45,9 @@ public class Xpan extends PApplet {
       localXbee.open(serialPort, SERIAL_BAUDRATE);
     }
     catch (XBeeException e) {
-      println("** Error opening XBee port " + serialPort + ": " + e + " **");
-      println("Is your XBee plugged in to your computer?");
-      exit();
+//      println("** Error opening XBee port " + serialPort + ": " + e + " **");
+//      println("Is your XBee plugged in to your computer?");
+//      exit();
     }
     return localXbee;
   }
@@ -98,6 +109,7 @@ public class Xpan extends PApplet {
     }
     catch (XBeeException e) {
       println("Could not broadcast vibe.");
+      //e.printStackTrace();
     }
   }
 
