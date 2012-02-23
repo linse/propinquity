@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="lib" path="lib/base/minim/jl1.0.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/base/minim"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/base/minim/jsminim.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/base/minim"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/base/minim/minim-spi.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/base/minim"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/base/minim/minim.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/base/minim"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/base/minim/mp3spi1.9.4.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/base/minim"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/base/minim/tritonus_aos.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/base/minim"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/base/minim/tritonus_share.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/base/minim"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/base/opengl/gluegen-rt-natives-linux-amd64.jar" sourcepath="/Applications/Processing.app/Contents/Resources/Java/libraries/opengl/src">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/base/opengl"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/base/opengl/gluegen-rt-natives-linux-i586.jar" sourcepath="/Applications/Processing.app/Contents/Resources/Java/libraries/opengl/src">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/base/opengl"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/base/opengl/gluegen-rt-natives-macosx-ppc.jar" sourcepath="/Applications/Processing.app/Contents/Resources/Java/libraries/opengl/src">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/base/opengl"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/base/opengl/gluegen-rt-natives-macosx-universal.jar" sourcepath="/Applications/Processing.app/Contents/Resources/Java/libraries/opengl/src">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/base/opengl"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/base/opengl/gluegen-rt-natives-windows-amd64.jar" sourcepath="/Applications/Processing.app/Contents/Resources/Java/libraries/opengl/src">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/base/opengl"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/base/opengl/gluegen-rt-natives-windows-i586.jar" sourcepath="/Applications/Processing.app/Contents/Resources/Java/libraries/opengl/src">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/base/opengl"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/base/opengl/gluegen-rt.jar" sourcepath="/Applications/Processing.app/Contents/Resources/Java/libraries/opengl/src">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/base/opengl"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/base/opengl/jogl-natives-linux-amd64.jar" sourcepath="/Applications/Processing.app/Contents/Resources/Java/libraries/opengl/src">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/base/opengl"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/base/opengl/jogl-natives-linux-i586.jar" sourcepath="/Applications/Processing.app/Contents/Resources/Java/libraries/opengl/src">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/base/opengl"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/base/opengl/jogl-natives-macosx-ppc.jar" sourcepath="/Applications/Processing.app/Contents/Resources/Java/libraries/opengl/src">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/base/opengl"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/base/opengl/jogl-natives-macosx-universal.jar" sourcepath="/Applications/Processing.app/Contents/Resources/Java/libraries/opengl/src">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/base/opengl"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/base/opengl/jogl-natives-windows-amd64.jar" sourcepath="/Applications/Processing.app/Contents/Resources/Java/libraries/opengl/src">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/base/opengl"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/base/opengl/jogl-natives-windows-i586.jar" sourcepath="/Applications/Processing.app/Contents/Resources/Java/libraries/opengl/src">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/base/opengl"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/base/opengl/jogl.jar" sourcepath="/Applications/Processing.app/Contents/Resources/Java/libraries/opengl/src">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/base/opengl"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/base/opengl/opengl.jar" sourcepath="/Applications/Processing.app/Contents/Resources/Java/libraries/opengl/src">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/base/opengl"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/base/serial/RXTXcomm.jar" sourcepath="/Applications/Processing.app/Contents/Resources/Java/libraries/serial/src">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/base/serial"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/base/serial/serial.jar" sourcepath="/Applications/Processing.app/Contents/Resources/Java/libraries/serial/src">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/base/serial"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/base/video/video.jar" sourcepath="/Applications/Processing.app/Contents/Resources/Java/libraries/video/src">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/base/video"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/base/core/ant-launcher.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/base/core"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/base/core/ant.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/base/core"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/base/core/core.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/base/core"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/Users/kintel/Documents/Processing/libraries/controlP5/library/controlP5.jar"/>
+	<classpathentry kind="lib" path="/Users/kintel/Documents/Processing/libraries/pbox2d/library/JBox2D-2.0.1-b250-Library.jar"/>
+	<classpathentry kind="lib" path="/Users/kintel/Documents/Processing/libraries/pbox2d/library/pbox2d.jar"/>
+	<classpathentry kind="lib" path="/Users/kintel/Documents/Processing/libraries/proxml/library/proxml.jar"/>
+	<classpathentry kind="lib" path="/Users/kintel/Documents/Processing/libraries/xbee/library/xbee.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
