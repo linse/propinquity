@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<level coop="0">
+<song file="05 Leila Came Round And We Watched A Video" name="Easy" duration="1:39" bpm="60" multiplier="6"/>
+<player number="1">
+	<sequence>
+		<step number="1" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
+		<step number="2" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/> 
+		<step number="3" pad1="0" pad2="0" pad3="0" pad4="0" free="0"/>
+		<step number="4" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
+		<step number="5" pad1="0" pad2="0" pad3="0" pad4="0" free="0"/>
+		<step number="6" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
+		<step number="7" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
+		<step number="8" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
+		<step number="9" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
+		<step number="10" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/> 
+		<step number="11" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
+		<step number="12" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
+		<step number="13" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
+		<step number="14" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
+		<step number="15" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
+		<step number="16" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
+        <step number="17" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
+        </sequence>
+</player>
+<player number="2">
+	<sequence>
+		<step number="1" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
+		<step number="2" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
+		<step number="3" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
+		<step number="4" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
+		<step number="5" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
+		<step number="6" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
+		<step number="7" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
+		<step number="8" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
+		<step number="9" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
+		<step number="10" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/> 
+		<step number="11" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
+		<step number="12" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
+		<step number="13" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
+		<step number="14" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
+		<step number="15" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
+		<step number="16" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
+        <step number="17" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
+	</sequence>
+</player>
+</level>
