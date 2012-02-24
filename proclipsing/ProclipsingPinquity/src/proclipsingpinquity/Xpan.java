@@ -84,14 +84,13 @@ public class Xpan extends PApplet implements Runnable {
 					if (atResponse.getCommand().equals("ND")
 							&& atResponse.getValue() != null
 							&& atResponse.getValue().length > 0) {
-						WpanNodeDiscover nd = WpanNodeDiscover
-								.parse((AtCommandResponse) response);
-						println("Node Discover is " + nd);
+						WpanNodeDiscover nd = WpanNodeDiscover.parse((AtCommandResponse) response);
+						this.discoveredNodes.add(nd);
 					}
 				}
 			}
 		} catch (XBeeException e) {
-			println("Error during node discovery: " + e);
+			System.err.println("Error during node discovery: " + e);
 		}
 	}
 
@@ -109,7 +108,7 @@ public class Xpan extends PApplet implements Runnable {
 		try {
 			this.localXbee.sendAsynchronous(request);
 		} catch (XBeeException e) {
-			println("Could not broadcast vibe.");
+			System.err.println("Could not broadcast vibe.");
 			// e.printStackTrace();
 		}
 	}

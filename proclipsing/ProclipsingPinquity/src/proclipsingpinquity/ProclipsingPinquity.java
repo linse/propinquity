@@ -22,6 +22,8 @@ public class ProclipsingPinquity extends PApplet {
 	static final int XPANS_PER_PLAYER = 3;
 	static final int LOCAL_XBEES = 6;
 	static final int SERIAL_BAUDRATE = 115200;
+	static final boolean strictScan = false;
+	static final boolean strictDiscovery = false;
 	PFont font;
 	Player[] players;
 
@@ -37,17 +39,17 @@ public class ProclipsingPinquity extends PApplet {
 
 		ArrayList<String> serialPorts = getLocalXbeeSerialPorts();
 		if (serialPorts.size() == 0) {
-			println("No local Xbees found. ");
+			System.err.println("No local Xbees found. ");
 		} else {
 			println("Xbee serial ports:");
 			println(serialPorts);
 
 			HashMap<String, String> niToPortMap = getNIToPortMap(serialPorts);
-			if (niToPortMap.size() != LOCAL_XBEES) {
-				println("Not all local xbees found! Are they plugged in?");
-				return;
+			if (strictScan && (niToPortMap.size() != LOCAL_XBEES)) {
+				System.err.println("Not all local xbees found! Are they plugged in?");
+				System.exit(1);
 			} else {
-				println("Local xbees: " + niToPortMap);
+				System.out.println("Local xbees: " + niToPortMap);
 				initPlayers(niToPortMap);
 			}
 		}
@@ -67,9 +69,9 @@ public class ProclipsingPinquity extends PApplet {
 			}
 		}
 		if (localXbeeSerialPorts.size() == 0) { // TODO throw exception?
-			println("** Error opening serial ports. **");
-			println("Are your local XBees plugged in to your computer?");
-			exit();
+			System.err.println("** Error opening serial ports. **");
+			System.err.println("Are your local XBees plugged in to your computer?");
+			System.exit(1);
 		}
 		return localXbeeSerialPorts;
 	}
@@ -109,9 +111,9 @@ public class ProclipsingPinquity extends PApplet {
 	void initPlayers(HashMap niToPortMap) {
 		Object[] keys = niToPortMap.keySet().toArray();
 		Arrays.sort(keys);
-		if (keys.length != NUM_PLAYERS * XPANS_PER_PLAYER) {
-			println("Number of local Xbees does not fit to number of players and networks (xpans) per player!");
-			exit();
+		if (strictScan && strictDiscovery && keys.length != NUM_PLAYERS * XPANS_PER_PLAYER) {
+			System.err.println("Number of local Xbees does not fit to number of players and networks (xpans) per player!");
+			System.exit(1);
 		}
 		// make xpans for players from NI / serial port pairs
 		int player = 0;
@@ -142,8 +144,11 @@ public class ProclipsingPinquity extends PApplet {
 		data = getProximityData(); // put data into the data object
 		if (millis() > 10000) { // just some startup delay for now
 			// just buzz the gloves for now
-			players[1].broadcastVibe();
-			players[0].broadcastVibe();
+			for (Player player : players) {
+				if (player!=null) {
+					player.broadcastVibe();
+				}
+			}
 		}
 	}
 

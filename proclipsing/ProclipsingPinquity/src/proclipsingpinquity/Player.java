@@ -16,7 +16,9 @@ public class Player extends PApplet {
 	}
 
 	void broadcastVibe() {
-		this.xpans[VIBE].broadcastVibe(200);
+		if (this.xpans[VIBE]!=null) {
+			this.xpans[VIBE].broadcastVibe(200);
+		}
 	}
 
 }
