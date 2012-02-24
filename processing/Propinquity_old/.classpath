@@ -140,12 +140,33 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/base/core"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/user/controlP5/controlP5.jar" sourcepath="/Users/linse/Documents/Processing/libraries/controlP5/src">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/user/controlP5"/>
+			<attribute name="javadoc_location" value="file:/Users/linse/Documents/Processing/libraries/controlP5/reference/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/user/pbox2d/JBox2D-2.0.1-b250-Library.jar" sourcepath="/Users/linse/Documents/Processing/libraries/pbox2d/src">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/user/pbox2d"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/user/pbox2d/pbox2d.jar" sourcepath="/Users/linse/Documents/Processing/libraries/pbox2d/src">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/user/pbox2d"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/user/proxml/proxml.jar" sourcepath="/Users/linse/Documents/Processing/libraries/proxml/src">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/user/proxml"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/user/xbee/xbee.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Propinquity_old/lib/user/xbee"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/Users/kintel/Documents/Processing/libraries/controlP5/library/controlP5.jar"/>
-	<classpathentry kind="lib" path="/Users/kintel/Documents/Processing/libraries/pbox2d/library/JBox2D-2.0.1-b250-Library.jar"/>
-	<classpathentry kind="lib" path="/Users/kintel/Documents/Processing/libraries/pbox2d/library/pbox2d.jar"/>
-	<classpathentry kind="lib" path="/Users/kintel/Documents/Processing/libraries/proxml/library/proxml.jar"/>
-	<classpathentry kind="lib" path="/Users/kintel/Documents/Processing/libraries/xbee/library/xbee.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
