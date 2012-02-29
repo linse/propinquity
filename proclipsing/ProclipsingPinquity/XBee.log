@@ -1,1 +1,0 @@
-[2012-02-24 14:53:21,440] [Thread-3] [WARN] [com.rapplogic.xbee.RxTxSerialComm] We were notified of new data but available() is returning 0 
