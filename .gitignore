@@ -463,3 +463,13 @@ processing/original/Propinquity/test/Metaball/Metaball.pde
 processing/original/Propinquity/XBeeManager.pde
 processing/original/Propinquity/XPan.pde
 .DS_Store
+processing/Node_Discovery_AT_Command/
+processing/Simple_Sensor_Network/
+processing/xbee-api-read-only/
+processing/refactored/Propinquity/data/xbee-api-0.9.jar
+processing/refactored/Propinquity/Propinquity.pde
+proclipsing/ProclipsingPinquity/bin/java.policy.applet
+proclipsing/ProclipsingPinquity/bin/proclipsingpinquity/Player.class
+proclipsing/ProclipsingPinquity/bin/proclipsingpinquity/ProclipsingPinquity$ProximityData.class
+proclipsing/ProclipsingPinquity/bin/proclipsingpinquity/ProclipsingPinquity.class
+proclipsing/ProclipsingPinquity/bin/proclipsingpinquity/Xpan.class
