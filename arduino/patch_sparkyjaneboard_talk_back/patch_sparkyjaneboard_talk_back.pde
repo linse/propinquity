@@ -65,11 +65,14 @@ void setup() {
 
 void loop() {
   // 1. check for new data
-  if (millis() % 10 == 0) {
-    checkXBeeInbox();
-  }
+//  if (millis() % 10 == 0) {
+//    checkXBeeInbox();
+//  }
   // 2. react appropriatel 
-  readAndSendProxViaXbee();
+  if (millis() % dataInterval == 0) {
+    readAndSendProxViaXbee();
+    //readAndSendProxViaSerial();
+  }
   //blinkLEDsAndVibe();
   //blinkRed(1000);
 }
@@ -83,12 +86,12 @@ void checkXBeeInbox() {
 }
 
 void get_data() {
-  if (xbee.getResponse().getApiId() == RX_16_RESPONSE) {
-    blinkRed(1000);
-  }
-  else if (xbee.getResponse().getApiId() == RX_64_RESPONSE) {
-    blinkGreen(1000);
-  }
+//  if (xbee.getResponse().getApiId() == RX_16_RESPONSE) {
+//    blinkRed(1000);
+//  }
+//  else if (xbee.getResponse().getApiId() == RX_64_RESPONSE) {
+//    blinkGreen(1000);
+//  }
 }
 
 void blinkBlue(int pause) {
