@@ -15,9 +15,29 @@ public class Player extends PApplet {
 		this.xpans = new Xpan[XPANS_PER_PLAYER];
 	}
 
-	void broadcastVibe() {
+	void receiveProxReadings() {
+		println("start prox readings receive");
+		if (this.xpans[PROX_1]!=null) {
+			this.xpans[PROX_1].receiveProxReadings();
+		}
+		if (this.xpans[PROX_2]!=null) {
+			this.xpans[PROX_2].receiveProxReadings();
+		}
+		println("end prox readings receive");
+	}
+	
+	void broadcastVibe(int value) {
 		if (this.xpans[VIBE]!=null) {
-			this.xpans[VIBE].broadcastVibe(200);
+			this.xpans[VIBE].broadcastVibe(value);
+		}
+	}
+
+	public void setRemoteProximityStepLength(int stepLength) {
+		if (this.xpans[PROX_1]!=null) {
+			this.xpans[PROX_1].broadcastProxConfig(stepLength);
+		}
+		if (this.xpans[PROX_2]!=null) {
+			this.xpans[PROX_2].broadcastProxConfig(stepLength);
 		}
 	}
 

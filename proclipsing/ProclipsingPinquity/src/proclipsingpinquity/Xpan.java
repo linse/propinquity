@@ -3,18 +3,25 @@ package proclipsingpinquity;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.Queue;
 import com.rapplogic.xbee.api.wpan.*;
-import com.rapplogic.xbee.api.wpan.TxRequest64;
-import com.rapplogic.xbee.api.wpan.WpanNodeDiscover;
 import processing.core.PApplet;
-import com.rapplogic.xbee.util.ByteUtils;
 import com.rapplogic.xbee.api.*;
-import com.rapplogic.xbee.api.CollectTerminator;
+
 import java.util.List;
 
 public class Xpan extends PApplet implements Runnable {
 
 	static final int SERIAL_BAUDRATE = 115200;
+	static final int PROX_OUT_PACKET_TYPE = 1;
 	static final int VIBE_OUT_PACKET_TYPE = 3;
+	static final int CONFIG_OUT_PACKET_TYPE = 5;
+	// length (bytes) of outgoing
+	// packet for proximity
+	// steps
+	static final int PROX_OUT_PACKET_LENGTH = 5; 
+	// length (bytes) of outgoing
+	// config packet for
+	// proximity
+	static final int CONFIG_OUT_PACKET_LENGTH = 3; 
 
 	Thread thread;
 	XBee localXbee;
@@ -29,11 +36,16 @@ public class Xpan extends PApplet implements Runnable {
 			return;
 		thread = new Thread(this);
 		thread.start();
+		try {
+			thread.join();
+		}
+		catch (InterruptedException e) {
+			e.printStackTrace(); 
+		}
 	}
 
 	public void run() {
 		discoverRemoteNodes(this.localXbee);
-		printRemoteNodes();
 
 		// clear thread
 		thread = null;
@@ -43,7 +55,7 @@ public class Xpan extends PApplet implements Runnable {
 	XBee localXbeeFromPort(String serialPort) {
 		XBee localXbee = new XBee();
 		try {
-			localXbee.open(serialPort, SERIAL_BAUDRATE);
+			localXbee.open(serialPort, Settings.SERIAL_BAUDRATE);
 		} catch (XBeeException e) {
 			println("** Error opening XBee port " + serialPort + ": " + e
 					+ " **");
@@ -88,6 +100,10 @@ public class Xpan extends PApplet implements Runnable {
 						this.discoveredNodes.add(nd);
 					}
 				}
+				else {
+					//println("Other response "+response);
+					// we also get some rx16 responses already
+				}
 			}
 		} catch (XBeeException e) {
 			System.err.println("Error during node discovery: " + e);
@@ -102,8 +118,25 @@ public class Xpan extends PApplet implements Runnable {
 		}
 	}
 
-	void broadcastVibe(int value) {
-		int[] payload = { VIBE_OUT_PACKET_TYPE, value };
+	void sendOutgoing(XBeeAddress16 address, int[] data, int turnNum,
+			int baseNum) {
+		// println("SEND OUTGOING: " + xbee + " " + xbee.getPort());
+		int[] payload = data;
+		payload[1] = turnNum;
+		TxRequest16 request = new TxRequest16(address, payload);
+		try {
+			this.localXbee.sendAsynchronous(request);
+		} catch (XBeeException e) {
+			System.err.println("Could not send outgoing package " + data
+					+ "in turn " + turnNum + ".");
+			// e.printStackTrace();
+		}
+		// add to output queue
+		// printToOutput("SENT at " + millis() + ": turn number " + turnNum +
+		// ", base number " + baseNum);
+	}
+
+	void broadcast(int[] payload) {
 		TxRequest16 request = new TxRequest16(XBeeAddress16.BROADCAST, payload);
 		try {
 			this.localXbee.sendAsynchronous(request);
@@ -114,12 +147,63 @@ public class Xpan extends PApplet implements Runnable {
 	}
 
 	// receive readings from all remote nodes
-	// void receiveProxReadings() {
-	// }
+	void receiveProxReadings() {
+	    try {
+			XBeeResponse response = this.localXbee.getResponse();
+	    	println("try to read");
+			if (response!=null) {
+				println(response);
+			}
+		} catch (XBeeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    // TODO check if prox reading
+	}
+	
 
 	// seems to help clearing serial connection
 	public void finalize() {
 		localXbee.close();
 	}
 
+	void broadcastProxConfig(int stepLength) {
+		println("broadcasting prox config");
+		broadcast(getProxConfigPacket(stepLength));
+	}
+
+	void broadcastVibe(int value) {
+		broadcast(getVibePacket(value));
+	}
+
+	// void broadcastStep(int stepNum, Step step1, Step step2, Step step3, Step
+	// step4) {
+	// broadcast(getStepPacket(stepNum, step1, step2, step3, step4));
+	// }
+
+	private int[] getProxConfigPacket(int stepLength) {
+		int[] packet = new int[CONFIG_OUT_PACKET_LENGTH];
+		packet[0] = CONFIG_OUT_PACKET_TYPE;
+		packet[1] = (stepLength >> 8) & 0xFF;
+		packet[2] = stepLength & 0xFF;
+		return packet;
+	}
+
+	// private int[] getStepPacket(int stepNum, Step step1, Step step2, Step
+	// step3, Step step4) {
+	// int[] packet = new int[PROX_OUT_PACKET_LENGTH];
+	// packet[0] = PROX_OUT_PACKET_TYPE;
+	// packet[1] = (stepNum >> 8) & 0xFF;
+	// packet[2] = stepNum & 0xFF;
+	// packet[3] = ((step1 == null ? 0 : step1.getPacketComponent()) << 4) |
+	// (step2 == null ? 0 : step2.getPacketComponent());
+	// packet[4] = ((step3 == null ? 0 : step3.getPacketComponent()) << 4) |
+	// (step4 == null ? 0 : step4.getPacketComponent());
+	// return packet;
+	// }
+
+	private int[] getVibePacket(int value) {
+		int[] packet = { VIBE_OUT_PACKET_TYPE, value };
+		return packet;
+	}
 }
