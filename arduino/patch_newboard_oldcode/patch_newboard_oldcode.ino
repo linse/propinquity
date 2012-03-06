@@ -139,6 +139,7 @@ void setup() {
 
   turnLength = DEFAULT_TURN_LENGTH;
   xbee.begin(9600);
+  Serial.println("patch_newboard_oldcode");
   packet_cnt = 0;
   seqNum = 0;
   turnSeqNum = 0;
@@ -342,14 +343,18 @@ void ack_config() {
     Serial.println(turnLength); 
   }
   xbee.send(tx);
+  Serial.println("ack_config()");
   digitalWrite(onboardLEDPin, 1);
 }
 
 void get_data() {
+  Serial.println("get_data()");
   if (xbee.getResponse().getApiId() == RX_16_RESPONSE) {
+    Serial.println("RX_16_RESPONSE");
     int packet_cnt = 0;
     xbee.getResponse().getRx16Response(rx);
     if (rx.getData(0) == PROX_OUT_PACKET_TYPE) {
+      Serial.println("PROX_OUT_PACKET_TYPE");
       while (packet_cnt < g_inPacketSize) {
         inPacket[packet_cnt] = rx.getData(packet_cnt++);
       }
@@ -359,6 +364,7 @@ void get_data() {
       prevTurnMillis = millis();
     }
     else if (rx.getData(0) == CONFIG_OUT_PACKET_TYPE) {
+      Serial.println("CONFIG_OUT_PACKET_TYPE");
       while (packet_cnt < g_configPacketSize) {
         configPacket[packet_cnt] = rx.getData(packet_cnt++);
       }
@@ -366,6 +372,14 @@ void get_data() {
       turnLength = stepLength-10;
       ack_config();
     }
+    else {
+      Serial.print("Unknown packet type: ");
+      Serial.println(rx.getData(0), HEX);
+    }
+  }
+  else if (xbee.getResponse().getApiId() != TX_STATUS_RESPONSE) {
+    Serial.print("Unknown API ID: ");
+    Serial.println(xbee.getResponse().getApiId(), HEX);
   }
 }
 
