@@ -59,7 +59,7 @@ public class Xpan implements Runnable {
 		try {
 			localXbee.open(serialPort, Settings.SERIAL_BAUDRATE);
 		} catch (XBeeException e) {
-			ProclipsingPinquity.game.println("** Error opening XBee port " + serialPort + ": " + e
+			ProclipsingPinquity.game.println("XPan: ** Error opening XBee port " + serialPort + ": " + e
 					+ " **");
 			ProclipsingPinquity.game.println("Is your XBee plugged in to your computer?");
 			System.exit(1);
