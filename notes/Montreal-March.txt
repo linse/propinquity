@@ -1,0 +1,12 @@
+Prerequisites:
+o Using new XBee API V0.9: http://code.google.com/p/xbee-api/
+o Using Proclipsing environment in Eclipse
+
+Local Discovery:
+o Using proclipsing/DiscoverTest project
+o Timeout problem:
+  - 5-15% of the time: communication with a local XBee times out, either in XBee.open() or in waiting for a NI response
+  - Reopening the port and retrying doesn't work: We read "garbage" data (partial packages, typical symptoms for either buffer overflow or an earlier partial package read)
+  - Hot-plugging the USB ports in question (i.e. rebooting the XBees) and then reopening, works, even without restarting the DiscoverTest program: Decent workaround for now
+
+
