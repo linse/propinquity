@@ -1,7 +1,10 @@
 package proclipsingpinquity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 import com.rapplogic.xbee.api.AtCommand;
 import com.rapplogic.xbee.api.AtCommandResponse;
@@ -13,8 +16,11 @@ import processing.serial.Serial;
 
 public class XBeeManager {
 
-	HashMap<String, String> niToPortMap;
 	ProclipsingPinquity game;
+//	List<String> requiredLocalNIs = new ArrayList(Arrays.asList("P1_PROX1", "P1_PROX2", "P1_VIBE"));
+//	List<String> requiredLocalNIs = new ArrayList(Arrays.asList("P2_PROX1", "P2_PROX2", "P2_VIBE"));
+	List<String> requiredLocalNIs = new ArrayList(Arrays.asList("P1_PROX1", "P1_PROX2", "P1_VIBE", "P2_PROX1", "P2_PROX2", "P2_VIBE"));
+	HashMap<String, String> niToPortMap;
 	
 	public XBeeManager(ProclipsingPinquity game) {
 		game.println("Creating xbeemanager");
@@ -75,9 +81,13 @@ public class XBeeManager {
 	// ports to players!
 	private HashMap<String, String> getNIToPortMap(ArrayList<String> serialPorts) {
 		HashMap<String, String> niToPortMap = new HashMap<String, String>();
-		try {
-			for (int i = 0; i < serialPorts.size(); i++) {
-				String port = serialPorts.get(i).toString();
+		while (!this.requiredLocalNIs.isEmpty()) {
+			if (serialPorts.isEmpty()) {
+				game.println("No more serial ports - giving up.");
+				break;
+			}
+			for (Iterator<String> i = serialPorts.iterator(); i.hasNext();) {
+				String port = i.next();
 				game.println("Communicating with port " + port);
 				XBee xbee = new XBee();
 				try {
@@ -85,28 +95,37 @@ public class XBeeManager {
 				}
 				catch (XBeeException e) {
 					game.println("Could not open serial port " + port + " : " + e);
-					return niToPortMap;
+					continue;
 				}
-				// Timeout 70000 if no other devices and not chained.
-				AtCommandResponse response = (AtCommandResponse) xbee
+				try {
+					// Timeout 70000 if no other devices and not chained.
+					AtCommandResponse response = (AtCommandResponse)xbee
 						.sendSynchronous(new AtCommand("NI"), 7000);
-				if (response.isOk()) {
-					int[] bytes = response.getValue();
-					StringBuffer buffer = new StringBuffer();
-					for (int b : bytes) {
-						buffer.append((char) b);
+					if (response.isOk()) {
+						int[] bytes = response.getValue();
+						StringBuffer buffer = new StringBuffer();
+						for (int b : bytes) {
+							buffer.append((char) b);
+						}
+						String NI = buffer.toString();
+						niToPortMap.put(NI, port);
+						game.println(NI + ":" + port);
+						i.remove();
+						for (String foundni : this.requiredLocalNIs) {
+							if (foundni.equals(NI)) {
+								this.requiredLocalNIs.remove(foundni);
+								break;
+							}
+						}
 					}
-					String NI = buffer.toString();
-					niToPortMap.put(NI, port);
-					game.println(NI + ":" + port);
+					else {
+						game.println("NI command failed: " + response);
+					}
+					xbee.close();
+				} catch (XBeeException e) {
+					game.println("Could not read NI of XBee on port " + port + " : " + e);
 				}
-				else {
-					game.println("NI command failed: " + response);
-				}
-				xbee.close();
 			}
-		} catch (XBeeException e) {
-			game.println("Could not read NI of XBee on port: " + e);
 		}
 		return niToPortMap;
 	}
