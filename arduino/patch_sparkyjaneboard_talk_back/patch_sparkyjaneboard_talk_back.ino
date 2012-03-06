@@ -48,6 +48,7 @@ int turnNum;
 
 
 void setup() {
+
   pinMode(onboardLedPin, OUTPUT);
   pinMode(redLedPin, OUTPUT);
   pinMode(greenLedPin, OUTPUT);
@@ -57,7 +58,6 @@ void setup() {
 
   prevDataMillis = millis();
   xbee.begin(9600);
-  Serial.begin(9600);
   color(0,0,0);
   analogWrite(vibePin, 0);
 }
@@ -131,7 +131,7 @@ void readAndSendProxViaSerial() {
   delay(20);
   proxReading = analogRead(proxPin);
   delay(20);
-  Serial.println(proxReading);
+//  Serial.println(proxReading);
   delay(20);
 }
 
