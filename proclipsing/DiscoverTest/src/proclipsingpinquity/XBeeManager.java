@@ -115,6 +115,9 @@ public class XBeeManager {
 			}
 			players[player].xpans[xpan] = new Xpan(entry.getKey());
 		}
+		
+		if (players[0] != null) players[0].setRemoteProximityStepLength(10000);
+		if (players[1] != null) players[1].setRemoteProximityStepLength(10000);
 	}
 
 	// map NI to serial port so that we can assign
@@ -132,33 +135,41 @@ public class XBeeManager {
 				XBee xbee = new XBee();
 				try {
 					xbee.open(port, Settings.SERIAL_BAUDRATE);
+					try {
+						// Timeout 70000 if no other devices and not chained.
+						AtCommandResponse response = (AtCommandResponse)xbee
+							.sendSynchronous(new AtCommand("NI"), 7000);
+						if (response.isOk()) {
+							int[] bytes = response.getValue();
+							StringBuffer buffer = new StringBuffer();
+							for (int b : bytes) {
+								buffer.append((char) b);
+							}
+							String NI = buffer.toString();
+							niToPortMap.put(NI, port);
+							ProclipsingPinquity.game.println(NI + ":" + port);
+							i.remove();
+							this.requiredLocalNIs.remove(NI);
+						}
+						else {
+							ProclipsingPinquity.game.println("NI command failed: " + response);
+						}
+					} catch (XBeeException e) {
+						ProclipsingPinquity.game.println("Could not read NI of XBee on port " + port + " : " + e);
+					}
 				}
 				catch (XBeeException e) {
 					ProclipsingPinquity.game.println("Could not open serial port " + port + " : " + e);
-					continue;
+//					// Attempts to do a software reset to clear any garbage left in the XBee buffer
+//					try {
+//						xbee.sendSynchronous(new AtCommand("FR"));
+//					}
+//					catch (XBeeException e2) {
+//						ProclipsingPinquity.game.println("Software reset failed: " + e2);
+//					}
 				}
-				try {
-					// Timeout 70000 if no other devices and not chained.
-					AtCommandResponse response = (AtCommandResponse)xbee
-						.sendSynchronous(new AtCommand("NI"), 7000);
-					if (response.isOk()) {
-						int[] bytes = response.getValue();
-						StringBuffer buffer = new StringBuffer();
-						for (int b : bytes) {
-							buffer.append((char) b);
-						}
-						String NI = buffer.toString();
-						niToPortMap.put(NI, port);
-						ProclipsingPinquity.game.println(NI + ":" + port);
-						i.remove();
-						this.requiredLocalNIs.remove(NI);
-					}
-					else {
-						ProclipsingPinquity.game.println("NI command failed: " + response);
-					}
-					xbee.close();
-				} catch (XBeeException e) {
-					ProclipsingPinquity.game.println("Could not read NI of XBee on port " + port + " : " + e);
+				finally {
+					if (xbee.isConnected()) xbee.close();
 				}
 			}
 		}
