@@ -22,6 +22,8 @@ public class XBeeManager extends PApplet {
 		boolean discoverLocalXBees = true;
 		if (discoverLocalXBees) {
 			discoverLocalXbees();
+			delay(1000);
+			println("Init players");
 			game.initPlayers(niToPortMap);
 		}
 		else { // take the ones we used before
@@ -43,7 +45,8 @@ public class XBeeManager extends PApplet {
 			for (Player player : game.getPlayers()) {
 				// TODO not used yet
 				if (player != null) {
-					player.setRemoteProximityStepLength(20);
+					player.setRemoteProximityStepLength(10000);
+					player.activateAll();
 				}
 			}	
 		}
@@ -66,6 +69,7 @@ public class XBeeManager extends PApplet {
 		niToPortMap = getNIToPortMap(serialPorts);
 		if (niToPortMap.size()==0) {
 			System.err.println("No local xbees found, maybe replug and try again.");
+			System.exit(1);
 		}
 		if (Settings.strictScan && (niToPortMap.size() != Settings.LOCAL_XBEES)) {
 			System.err.println("Not all local xbees found! Are they plugged in?");
@@ -103,7 +107,7 @@ public class XBeeManager extends PApplet {
 				xbee.open(port, Settings.SERIAL_BAUDRATE);
 				// Timeout 70000 if no other devices and not chained.
 				AtCommandResponse response = (AtCommandResponse) xbee
-						.sendSynchronous(new AtCommand("NI"), 70000);
+						.sendSynchronous(new AtCommand("NI"), 7000);
 				if (response.isOk()) {
 					int[] bytes = response.getValue();
 					StringBuffer buffer = new StringBuffer();
@@ -114,10 +118,13 @@ public class XBeeManager extends PApplet {
 					niToPortMap.put(NI, port);
 					println(NI + ":" + port);
 				}
+				else {
+					println("NI command failed: " + response);
+				}
 				xbee.close();
 			}
 		} catch (XBeeException e) {
-			// println("Could not open serial port: "+e);
+			println("Could not open serial port: "+e);
 		}
 		return niToPortMap;
 	}

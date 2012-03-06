@@ -38,9 +38,7 @@ public class ProclipsingPinquity extends PApplet {
 		PropertyConfigurator.configure(dataPath("") + "log4j.properties");
 		
 		// setup game
-		players = new Player[Settings.NUM_PLAYERS];
 		xbeeManager = new XBeeManager(this);
-		System.exit(0);
 	}
 
 
@@ -50,6 +48,7 @@ public class ProclipsingPinquity extends PApplet {
 	// init players according to serial port map
 	// TODO maybe too generic ;-)
 	void initPlayers(HashMap niToPortMap) {
+		players = new Player[Settings.NUM_PLAYERS];
 		Object[] keys = niToPortMap.keySet().toArray();
 		Arrays.sort(keys);
 		if (Settings.strictScan && Settings.strictDiscovery
@@ -84,8 +83,7 @@ public class ProclipsingPinquity extends PApplet {
 
 	public void draw() {
 //		println("draw");
-//		ProximityData data = new ProximityData(); // create a data object
-//		data = getProximityData(); // put data into the data object
+//		ProximityData data = getProximityData(); // put data into the data object
 ////		if (millis() > 10000) { // just some startup delay for now
 ////			// just buzz the gloves for now
 ////			for (Player player : players) {
@@ -102,7 +100,7 @@ public class ProclipsingPinquity extends PApplet {
 
 		for (Player player : players) {
 			if (player != null) {
-				println("start receive from player ");
+//				println("start receive from player ");
 				player.receiveProxReadings();
 			}
 		}
@@ -154,5 +152,6 @@ public class ProclipsingPinquity extends PApplet {
 	public static void main(String _args[]) {
 		PApplet.main(new String[] { proclipsingpinquity.ProclipsingPinquity.class
 				.getName() });
+		println("Exiting Propinquity");
 	}
 }

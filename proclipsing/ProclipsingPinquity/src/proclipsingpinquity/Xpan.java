@@ -42,6 +42,7 @@ public class Xpan extends PApplet implements Runnable {
 		catch (InterruptedException e) {
 			e.printStackTrace(); 
 		}
+
 	}
 
 	public void run() {
@@ -60,7 +61,7 @@ public class Xpan extends PApplet implements Runnable {
 			println("** Error opening XBee port " + serialPort + ": " + e
 					+ " **");
 			println("Is your XBee plugged in to your computer?");
-			exit();
+			System.exit(1);
 		}
 		return localXbee;
 	}
@@ -105,6 +106,13 @@ public class Xpan extends PApplet implements Runnable {
 					// we also get some rx16 responses already
 				}
 			}
+
+			this.localXbee.addPacketListener(new PacketListener() {
+			    public void processResponse(XBeeResponse response) {
+					println(response);
+			    }
+			});
+
 		} catch (XBeeException e) {
 			System.err.println("Error during node discovery: " + e);
 		}
@@ -149,11 +157,13 @@ public class Xpan extends PApplet implements Runnable {
 	// receive readings from all remote nodes
 	void receiveProxReadings() {
 	    try {
-			XBeeResponse response = this.localXbee.getResponse();
+			XBeeResponse response = this.localXbee.getResponse(1000);
 	    	println("try to read");
 			if (response!=null) {
 				println(response);
 			}
+		} catch (XBeeTimeoutException e) {
+			println("timeout");
 		} catch (XBeeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -176,10 +186,9 @@ public class Xpan extends PApplet implements Runnable {
 		broadcast(getVibePacket(value));
 	}
 
-	// void broadcastStep(int stepNum, Step step1, Step step2, Step step3, Step
-	// step4) {
-	// broadcast(getStepPacket(stepNum, step1, step2, step3, step4));
-	// }
+	 void broadcastStep() {
+	 broadcast(getStepPacket());
+	 }
 
 	private int[] getProxConfigPacket(int stepLength) {
 		int[] packet = new int[CONFIG_OUT_PACKET_LENGTH];
@@ -189,18 +198,15 @@ public class Xpan extends PApplet implements Runnable {
 		return packet;
 	}
 
-	// private int[] getStepPacket(int stepNum, Step step1, Step step2, Step
-	// step3, Step step4) {
-	// int[] packet = new int[PROX_OUT_PACKET_LENGTH];
-	// packet[0] = PROX_OUT_PACKET_TYPE;
-	// packet[1] = (stepNum >> 8) & 0xFF;
-	// packet[2] = stepNum & 0xFF;
-	// packet[3] = ((step1 == null ? 0 : step1.getPacketComponent()) << 4) |
-	// (step2 == null ? 0 : step2.getPacketComponent());
-	// packet[4] = ((step3 == null ? 0 : step3.getPacketComponent()) << 4) |
-	// (step4 == null ? 0 : step4.getPacketComponent());
-	// return packet;
-	// }
+	 private int[] getStepPacket() {
+	 int[] packet = new int[PROX_OUT_PACKET_LENGTH];
+	 packet[0] = PROX_OUT_PACKET_TYPE;
+	 packet[1] = 0;
+	 packet[2] = 0;
+	 packet[3] = 0xff;
+	 packet[4] = 0xff;
+	 return packet;
+	 }
 
 	private int[] getVibePacket(int value) {
 		int[] packet = { VIBE_OUT_PACKET_TYPE, value };

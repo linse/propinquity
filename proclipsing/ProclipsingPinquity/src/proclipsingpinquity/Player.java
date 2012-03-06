@@ -16,14 +16,14 @@ public class Player extends PApplet {
 	}
 
 	void receiveProxReadings() {
-		println("start prox readings receive");
+//		println("start prox readings receive");
 		if (this.xpans[PROX_1]!=null) {
 			this.xpans[PROX_1].receiveProxReadings();
 		}
 		if (this.xpans[PROX_2]!=null) {
 			this.xpans[PROX_2].receiveProxReadings();
 		}
-		println("end prox readings receive");
+//		println("end prox readings receive");
 	}
 	
 	void broadcastVibe(int value) {
@@ -38,6 +38,15 @@ public class Player extends PApplet {
 		}
 		if (this.xpans[PROX_2]!=null) {
 			this.xpans[PROX_2].broadcastProxConfig(stepLength);
+		}
+	}
+
+	public void activateAll() {
+		if (this.xpans[PROX_1]!=null) {
+			this.xpans[PROX_1].broadcastStep();
+		}
+		if (this.xpans[PROX_2]!=null) {
+			this.xpans[PROX_2].broadcastStep();
 		}
 	}
 
