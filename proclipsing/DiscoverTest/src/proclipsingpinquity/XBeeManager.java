@@ -5,6 +5,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import com.rapplogic.xbee.api.AtCommand;
 import com.rapplogic.xbee.api.AtCommandResponse;
@@ -16,15 +19,22 @@ import processing.serial.Serial;
 
 public class XBeeManager {
 
-	ProclipsingPinquity game;
 //	List<String> requiredLocalNIs = new ArrayList(Arrays.asList("P1_PROX1", "P1_PROX2", "P1_VIBE"));
-//	List<String> requiredLocalNIs = new ArrayList(Arrays.asList("P2_PROX1", "P2_PROX2", "P2_VIBE"));
-	List<String> requiredLocalNIs = new ArrayList(Arrays.asList("P1_PROX1", "P1_PROX2", "P1_VIBE", "P2_PROX1", "P2_PROX2", "P2_VIBE"));
-	HashMap<String, String> niToPortMap;
+	List<String> requiredLocalNIs = new ArrayList(Arrays.asList("P2_PROX1", "P2_PROX2", "P2_VIBE"));
+//	List<String> requiredLocalNIs = new ArrayList(Arrays.asList("P1_PROX1", "P1_PROX2", "P1_VIBE", "P2_PROX1", "P2_PROX2", "P2_VIBE"));
+	SortedMap<String, String> niToPortMap;
 	
-	public XBeeManager(ProclipsingPinquity game) {
-		game.println("Creating xbeemanager");
-		
+	static private XBeeManager manager = null;
+	static public XBeeManager instance() {
+		if (XBeeManager.manager == null) XBeeManager.manager = new XBeeManager();
+		return XBeeManager.manager;
+	}
+	
+	public XBeeManager() {
+		ProclipsingPinquity.game.println("Creating xbeemanager");
+	}
+	
+	public Boolean init() {
 		//1. local xbees
 		boolean discoverLocalXBees = true;
 		if (discoverLocalXBees) {
@@ -34,7 +44,9 @@ public class XBeeManager {
 			loadLocalXbees();
 		}
 		System.out.println("Local xbees: " + niToPortMap);
-		
+
+		initPlayers();
+		return true;
 	}
 
 	void discoverLocalXbees() {
@@ -44,7 +56,7 @@ public class XBeeManager {
 			System.err.println("No local Xbees found. ");
 			System.exit(1);
 		} else {
-			game.println("Xbee serial ports: " + serialPorts);
+			ProclipsingPinquity.game.println("Xbee serial ports: " + serialPorts);
 		}
 		// 2. get matching xbee node identifiers
 		niToPortMap = getNIToPortMap(serialPorts);
@@ -59,7 +71,7 @@ public class XBeeManager {
 	}
 	
 	void loadLocalXbees() {
-		niToPortMap = new HashMap<String,String>();
+		niToPortMap = new TreeMap<String,String>();
 		niToPortMap.put("P2_VIBE", "/dev/tty.usbserial-A8004Z0D");
 		niToPortMap.put("P2_PROX1", "/dev/tty.usbserial-A8004Z0e");
 		niToPortMap.put("P2_PROX2", "/dev/tty.usbserial-A8004xAX");
@@ -71,30 +83,58 @@ public class XBeeManager {
 		
 	}
 
-	// not here??
-	private void initPlayers(HashMap<String, String> niToPortMap) {
-		// TODO Auto-generated method stub
+	// init players according to serial port map
+	// TODO maybe too generic ;-)
+	void initPlayers() {
+		Player[] players = new Player[Settings.NUM_PLAYERS];
 		
+		if (Settings.strictScan && Settings.strictDiscovery
+				&& this.niToPortMap.size() != Settings.NUM_PLAYERS * Settings.XPANS_PER_PLAYER) {
+			System.err
+					.println("Number of local Xbees does not fit to number of players and networks (xpans) per player!");
+			System.exit(1);
+		}
+		// make xpans for players from NI / serial port pairs
+		int player = 0;
+		int xpan = 0;
+		for (Map.Entry<String, String> entry : this.niToPortMap.entrySet()) {
+			if (entry.getKey().startsWith("P1_")) player = 0;
+			else if (entry.getKey().startsWith("P2_")) player = 1;
+			else {
+				ProclipsingPinquity.game.println("Unknown local XBee: " + entry.getKey());
+				break;
+			}
+			if (players[player] == null) players[player] = new Player();
+
+			if (entry.getKey().endsWith("PROX1")) xpan = Player.PROX_1;
+			else if (entry.getKey().endsWith("PROX2")) xpan = Player.PROX_2;
+			else if (entry.getKey().endsWith("VIBE")) xpan = Player.VIBE;
+			else {
+				ProclipsingPinquity.game.println("Unknown local XBee: " + entry.getKey());
+				break;
+			}
+			players[player].xpans[xpan] = new Xpan(entry.getKey());
+		}
 	}
 
 	// map NI to serial port so that we can assign
 	// ports to players!
-	private HashMap<String, String> getNIToPortMap(ArrayList<String> serialPorts) {
-		HashMap<String, String> niToPortMap = new HashMap<String, String>();
+	private SortedMap<String, String> getNIToPortMap(ArrayList<String> serialPorts) {
+		SortedMap<String, String> niToPortMap = new TreeMap<String, String>();
 		while (!this.requiredLocalNIs.isEmpty()) {
 			if (serialPorts.isEmpty()) {
-				game.println("No more serial ports - giving up.");
+				ProclipsingPinquity.game.println("No more serial ports - giving up.");
 				break;
 			}
 			for (Iterator<String> i = serialPorts.iterator(); i.hasNext();) {
 				String port = i.next();
-				game.println("Communicating with port " + port);
+				ProclipsingPinquity.game.println("Communicating with port " + port);
 				XBee xbee = new XBee();
 				try {
 					xbee.open(port, Settings.SERIAL_BAUDRATE);
 				}
 				catch (XBeeException e) {
-					game.println("Could not open serial port " + port + " : " + e);
+					ProclipsingPinquity.game.println("Could not open serial port " + port + " : " + e);
 					continue;
 				}
 				try {
@@ -109,21 +149,16 @@ public class XBeeManager {
 						}
 						String NI = buffer.toString();
 						niToPortMap.put(NI, port);
-						game.println(NI + ":" + port);
+						ProclipsingPinquity.game.println(NI + ":" + port);
 						i.remove();
-						for (String foundni : this.requiredLocalNIs) {
-							if (foundni.equals(NI)) {
-								this.requiredLocalNIs.remove(foundni);
-								break;
-							}
-						}
+						this.requiredLocalNIs.remove(NI);
 					}
 					else {
-						game.println("NI command failed: " + response);
+						ProclipsingPinquity.game.println("NI command failed: " + response);
 					}
 					xbee.close();
 				} catch (XBeeException e) {
-					game.println("Could not read NI of XBee on port " + port + " : " + e);
+					ProclipsingPinquity.game.println("Could not read NI of XBee on port " + port + " : " + e);
 				}
 			}
 		}
@@ -149,6 +184,10 @@ public class XBeeManager {
 			System.exit(1);
 		}
 		return localXbeeSerialPorts;
+	}
+	
+	public String getPort(String nodeid) {
+		return this.niToPortMap.get(nodeid);
 	}
 	
 }

@@ -18,9 +18,12 @@ import processing.serial.Serial;
 
 public class ProclipsingPinquity extends PApplet {
 	
-	private XBeeManager xbeeManager;
+	Player[] players;
 
+	static public ProclipsingPinquity game;
+	
 	public void setup() {
+		game = this;
 		// setup general stuff
 		size(1024, 768, OPENGL);
 		smooth(); // anti-aliasing for graphic display
@@ -30,7 +33,9 @@ public class ProclipsingPinquity extends PApplet {
 		PropertyConfigurator.configure(dataPath("") + "log4j.properties");
 		
 		// setup game
-		xbeeManager = new XBeeManager(this);
+		XBeeManager.instance().init();
+		
+		
 		System.exit(0);
 	}
 
