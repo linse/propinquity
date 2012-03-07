@@ -76,6 +76,16 @@ public class DiscoverTest extends PApplet {
 			println("");
 			println("Checks done");
 			printDiscovered();
+			
+			for (int i=0;i<2;i++) {
+				for (XPan xpan : players[i].xpans.get(0)) {
+					if (xpan != null) {
+						xpan.broadcastProxConfig(10000);
+					}
+				}
+			}
+			
+			
 			exit();
 		}
 	}
@@ -97,8 +107,8 @@ public class DiscoverTest extends PApplet {
 
 	void initPlayers() {
 		players = new Player[2];
-		players[0] = new Player(this);
-		players[1] = new Player(this);
+		players[0] = new Player();
+		players[1] = new Player();
 
 		// TODO: Node IDs are hard coded, we want this from the scan!!
 		// node identifyers of local xbees for player 1 
@@ -124,7 +134,7 @@ public class DiscoverTest extends PApplet {
 
 	void xBeeDiscoverEvent(XBeeReader xbee) {
 		XBeeDataFrame data = xbee.getXBeeReading();
-//		println("Received ApiId " + data.getApiID());
+		println("Received ApiId " + data.getApiID());
 		if (data.getApiID() != XBeeReader.ATCOMMAND_RESPONSE) return;
 		data.parseXBeeRX16Frame();
 

@@ -5,9 +5,7 @@ import processing.core.PApplet;
 
 
 public class Player {
-  
-  PApplet parent;
-  
+    
   // types of xpans
   final int PROX = 0;
   final int ACCEL = 1;
@@ -20,9 +18,7 @@ public class Player {
   ArrayList<XPan[]> xpans = new ArrayList<XPan[]>();
 
 
-  public Player(PApplet p) {
-    parent = p;
-    
+  public Player() {
     for (int xpanType = PROX; xpanType <= VIBE; xpanType++)
       xpans.add(new XPan[XPANS_LOCAL_XBEES[xpanType]]);
   }
@@ -42,8 +38,8 @@ public class Player {
 
     XBeeReader xbee = XBeeManager.instance().reader(localXbeeNI);
     if (xbee != null) {
-      xpans.get(xpanType)[xpanNumber] = new XPan(xbee, parent);
-      parent.println("Xbee network for " + XPAN_NAMES[xpanType] + ": local Xbee " 
+      xpans.get(xpanType)[xpanNumber] = new XPan(xbee);
+      DiscoverTest.game.println("Xbee network for " + XPAN_NAMES[xpanType] + ": local Xbee " 
       + localXbeeNI + " connected.");
     }
     else {
