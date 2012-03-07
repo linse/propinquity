@@ -124,36 +124,34 @@ public class DiscoverTest extends PApplet {
 
 	void xBeeDiscoverEvent(XBeeReader xbee) {
 		XBeeDataFrame data = xbee.getXBeeReading();
-		if (data.getApiID() != XBeeReader.SERIES1_RX16PACKET) return;
+//		println("Received ApiId " + data.getApiID());
+		if (data.getApiID() != XBeeReader.ATCOMMAND_RESPONSE) return;
 		data.parseXBeeRX16Frame();
 
 		int[] buffer = data.getBytes();
 
 		if (buffer.length > 11) {
 			//check first letter of NI parameter
-			String serial = "";
-			for(int i = 3; i < 11; i++)
-				serial += hex(buffer[i], 2);
 			String name = "";
 			for(int i = 11; i < buffer.length; i++)
-				name += buffer[i];
+				name += (char)buffer[i];
 
 			switch (buffer[11]) {
 			case 'P':
-				foundProxs.add(serial);
-				println(" Found proximity patch: " + name + " (" + serial + ") at "+millis());
+				foundProxs.add(name);
+				println(" Found proximity patch: " + name + " at "+millis());
 				break;
 			case 'V':
-				foundVibes.add(serial);
-				println(" Found vibration patch: " + name + " (" + serial + ") at "+millis());
+				foundVibes.add(name);
+				println(" Found vibration patch: " + name + " at "+millis());
 				break;
 			case 'A':
-				foundAccels.add(serial);
-				println(" Found acceleration patch: " + name + " (" + serial + ") at "+millis());
+				foundAccels.add(name);
+				println(" Found acceleration patch: " + name + " at "+millis());
 				break;
 			default:
-				foundUndefs.add(serial);
-				println(" Found undefined patch: " + name + " (" + serial + ") at "+millis());
+				foundUndefs.add(name);
+				println(" Found undefined patch: " + name + " at "+millis());
 				break;
 			}
 		}

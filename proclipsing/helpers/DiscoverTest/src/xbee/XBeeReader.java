@@ -41,7 +41,7 @@ public class XBeeReader extends Thread {
   Serial port = null;                     // the serial port
   int[] dataArray;                        // the array returned for the data frame
   public XBeeDataFrame dataFrame;         // the dataArray object
-  public boolean DEBUG = true;                  // whether or not we're debugging; turns off System.out.printlns()
+  public boolean DEBUG = false;                  // whether or not we're debugging; turns off System.out.printlns()
   Method xBeeMethod;                      // for the xBeeEvent
 
   private boolean running;                // Is the thread running?  Yes or no?

@@ -18,7 +18,7 @@ import processing.core.*;
 import processing.serial.*;
 
 public class XBeeDataFrame {
-  boolean DEBUG = true;                   // whether or not we're debugging; turns off printlns()
+  boolean DEBUG = false;                   // whether or not we're debugging; turns off printlns()
 
   public int[] frameData;
   public int apiId = -1;
