@@ -17,15 +17,13 @@ public class DiscoverTest extends PApplet {
 
 	final int XBEE_DISCOVER_TIMEOUT = 5 * 1000; // 5 sec
 
-	Player[] players;
-
 	ArrayList foundProxs;
 	ArrayList foundVibes;
 	ArrayList foundAccels;
 	ArrayList foundUndefs;
 
 	public static DiscoverTest game;
-	public GameState gamestate;
+	public GameState gamestate = new GameState();
 	
 	public void setup() {
 		game = this;
@@ -46,7 +44,7 @@ public class DiscoverTest extends PApplet {
 
 		// scan test for local xbees via serial
 		if (mode == MODE_CHECK_SERIAL && XBeeManager.instance().hasAllNIs()) {
-			//println("Local XBees found: " + xbeeManager.getNodeIDs() + ".");
+			println("Local XBees found: " + XBeeManager.instance().getNodeIDs() + ".");
 			mode++;
 		}
 		// set up networks for all local xbees
@@ -58,9 +56,9 @@ public class DiscoverTest extends PApplet {
 		else if (mode == MODE_SEND_DISCOVER) {
 			println("Scanning for remote xbees...");
 			println("Player 1:");
-			players[0].discoverRemoteXbees();
+			gamestate.players[0].discoverRemoteXbees();
 			println("Player 2:");
-			players[1].discoverRemoteXbees();
+			gamestate.players[1].discoverRemoteXbees();
 			startDiscover = millis();
 			mode++;
 		}
@@ -80,23 +78,22 @@ public class DiscoverTest extends PApplet {
 			printDiscovered();
 			
 			for (int i=0;i<2;i++) {
-				for (XPan xpan : players[i].xpans.get(Player.PROX)) {
+				XPan xpan = gamestate.players[i].getProxXpan();
 					if (xpan != null) {
 						xpan.broadcastVibe(1000, 128);
 						int rgb[] = {0, 0, 255};
 						int addr = 10;
 						xpan.sendOutgoing(addr, xpan.getProxStatePacket(true, rgb, 1000, 128));
-					}
 				}
-				for (XPan xpan : players[i].xpans.get(Player.VIBE)) {
+				xpan = gamestate.players[i].getVibeXpan();
 					if (xpan != null) {
 						xpan.broadcastVibe(200, (byte)64);
 					}
-				}
 			}
 			mode++;
 		}
 		else if (mode == MODE_RUNNING) {
+			gamestate.update();
 			render(gamestate);
 		}
 	}
@@ -125,30 +122,17 @@ public class DiscoverTest extends PApplet {
 	}
 
 	void initPlayers() {
-		players = new Player[2];
-		players[0] = new Player();
-		players[1] = new Player();
+		gamestate.players = new Player[2];
+		gamestate.players[0] = new Player();
+		gamestate.players[1] = new Player();
 
-		// TODO: Node IDs are hard coded, we want this from the scan!!
-		// node identifyers of local xbees for player 1 
-		ArrayList<String[]> NIS_PLAYER1 = new ArrayList<String[]>();
-		String[] proxNIs = {"P1_PROX1","P1_PROX2"};
-		String[] accelNI = {"P1_ACCEL"};
-		String[] vibeNI = {"P1_VIBE"};
-		NIS_PLAYER1.add(proxNIs);
-		NIS_PLAYER1.add(accelNI);
-		NIS_PLAYER1.add(vibeNI);
-		// player 2
-		ArrayList<String[]> NIS_PLAYER2 = new ArrayList<String[]>();
-		String[] proxNIs2 = {"P2_PROX1","P2_PROX2"};
-		String[] accelNI2 = {"P2_ACCEL"};
-		String[] vibeNI2 = {"P2_VIBE"};
-		NIS_PLAYER2.add(proxNIs2);
-		NIS_PLAYER2.add(accelNI2);
-		NIS_PLAYER2.add(vibeNI2);
-
-		players[0].init(NIS_PLAYER1);
-		players[1].init(NIS_PLAYER2);
+		Player.init();
+		
+		gamestate.players[0].vibeXpan = Player.address_to_xpan.get(5);
+		gamestate.players[0].proxXpan = Player.address_to_xpan.get(1);
+		gamestate.players[1].vibeXpan = Player.address_to_xpan.get(13);
+		gamestate.players[1].proxXpan = Player.address_to_xpan.get(9);
+		
 	}
 
 	void xBeeDiscoverEvent(XBeeReader xbee) {
@@ -194,31 +178,8 @@ public class DiscoverTest extends PApplet {
 			xBeeDiscoverEvent(xbee);
 		}
 		else if (mode == MODE_RUNNING) {
-			int[] packet = XPan.decodePacket(xbee);
-			if (packet == null) return;  
-			switch (packet[0]) {
-			case XPan.PROX_IN_PACKET_TYPE:
-				assert(packet.length == XPan.PROX_IN_PACKET_LENGTH);
-
-				int patch = (packet[1] >> 1);                
-				int player = getPlayerIndexForPatch(patch);
-
-				if (player != -1) {
-					int proximity = ((packet[4] & 0xFF) << 8) | (packet[5] & 0xFF);;
-					println(proximity);
-				}
-				else {
-					System.err.println("Trouble in paradise, we received a packet from patch '"+ patch + "', which is not assigned to a player");
-				}
-				break;
-			}
+			gamestate.xBeeEvent(xbee);
 		}
-	}
-
-	public int getPlayerIndexForPatch(int patch) {
-		if (patch >= 1 && patch <= 4) return 0;
-		else if (patch >= 9 && patch <= 16) return 1;
-		else return -1;
 	}
 
 	public void keyPressed() {
