@@ -7,9 +7,9 @@ import processing.core.PApplet;
 public class Player {
     
   // types of xpans
-  final int PROX = 0;
-  final int ACCEL = 1;
-  final int VIBE = 2;
+  static final int PROX = 0;
+  static final int ACCEL = 1;
+  static final int VIBE = 2;
   // number of the xpan's local xbees in prox, accel, vibe xpan of this player
   final int[] XPANS_LOCAL_XBEES = {2,1,1};
   // names of the xpans

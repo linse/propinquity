@@ -20,6 +20,7 @@ public class XPan {
   static final int CONFIG_OUT_PACKET_TYPE = 5;
   static final int CONFIG_ACK_PACKET_TYPE = 6;
   static final int VIBE_IN_PACKET_TYPE = 7; // THIS IS NEW. For button presses.
+  static final int VIBE_STATE_PACKET_TYPE = 9;
   
   //Serial g_port;
   XBeeReader xbee;
@@ -66,7 +67,7 @@ public class XPan {
   void stop() { xbee.stopXBee(); }
   
   void broadcastProxConfig(int stepLength) { DiscoverTest.game.println("broadcasting prox config"); broadcast(getProxConfigPacket(stepLength)); }
-  void broadcastVibe(int value) { broadcast(getVibePacket(value)); }
+  void broadcastVibe(int period, byte duty) { broadcast(getVibePacket(period, duty)); }
   void broadcastStep(int stepNum, Step step1, Step step2, Step step3, Step step4) {
     broadcast(getStepPacket(stepNum, step1, step2, step3, step4));
   }
@@ -89,8 +90,8 @@ public class XPan {
     return packet;
   }
   
-  private int[] getVibePacket(int value) {
-    int[] packet = { VIBE_OUT_PACKET_TYPE, value };
+  private int[] getVibePacket(int period, byte duty) {
+    int[] packet = { VIBE_STATE_PACKET_TYPE, (period >> 8) & 0xff, period & 0xff, duty };
     return packet;
   }
 }
