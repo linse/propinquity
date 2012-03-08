@@ -33,7 +33,6 @@ TxStatusResponse txStatus = TxStatusResponse();
 const int RED_COLOR = 1;
 const int BLUE_COLOR = 2;
 
-// Vibe variables
 struct Blinker {
   bool _state;
   uint16_t millisOn;
@@ -71,6 +70,7 @@ struct Blinker {
 Blinker vibeBlinker;
 Blinker colorBlinker;
 uint8_t rgb[3] = {0, 0, 0};
+bool active = false;
 
 //Communication -- addressing (need to be changed for each patch)
 //PROX1_PLAYER1
@@ -158,7 +158,6 @@ int proxPin = 4; //A4, 18 of 20
 int proxBaseline = 250;
 int proxReading = 0;
 int touchThreshold = 1250;
-boolean touched = false;
 //might need to establish running average for capsense and look for spikes
 
 //Feedback
@@ -242,45 +241,17 @@ void debugCycle() {
 }
 
 void loop() {
-  //currentMillis = millis();
   if (millis() - prevCheckMillis > xCheckInterval) {
     checkXbee();
     prevCheckMillis = millis();
   }
-  //if (currentMillis - prevTurnMillis > turnLength) running = false;
-  if (waiting) {
-   //check delay and if it's past, start running. 
-   if (millis() - prevTurnMillis > initialDelay) {
-     running = true;
-     blinking = true;
-     waiting = false;
-   }
-  }
-  if (running) {
-    // Turned off capacitive sensing. kintel 20111013.
-    //    readCapSense();
+
+  if (active) {
     if (millis() - prevDataMillis > dataInterval) {
+      Serial.println("ReadProx");
       readProx();
       send_data();
       prevDataMillis = millis();
-    }
-    if (blinking) {
-      if (millis() - prevBlinkMillis > blinkInterval) {
-        doBlink(); 
-        prevBlinkMillis = millis();
-      }
-    }
-    if (millis() - prevTurnMillis > turnLength) {
-      running = false;
-      stopVibe();
-      if (testing) {
-        turnNum++;
-        running = true; 
-      }
-      if (blinking) {
-        color(0,0,0);
-        blinking = false; 
-      }
     }
   }
   blinkVibe();
@@ -298,69 +269,11 @@ void readProx() {
   proxReading = analogRead(proxPin);
   if (proxReading < proxBaseline) proxReading = 0;
   else proxReading -= proxBaseline;
-  doVibe();
-}
-
-// TODO: rescale?
-void doVibe() {
-  if (proxReading > 400) {
-    analogWrite(vibePin, 255);
-  }
-  else if (proxReading > 300) {
-    analogWrite(vibePin, 200);
-  }
-  else if (proxReading > 200) {
-    analogWrite(vibePin, 150);
-  }
-  else if (proxReading > 100) {
-    analogWrite(vibePin, 100); 
-  }
-  else {
-    analogWrite(vibePin, 0); 
-  }
-}
-
-void stopVibe() {
-  analogWrite(vibePin, 0); 
-}
-
-void doBlink() {
-  if (ledState == LOW) {
-    color(255, 255, 255);
-    ledState = HIGH;
-  }
-  else if (ledState == HIGH) {
-    color(0, 0, 0);
-    ledState = LOW;
-  }
-}
-
-void setLeds(int firstbyte, int secondbyte) {
-  if (firstbyte & ledFilter1) {
-    //start blinking and sensing.
-    color(255, 255, 255);
-    ledState = HIGH;
-    blinking = true;
-    waiting = true;
-    if (testingLights) Serial.println("sensing now.");
-  }
-  // Temporarily disabled "warning" lights for patches becoming active 
-  // next turns. kintel 20111013
-  else {
-    //nothing anytime soon
-    color(0,0,0);
-    ledState = LOW;
-    blinking = false;
-    running = false;
-    waiting = false;
-    if (testingLights) Serial.println("sensing in three or more turns.");
-  }
-  if (testing) running = true;
 }
 
 void send_data() {
   outPacket[0] = PROX_IN_PACKET_TYPE;
-  outPacket[1] = uint8_t(myAddress << 1 | (int)touched);
+  outPacket[1] = uint8_t(myAddress << 1);
   outPacket[2] = uint8_t(turnNum >> 8);
   outPacket[3] = uint8_t(turnNum);
   outPacket[4] = uint8_t(proxReading >> 8);
@@ -370,11 +283,9 @@ void send_data() {
     Serial.print((int)millis()+"\t");
     Serial.print(turnNum+"\t");
     Serial.print((int)outPacket[1]+"\t");
-    Serial.print(touched+"\t");
     Serial.println(proxReading);
   }
   xbee.send(tx);
-  touched = false;
 }
 
 uint8_t frameId = 0;
@@ -417,7 +328,8 @@ void get_data() {
       while (packet_cnt < PROX_STATE_PACKET_LENGTH) {
         proxStatePacket[packet_cnt] = rx.getData(packet_cnt++);
       }
-      //      active = proxStatePacket[1];
+      active = proxStatePacket[1];
+      Serial.print("Active: "); Serial.println(active);
       rgb[0] = proxStatePacket[2];
       rgb[1] = proxStatePacket[3];
       rgb[2] = proxStatePacket[4];
