@@ -20,14 +20,19 @@
 #ifndef XBee_h
 #define XBee_h
 
-#include <Arduino.h>
+#if defined(ARDUINO) && ARDUINO >= 100
+	#include "Arduino.h"
+#else
+	#include "WProgram.h"
+#endif
+
 #include <inttypes.h>
 
 #define SERIES_1
 #define SERIES_2
 
 // set to ATAP value of XBee. AP=2 is recommended
-#define ATAP 2
+#define ATAP 1
 
 #define START_BYTE 0x7e
 #define ESCAPE 0x7d
@@ -669,8 +674,6 @@ private:
 class XBee {
 public:
 	XBee();
-	// for eclipse dev only
-	void setSerial(HardwareSerial serial);
 	/**
 	 * Reads all available serial bytes until a packet is parsed, an error occurs, or the buffer is empty.
 	 * You may call <i>xbee</i>.getResponse().isAvailable() after calling this method to determine if
@@ -714,7 +717,15 @@ public:
 	 * Returns a sequential frame id between 1 and 255
 	 */
 	uint8_t getNextFrameId();
+	/**
+	 * Specify the serial port.  Only relevant for Arduinos that support multiple serial ports (e.g. Mega)
+	 */
+	void setSerial(HardwareSerial &serial);
 private:
+	bool available();
+	uint8_t read();
+	void flush();
+	void write(uint8_t val);
 	void sendByte(uint8_t b, bool escape);
 	void resetResponse();
 	XBeeResponse _response;
@@ -727,6 +738,7 @@ private:
 	uint8_t _nextFrameId;
 	// buffer for incoming RX packets.  holds only the api specific frame data, starting after the api id byte and prior to checksum
 	uint8_t _responseFrameData[MAX_FRAME_DATA_SIZE];
+	HardwareSerial* _serial;
 };
 
 /**
