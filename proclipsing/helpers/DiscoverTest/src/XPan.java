@@ -93,12 +93,12 @@ public class XPan {
     return packet;
   }
   
-  private int[] getVibePacket(int period, int duty) {
+  static public int[] getVibePacket(int period, int duty) {
     int[] packet = { VIBE_STATE_PACKET_TYPE, (period >> 8) & 0xff, period & 0xff, duty };
     return packet;
   }
 
-  public int[] getProxStatePacket(Boolean active, int[] color, int color_period, int color_duty) {
+  static public int[] getProxStatePacket(Boolean active, int[] color, int color_period, int color_duty) {
 	    int[] packet = { PROX_STATE_PACKET_TYPE, active?1:0, color[0], color[1], color[2], (color_period >> 8) & 0xff, color_period & 0xff, color_duty };
 	    return packet;
 	  }

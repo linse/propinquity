@@ -55,8 +55,6 @@ public class XBeeManager implements Runnable {
     }
     hasAllNIs = true;
     
-    DiscoverTest.game.println("Local XBees found: " + getNodeIDs() + ".");
-
     //clear thread
     thread = null; 
   }
@@ -87,7 +85,7 @@ public class XBeeManager implements Runnable {
           ie.printStackTrace(); 
         }  
         if (hasNI) {
-        	DiscoverTest.game.println(nodeID);
+        	DiscoverTest.game.println("Got node ID: " + nodeID + " port = " + port);
           nodeIDAndSerialPort.put(nodeID, port);
           break;
         }

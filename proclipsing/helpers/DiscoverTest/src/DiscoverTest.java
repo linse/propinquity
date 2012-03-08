@@ -80,14 +80,20 @@ public class DiscoverTest extends PApplet {
 			for (int i=0;i<2;i++) {
 				XPan xpan = gamestate.players[i].getProxXpan();
 					if (xpan != null) {
-						xpan.broadcastVibe(1000, 128);
+						xpan.broadcastVibe(1000, 0);
 						int rgb[] = {0, 0, 255};
-						int addr = 10;
-						xpan.sendOutgoing(addr, xpan.getProxStatePacket(true, rgb, 1000, 128));
+						if (i == 0) {
+	  						xpan.sendOutgoing(1, xpan.getProxStatePacket(true, rgb, 1000, 0));
+	  						xpan.sendOutgoing(2, xpan.getProxStatePacket(true, rgb, 1000, 0));
+						}
+						else {
+	  						xpan.sendOutgoing(9, xpan.getProxStatePacket(true, rgb, 1000, 0));
+	  						xpan.sendOutgoing(10, xpan.getProxStatePacket(true, rgb, 1000, 0));
+						}
 				}
 				xpan = gamestate.players[i].getVibeXpan();
 					if (xpan != null) {
-						xpan.broadcastVibe(200, (byte)64);
+						xpan.broadcastVibe(200, 0);
 					}
 			}
 			mode++;
@@ -205,65 +211,66 @@ public class DiscoverTest extends PApplet {
 		  		System.out.println("Set vibe mapping 5.");
 		  		gamestate.setVibeMapping(GameState.MAPPING_5);
 		  		break;
-		  	case 'R' : // set color
+		  	case 'r' : // set color
 		  		System.out.println("Set everything red.");
 		  		int[] red = {255,0,0};
-		  		gamestate.setPatchColor(1, 1, red);
-		  		gamestate.setPatchColor(1, 2, red);
-		  		gamestate.setPatchColor(1, 3, red);
-		  		gamestate.setPatchColor(2, 1, red);
-		  		gamestate.setPatchColor(2, 2, red);
-		  		gamestate.setPatchColor(2, 3, red);
+ 
+		  		gamestate.setPatchColor(1, red);
+		  		gamestate.setPatchColor(2, red);
+		  		gamestate.setPatchColor(3, red);
+		  		gamestate.setPatchColor(9, red);
+		  		gamestate.setPatchColor(10, red);
+		  		gamestate.setPatchColor(11, red);
 		  		break;
-		  	case 'G' : // set color
+		  	case 'g' : // set color
 		  		System.out.println("Set everything green.");
 		  		int[] green = {0,255,0};
-		  		gamestate.setPatchColor(1, 1, green);
-		  		gamestate.setPatchColor(1, 2, green);
-		  		gamestate.setPatchColor(1, 3, green);
-		  		gamestate.setPatchColor(2, 1, green);
-		  		gamestate.setPatchColor(2, 2, green);
-		  		gamestate.setPatchColor(2, 3, green);
+		  		gamestate.setPatchColor(1, green);
+		  		gamestate.setPatchColor(2, green);
+		  		gamestate.setPatchColor(3, green);
+		  		gamestate.setPatchColor(9, green);
+		  		gamestate.setPatchColor(10, green);
+		  		gamestate.setPatchColor(11, green);
 		  		break;
-		  	case 'B' : // set color
+		  	case 'b' : // set color
 		  		System.out.println("Set everything blue.");
 		  		int[] blue = {0,0,255};
-		  		gamestate.setPatchColor(1, 1, blue);
-		  		gamestate.setPatchColor(1, 2, blue);
-		  		gamestate.setPatchColor(1, 3, blue);
-		  		gamestate.setPatchColor(2, 1, blue);
-		  		gamestate.setPatchColor(2, 2, blue);
-		  		gamestate.setPatchColor(2, 3, blue);
+		  		gamestate.setPatchColor(1, blue);
+		  		gamestate.setPatchColor(2, blue);
+		  		gamestate.setPatchColor(3, blue);
+		  		gamestate.setPatchColor(9, blue);
+		  		gamestate.setPatchColor(10, blue);
+		  		gamestate.setPatchColor(11, blue);
 		  		break;
-		  	case 'A' :
+		  	case 'a' :
 		  		// toggle patch 1 player 1
 		  		System.out.println("Toggle patch 1 player 1.");
-		  		gamestate.activatePatch(1, 1, !gamestate.isPatchActive(1, 1));
+		  		gamestate.activatePatch(1, !gamestate.isPatchActive(1));
 		  		break;
-		  	case 'S' :
+		  	case 's' :
 		  		// toggle patch 2 player 1
 		  		System.out.println("Toggle patch 2 player 1.");
-		  		gamestate.activatePatch(1, 2, !gamestate.isPatchActive(1, 2));
+		  		gamestate.activatePatch(2, !gamestate.isPatchActive(2));
 		  		break;
-		  	case 'D' :
+		  	case 'd' :
 		  		// toggle patch 3 player 1
 		  		System.out.println("Toggle patch 3 player 1.");
-		  		gamestate.activatePatch(1, 3, !gamestate.isPatchActive(1, 3));
+		  		gamestate.activatePatch(3, !gamestate.isPatchActive(3));
 		  		break;
-		  	case 'J' :
+		  	case 'j' :
 		  		// toggle patch 1 player 2
 		  		System.out.println("Toggle patch 1 player 2.");
-		  		gamestate.activatePatch(2, 1, !gamestate.isPatchActive(2, 1));
+		  		gamestate.activatePatch(9, !gamestate.isPatchActive(9));
 		  		break;
-		  	case 'K' :
+		  	case 'k' :
 		  		// toggle patch 2 player 2
 		  		System.out.println("Toggle patch 2 player 2.");
-		  		gamestate.activatePatch(2, 2, !gamestate.isPatchActive(2, 2));
+		  		gamestate.activatePatch(10, !gamestate.isPatchActive(10));
 		  		break;
-		  	case 'L' :
+		  	case 'l' :
 		  		// toggle patch 3 player 2
 		  		System.out.println("Toggle patch 3 player 2.");
-		  		gamestate.activatePatch(2, 3, !gamestate.isPatchActive(2, 3));
+		  		gamestate.activatePatch(11, !gamestate.isPatchActive(11));
 		  		break;
 		    case 'q':
 		    	System.exit(0);
