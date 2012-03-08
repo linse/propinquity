@@ -80,7 +80,7 @@ public class DiscoverTest extends PApplet {
 			for (int i=0;i<2;i++) {
 				for (XPan xpan : players[i].xpans.get(Player.PROX)) {
 					if (xpan != null) {
-						xpan.broadcastProxConfig(10000);
+						xpan.broadcastVibe(500, (byte)64);
 					}
 				}
 				for (XPan xpan : players[i].xpans.get(Player.VIBE)) {
