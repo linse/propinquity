@@ -12,11 +12,41 @@
 const int vibePin = 3;
 const int ledPin = 13;
 
-uint16_t millisOn = 0;
-uint16_t millisOff = 0;
-bool vibeState = false;
-uint16_t blinkVibeInterval = 100;
-unsigned long prevBlinkVibeMillis = 0;
+struct Blinker {
+  bool _state;
+  uint16_t millisOn;
+  uint16_t millisOff;
+  uint16_t interval;
+  unsigned long prevMillis;
+
+  Blinker() : _state(false), millisOn(0), millisOff(0), interval(100), prevMillis(0) {}
+
+  void init(uint16_t millisOn, uint16_t millisOff) {
+    this->millisOn = millisOn;
+    this->millisOff = millisOff;
+  }
+
+  bool state() {
+    if (millis() - prevMillis > interval) {
+      if (!_state && millisOn > 0) {
+          _state = true;
+          setInterval(millisOn);
+      }
+      else {
+        _state = false;
+        setInterval(millisOff);
+      }
+    }
+    return _state;
+  }
+
+  void setInterval(uint16_t newinterval) {
+    prevMillis = millis();
+    interval = newinterval;
+  }
+};
+
+Blinker vibeBlinker;
 
 //change for each player
 
@@ -103,34 +133,19 @@ void get_data()
       digitalWrite(ledPin, true); // Turn on on first received package
       uint16_t period  = inPacket[1] << 8 | inPacket[2];
       uint8_t duty = inPacket[3];
-      millisOn = period * duty / 255;
-      millisOff = period - millisOn;
-      Serial.print("period: "); Serial.println(period);
-      Serial.print("duty: "); Serial.println(duty);
-      Serial.print("millisOn: "); Serial.println(millisOn);
-      Serial.print("millisOff: "); Serial.println(millisOff);
+      uint16_t millisOn = 1L * period * duty / 255;
+      vibeBlinker.init(millisOn, period - millisOn);
     }
   }
 }
 
 void blinkVibe() {
-  if (millis() - prevBlinkVibeMillis > blinkVibeInterval) {
-    prevBlinkVibeMillis = millis();
-    if (vibeState) {
-      vibeState = false;
-      if (millisOff > 0) {
-        analogWrite(vibePin, 0);
-        digitalWrite(ledPin, 0);
-        blinkVibeInterval = millisOff;
-      }
-    } 
-    else {
-      vibeState = true;
-      if (millisOn > 0) {
-        analogWrite(vibePin, 255);
-        digitalWrite(ledPin, 1);
-        blinkVibeInterval = millisOn;
-      }
-    } 
-  }  
+  if (vibeBlinker.state()) {
+    analogWrite(vibePin, 255);
+    digitalWrite(ledPin, 1);
+  }
+  else {
+    analogWrite(vibePin, 0);
+    digitalWrite(ledPin, 0);
+  }
 }
