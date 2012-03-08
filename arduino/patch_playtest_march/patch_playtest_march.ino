@@ -102,18 +102,18 @@ bool active = false;
 // static int ledFilter2 = 0x01; //8, 4, 2, and 1 -- for lower order bits
 
 // PROX1_PLAYER2
-int myColor = BLUE_COLOR;
-static int myAddress = 9;
-static int initialDelay = 0; //for staggering messages from sensors to avoid packet collision
-static int ledFilter1 = 0x80; //128, 64, 32, and 16 -- for higher order bits
-static int ledFilter2 = 0x08; //8, 4, 2, and 1 -- for lower order bits
+// int myColor = BLUE_COLOR;
+// static int myAddress = 9;
+// static int initialDelay = 0; //for staggering messages from sensors to avoid packet collision
+// static int ledFilter1 = 0x80; //128, 64, 32, and 16 -- for higher order bits
+// static int ledFilter2 = 0x08; //8, 4, 2, and 1 -- for lower order bits
 
 // PROX2_PLAYER2
-//int myColor = BLUE_COLOR;
-//static int myAddress = 0x0A;
-//static int initialDelay = 10; //for staggering messages from sensors to avoid packet collision
-//static int ledFilter1 = 0x40; //128, 64, 32, and 16 -- for higher order bits
-//static int ledFilter2 = 0x04; //8, 4, 2, and 1 -- for lower order bits
+int myColor = BLUE_COLOR;
+static int myAddress = 0x0A;
+static int initialDelay = 10; //for staggering messages from sensors to avoid packet collision
+static int ledFilter1 = 0x40; //128, 64, 32, and 16 -- for higher order bits
+static int ledFilter2 = 0x04; //8, 4, 2, and 1 -- for lower order bits
 
 // PROX3_PLAYER2
 // int myColor = BLUE_COLOR;
@@ -130,14 +130,6 @@ static int ledFilter2 = 0x08; //8, 4, 2, and 1 -- for lower order bits
 // static int ledFilter2 = 0x01; //8, 4, 2, and 1 -- for lower order bits
 
 
-// Ordering
-int seqNum;
-int turnSeqNum;
-int turnNum;
-
-// Scheduling
-const int DEFAULT_TURN_LENGTH = 1900;
-
 long dataInterval = 50; // 20 Hz
 long prevDataMillis = 0;
 long xCheckInterval = 20; // 50 Hz
@@ -149,8 +141,6 @@ long prevTurnMillis = 0;
 unsigned long currentMillis = 0;
 
 // State variables
-boolean running = false;
-boolean blinking = false;
 boolean waiting = false;
 
 // Sensing
@@ -180,18 +170,12 @@ void setup() {
   debugCycle();
   prevCheckMillis = prevTurnMillis = prevDataMillis = prevBlinkMillis = millis();
 
-  turnLength = DEFAULT_TURN_LENGTH;
   xbee.begin(9600);
-  Serial.print("patch_newboard_oldcode (addr = ");
+  Serial.print("patch_playtest_march (addr = ");
   Serial.print(myAddress);
   Serial.println(")");
   packet_cnt = 0;
-  seqNum = 0;
-  turnSeqNum = 0;
-  turnNum = 0;
   if (testing) {
-    running = true;//testing
-    blinking = true;//testing
     Serial.begin(9600);//testing*/
   }
 
@@ -248,7 +232,6 @@ void loop() {
 
   if (active) {
     if (millis() - prevDataMillis > dataInterval) {
-      Serial.println("ReadProx");
       readProx();
       send_data();
       prevDataMillis = millis();
@@ -274,17 +257,17 @@ void readProx() {
 void send_data() {
   outPacket[0] = PROX_IN_PACKET_TYPE;
   outPacket[1] = uint8_t(myAddress << 1);
-  outPacket[2] = uint8_t(turnNum >> 8);
-  outPacket[3] = uint8_t(turnNum);
+  outPacket[2] = 0;
+  outPacket[3] = 0;
   outPacket[4] = uint8_t(proxReading >> 8);
   outPacket[5] = uint8_t(proxReading);
   tx = Tx16Request(base_address, outPacket, g_outPacketSize);
   if (testing) {
     Serial.print((int)millis()+"\t");
-    Serial.print(turnNum+"\t");
     Serial.print((int)outPacket[1]+"\t");
     Serial.println(proxReading);
   }
+
   xbee.send(tx);
 }
 
