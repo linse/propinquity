@@ -96,7 +96,7 @@ public class XPan {
     return packet;
   }
 
-  public int[] getProxStatePacket(Boolean active, byte[] color, int color_period, byte color_duty) {
+  public int[] getProxStatePacket(Boolean active, int[] color, int color_period, int color_duty) {
 	    int[] packet = { PROX_STATE_PACKET_TYPE, active?1:0, color[0], color[1], color[2], (color_period >> 8) & 0xff, color_period & 0xff, color_duty };
 	    return packet;
 	  }
