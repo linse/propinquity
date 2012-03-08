@@ -34,12 +34,43 @@ const int RED_COLOR = 1;
 const int BLUE_COLOR = 2;
 
 // Vibe variables
-uint16_t millisOn = 0;
-uint16_t millisOff = 0;
-bool vibeState = false;
-uint16_t blinkVibeInterval = 100;
-unsigned long prevBlinkVibeMillis = 0;
+struct Blinker {
+  bool _state;
+  uint16_t millisOn;
+  uint16_t millisOff;
+  uint16_t interval;
+  unsigned long prevMillis;
 
+  Blinker() : _state(false), millisOn(0), millisOff(0), interval(100), prevMillis(0) {}
+
+  void init(uint16_t millisOn, uint16_t millisOff) {
+    this->millisOn = millisOn;
+    this->millisOff = millisOff;
+  }
+
+  bool state() {
+    if (millis() - prevMillis > interval) {
+      if (!_state && millisOn > 0) {
+          _state = true;
+          setInterval(millisOn);
+      }
+      else {
+        _state = false;
+        setInterval(millisOff);
+      }
+    }
+    return _state;
+  }
+
+  void setInterval(uint16_t newinterval) {
+    prevMillis = millis();
+    interval = newinterval;
+  }
+};
+
+Blinker vibeBlinker;
+Blinker colorBlinker;
+uint8_t rgb[3] = {0, 0, 0};
 
 //Communication -- addressing (need to be changed for each patch)
 //PROX1_PLAYER1
@@ -253,6 +284,7 @@ void loop() {
     }
   }
   blinkVibe();
+  blinkColor();
 }
 
 void checkXbee() {
@@ -377,8 +409,8 @@ void get_data() {
       digitalWrite(ledPin, true); // Turn on on first received package
       uint16_t period  = vibeStatePacket[1] << 8 | vibeStatePacket[2];
       uint8_t duty = vibeStatePacket[3];
-      millisOn = period * duty / 255;
-      millisOff = period - millisOn;
+      uint16_t millisOn = 1L * period * duty / 255;
+      vibeBlinker.init(millisOn, period - millisOn);
     }
     else if (rx.getData(0) == PROX_STATE_PACKET_TYPE) {
       Serial.println("PROX_STATE_PACKET_TYPE");
@@ -386,14 +418,14 @@ void get_data() {
         proxStatePacket[packet_cnt] = rx.getData(packet_cnt++);
       }
       //      active = proxStatePacket[1];
-      uint8_t rgb[3];
       rgb[0] = proxStatePacket[2];
       rgb[1] = proxStatePacket[3];
       rgb[2] = proxStatePacket[4];
-      //      color_period = proxStatePacket[5] << 8 | proxStatePacket[6];
-      //      color_duty = proxStatePacket[7];
       
-      color(rgb[0], rgb[1], rgb[2]);
+      uint16_t period  = proxStatePacket[5] << 8 | proxStatePacket[6];
+      uint8_t duty = proxStatePacket[7];
+      uint16_t millisOn = 1L * period * duty / 255;
+      colorBlinker.init(millisOn, period - millisOn);
     }
     // else if (rx.getData(0) == PROX_OUT_PACKET_TYPE) {
     //   Serial.println("PROX_OUT_PACKET_TYPE");
@@ -432,23 +464,21 @@ void color(unsigned char red, unsigned char green, unsigned char blue) {
 }
 
 void blinkVibe() {
-  if (millis() - prevBlinkVibeMillis > blinkVibeInterval) {
-    prevBlinkVibeMillis = millis();
-    if (vibeState) {
-      vibeState = false;
-      if (millisOff > 0) {
-        analogWrite(vibePin, 0);
-        digitalWrite(ledPin, 0);
-        blinkVibeInterval = millisOff;
-      }
-    } 
-    else {
-      vibeState = true;
-      if (millisOn > 0) {
-        analogWrite(vibePin, 255);
-        digitalWrite(ledPin, 1);
-        blinkVibeInterval = millisOn;
-      }
-    } 
-  }  
+  if (vibeBlinker.state()) {
+    analogWrite(vibePin, 255);
+    digitalWrite(ledPin, 1);
+  }
+  else {
+    analogWrite(vibePin, 0);
+    digitalWrite(ledPin, 0);
+  }
+}
+
+void blinkColor() {
+  if (colorBlinker.state()) {
+    color(rgb[0], rgb[1], rgb[2]);
+  }
+  else {
+    color(0, 0, 0);
+  }
 }
