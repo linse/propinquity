@@ -19,6 +19,7 @@ const int g_outPacketSize = 6;
 const int g_configPacketSize = 3;
 const int g_configAckSize = 4;
 static uint8_t vibeStatePacket[VIBE_STATE_PACKET_LENGTH];
+static uint8_t proxStatePacket[PROX_STATE_PACKET_LENGTH];
 static uint8_t outPacket[g_outPacketSize];
 static uint8_t configPacket[g_configPacketSize];
 static int packet_cnt;
@@ -378,6 +379,21 @@ void get_data() {
       uint8_t duty = vibeStatePacket[3];
       millisOn = period * duty / 255;
       millisOff = period - millisOn;
+    }
+    else if (rx.getData(0) == PROX_STATE_PACKET_TYPE) {
+      Serial.println("PROX_STATE_PACKET_TYPE");
+      while (packet_cnt < PROX_STATE_PACKET_LENGTH) {
+        proxStatePacket[packet_cnt] = rx.getData(packet_cnt++);
+      }
+      //      active = proxStatePacket[1];
+      uint8_t rgb[3];
+      rgb[0] = proxStatePacket[2];
+      rgb[1] = proxStatePacket[3];
+      rgb[2] = proxStatePacket[4];
+      //      color_period = proxStatePacket[5] << 8 | proxStatePacket[6];
+      //      color_duty = proxStatePacket[7];
+      
+      color(rgb[0], rgb[1], rgb[2]);
     }
     // else if (rx.getData(0) == PROX_OUT_PACKET_TYPE) {
     //   Serial.println("PROX_OUT_PACKET_TYPE");
