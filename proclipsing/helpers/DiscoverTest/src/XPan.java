@@ -1,5 +1,6 @@
 import processing.core.PApplet;
 import processing.serial.Serial;
+import xbee.XBeeDataFrame;
 import xbee.XBeeReader;
 
 public class XPan { 
@@ -10,6 +11,7 @@ public class XPan {
   static final int ACCEL_IN_PACKET_LENGTH = 5;  //length (bytes) of incoming packet for proximity readings
   static final int CONFIG_ACK_LENGTH = 4;
   static final int VIBE_IN_PACKET_LENGTH = 3;
+  static final int PROX_STATE_PACKET_LENGTH = 8;
 
   static final int BROADCAST_ADDR = 0xFFFF; 
 
@@ -68,7 +70,7 @@ public class XPan {
   void stop() { xbee.stopXBee(); }
   
   void broadcastProxConfig(int stepLength) { DiscoverTest.game.println("broadcasting prox config"); broadcast(getProxConfigPacket(stepLength)); }
-  void broadcastVibe(int period, byte duty) { broadcast(getVibePacket(period, duty)); }
+  void broadcastVibe(int period, int duty) { broadcast(getVibePacket(period, duty)); }
   void broadcastStep(int stepNum, Step step1, Step step2, Step step3, Step step4) {
     broadcast(getStepPacket(stepNum, step1, step2, step3, step4));
   }
@@ -91,7 +93,7 @@ public class XPan {
     return packet;
   }
   
-  private int[] getVibePacket(int period, byte duty) {
+  private int[] getVibePacket(int period, int duty) {
     int[] packet = { VIBE_STATE_PACKET_TYPE, (period >> 8) & 0xff, period & 0xff, duty };
     return packet;
   }
@@ -100,5 +102,13 @@ public class XPan {
 	    int[] packet = { PROX_STATE_PACKET_TYPE, active?1:0, color[0], color[1], color[2], (color_period >> 8) & 0xff, color_period & 0xff, color_duty };
 	    return packet;
 	  }
+
+  public static int[] decodePacket(XBeeReader xbee) {
+	  XBeeDataFrame data = xbee.getXBeeReading();  
+	  if (data.getApiID() == xbee.SERIES1_RX16PACKET) {
+		  return data.getBytes();
+	  }
+	  else return null;
+  }
 }
 

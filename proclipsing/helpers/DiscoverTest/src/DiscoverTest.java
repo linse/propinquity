@@ -12,6 +12,7 @@ public class DiscoverTest extends PApplet {
 	final int MODE_SEND_DISCOVER = 2;
 	final int MODE_RECEIVE_DISCOVER = 3;
 	final int MODE_CHECKS_DONE = 4;
+	final int MODE_RUNNING = 5;
 	int mode = MODE_CHECK_SERIAL;
 
 	final int XBEE_DISCOVER_TIMEOUT = 5 * 1000; // 5 sec
@@ -80,10 +81,10 @@ public class DiscoverTest extends PApplet {
 			for (int i=0;i<2;i++) {
 				for (XPan xpan : players[i].xpans.get(Player.PROX)) {
 					if (xpan != null) {
-						xpan.broadcastVibe(1000, (byte)255);
+						xpan.broadcastVibe(1000, 128);
 						int rgb[] = {0, 0, 255};
 						int addr = 9;
-						xpan.sendOutgoing(addr, xpan.getProxStatePacket(false, rgb, 1000, 255));
+						xpan.sendOutgoing(addr, xpan.getProxStatePacket(true, rgb, 1000, 128));
 					}
 				}
 				for (XPan xpan : players[i].xpans.get(Player.VIBE)) {
@@ -92,9 +93,7 @@ public class DiscoverTest extends PApplet {
 					}
 				}
 			}
-			
-			
-			exit();
+			mode++;
 		}
 	}
 
@@ -182,6 +181,32 @@ public class DiscoverTest extends PApplet {
 		else if (mode == MODE_RECEIVE_DISCOVER) {
 			xBeeDiscoverEvent(xbee);
 		}
+		else if (mode == MODE_RUNNING) {
+			int[] packet = XPan.decodePacket(xbee);
+			if (packet == null) return;  
+			switch (packet[0]) {
+			case XPan.PROX_IN_PACKET_TYPE:
+				assert(packet.length == XPan.PROX_IN_PACKET_LENGTH);
+
+				int patch = (packet[1] >> 1);                
+				int player = getPlayerIndexForPatch(patch);
+
+				if (player != -1) {
+					int proximity = ((packet[4] & 0xFF) << 8) | (packet[5] & 0xFF);;
+					println(proximity);
+				}
+				else {
+					System.err.println("Trouble in paradise, we received a packet from patch '"+ patch + "', which is not assigned to a player");
+				}
+				break;
+			}
+		}
+	}
+
+	public int getPlayerIndexForPatch(int patch) {
+		if (patch >= 1 && patch <= 4) return 0;
+		else if (patch >= 9 && patch <= 16) return 1;
+		else return -1;
 	}
 
 	public static void main(String _args[]) {
