@@ -81,6 +81,9 @@ public class DiscoverTest extends PApplet {
 				for (XPan xpan : players[i].xpans.get(Player.PROX)) {
 					if (xpan != null) {
 						xpan.broadcastVibe(500, (byte)64);
+						byte rgb[] = {(byte) 0, (byte)0, (byte)255};
+						int addr = 9;
+						xpan.sendOutgoing(addr, xpan.getProxStatePacket(false, rgb, 0, (byte)255));
 					}
 				}
 				for (XPan xpan : players[i].xpans.get(Player.VIBE)) {

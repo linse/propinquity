@@ -20,6 +20,7 @@ public class XPan {
   static final int CONFIG_OUT_PACKET_TYPE = 5;
   static final int CONFIG_ACK_PACKET_TYPE = 6;
   static final int VIBE_IN_PACKET_TYPE = 7; // THIS IS NEW. For button presses.
+  static final int PROX_STATE_PACKET_TYPE = 8;
   static final int VIBE_STATE_PACKET_TYPE = 9;
   
   //Serial g_port;
@@ -94,5 +95,10 @@ public class XPan {
     int[] packet = { VIBE_STATE_PACKET_TYPE, (period >> 8) & 0xff, period & 0xff, duty };
     return packet;
   }
+
+  public int[] getProxStatePacket(Boolean active, byte[] color, int color_period, byte color_duty) {
+	    int[] packet = { PROX_STATE_PACKET_TYPE, active?1:0, color[0], color[1], color[2], (color_period >> 8) & 0xff, color_period & 0xff, color_duty };
+	    return packet;
+	  }
 }
 
