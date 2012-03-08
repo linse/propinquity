@@ -108,7 +108,10 @@ public class XPan {
 	  if (data.getApiID() == xbee.SERIES1_RX16PACKET) {
 		  return data.getBytes();
 	  }
-	  else return null;
+	  else {
+		  DiscoverTest.game.println("Got Api ID: " + data.getApiID());
+		  return null;
+	  }
   }
 }
 

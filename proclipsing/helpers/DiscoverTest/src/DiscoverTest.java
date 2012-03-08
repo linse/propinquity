@@ -25,6 +25,7 @@ public class DiscoverTest extends PApplet {
 	ArrayList foundUndefs;
 
 	public static DiscoverTest game;
+	public GameState gamestate;
 	
 	public void setup() {
 		game = this;
@@ -83,7 +84,7 @@ public class DiscoverTest extends PApplet {
 					if (xpan != null) {
 						xpan.broadcastVibe(1000, 128);
 						int rgb[] = {0, 0, 255};
-						int addr = 9;
+						int addr = 10;
 						xpan.sendOutgoing(addr, xpan.getProxStatePacket(true, rgb, 1000, 128));
 					}
 				}
@@ -95,7 +96,18 @@ public class DiscoverTest extends PApplet {
 			}
 			mode++;
 		}
+		else if (mode == MODE_RUNNING) {
+			render(gamestate);
+		}
 	}
+
+	private void render(GameState gamestate) {
+		
+		
+		
+		
+	}
+
 
 	void printDiscovered() {
 		println("Discovered proximity patches");
@@ -209,6 +221,17 @@ public class DiscoverTest extends PApplet {
 		else return -1;
 	}
 
+	public void keyPressed() {
+		if (mode == MODE_RUNNING) {
+		  switch (key) {
+		    case 'q':
+		    	System.exit(0);
+		      break;      
+		  }
+		}
+	}
+	
+	
 	public static void main(String _args[]) {
 		PApplet.main(new String[] { DiscoverTest.class.getName() });
 	}
