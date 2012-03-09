@@ -15,14 +15,13 @@ public class DiscoverTest extends PApplet {
 	final int MODE_RUNNING = 5;
 	int mode = MODE_CHECK_SERIAL;
 
-	final int XBEE_DISCOVER_TIMEOUT = 5 * 1000; // 5 sec
+	final int XBEE_DISCOVER_TIMEOUT = 5000; // 5 sec
 
 	Player[] players;
 
-	ArrayList foundProxs;
-	ArrayList foundVibes;
-	ArrayList foundAccels;
-	ArrayList foundUndefs;
+	ArrayList<String> foundProxs;
+	ArrayList<String> foundVibes;
+	ArrayList<String> foundUndefs;
 
 	public static DiscoverTest game;
 	public GameState gamestate;
@@ -35,10 +34,9 @@ public class DiscoverTest extends PApplet {
 		XBeeManager.instance().init();
 
 		// 2. discover test for remote xbees
-		foundProxs = new ArrayList();
-		foundVibes = new ArrayList();
-		foundAccels = new ArrayList();
-		foundUndefs = new ArrayList();
+		foundProxs = new ArrayList<String>();
+		foundVibes = new ArrayList<String>();
+		foundUndefs = new ArrayList<String>();
 	}
 
 
@@ -101,9 +99,6 @@ public class DiscoverTest extends PApplet {
 		println("Discovered vibration gloves");
 		for(int i=0; i<foundVibes.size() ; i++)
 			println(foundVibes.get(i));
-		println("Discovered accelerometer anklets");
-		for(int i=0; i<foundAccels.size() ; i++)
-			println(foundAccels.get(i));
 		println("Discovered undefined remote xbee senders");
 		for(int i=0; i<foundUndefs.size() ; i++)
 			println(foundUndefs.get(i));
@@ -158,10 +153,6 @@ public class DiscoverTest extends PApplet {
 			case 'V':
 				foundVibes.add(name);
 				println(" Found vibration patch: " + name + " at "+millis());
-				break;
-			case 'A':
-				foundAccels.add(name);
-				println(" Found acceleration patch: " + name + " at "+millis());
 				break;
 			default:
 				foundUndefs.add(name);

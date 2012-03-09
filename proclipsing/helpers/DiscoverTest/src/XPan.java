@@ -28,14 +28,12 @@ public class XPan {
   //Serial g_port;
   XBeeReader xbee;
 
-  public XPan(XBeeReader xbee)
-  {
+  public XPan(XBeeReader xbee) {
     this.xbee = xbee;
     xbee.startXBee();
   }
   
-  public XPan(Serial port, PApplet parent)
-  {
+  public XPan(Serial port, PApplet parent) {
     //g_port = port;
     xbee = new XBeeReader(parent, port);
     xbee.startXBee();
@@ -45,8 +43,7 @@ public class XPan {
     sendOutgoing(BROADCAST_ADDR, data, turnNum, baseNum);
   }
   
-  void sendOutgoing(int adl, int[] data, int turnNum, int baseNum)
-  {
+  void sendOutgoing(int adl, int[] data, int turnNum, int baseNum) {
    //println("SEND OUTGOING: " + xbee + " " + xbee.getPort());
    int[] myData = data;
    data[1] = turnNum; 
@@ -59,18 +56,29 @@ public class XPan {
     sendOutgoing(BROADCAST_ADDR, data);
   }
   
-  void sendOutgoing(int adl, int[] data)
-  {
+  void sendOutgoing(int adl, int[] data) {
      int[] myData = data;
      xbee.sendDataString16(adl, myData);
   }
   
-  void nodeDiscover() { DiscoverTest.game.println("discovering nodes from xpan."); xbee.nodeDiscover(); }
+  void nodeDiscover() { 
+	  System.out.println("discovering nodes from xpan."); 
+	  xbee.nodeDiscover(); 
+  }
   
-  void stop() { xbee.stopXBee(); }
+  void stop() { 
+	  xbee.stopXBee(); 
+  }
   
-  void broadcastProxConfig(int stepLength) { DiscoverTest.game.println("broadcasting prox config"); broadcast(getProxConfigPacket(stepLength)); }
-  void broadcastVibe(int period, int duty) { broadcast(getVibePacket(period, duty)); }
+  void broadcastProxConfig(int stepLength) { 
+	  System.out.println("broadcasting prox config"); 
+	  broadcast(getProxConfigPacket(stepLength));
+  }
+  
+  void broadcastVibe(int period, int duty) { 
+	  broadcast(getVibePacket(period, duty)); 
+  }
+  
   void broadcastStep(int stepNum, Step step1, Step step2, Step step3, Step step4) {
     broadcast(getStepPacket(stepNum, step1, step2, step3, step4));
   }
@@ -99,17 +107,18 @@ public class XPan {
   }
 
   public static int[] getProxStatePacket(Boolean active, int[] color, int color_period, int color_duty) {
-	    int[] packet = { PROX_STATE_PACKET_TYPE, active?1:0, color[0], color[1], color[2], (color_period >> 8) & 0xff, color_period & 0xff, color_duty };
-	    return packet;
-	  }
+	int[] packet = { PROX_STATE_PACKET_TYPE, active?1:0, 
+					color[0], color[1], color[2], (color_period >> 8) & 0xff, color_period & 0xff, color_duty };
+	return packet;
+  }
 
   public static int[] decodePacket(XBeeReader xbee) {
 	  XBeeDataFrame data = xbee.getXBeeReading();  
-	  if (data.getApiID() == xbee.SERIES1_RX16PACKET) {
+	  if (data.getApiID() == XBeeReader.SERIES1_RX16PACKET) {
 		  return data.getBytes();
 	  }
 	  else {
-		  DiscoverTest.game.println("Got Api ID: " + data.getApiID());
+		  System.out.println("Got Api ID: " + data.getApiID());
 		  return null;
 	  }
   }
