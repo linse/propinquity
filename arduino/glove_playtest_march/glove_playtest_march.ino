@@ -51,13 +51,13 @@ Blinker vibeBlinker;
 //change for each player
 
 // VIBE1_PLAYER1
-//static int myAddress = 5;
+static int myAddress = 5;
 
 // VIBE2_PLAYER1
 //static int myAddress = 6;
 
 // VIBE1_PLAYER2
-static int myAddress = 13;
+//static int myAddress = 13;
 
 // VIBE2_PLAYER2
 //static int myAddress = 14;

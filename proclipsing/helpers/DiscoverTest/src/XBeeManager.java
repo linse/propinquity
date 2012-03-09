@@ -20,7 +20,7 @@ public class XBeeManager implements Runnable {
   boolean hasNI;
   boolean hasAllNIs;
   
-  HashMap nodeIDAndSerialPort;
+  HashMap<String, String> nodeIDAndSerialPort;
  
   private static XBeeManager inst;
   public static XBeeManager instance() {
@@ -31,7 +31,7 @@ public class XBeeManager implements Runnable {
   public XBeeManager() { }
 
   public void init() {
-    nodeIDAndSerialPort = new HashMap();
+    nodeIDAndSerialPort = new HashMap<String, String>();
     
     if (thread != null) 
       return;

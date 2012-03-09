@@ -75,7 +75,7 @@ public class XPan {
     broadcast(getStepPacket(stepNum, step1, step2, step3, step4));
   }
   
-  private int[] getProxConfigPacket(int stepLength) {
+  private static int[] getProxConfigPacket(int stepLength) {
     int[] packet = new int[CONFIG_OUT_PACKET_LENGTH];
     packet[0] = CONFIG_OUT_PACKET_TYPE;
     packet[1] = (stepLength >> 8) & 0xFF;
@@ -83,7 +83,7 @@ public class XPan {
     return packet;
   }
   
-  private int[] getStepPacket(int stepNum, Step step1, Step step2, Step step3, Step step4) {
+  private static int[] getStepPacket(int stepNum, Step step1, Step step2, Step step3, Step step4) {
     int[] packet = new int[PROX_OUT_PACKET_LENGTH];
     packet[0] = PROX_OUT_PACKET_TYPE;
     packet[1] = (stepNum >> 8) & 0xFF;
@@ -93,12 +93,12 @@ public class XPan {
     return packet;
   }
   
-  private int[] getVibePacket(int period, int duty) {
+  private static int[] getVibePacket(int period, int duty) {
     int[] packet = { VIBE_STATE_PACKET_TYPE, (period >> 8) & 0xff, period & 0xff, duty };
     return packet;
   }
 
-  public int[] getProxStatePacket(Boolean active, int[] color, int color_period, int color_duty) {
+  public static int[] getProxStatePacket(Boolean active, int[] color, int color_period, int color_duty) {
 	    int[] packet = { PROX_STATE_PACKET_TYPE, active?1:0, color[0], color[1], color[2], (color_period >> 8) & 0xff, color_period & 0xff, color_duty };
 	    return packet;
 	  }

@@ -29,6 +29,7 @@ public class DiscoverTest extends PApplet {
 	
 	public void setup() {
 		game = this;
+		gamestate = new GameState(this);
 
 		// 1. scan test for local xbees 
 		XBeeManager.instance().init();
@@ -78,22 +79,6 @@ public class DiscoverTest extends PApplet {
 			println("");
 			println("Checks done");
 			printDiscovered();
-			
-			for (int i=0;i<2;i++) {
-				for (XPan xpan : players[i].xpans.get(Player.PROX)) {
-					if (xpan != null) {
-						xpan.broadcastVibe(1000, 128);
-						int rgb[] = {0, 0, 255};
-						int addr = 10;
-						xpan.sendOutgoing(addr, xpan.getProxStatePacket(true, rgb, 1000, 128));
-					}
-				}
-				for (XPan xpan : players[i].xpans.get(Player.VIBE)) {
-					if (xpan != null) {
-						xpan.broadcastVibe(200, (byte)64);
-					}
-				}
-			}
 			mode++;
 		}
 		else if (mode == MODE_RUNNING) {
@@ -244,67 +229,58 @@ public class DiscoverTest extends PApplet {
 		  		System.out.println("Set vibe mapping 5.");
 		  		gamestate.setVibeMapping(GameState.MAPPING_5);
 		  		break;
-		  	case 'R' : // set color
+		  	case 'r' : // set color
 		  		System.out.println("Set everything red.");
 		  		int[] red = {255,0,0};
-		  		gamestate.setPatchColor(1, 1, red);
-		  		gamestate.setPatchColor(1, 2, red);
-		  		gamestate.setPatchColor(1, 3, red);
-		  		gamestate.setPatchColor(2, 1, red);
-		  		gamestate.setPatchColor(2, 2, red);
-		  		gamestate.setPatchColor(2, 3, red);
+		  		gamestate.setPatchColorForAll(red);
 		  		break;
-		  	case 'G' : // set color
+		  	case 'g' : // set color
 		  		System.out.println("Set everything green.");
 		  		int[] green = {0,255,0};
-		  		gamestate.setPatchColor(1, 1, green);
-		  		gamestate.setPatchColor(1, 2, green);
-		  		gamestate.setPatchColor(1, 3, green);
-		  		gamestate.setPatchColor(2, 1, green);
-		  		gamestate.setPatchColor(2, 2, green);
-		  		gamestate.setPatchColor(2, 3, green);
+		  		gamestate.setPatchColorForAll(green);
 		  		break;
-		  	case 'B' : // set color
+		  	case 'b' : // set color
 		  		System.out.println("Set everything blue.");
 		  		int[] blue = {0,0,255};
-		  		gamestate.setPatchColor(1, 1, blue);
-		  		gamestate.setPatchColor(1, 2, blue);
-		  		gamestate.setPatchColor(1, 3, blue);
-		  		gamestate.setPatchColor(2, 1, blue);
-		  		gamestate.setPatchColor(2, 2, blue);
-		  		gamestate.setPatchColor(2, 3, blue);
+		  		gamestate.setPatchColorForAll(blue);
 		  		break;
-		  	case 'A' :
+		  	case 'a' :
 		  		// toggle patch 1 player 1
 		  		System.out.println("Toggle patch 1 player 1.");
 		  		gamestate.activatePatch(1, 1, !gamestate.isPatchActive(1, 1));
 		  		break;
-		  	case 'S' :
+		  	case 's' :
 		  		// toggle patch 2 player 1
 		  		System.out.println("Toggle patch 2 player 1.");
 		  		gamestate.activatePatch(1, 2, !gamestate.isPatchActive(1, 2));
 		  		break;
-		  	case 'D' :
+		  	case 'd' :
 		  		// toggle patch 3 player 1
 		  		System.out.println("Toggle patch 3 player 1.");
 		  		gamestate.activatePatch(1, 3, !gamestate.isPatchActive(1, 3));
 		  		break;
-		  	case 'J' :
+		  	case 'j' :
 		  		// toggle patch 1 player 2
 		  		System.out.println("Toggle patch 1 player 2.");
 		  		gamestate.activatePatch(2, 1, !gamestate.isPatchActive(2, 1));
 		  		break;
-		  	case 'K' :
+		  	case 'k' :
 		  		// toggle patch 2 player 2
 		  		System.out.println("Toggle patch 2 player 2.");
 		  		gamestate.activatePatch(2, 2, !gamestate.isPatchActive(2, 2));
 		  		break;
-		  	case 'L' :
+		  	case 'l' :
 		  		// toggle patch 3 player 2
 		  		System.out.println("Toggle patch 3 player 2.");
 		  		gamestate.activatePatch(2, 3, !gamestate.isPatchActive(2, 3));
 		  		break;
 		    case 'q':
+		    	// stop vibe and stop blink
+		    	gamestate.setVibeForAll(0,0);
+		  		delay(1000); // 1 sec so the packets can be transmitted for sure
+		    	int[] noColor = {0,0,0};
+		  		gamestate.setPatchColorForAll(noColor);
+		  		delay(1000); // 1 sec so the packets can be transmitted for sure
 		    	System.exit(0);
 		    	break;      
 		  }
