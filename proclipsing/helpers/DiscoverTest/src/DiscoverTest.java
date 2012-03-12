@@ -77,7 +77,8 @@ public class DiscoverTest extends PApplet {
 			println("");
 			println("Checks done");
 			printDiscovered();
-			
+
+			/*
 			for (int i=0;i<2;i++) {
 				XPan xpan = gamestate.players[i].getProxXpan();
 					if (xpan != null) {
@@ -97,6 +98,7 @@ public class DiscoverTest extends PApplet {
 						xpan.broadcastVibe(200, 0);
 					}
 			}
+			*/
 			mode++;
 		}
 		else if (mode == MODE_RUNNING) {
@@ -186,24 +188,22 @@ public class DiscoverTest extends PApplet {
 		if (mode == MODE_RUNNING) {
 		  switch (key) {
 		  	case '1' : // set vibe mapping
-		  		System.out.println("Set vibe mapping 1.");
-		  		gamestate.setVibeMapping(GameState.MAPPING_1);
+		  		gamestate.setVibeForAll(200, 128);
 		  		break;
 		  	case '2' :
-		  		System.out.println("Set vibe mapping 2.");
-		  		gamestate.setVibeMapping(GameState.MAPPING_2);
+		  		gamestate.setVibeForAll(500, 128);
 		  		break;
 		  	case '3' :
-		  		System.out.println("Set vibe mapping 3.");
-		  		gamestate.setVibeMapping(GameState.MAPPING_3);
+		  		gamestate.setVibeForAll(1000, 64);
 		  		break;
 		  	case '4' :
-		  		System.out.println("Set vibe mapping 4.");
-		  		gamestate.setVibeMapping(GameState.MAPPING_4);
+		  		gamestate.setVibeForAll(1000, 128);
 		  		break;
 		  	case '5' :
-		  		System.out.println("Set vibe mapping 5.");
-		  		gamestate.setVibeMapping(GameState.MAPPING_5);
+		  		gamestate.setVibeForAll(2000, 128);
+		  		break;
+		  	case '6' :
+		  		gamestate.setVibeForAll(2000, 255);
 		  		break;
 		  	case 'r' : // set color
 		  		System.out.println("Set everything red.");

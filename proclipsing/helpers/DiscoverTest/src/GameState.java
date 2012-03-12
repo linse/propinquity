@@ -7,6 +7,8 @@ public class GameState {
 	
 	public GameState(DiscoverTest game) {
 		this.game = game;
+		for (int i=0;i<16;i++) patches[i] = new PatchState();
+		for (int i=0;i<2;i++) vibestates[i] = new VibeState();
 	}
 
 	public class VibeState {
@@ -14,7 +16,7 @@ public class GameState {
 		int duty;
 	}
 	public class PatchState {
-		Boolean active;
+		boolean active;
 		int[] color = {0,0,0};
 		int proxvalue;
 	}
@@ -29,22 +31,18 @@ public class GameState {
 	public static final int VIBE_PATTERN_4 = 4;
 	int lastpattern = 0;
 	
-	public GameState() {
-		for (int i=0;i<16;i++) patches[i] = new PatchState();
-		for (int i=0;i<2;i++) vibestates[i] = new VibeState();
-	}
 	
 	public int getProxReading(int patch) {
 		return this.patches[patch].proxvalue;
 	}
 	
-	public Boolean isPatchActive(int patch) {
+	public boolean isPatchActive(int patch) {
 		return this.patches[patch].active;
 	}
 	
-	public void activatePatch(int patch, Boolean active) {
+	public void activatePatch(int patch, boolean active) {
 		this.patches[patch].active = active;
-		//sendPatchState(patch);
+		sendPatchState(patch);
 	}
 
 	public void setPatchColor(int patch, int[] color) {
@@ -53,19 +51,6 @@ public class GameState {
 			this.patches[patch].color[2] = color[2];
 			sendPatchState(patch);
 	}
-
-	/*
-	public void setPatchColor(int player, int patch, int[] color) {
-		int addr = getPatchAddress(player, patch); 
-		// first or second base station?
-		int localXbee = (patch <= 2) ? 0 : 1; 
-		// get the right xpan for player and patch
-		XPan xpan = game.players[player-1].xpans.get(Player.PROX)[localXbee]; 
-		if (xpan!=null) {
-			xpan.sendOutgoing(addr, XPan.getProxStatePacket(true, color, 1000, 128));
-		}
-	}
-	*/
 
 	// TODO ugly hard coded solution
 	private int getPatchAddress(int player, int patch) {
@@ -113,22 +98,20 @@ public class GameState {
 	}
 
 	public void setPatchColorForAll(int[] color) {
-/*
-  		for (int player=1; player <= 2; player++) {
- 
-			for (int patch=1; patch<=3; patch++) {
-				setPatchColor(player, patch, color);
-			}
-		}
-	*/
+				setPatchColor(1, color);
+				setPatchColor(2, color);
+				setPatchColor(9, color);
+				setPatchColor(10, color);
 	}
 	
 
 	public void sendPatchState(int patch) {
 		XPan xpan = Player.address_to_xpan.get(patch);
+		if (xpan != null) {
 			xpan.sendOutgoing(patch, 
 							  XPan.getProxStatePacket(this.patches[patch].active, 
 								  					  this.patches[patch].color, 1000, 255));
+		}
 	}
 	
 	public static final int MAPPING_1 = 0;
@@ -138,43 +121,21 @@ public class GameState {
 	public static final int MAPPING_5 = 4;
 
 	public void setVibeMapping(int mapping) {
-		switch (mapping) {
-		case MAPPING_1:
-			setVibeForAll(2000, 128);
-			break;
-		case MAPPING_2:
-			setVibeForAll(1000, 128);
-			break;
-		case MAPPING_3:
-			setVibeForAll(800, 128);
-			break;
-		case MAPPING_4:
-			setVibeForAll(600, 128);
-			break;
-		case MAPPING_5:
-			setVibeForAll(400, 128);
-			break;
-		}
+
 	}
 
 	
 	public void setVibeForAll(int period, int duty) {
-/*
-		for (Player player : game.players) {
-			// make all patches vibe
-			for (XPan xpan : player.xpans.get(Player.PROX)) {
-				if (xpan != null) {
-					xpan.broadcastVibe(period, duty);
-				}
-			}
-			// make all gloves vibe
-			for (XPan xpan : player.xpans.get(Player.VIBE)) {
-				if (xpan != null) {
-					xpan.broadcastVibe(period, duty);
-				}
-			}
-		}
-		*/
+		vibestates[0].period = period;
+		vibestates[0].duty = duty;
+		vibestates[1].period = period;
+		vibestates[1].duty = duty;
+		sendVibeState(0, 5);
+		sendVibeState(1, 13);
+		sendVibeState(0, 1);
+		sendVibeState(0, 2);
+		sendVibeState(1, 9);
+		sendVibeState(1, 10);
 	}
 
 	public void update() {
@@ -185,41 +146,37 @@ public class GameState {
 		
 		// Player 2	
 		int average2 = (this.patches[9].proxvalue + this.patches[10].proxvalue) / 2;
-//		DiscoverTest.game.println("Player 2: " + average2);
-
+		if (this.patches[9].active || this.patches[10].active) {
+			DiscoverTest.game.println("Player 2: " + average2);
+		}
+		
 		int pattern = VIBE_PATTERN_0;
-		if (average2 > 400) {
+		if (average2 > 190) {
 			pattern = VIBE_PATTERN_1;
 		}
-		else if (average2 > 300) {
+		else if (average2 > 10) {
 			pattern = VIBE_PATTERN_2;
-		}
-		else if (average2 > 100) {
-			pattern = VIBE_PATTERN_3;
-		}
-		else  {
-			pattern = VIBE_PATTERN_4;
 		}
 		if (pattern != lastpattern) {
 			DiscoverTest.game.println("pattern: " + pattern);
 			lastpattern = pattern;
 			switch (pattern) {
+			case VIBE_PATTERN_0:
+				vibestates[0].period = 2000;
+				vibestates[0].duty = 0;
+				break;
 			case VIBE_PATTERN_1:
-				vibestates[0].period = 500;
-				vibestates[0].duty = 127;
+				vibestates[0].period = 2000;
+				vibestates[0].duty = 255;
 				break;
 			case VIBE_PATTERN_2:
-				vibestates[0].period = 1000;
-				vibestates[0].duty = 127;
+				vibestates[0].period = 200;
+				vibestates[0].duty = 128;
 				break;
-			case VIBE_PATTERN_3:
-				vibestates[0].period = 1000;
-				vibestates[0].duty = 64;
-			default:
-				vibestates[0].period = 1000;
-				vibestates[0].duty = 0;
 			}
 			sendVibeState(0, 13);
+			sendVibeState(0, 9);
+			sendVibeState(0, 10);
 		}		
 		
 		// for each player
