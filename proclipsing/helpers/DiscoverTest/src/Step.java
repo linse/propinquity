@@ -1,9 +1,10 @@
+// is this still needed? were steps sent to keep all patches in exact sync?
+
 public class Step {
   boolean _led0; // patch 1
   boolean _led1; // patch 2
   boolean _led2; // patch 3
   boolean _led3; // patch 4
-  boolean _free; // don't need to use this now
   
   public Step(boolean led0, boolean led1, boolean led2, boolean led3, boolean free)
   {
@@ -11,12 +12,6 @@ public class Step {
     _led1 = led1;
     _led2 = led2;
     _led3 = led3;
-    _free = free;
-  }
-  
-  public boolean isFree()
-  {
-    return _free; 
   }
   
   public int getPacketComponent()

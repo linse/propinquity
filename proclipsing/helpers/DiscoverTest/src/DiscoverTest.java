@@ -15,27 +15,28 @@ public class DiscoverTest extends PApplet {
 	final int MODE_RUNNING = 5;
 	int mode = MODE_CHECK_SERIAL;
 
-	final int XBEE_DISCOVER_TIMEOUT = 5 * 1000; // 5 sec
+	final int XBEE_DISCOVER_TIMEOUT = 5000; // 5 sec
 
-	ArrayList foundProxs;
-	ArrayList foundVibes;
-	ArrayList foundAccels;
-	ArrayList foundUndefs;
+	Player[] players;
+
+	ArrayList<String> foundProxs;
+	ArrayList<String> foundVibes;
+	ArrayList<String> foundUndefs;
 
 	public static DiscoverTest game;
-	public GameState gamestate = new GameState();
+	public GameState gamestate;
 	
 	public void setup() {
 		game = this;
+		gamestate = new GameState(this);
 
 		// 1. scan test for local xbees 
 		XBeeManager.instance().init();
 
 		// 2. discover test for remote xbees
-		foundProxs = new ArrayList();
-		foundVibes = new ArrayList();
-		foundAccels = new ArrayList();
-		foundUndefs = new ArrayList();
+		foundProxs = new ArrayList<String>();
+		foundVibes = new ArrayList<String>();
+		foundUndefs = new ArrayList<String>();
 	}
 
 
@@ -119,9 +120,6 @@ public class DiscoverTest extends PApplet {
 		println("Discovered vibration gloves");
 		for(int i=0; i<foundVibes.size() ; i++)
 			println(foundVibes.get(i));
-		println("Discovered accelerometer anklets");
-		for(int i=0; i<foundAccels.size() ; i++)
-			println(foundAccels.get(i));
 		println("Discovered undefined remote xbee senders");
 		for(int i=0; i<foundUndefs.size() ; i++)
 			println(foundUndefs.get(i));
@@ -163,10 +161,6 @@ public class DiscoverTest extends PApplet {
 			case 'V':
 				foundVibes.add(name);
 				println(" Found vibration patch: " + name + " at "+millis());
-				break;
-			case 'A':
-				foundAccels.add(name);
-				println(" Found acceleration patch: " + name + " at "+millis());
 				break;
 			default:
 				foundUndefs.add(name);
@@ -214,33 +208,17 @@ public class DiscoverTest extends PApplet {
 		  	case 'r' : // set color
 		  		System.out.println("Set everything red.");
 		  		int[] red = {255,0,0};
- 
-		  		gamestate.setPatchColor(1, red);
-		  		gamestate.setPatchColor(2, red);
-		  		gamestate.setPatchColor(3, red);
-		  		gamestate.setPatchColor(9, red);
-		  		gamestate.setPatchColor(10, red);
-		  		gamestate.setPatchColor(11, red);
+		  		gamestate.setPatchColorForAll(red);
 		  		break;
 		  	case 'g' : // set color
 		  		System.out.println("Set everything green.");
 		  		int[] green = {0,255,0};
-		  		gamestate.setPatchColor(1, green);
-		  		gamestate.setPatchColor(2, green);
-		  		gamestate.setPatchColor(3, green);
-		  		gamestate.setPatchColor(9, green);
-		  		gamestate.setPatchColor(10, green);
-		  		gamestate.setPatchColor(11, green);
+		  		gamestate.setPatchColorForAll(green);
 		  		break;
 		  	case 'b' : // set color
 		  		System.out.println("Set everything blue.");
 		  		int[] blue = {0,0,255};
-		  		gamestate.setPatchColor(1, blue);
-		  		gamestate.setPatchColor(2, blue);
-		  		gamestate.setPatchColor(3, blue);
-		  		gamestate.setPatchColor(9, blue);
-		  		gamestate.setPatchColor(10, blue);
-		  		gamestate.setPatchColor(11, blue);
+		  		gamestate.setPatchColorForAll(blue);
 		  		break;
 		  	case 'a' :
 		  		// toggle patch 1 player 1
@@ -273,6 +251,12 @@ public class DiscoverTest extends PApplet {
 		  		gamestate.activatePatch(11, !gamestate.isPatchActive(11));
 		  		break;
 		    case 'q':
+		    	// stop vibe and stop blink
+		    	gamestate.setVibeForAll(0,0);
+		  		delay(1000); // 1 sec so the packets can be transmitted for sure
+		    	int[] noColor = {0,0,0};
+		  		gamestate.setPatchColorForAll(noColor);
+		  		delay(1000); // 1 sec so the packets can be transmitted for sure
 		    	System.exit(0);
 		    	break;      
 		  }

@@ -20,7 +20,7 @@ public class XBeeManager implements Runnable {
   boolean hasNI;
   boolean hasAllNIs;
   
-  HashMap nodeIDAndSerialPort;
+  HashMap<String, String> nodeIDAndSerialPort;
  
   private static XBeeManager inst;
   public static XBeeManager instance() {
@@ -31,7 +31,7 @@ public class XBeeManager implements Runnable {
   public XBeeManager() { }
 
   public void init() {
-    nodeIDAndSerialPort = new HashMap();
+    nodeIDAndSerialPort = new HashMap<String, String>();
     
     if (thread != null) 
       return;
@@ -55,6 +55,8 @@ public class XBeeManager implements Runnable {
     }
     hasAllNIs = true;
     
+    System.out.println("Local XBees found: " + getNodeIDs() + ".");
+
     //clear thread
     thread = null; 
   }
@@ -64,7 +66,7 @@ public class XBeeManager implements Runnable {
   }
   
   public void readSerialPort(String port) {
-	  DiscoverTest.game.println(" Connecting to port: " + port);
+	  System.out.println(" Connecting to port: " + port);
       Serial serial = new Serial(DiscoverTest.game, port, XBEE_BAUDRATE); 
       
       // get node identifier from local xbee
@@ -96,7 +98,7 @@ public class XBeeManager implements Runnable {
       
       // Stop program if we still has no xbee after timeout
       if (!hasNI) {
-    	  DiscoverTest.game.println("Serial timeout and no local XBee found.");
+    	  System.out.println("Serial timeout and no local XBee found.");
         System.exit(1);
       }
   }  
@@ -124,8 +126,8 @@ public class XBeeManager implements Runnable {
   }  
    
   public String getNodeIDs() {
-    Set nodeIDs = nodeIDAndSerialPort.keySet();
-    Iterator it = nodeIDs.iterator();
+    Set<String> nodeIDs = nodeIDAndSerialPort.keySet();
+    Iterator<String> it = nodeIDs.iterator();
     String nodeIDString = "";
     
     while (it.hasNext())    

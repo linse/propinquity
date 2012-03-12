@@ -74,11 +74,11 @@ bool active = false;
 
 //Communication -- addressing (need to be changed for each patch)
 //PROX1_PLAYER1
- // int myColor = RED_COLOR;
- // static int myAddress = 1;
- // static int initialDelay = 0; //for staggering messages from sensors to avoid packet collision
- // static int ledFilter1 = 0x80; //128, 64, 32, and 16 -- for higher order bits
- // static int ledFilter2 = 0x08; //8, 4, 2, and 1 -- for lower order bits
+int myColor = RED_COLOR;
+static int myAddress = 1;
+static int initialDelay = 0; //for staggering messages from sensors to avoid packet collision
+static int ledFilter1 = 0x80; //128, 64, 32, and 16 -- for higher order bits
+static int ledFilter2 = 0x08; //8, 4, 2, and 1 -- for lower order bits
 
 // PROX2_PLAYER1
 // int myColor = RED_COLOR;
@@ -88,11 +88,11 @@ bool active = false;
 // static int ledFilter2 = 0x04; //8, 4, 2, and 1 -- for lower order bits
 
 // PROX3_PLAYER1
-// int myColor = RED_COLOR;
-// static int myAddress = 3;
-// static int initialDelay = 20; //for staggering messages from sensors to avoid packet collision
-// static int ledFilter1 = 0x20; //128, 64, 32, and 16 -- for higher order bits
-// static int ledFilter2 = 0x02; //8, 4, 2, and 1 -- for lower order bits
+//int myColor = RED_COLOR;
+//static int myAddress = 3;
+//static int initialDelay = 20; //for staggering messages from sensors to avoid packet collision
+//static int ledFilter1 = 0x20; //128, 64, 32, and 16 -- for higher order bits
+//static int ledFilter2 = 0x02; //8, 4, 2, and 1 -- for lower order bits
 
 // PROX4_PLAYER1
 // int myColor = RED_COLOR;
@@ -109,11 +109,11 @@ bool active = false;
 // static int ledFilter2 = 0x08; //8, 4, 2, and 1 -- for lower order bits
 
 // PROX2_PLAYER2
-int myColor = BLUE_COLOR;
-static int myAddress = 0x0A;
-static int initialDelay = 10; //for staggering messages from sensors to avoid packet collision
-static int ledFilter1 = 0x40; //128, 64, 32, and 16 -- for higher order bits
-static int ledFilter2 = 0x04; //8, 4, 2, and 1 -- for lower order bits
+//int myColor = BLUE_COLOR;
+//static int myAddress = 0x0A;
+//static int initialDelay = 10; //for staggering messages from sensors to avoid packet collision
+//static int ledFilter1 = 0x40; //128, 64, 32, and 16 -- for higher order bits
+//static int ledFilter2 = 0x04; //8, 4, 2, and 1 -- for lower order bits
 
 // PROX3_PLAYER2
 // int myColor = BLUE_COLOR;
