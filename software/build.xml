@@ -1,4 +1,4 @@
-<project name="Propinquity" basedir="." default="main">
+<project name="propinquity.Propinquity" basedir="." default="main">
 
 	
 	<property name="main-class" value="${ant.project.name}"/>

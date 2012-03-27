@@ -1,3 +1,5 @@
+package propinquity;
+
 public class Step {
 	boolean _led0; // patch 1
 	boolean _led1; // patch 2

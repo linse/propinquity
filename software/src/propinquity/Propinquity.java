@@ -1,3 +1,5 @@
+package propinquity;
+
 import java.io.PrintWriter;
 import java.util.*;
 
@@ -1394,6 +1396,6 @@ public class Propinquity extends PApplet {
 	}
 
 	static public void main(String args[]) {
-		PApplet.main(new String[] { "--bgcolor=#FFFFFF", "Propinquity" });
+		PApplet.main(new String[] { "--bgcolor=#FFFFFF", "propinquity.Propinquity" });
 	}
 }

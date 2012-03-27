@@ -1,3 +1,5 @@
+package propinquity;
+
 import processing.core.*;
 
 /**

@@ -1,3 +1,5 @@
+package propinquity;
+
 public class ProxData {
 	int player;
 	int patch;

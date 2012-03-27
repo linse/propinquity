@@ -1,3 +1,5 @@
+package propinquity;
+
 import java.util.ArrayList;
 
 import controlP5.Button;

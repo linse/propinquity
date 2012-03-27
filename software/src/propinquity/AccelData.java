@@ -1,3 +1,5 @@
+package propinquity;
+
 public class AccelData {
 	int player;
 	int patch;
