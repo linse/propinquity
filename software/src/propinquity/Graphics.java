@@ -3,7 +3,7 @@ package propinquity;
 import processing.core.*;
 
 /**
- * 
+ * Handles graphic content initialization and usage.
  * 
  * @author Stephane Beniak
  */

@@ -1,3 +1,5 @@
 books/
+/software/bin
 *.class
 *.DS_Store
+
