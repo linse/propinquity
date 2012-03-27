@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" output="bin" path="src"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/base/core/ant-launcher.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/base/core/ant.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/base/core/core.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/base/minim/jl1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/base/minim/jsminim.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/base/minim/minim-spi.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/base/minim/minim.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/base/minim/mp3spi1.9.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/base/minim/tritonus_aos.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/base/minim/tritonus_share.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/base/opengl/gluegen-rt-natives-linux-amd64.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/base/opengl/gluegen-rt-natives-linux-i586.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/base/opengl/gluegen-rt-natives-macosx-ppc.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/base/opengl/gluegen-rt-natives-macosx-universal.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/base/opengl/gluegen-rt-natives-windows-amd64.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/base/opengl/gluegen-rt-natives-windows-i586.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/base/opengl/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/base/opengl/jogl-natives-linux-amd64.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/base/opengl/jogl-natives-linux-i586.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/base/opengl/jogl-natives-macosx-ppc.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/base/opengl/jogl-natives-macosx-universal.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/base/opengl/jogl-natives-windows-amd64.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/base/opengl/jogl-natives-windows-i586.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/base/opengl/jogl.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="C:/Users/Stephane/Code/Propinquity/software/lib/base/opengl"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/base/opengl/opengl.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/base/serial/RXTXcomm.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="C:/Users/Stephane/Code/Propinquity/software/lib/base/serial"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/base/serial/serial.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/base/video/video.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/user/controlP5/controlP5.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/user/pbox2d/JBox2D-2.0.1-b250-Library.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/user/pbox2d/pbox2d.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/user/proxml/proxml.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/user/xbee/xbee.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
