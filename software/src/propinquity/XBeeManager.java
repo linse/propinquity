@@ -214,8 +214,8 @@ public class XBeeManager implements Runnable {
 		int i = 0;
 		Iterator<String> it = ports.keySet().iterator();
 		while (it.hasNext()) {
-			String nodeId = (String) it.next();
-			xbeeList[i++] = nodeId + "=" + (String) ports.get(nodeId);
+			String nodeId = it.next();
+			xbeeList[i++] = nodeId + "=" + ports.get(nodeId);
 		}
 		parent.saveStrings(parent.dataPath(XBEE_PORTS_FILE), xbeeList);
 	}

@@ -349,7 +349,7 @@ public class Player implements PConstants {
 		if (proxStubIndex >= proxStub.size())
 			return null;
 
-		String[] data = ((String) proxStub.get(proxStubIndex)).split(",");
+		String[] data = (proxStub.get(proxStubIndex)).split(",");
 
 		// check if we reached the time for this step
 		if (Integer.valueOf(data[0]) >= time)
@@ -374,7 +374,7 @@ public class Player implements PConstants {
 		if (accelStubIndex >= accelStub.size())
 			return null;
 
-		String[] data = ((String) accelStub.get(accelStubIndex)).split(",");
+		String[] data = (accelStub.get(accelStubIndex)).split(",");
 
 		// check if we reached the time for this step
 		if (Integer.valueOf(data[0]) >= time)

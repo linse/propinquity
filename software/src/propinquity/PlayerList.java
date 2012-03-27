@@ -92,7 +92,7 @@ public class PlayerList {
 		// process controlP5 remove queue
 		for (int i = 0; i < removeQueue.size(); i++)
 			controlP5
-					.remove(((controlP5.Controller) removeQueue.get(i)).name());
+					.remove((removeQueue.get(i)).name());
 		removeQueue.clear();
 	}
 
@@ -127,11 +127,11 @@ public class PlayerList {
 		Textfield tf;
 		Button btn;
 		for (int i = 0; i < playerFields.size(); i++) {
-			tf = (Textfield) playerFields.get(i);
+			tf = playerFields.get(i);
 			pos = tf.position();
 			tf.setPosition(pos.x, y);
 
-			btn = (Button) removeButtons.get(i);
+			btn = removeButtons.get(i);
 			pos = btn.position();
 			btn.setPosition(pos.x, y);
 
@@ -209,7 +209,7 @@ public class PlayerList {
 
 				// adjust values
 				for (; i < playerFields.size(); i++) {
-					Textfield rtf = (Textfield) playerFields.get(i);
+					Textfield rtf = playerFields.get(i);
 					rtf.setCaptionLabel("Player " + (i + 1));
 				}
 
