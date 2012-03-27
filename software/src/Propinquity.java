@@ -145,7 +145,7 @@ public class Propinquity extends PApplet {
 	boolean mmOutput = false;
 
 	// logging
-	String filename = "outputs/messages.txt";
+	String filename = "messages.txt";
 	PrintWriter output;
 
 	// XBees
