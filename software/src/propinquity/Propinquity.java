@@ -298,6 +298,7 @@ public class Propinquity extends PApplet {
 		}
 	}
 
+	@SuppressWarnings("unchecked") //TODO Fix this madness
 	void initParticles() {
 		// init box2d
 		initBox2D();
