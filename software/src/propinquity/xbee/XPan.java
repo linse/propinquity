@@ -1,4 +1,4 @@
-package propinquity;
+package propinquity.xbee;
 
 import processing.core.PApplet;
 import processing.serial.Serial;

@@ -23,6 +23,8 @@ import proxml.*;
 import xbee.XBeeReader;
 import ddf.minim.*;
 
+import propinquity.xbee.*;
+
 public class Propinquity extends PApplet {
 
 	// Unique serialization ID

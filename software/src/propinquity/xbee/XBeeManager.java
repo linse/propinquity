@@ -1,4 +1,4 @@
-package propinquity;
+package propinquity.xbee;
 
 import java.io.File;
 import java.util.HashMap;
