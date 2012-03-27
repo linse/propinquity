@@ -23,8 +23,6 @@ import proxml.*;
 import xbee.XBeeReader;
 import ddf.minim.*;
 
-import propinquity.xbee.*;
-
 public class Propinquity extends PApplet {
 
 	// Unique serialization ID
@@ -629,7 +627,7 @@ public class Propinquity extends PApplet {
 
 		ListIterator<Particle> it = particles[p].listIterator();
 		while (it.hasNext())
-			((Particle) it.next()).draw();
+			(it.next()).draw();
 	}
 
 	void drawMask() {
@@ -866,7 +864,7 @@ public class Propinquity extends PApplet {
 		Particle particle;
 		boolean killedLastPeriodParticle = false;
 		while (nParticles > 0 && particles[p].size() > 0) {
-			particle = (Particle) particles[p].removeFirst();
+			particle = particles[p].removeFirst();
 			if (particle == lastPeriodParticle[p])
 				killedLastPeriodParticle = true;
 			box2d.destroyBody(particle.body);
@@ -881,7 +879,7 @@ public class Propinquity extends PApplet {
 			if (particles[p].isEmpty())
 				lastPeriodParticle[p] = null;
 			else
-				lastPeriodParticle[p] = (Particle) particles[p].getLast();
+				lastPeriodParticle[p] = particles[p].getLast();
 		}
 	}
 
@@ -908,11 +906,11 @@ public class Propinquity extends PApplet {
 		Particle particle;
 		// for(int a = 0; a < particles[p].size(); a++)
 		// {
-		// particle = (Particle)particles[p].get(a);
+		// particle = particles[p].get(a);
 		int i = 0;
 		ListIterator<Particle> it = particles[p].listIterator();
 		while (it.hasNext()) {
-			particle = (Particle) it.next();
+			particle = it.next();
 			int hcell = hashX(particle.body.m_sweep.c.x);
 			int vcell = hashY(particle.body.m_sweep.c.y);
 			if (hcell > -1 && hcell < hashWidth && vcell > -1
@@ -960,7 +958,7 @@ public class Propinquity extends PApplet {
 		it = particles[p].listIterator();
 		int i = 0;
 		while (it.hasNext()) {
-			particle = (Particle) it.next();
+			particle = it.next();
 			xs[i] = multiplier * particle.body.m_sweep.c.x;
 			ys[i] = multiplier * particle.body.m_sweep.c.y;
 			vxs[i] = multiplier * particle.body.m_linearVelocity.x;
@@ -971,7 +969,7 @@ public class Propinquity extends PApplet {
 		it = particles[p].listIterator();
 		i = 0;
 		while (it.hasNext()) {
-			particle = (Particle) it.next();
+			particle = it.next();
 			// Populate the neighbor list from the 9 proximate cells
 			ArrayList<Integer> neighbors = new ArrayList<Integer>();
 			int hcell = hashX(particle.body.m_sweep.c.x);
@@ -983,7 +981,7 @@ public class Propinquity extends PApplet {
 					if (xc > -1 && xc < hashWidth && yc > -1 && yc < hashHeight
 							&& hash[xc][yc].size() > 0) {
 						for (int a = 0; a < hash[xc][yc].size(); a++) {
-							Integer ne = (Integer) hash[xc][yc].get(a);
+							Integer ne = hash[xc][yc].get(a);
 							if (ne != null && ne.intValue() != i)
 								neighbors.add(ne);
 						}
@@ -998,7 +996,7 @@ public class Propinquity extends PApplet {
 			float pres = 0.0f;
 			float pnear = 0.0f;
 			for (int a = 0; a < neighbors.size(); a++) {
-				Integer n = (Integer) neighbors.get(a);
+				Integer n = neighbors.get(a);
 				int j = n.intValue();
 				float vx = xs[j] - xs[i];// liquid[j].m_sweep.c.x -
 											// liquid[i].m_sweep.c.x;
@@ -1030,7 +1028,7 @@ public class Propinquity extends PApplet {
 			float changex = 0.0F;
 			float changey = 0.0F;
 			for (int a = 0; a < neighbors.size(); a++) {
-				Integer n = (Integer) neighbors.get(a);
+				Integer n = neighbors.get(a);
 				int j = n.intValue();
 				float vx = xs[j] - xs[i];// liquid[j].m_sweep.c.x -
 											// liquid[i].m_sweep.c.x;
@@ -1076,7 +1074,7 @@ public class Propinquity extends PApplet {
 		it = particles[p].listIterator();
 		i = 0;
 		while (it.hasNext()) {
-			particle = (Particle) it.next();
+			particle = it.next();
 			particle.body.m_xf.position.x += xchange[i] / multiplier;
 			particle.body.m_xf.position.y += ychange[i] / multiplier;
 			particle.body.m_linearVelocity.x += xchange[i]
@@ -1091,7 +1089,7 @@ public class Propinquity extends PApplet {
 		Particle particle;
 		ListIterator<Particle> it = particles[p].listIterator();
 		while (it.hasNext()) {
-			particle = (Particle) it.next();
+			particle = it.next();
 			particle.body.setLinearVelocity(particle.body.getLinearVelocity()
 					.mul(damp));
 		}
@@ -1100,12 +1098,12 @@ public class Propinquity extends PApplet {
 	void resetLiquid() {
 		for (int p = 0; p < level.getNumPlayers(); p++) {
 			// for (int i=0; i<particles[p].size(); ++i) {
-			// box2d.destroyBody(((Particle)particles[p].removeFirst()).body);
+			// box2d.destroyBody((particles[p].removeFirst()).body);
 			// }
 			Particle particle;
 			ListIterator<Particle> it = particles[p].listIterator();
 			while (it.hasNext()) {
-				particle = (Particle) it.next();
+				particle = it.next();
 				box2d.destroyBody(particle.body);
 				it.remove();
 			}
@@ -1127,7 +1125,7 @@ public class Propinquity extends PApplet {
 			Particle particle = null;
 			ListIterator<Particle> it = particles[p].listIterator();
 			while (it.hasNext() && particle != lastPeriodParticle[p]) {
-				particle = (Particle) it.next();
+				particle = it.next();
 
 				particle.body.m_linearVelocity.x += particle.push.x;
 				particle.body.m_linearVelocity.y += particle.push.y;
@@ -1157,7 +1155,7 @@ public class Propinquity extends PApplet {
 			// for(i = lastPeriodParticle[p]; i < pCount[p]; i++) {
 			// if (particles[p][i] == null) continue;
 			while (it.hasNext()) {
-				particle = (Particle) it.next();
+				particle = it.next();
 
 				particle.shape.setFilterData(filter);
 				box2d.world.refilter(particle.shape);
@@ -1214,7 +1212,7 @@ public class Propinquity extends PApplet {
 
 				ListIterator<Particle> it = particles[p].listIterator();
 				while (it.hasNext()) {
-					particle = (Particle) it.next();
+					particle = it.next();
 					particle.shape.setFilterData(filter);
 					box2d.world.refilter(particle.shape);
 				}
@@ -1226,7 +1224,7 @@ public class Propinquity extends PApplet {
 		for (int p = 0; p < level.getNumPlayers(); p++) {
 			ListIterator<Particle> it = particles[p].listIterator();
 			while (it.hasNext()) {
-				particle = (Particle) it.next();
+				particle = it.next();
 
 				Body b = particle.body;
 
@@ -1384,6 +1382,7 @@ public class Propinquity extends PApplet {
 				break;
 			case '6':
 				particleViscosity += 0.001;
+				break;
 			case 'e': // play stub
 				level.currentStep = level.numSteps;
 				break;

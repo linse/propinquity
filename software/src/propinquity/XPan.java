@@ -1,8 +1,10 @@
-package propinquity.xbee;
+package propinquity;
 
 import processing.core.PApplet;
 import processing.serial.Serial;
 import xbee.XBeeReader;
+
+import propinquity.*;
 
 public class XPan {
 	// xbee

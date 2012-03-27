@@ -511,7 +511,7 @@ public class LevelSelect implements PConstants {
 
 			String[] namesWithExt = new String[parsedNames.size()];
 			for (int i = 0; i < namesWithExt.length; i++)
-				namesWithExt[i] = (String) parsedNames.get(i);
+				namesWithExt[i] = parsedNames.get(i);
 
 			return namesWithExt;
 		} else {

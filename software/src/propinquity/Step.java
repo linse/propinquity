@@ -1,4 +1,4 @@
-package propinquity.xbee;
+package propinquity;
 
 public class Step {
 	boolean _led0; // patch 1
