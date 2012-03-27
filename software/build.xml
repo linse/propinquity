@@ -1,9 +1,7 @@
 <project name="propinquity.Propinquity" basedir="." default="main">
 
-	
 	<property name="main-class" value="${ant.project.name}"/>
 
-	<property name="ref.dir" value="reference"/>
 	<property name="src.dir" value="src"/>
 	<property name="build.dir" value="bin"/>
 	<property name="lib.dir" value="lib"/>
@@ -13,7 +11,15 @@
 			<include name="**/*.jar"/>
 		</fileset>
 	</path>
-	
+
+	<path id="nativepath">
+		<dirset dir="${lib.dir}">
+			<include name="**/*"/>
+		</dirset>
+	</path>
+
+	<property name="nativepath.prop" refid="nativepath"/>
+
 	<target name="clean">
 		<delete dir="${build.dir}"/>
 	</target>
@@ -23,32 +29,9 @@
 		<javac includeantruntime="false" srcdir="${src.dir}" destdir="${build.dir}" classpathref="classpath"/>
 	</target>
 
-	<target name="jar" depends="compile">
-		<unjar dest="${build.dir}">
-			<patternset>
-				<include name="**/*.class"/>
-			</patternset>
-			<path refid="classpath"/>
-		</unjar>
-
-		<copy todir="${build.dir}/data" failonerror="false">
-			<fileset dir="./data"/>
-		</copy>
-
-		<jar destfile="${ant.project.name}.jar" basedir="${build.dir}">
-			<include name="**/*.class"/>
-			<include name="data/**/*"/>
-			<manifest>
-				<attribute name="Main-Class" value="${main-class}"/>
-			</manifest>
-		</jar>
-		
-		<antcall target="clean"/>
-	</target>
-
 	<target name="run" depends="compile">
 		<java classname="${main-class}" fork="true">
-			<sysproperty key="java.library.path" path="${java.library.path}:${lib.dir}/base/opengl/:${lib.dir}/base/opengl/:${lib.dir}/base/serial/"/>
+			<sysproperty key="java.library.path" value="${java.library.path}:${nativepath.prop}"/>
 			<jvmarg value="-d32"/>
 			<classpath>
 				<path refid="classpath"/>
@@ -58,7 +41,6 @@
 	</target>
 	
 	<target name="main" depends="run">
-		<!-- <antcall target="clean"/> -->
 	</target>
 
 </project>
