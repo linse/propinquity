@@ -19,7 +19,7 @@ public class Graphics {
 	private static PApplet app;
 	
 	/**
-	 * Suppress default constructor to disable instantiability
+	 * Suppress default constructor to disable instantiability.
 	 */
 	private Graphics () {
 		throw new AssertionError();

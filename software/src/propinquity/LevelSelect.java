@@ -69,7 +69,7 @@ public class LevelSelect implements PConstants {
 
 	public LevelSelect(Propinquity p, PlayerList playerList) {
 		this.parent = p;
-		this.radius = parent.height / 2 - parent.HUD_WIDTH * 2;
+		this.radius = parent.height / 2 - Hud.WIDTH * 2;
 		this.playerNames = playerList.getNames();
 
 		this.font = p.loadFont(LEVEL_FONT);
@@ -308,7 +308,7 @@ public class LevelSelect implements PConstants {
 
 		parent.fill(255);
 		parent.pushMatrix();
-		parent.rotate(parent.frameCount * parent.HUD_PROMPT_ROT_SPEED);
+		parent.rotate(parent.frameCount * Hud.PROMPT_ROT_SPEED);
 		parent.image(imgSelectPlayer[player], 0, -65);
 		parent.textFont(font, LEVEL_FONT_SIZE);
 		parent.text(foundProxPatches.size() + " proximity patch"
@@ -339,9 +339,9 @@ public class LevelSelect implements PConstants {
 		parent.pushMatrix();
 		parent.translate(
 				PApplet.cos(angle)
-						* (parent.height / 2 - parent.HUD_WIDTH + parent.HUD_OFFSET),
+						* (parent.height / 2 - Hud.WIDTH + Hud.OFFSET),
 				PApplet.sin(angle)
-						* (parent.height / 2 - parent.HUD_WIDTH + parent.HUD_OFFSET));
+						* (parent.height / 2 - Hud.WIDTH + Hud.OFFSET));
 		parent.rotate(angle + PApplet.PI / 2);
 		parent.scale(imgPlayers[player].width / 2,
 				imgPlayers[player].height / 2);
@@ -362,10 +362,10 @@ public class LevelSelect implements PConstants {
 		String name = playerNames[selected].length() > 24 ? playerNames[selected]
 				.substring(0, 24) : playerNames[selected];
 		float offset = (parent.textWidth(name) / 2)
-				/ (2 * PApplet.PI * (parent.height / 2 - parent.HUD_SCORE_RADIUS_OFFSET))
+				/ (2 * PApplet.PI * (parent.height / 2 - Hud.SCORE_RADIUS_OFFSET))
 				* PApplet.TWO_PI;
 		parent.arctext(name,
-				parent.height / 2 - parent.HUD_SCORE_RADIUS_OFFSET, angle
+				parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, angle
 						- offset);
 		parent.popMatrix();
 	}
@@ -379,7 +379,7 @@ public class LevelSelect implements PConstants {
 
 		parent.fill(255);
 		parent.pushMatrix();
-		parent.rotate(parent.frameCount * parent.HUD_PROMPT_ROT_SPEED);
+		parent.rotate(parent.frameCount * Hud.PROMPT_ROT_SPEED);
 		parent.image(imgSelectSong, 0, 20);
 		String message = players[0].name + ",";
 		parent.textFont(font, PLAYERNAME_FONT_SIZE);
@@ -402,9 +402,9 @@ public class LevelSelect implements PConstants {
 		parent.pushMatrix();
 		parent.translate(
 				PApplet.cos(angle)
-						* (parent.height / 2 - parent.HUD_WIDTH + parent.HUD_OFFSET),
+						* (parent.height / 2 - Hud.WIDTH + Hud.OFFSET),
 				PApplet.sin(angle)
-						* (parent.height / 2 - parent.HUD_WIDTH + parent.HUD_OFFSET));
+						* (parent.height / 2 - Hud.WIDTH + Hud.OFFSET));
 		parent.rotate(angle + PApplet.PI / 2);
 		parent.scale(imgLevel.width / 2, imgLevel.height / 2);
 		parent.beginShape(PApplet.QUADS);
@@ -425,10 +425,10 @@ public class LevelSelect implements PConstants {
 		String name = level.songName + " (" + level.songDuration + ")";
 		name = name.length() > 24 ? name.substring(0, 24) : name;
 		float offset = (parent.textWidth(name) / 2)
-				/ (2 * PApplet.PI * (parent.height / 2 - parent.HUD_SCORE_RADIUS_OFFSET))
+				/ (2 * PApplet.PI * (parent.height / 2 - Hud.SCORE_RADIUS_OFFSET))
 				* PApplet.TWO_PI;
 		parent.arctext(name,
-				parent.height / 2 - parent.HUD_SCORE_RADIUS_OFFSET, angle
+				parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, angle
 						- offset);
 		parent.popMatrix();
 	}

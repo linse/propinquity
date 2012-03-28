@@ -4,8 +4,6 @@ import processing.core.PApplet;
 import processing.serial.Serial;
 import xbee.XBeeReader;
 
-import propinquity.*;
-
 public class XPan {
 	// xbee
 	static final int PROX_IN_PACKET_LENGTH = 6; // length (bytes) of incoming

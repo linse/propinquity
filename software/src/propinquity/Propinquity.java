@@ -62,26 +62,17 @@ public class Propinquity extends PApplet {
 	final float PUSH_DAMPENING = 0.98f;
 
 	// game constants
-	final int HUD_WIDTH = 50;
-	final int HUD_OFFSET = 4;
-	final float HUD_SCORE_ROT_SPEED = 0.0001f;
-	final float HUD_PROMPT_ROT_SPEED = 0.002f;
-	final int HUD_FONT_SIZE = 32;
-	final float HUD_SCORE_ANGLE_OFFSET = 0.35f;
-	final int HUD_SCORE_RADIUS_OFFSET = 40;
-	// final String LEVEL_FILE = "levels/sequence4.xml";
 	final int END_LEVEL_TIME = 6;
 	final int BOUNDARY_WIDTH = 5;
 	final int[] PLAYER_COLORS = { color(55, 137, 254), color(255, 25, 0) };
 	final int NEUTRAL_COLOR = color(142, 20, 252);
 
 	// game states
-	final int STATE_XBEE_INIT = 0;
-	final int STATE_PLAYER_LIST = 1;
-	final int STATE_LEVEL_SELECT = 2;
-	final int STATE_PLAY = 3;
-	final int STATE_HIGHSCORE = 4;
-	int gameState = STATE_XBEE_INIT;
+	enum GameState {
+		XBeeInit, PlayerList, LevelSelect, Play, Highscore
+	}
+
+	GameState gameState = GameState.XBeeInit;
 
 	// level select controller
 	LevelSelect levelSelect = null;
@@ -132,14 +123,10 @@ public class Propinquity extends PApplet {
 	XMLInOut xmlInOut;
 
 	// HUD (Heads Up Display) -- shows the score.
-	
-	
+	Hud hud;
 	PImage[] hudImgPlayers;
 	PImage hudCoopPlayer;
 	PGraphics hudMask;
-	float hudAngle = 0;// random(0, TWO_PI);
-	float hudVelocity = -TWO_PI / 500f;
-	boolean hudSnapped = false;
 	AudioPlayer compSound;
 
 	// Video output
@@ -154,7 +141,7 @@ public class Propinquity extends PApplet {
 	public XBeeManager xbeeManager;
 
 	public void setup() {
-		
+
 		Graphics.setup(this);
 
 		// init minim
@@ -168,11 +155,13 @@ public class Propinquity extends PApplet {
 
 		// Load artwork
 		Graphics.loadContent();
-		
+
+		hud = new Hud(this);
+
 		// init logging
 		initLogging();
 	}
-	
+
 	void initLogging() {
 		output = createWriter(filename);
 		output.println("Starting Logging of Propinquity Test.");
@@ -193,7 +182,7 @@ public class Propinquity extends PApplet {
 		}
 
 		// send configuration message here
-		// TODO (send step length to proximity patches)
+		// TODO: send step length to proximity patches
 	}
 
 	void initHUD() {
@@ -202,8 +191,7 @@ public class Propinquity extends PApplet {
 
 		hudImgPlayers = new PImage[level.getNumPlayers()];
 		for (int i = 0; i < level.getNumPlayers(); i++)
-			hudImgPlayers[i] = loadImage("data/hud/player" + (i + 1)
-					+ "score.png");
+			hudImgPlayers[i] = loadImage("data/hud/player" + (i + 1) + "score.png");
 		hudCoopPlayer = loadImage("data/hud/level.png");
 
 		hudMask = createGraphics(width, height, P2D);
@@ -211,16 +199,15 @@ public class Propinquity extends PApplet {
 		hudMask.beginDraw();
 		hudMask.noStroke();
 		hudMask.fill(255);
-		hudMask.ellipse(width / 2, height / 2, height - HUD_WIDTH * 2
-				+ BOUNDARY_WIDTH, height - HUD_WIDTH * 2 + BOUNDARY_WIDTH);
+		hudMask.ellipse(width / 2, height / 2, height - Hud.WIDTH * 2 + BOUNDARY_WIDTH, height - Hud.WIDTH * 2
+				+ BOUNDARY_WIDTH);
 		hudMask.endDraw();
 	}
 
 	void initBox2D() {
 		// initialize box2d physics and create the world
 		box2d = new PBox2D(this, (float) height / WORLD_SIZE);
-		box2d.createWorld(-WORLD_SIZE / 2f, -WORLD_SIZE / 2f, WORLD_SIZE,
-				WORLD_SIZE);
+		box2d.createWorld(-WORLD_SIZE / 2f, -WORLD_SIZE / 2f, WORLD_SIZE, WORLD_SIZE);
 		box2d.setGravity(0.0f, 0.0f);
 
 		// load default jbox2d settings
@@ -230,16 +217,14 @@ public class Propinquity extends PApplet {
 	void initTextures() {
 		imgParticle = new PImage[level.getNumPlayers()];
 		for (int i = 0; i < level.getNumPlayers(); i++)
-			imgParticle[i] = loadImage("data/particles/player" + (i + 1)
-					+ ".png");
+			imgParticle[i] = loadImage("data/particles/player" + (i + 1) + ".png");
 
 		if (DRAW_SHADOWS)
 			imgShadow = loadImage("data/particles/shadow.png");
 
 		pgParticle = new PGraphics[level.getNumPlayers()];
 		for (int i = 0; i < level.getNumPlayers(); i++) {
-			pgParticle[i] = createGraphics(imgParticle[i].width,
-					imgParticle[i].height, P2D);
+			pgParticle[i] = createGraphics(imgParticle[i].width, imgParticle[i].height, P2D);
 			pgParticle[i].background(imgParticle[i]);
 			pgParticle[i].mask(imgParticle[i]);
 		}
@@ -264,9 +249,8 @@ public class Propinquity extends PApplet {
 
 			for (int i = 0; i < FENCE_SECTIONS; i++) {
 				float angle = 2 * PI / FENCE_SECTIONS * i;
-				sd.setAsBox(perimeter / FENCE_SECTIONS, fenceDepth, new Vec2(
-						cos(angle) * radius, sin(angle) * radius), angle + PI
-						/ 2);
+				sd.setAsBox(perimeter / FENCE_SECTIONS, fenceDepth, new Vec2(cos(angle) * radius, sin(angle) * radius),
+						angle + PI / 2);
 				innerFence.createShape(sd);
 			}
 		}
@@ -284,21 +268,20 @@ public class Propinquity extends PApplet {
 
 			float fenceDepth = 0.2f;
 			float worldScale = height / WORLD_SIZE;
-			float radius = (WORLD_SIZE - (HUD_WIDTH / worldScale)) / 2f
-					+ fenceDepth / 2;
+			float radius = (WORLD_SIZE - (Hud.WIDTH / worldScale)) / 2f + fenceDepth / 2;
 			float perimeter = 2 * PI * radius;
 
 			for (int i = 0; i < FENCE_SECTIONS; i++) {
 				float angle = 2 * PI / FENCE_SECTIONS * i;
-				sd.setAsBox(perimeter / FENCE_SECTIONS, fenceDepth, new Vec2(
-						cos(angle) * radius, sin(angle) * radius), angle + PI
-						/ 2);
+				sd.setAsBox(perimeter / FENCE_SECTIONS, fenceDepth, new Vec2(cos(angle) * radius, sin(angle) * radius),
+						angle + PI / 2);
 				outerFence.createShape(sd);
 			}
 		}
 	}
 
-	@SuppressWarnings("unchecked") //TODO Fix this madness
+	@SuppressWarnings("unchecked")
+	// TODO: Fix this madness
 	void initParticles() {
 		// init box2d
 		initBox2D();
@@ -326,11 +309,9 @@ public class Propinquity extends PApplet {
 		for (int i = 0; i < particles.length; i++)
 			particles[i] = new LinkedList<Particle>();
 
-		ptsPerParticle = (level.getNumSteps() * AVG_PTS_PER_STEP * level
-				.getNumPlayers()) / APPROX_MAX_PARTICLES;
+		ptsPerParticle = (level.getNumSteps() * AVG_PTS_PER_STEP * level.getNumPlayers()) / APPROX_MAX_PARTICLES;
 		// pCount = new int[level.getNumPlayers()];
-		numStepsPerPeriod = round(AVG_PARTICLE_PER_STEP * ptsPerParticle
-				/ AVG_PTS_PER_STEP);
+		numStepsPerPeriod = round(AVG_PARTICLE_PER_STEP * ptsPerParticle / AVG_PTS_PER_STEP);
 		if (numStepsPerPeriod == 0)
 			++numStepsPerPeriod;
 		lastPeriodParticle = new Particle[level.getNumPlayers()];
@@ -343,19 +324,19 @@ public class Propinquity extends PApplet {
 		background(0);
 
 		switch (gameState) {
-		case STATE_XBEE_INIT:
+		case XBeeInit:
 			drawXBeeManager();
 			break;
-		case STATE_PLAYER_LIST:
+		case PlayerList:
 			updatePlayerList();
 			break;
-		case STATE_LEVEL_SELECT:
+		case LevelSelect:
 			drawLevelSelect();
 			break;
-		case STATE_PLAY:
+		case Play:
 			drawPlay();
 			break;
-		case STATE_HIGHSCORE:
+		case Highscore:
 			drawHighscore();
 			break;
 		}
@@ -366,7 +347,7 @@ public class Propinquity extends PApplet {
 	}
 
 	public void stop() {
-		if (gameState == STATE_PLAY)
+		if (gameState == GameState.Play)
 			level.clear();
 	}
 
@@ -397,13 +378,13 @@ public class Propinquity extends PApplet {
 
 		pushMatrix();
 		translate(width / 2, height / 2);
-		textFont(Graphics.font, HUD_FONT_SIZE);
+		textFont(Graphics.font, Hud.FONT_SIZE);
 		textAlign(CENTER, CENTER);
 		fill(255);
 		noStroke();
 		text("Detecting XBee modules... ", 0, 0);
 		translate(0, 30);
-		textFont(Graphics.font, HUD_FONT_SIZE * 0.65f);
+		textFont(Graphics.font, Hud.FONT_SIZE * 0.65f);
 		text(msg, 0, 0);
 		popMatrix();
 	}
@@ -442,7 +423,7 @@ public class Propinquity extends PApplet {
 		if (DEBUG)
 			drawDebugFence();
 
-		drawHUD();
+		hud.draw();
 
 		if (level.isDone()) {
 
@@ -452,14 +433,13 @@ public class Propinquity extends PApplet {
 				textAlign(CENTER);
 				pushMatrix();
 				translate(width / 2, height / 2);
-				rotate(frameCount * HUD_PROMPT_ROT_SPEED);
+				rotate(frameCount * Hud.PROMPT_ROT_SPEED);
 				image(Graphics.hudImgLevelComplete, 0, -25);
-				textFont(Graphics.font, HUD_FONT_SIZE);
+				textFont(Graphics.font, Hud.FONT_SIZE);
 				textAlign(CENTER, CENTER);
 				fill(winner != null ? winner.getColor() : NEUTRAL_COLOR);
 				noStroke();
-				text(winner != null ? winner.getName() + " won!" : "You tied!",
-						0, 0);
+				text(winner != null ? winner.getName() + " won!" : "You tied!", 0, 0);
 				image(Graphics.hudImgPlayAgain, 0, 30);
 				popMatrix();
 			} else {
@@ -479,20 +459,19 @@ public class Propinquity extends PApplet {
 				liquify();
 
 				// snap score in final position
-				snapHUD();
+				hud.snap();
 
 				// pull particles into groups
 				groupParticles();
 
 				// flag as ended
-				if (doneTime != -1
-						&& frameCount > doneTime + Graphics.FPS * END_LEVEL_TIME)
+				if (doneTime != -1 && frameCount > doneTime + Graphics.FPS * END_LEVEL_TIME)
 					endedLevel = true;
 			}
 
 		} else if (level.isRunning()) {
 			// update hud
-			updateHUD(hudAngle + HALF_PI, TWO_PI / 10000f, TWO_PI / 2000f);
+			hud.update(hud.getAngle() + HALF_PI, TWO_PI / 10000f, TWO_PI / 2000f);
 
 			// push particles of current period out
 			pushPeriod();
@@ -523,7 +502,7 @@ public class Propinquity extends PApplet {
 			textAlign(CENTER);
 			pushMatrix();
 			translate(width / 2, height / 2);
-			rotate(frameCount * HUD_PROMPT_ROT_SPEED);
+			rotate(frameCount * Hud.PROMPT_ROT_SPEED);
 			image(Graphics.hudImgPlay, 0, 0);
 			popMatrix();
 		}
@@ -539,11 +518,11 @@ public class Propinquity extends PApplet {
 		doneTime = -1;
 		groupedParticles = false;
 		lastPeriodParticle = new Particle[level.getNumPlayers()];
-		hudSnapped = false;
-		hudVelocity = -TWO_PI / 500f;
+		
+		hud.reset();
 
 		levelSelect.reset();
-		gameState = STATE_LEVEL_SELECT;
+		gameState = GameState.LevelSelect;
 		println("gamestate = " + gameState);
 	}
 
@@ -579,7 +558,7 @@ public class Propinquity extends PApplet {
 		strokeWeight(1);
 
 		rectMode(CENTER);
-		float radius = height / 2 - HUD_WIDTH;
+		float radius = height / 2 - Hud.WIDTH;
 		float perimeter = 2 * PI * radius;
 		float w = perimeter / FENCE_SECTIONS;
 		float h = 5f;
@@ -587,8 +566,7 @@ public class Propinquity extends PApplet {
 		for (int i = 0; i < FENCE_SECTIONS; i++) {
 			angle = 2f * PI / FENCE_SECTIONS * i;
 			pushMatrix();
-			translate(width / 2 + cos(angle) * radius, height / 2 + sin(angle)
-					* radius);
+			translate(width / 2 + cos(angle) * radius, height / 2 + sin(angle) * radius);
 			rotate(angle + PI / 2);
 			rect(0, 0, w, h);
 			popMatrix();
@@ -602,8 +580,7 @@ public class Propinquity extends PApplet {
 		for (int i = 0; i < FENCE_SECTIONS; i++) {
 			angle = 2f * PI / FENCE_SECTIONS * i;
 			pushMatrix();
-			translate(width / 2 + cos(angle) * radius, height / 2 + sin(angle)
-					* radius);
+			translate(width / 2 + cos(angle) * radius, height / 2 + sin(angle) * radius);
 			rotate(angle + PI / 2);
 			rect(0, 0, w, h);
 			popMatrix();
@@ -651,97 +628,6 @@ public class Propinquity extends PApplet {
 		popMatrix();
 	}
 
-	void drawHUD() {
-		pgl = (PGraphicsOpenGL) g;
-		gl = pgl.beginGL();
-		gl.glEnable(GL.GL_BLEND);
-		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-		pgl.endGL();
-
-		noStroke();
-		noFill();
-
-		/*
-		 * if ((level.isCoop() && !level.isCoopDone()) != lastCoopDone)
-		 * playsound lastCoopDone = level.isCoop() && !level.isCoopDone();
-		 */
-
-		if (level.isCoop() && !level.isCoopDone()) {
-			float angle = hudAngle - PI / 2;
-			pushMatrix();
-			translate(width / 2 + cos(angle)
-					* (height / 2 - HUD_WIDTH + HUD_OFFSET), height / 2
-					+ sin(angle) * (height / 2 - HUD_WIDTH + HUD_OFFSET));
-			rotate(angle + PI / 2);
-			scale(hudCoopPlayer.width / 2, hudCoopPlayer.height / 2);
-			beginShape(QUADS);
-			texture(hudCoopPlayer);
-			vertex(-1, -1, 0, 0, 0);
-			vertex(1, -1, 0, 1, 0);
-			vertex(1, 1, 0, 1, 1);
-			vertex(-1, 1, 0, 0, 1);
-			endShape(CLOSE);
-			popMatrix();
-			pushMatrix();
-			translate(width / 2, height / 2);
-			fill(255);
-			noStroke();
-			textAlign(CENTER, BASELINE);
-			textFont(Graphics.font, HUD_FONT_SIZE);
-			String score = String.valueOf(level.getTotalPts() / 2);
-			String name = "Coop";
-			while (textWidth(score + name) < 240)
-				name += ' ';
-
-			arctext(name + score, height / 2 - HUD_SCORE_RADIUS_OFFSET, angle
-					- HUD_SCORE_ANGLE_OFFSET);
-
-			popMatrix();
-		} else {
-			if (!level.getLastCoopDone()) {
-				compSound.play();
-				compSound.rewind();
-				level.setLastCoopDone(true);
-			}
-			for (int i = 0; i < level.getNumPlayers(); i++) {
-				Player player = level.getPlayer(i);
-				player.approachHudTo(-PI / 2 + TWO_PI / level.getNumPlayers()
-						* i);
-				float angle = hudAngle - PI / 2 + player.hudAngle;
-				pushMatrix();
-				translate(width / 2 + cos(angle)
-						* (height / 2 - HUD_WIDTH + HUD_OFFSET), height / 2
-						+ sin(angle) * (height / 2 - HUD_WIDTH + HUD_OFFSET));
-				rotate(angle + PI / 2);
-				scale(hudImgPlayers[i].width / 2, hudImgPlayers[i].height / 2);
-				beginShape(QUADS);
-				texture(hudImgPlayers[i]);
-				vertex(-1, -1, 0, 0, 0);
-				vertex(1, -1, 0, 1, 0);
-				vertex(1, 1, 0, 1, 1);
-				vertex(-1, 1, 0, 0, 1);
-				endShape(CLOSE);
-				popMatrix();
-				pushMatrix();
-				translate(width / 2, height / 2);
-				fill(255);
-				noStroke();
-				textAlign(CENTER, BASELINE);
-				textFont(Graphics.font, HUD_FONT_SIZE);
-				String score = String.valueOf(player.getTotalPts());
-				String name = player.getName().length() > 12 ? player.getName()
-						.substring(0, 12) : player.getName();
-				while (textWidth(score + name) < 240)
-					name += ' ';
-
-				arctext(name + score, height / 2 - HUD_SCORE_RADIUS_OFFSET,
-						angle - HUD_SCORE_ANGLE_OFFSET);
-
-				popMatrix();
-			}
-		}
-	}
-
 	void arctext(String message, float radius, float startAngle) {
 		// We must keep track of our position along the curve
 		float arclength = 0;
@@ -783,8 +669,7 @@ public class Propinquity extends PApplet {
 		int nParticles;
 
 		// release particles if the player has accumulated period pts
-		nParticles = min(player.getPeriodPts() / ptsPerParticle,
-				MAX_PARTICLES_PER_FRAME);
+		nParticles = min(player.getPeriodPts() / ptsPerParticle, MAX_PARTICLES_PER_FRAME);
 		if (nParticles > 0) {
 			// if (pCount[p]+nParticles > MAX_PARTICLES/2)
 			// nParticles = MAX_PARTICLES/2-pCount[p];
@@ -793,8 +678,7 @@ public class Propinquity extends PApplet {
 		}
 
 		// kill particles if the player touched
-		nParticles = min(player.getKillPts() / ptsPerParticle,
-				MAX_PARTICLES_PER_FRAME);
+		nParticles = min(player.getKillPts() / ptsPerParticle, MAX_PARTICLES_PER_FRAME);
 		if (nParticles > 0) {
 			killParticles(p, nParticles);
 		}
@@ -803,8 +687,7 @@ public class Propinquity extends PApplet {
 	void releaseParticles(int p, int nParticles) {
 		Player player = level.getPlayer(p);
 
-		float releaseAngle = level.getTime() * HUD_SCORE_ROT_SPEED
-				/ EMITTER_ANGULAR_VELOCITY;
+		float releaseAngle = level.getTime() * Hud.SCORE_ROT_SPEED / EMITTER_ANGULAR_VELOCITY;
 		if (p % 2 == 1)
 			releaseAngle += PI;
 
@@ -826,8 +709,7 @@ public class Propinquity extends PApplet {
 
 		for (int i = 0; i < nParticles; ++i) {
 			BodyDef bd = new BodyDef();
-			bd.position = new Vec2(cos(releaseAngle)
-					* (EMITTER_RADIUS * random(0.8f, 1)), sin(releaseAngle)
+			bd.position = new Vec2(cos(releaseAngle) * (EMITTER_RADIUS * random(0.8f, 1)), sin(releaseAngle)
 					* (EMITTER_RADIUS * random(0.8f, 1)));
 			// bd.position = new Vec2(cx, cy);
 			bd.fixedRotation = true;
@@ -843,10 +725,8 @@ public class Propinquity extends PApplet {
 			// particles[p][i] = new Particle(b, sh,
 			// PARTICLE_SCALE*random(1.0-PARTICLE_SCALE_RANGE, 1.0),
 			// pgParticle[p]);
-			particles[p]
-					.add(new Particle(this, b, sh, PARTICLE_SCALE
-							* random(1.0f - PARTICLE_SCALE_RANGE, 1.0f),
-							pgParticle[p]));
+			particles[p].add(new Particle(this, b, sh, PARTICLE_SCALE * random(1.0f - PARTICLE_SCALE_RANGE, 1.0f),
+					pgParticle[p]));
 		}
 
 		// keep track of the released particles
@@ -914,8 +794,7 @@ public class Propinquity extends PApplet {
 			particle = it.next();
 			int hcell = hashX(particle.body.m_sweep.c.x);
 			int vcell = hashY(particle.body.m_sweep.c.y);
-			if (hcell > -1 && hcell < hashWidth && vcell > -1
-					&& vcell < hashHeight)
+			if (hcell > -1 && hcell < hashWidth && vcell > -1 && vcell < hashHeight)
 				hash[hcell][vcell].add(new Integer(i));
 			i++;
 		}
@@ -979,8 +858,7 @@ public class Propinquity extends PApplet {
 				for (int ny = -1; ny < 2; ny++) {
 					int xc = hcell + nx;
 					int yc = vcell + ny;
-					if (xc > -1 && xc < hashWidth && yc > -1 && yc < hashHeight
-							&& hash[xc][yc].size() > 0) {
+					if (xc > -1 && xc < hashWidth && yc > -1 && yc < hashHeight && hash[xc][yc].size() > 0) {
 						for (int a = 0; a < hash[xc][yc].size(); a++) {
 							Integer ne = hash[xc][yc].get(a);
 							if (ne != null && ne.intValue() != i)
@@ -1005,8 +883,7 @@ public class Propinquity extends PApplet {
 											// liquid[i].m_sweep.c.y;
 
 				// early exit check
-				if (vx > -idealRad && vx < idealRad && vy > -idealRad
-						&& vy < idealRad) {
+				if (vx > -idealRad && vx < idealRad && vy > -idealRad && vy < idealRad) {
 					float vlensqr = (vx * vx + vy * vy);
 					// within idealRad check
 					if (vlensqr < idealRad * idealRad) {
@@ -1035,14 +912,11 @@ public class Propinquity extends PApplet {
 											// liquid[i].m_sweep.c.x;
 				float vy = ys[j] - ys[i];// liquid[j].m_sweep.c.y -
 											// liquid[i].m_sweep.c.y;
-				if (vx > -idealRad && vx < idealRad && vy > -idealRad
-						&& vy < idealRad) {
+				if (vx > -idealRad && vx < idealRad && vy > -idealRad && vy < idealRad) {
 					if (vlen[a] < idealRad) {
 						float q = vlen[a] / idealRad;
 						float oneminusq = 1.0f - q;
-						float factor = oneminusq
-								* (pressure + presnear * oneminusq)
-								/ (2.0F * vlen[a]);
+						float factor = oneminusq * (pressure + presnear * oneminusq) / (2.0F * vlen[a]);
 						float dx = vx * factor;
 						float dy = vy * factor;
 						float relvx = vxs[j] - vxs[i];
@@ -1078,10 +952,8 @@ public class Propinquity extends PApplet {
 			particle = it.next();
 			particle.body.m_xf.position.x += xchange[i] / multiplier;
 			particle.body.m_xf.position.y += ychange[i] / multiplier;
-			particle.body.m_linearVelocity.x += xchange[i]
-					/ (multiplier * deltaT);
-			particle.body.m_linearVelocity.y += ychange[i]
-					/ (multiplier * deltaT);
+			particle.body.m_linearVelocity.x += xchange[i] / (multiplier * deltaT);
+			particle.body.m_linearVelocity.y += ychange[i] / (multiplier * deltaT);
 			i++;
 		}
 	}
@@ -1091,8 +963,7 @@ public class Propinquity extends PApplet {
 		ListIterator<Particle> it = particles[p].listIterator();
 		while (it.hasNext()) {
 			particle = it.next();
-			particle.body.setLinearVelocity(particle.body.getLinearVelocity()
-					.mul(damp));
+			particle.body.setLinearVelocity(particle.body.getLinearVelocity().mul(damp));
 		}
 	}
 
@@ -1136,8 +1007,7 @@ public class Propinquity extends PApplet {
 			// println("last period step " + lastPeriodStep);
 			// println("num steps per period: " + numStepsPerPeriod);
 
-			if (!override
-					&& (lastPeriodStep == cStep || cStep % numStepsPerPeriod != 0))
+			if (!override && (lastPeriodStep == cStep || cStep % numStepsPerPeriod != 0))
 				continue;
 
 			// go through particles
@@ -1148,8 +1018,7 @@ public class Propinquity extends PApplet {
 			filter.categoryBits = p + 1;
 			filter.maskBits = OUTER_FENCE_MASK | PLAYERS_MASK;
 
-			float angle = level.getTime() * PUSH_PERIOD_ROT_SPEED + TWO_PI
-					/ level.getNumPlayers() * p;
+			float angle = level.getTime() * PUSH_PERIOD_ROT_SPEED + TWO_PI / level.getNumPlayers() * p;
 			float force = random(MIN_RELEASE_FORCE, MAX_RELEASE_FORCE);
 
 			// int i;
@@ -1171,34 +1040,6 @@ public class Propinquity extends PApplet {
 		}
 
 		lastPeriodStep = cStep;
-	}
-
-	void updateHUD(float targetAngle, float targetAcceleration,
-			float maxVelocity) {
-		float diff = targetAngle - hudAngle;
-		int dir = diff < 0 ? -1 : 1;
-
-		if (diff * dir < TWO_PI / 5000f) {
-			hudAngle = targetAngle;
-			return;
-		}
-
-		hudVelocity += dir * targetAcceleration;
-		if (hudVelocity / dir > maxVelocity)
-			hudVelocity = dir * maxVelocity;
-
-		hudVelocity *= 0.85;
-
-		hudAngle += hudVelocity;
-	}
-
-	void snapHUD() {
-		if (!hudSnapped) {
-			hudAngle = hudAngle - ((int) (hudAngle / TWO_PI)) * TWO_PI;
-			hudSnapped = true;
-		}
-
-		updateHUD(TWO_PI, TWO_PI / 500f, TWO_PI / 10f);
 	}
 
 	void groupParticles() {
@@ -1243,73 +1084,69 @@ public class Propinquity extends PApplet {
 	}
 
 	void xBeeEvent(XBeeReader xbee) {
-		if (gameState == STATE_XBEE_INIT) {
+		if (gameState == GameState.XBeeInit) {
 			xbeeManager.xBeeEvent(xbee);
-		} else if (gameState == STATE_PLAYER_LIST) {
+		} else if (gameState == GameState.PlayerList) {
 			// println("xbee event: player list");
-		} else if (gameState == STATE_LEVEL_SELECT) {
+		} else if (gameState == GameState.LevelSelect) {
 			println("xBeeEvent(): sending to level select");
 			levelSelect.xBeeEvent(xbee);
-		} else if (gameState == STATE_PLAY) {
+		} else if (gameState == GameState.Play) {
 			// println("sending to level");
 			level.xBeeEvent(xbee);
 		}
 	}
 
 	public void controlEvent(ControlEvent theEvent) {
-		if (gameState == STATE_XBEE_INIT) {
+
+		if (gameState == GameState.XBeeInit) {
 			xbeeManager.controlEvent(theEvent);
+
 			if (xbeeManager.isDone()) {
-				// xbeeManager.dispose();
-				// initPlayerListCtrl();
-				gameState++;
+				gameState = GameState.PlayerList;
 				println("gamestate = " + gameState);
 			}
-		} else if (gameState == STATE_PLAYER_LIST) {
+
+		} else if (gameState == GameState.PlayerList) {
 			playerList.controlEvent(theEvent);
+
 			if (playerList.isDone()) {
-				gameState++;
+				gameState = GameState.LevelSelect;
 				println("gamestate = " + gameState);
 			}
 		}
 	}
 
 	public void keyPressed() {
-		/*
-		 * switch (key) { case 'ENTER': if (!mmOutput) {
-		 * println("Start recording..."); mm = new MovieMaker(this, width,
-		 * height, "Propinquity.mov", FPS, MovieMaker.ANIMATION,
-		 * MovieMaker.LOSSLESS); mmOutput = true; } else {
-		 * println("End recording."); mm.finish(); mmOutput = false; } break; }
-		 */
-		if (gameState == STATE_XBEE_INIT) {
+
+		if (gameState == GameState.XBeeInit) {
 			switch (key) {
 			case ENTER:
 				xbeeManager.save();
 				// xbeeManager.dispose();
 				// initPlayerListCtrl();
-				gameState++;
+				gameState = GameState.PlayerList;
 				println("gamestate = " + gameState);
 				break;
 			}
-		} else if (gameState == STATE_PLAYER_LIST) {
+		} else if (gameState == GameState.PlayerList) {
 			switch (key) {
 			case ENTER:
 				playerList.process();
 				if (playerList.isDone()) {
-					gameState++;
+					gameState = GameState.LevelSelect;
 					println("gamestate = " + gameState);
 				}
 				break;
 			}
-		} else if (gameState == STATE_LEVEL_SELECT) {
+		} else if (gameState == GameState.LevelSelect) {
 			switch (key) {
 			case BACKSPACE:
 				levelSelect.clear();
 				levelSelect = null;
 				playerList = null;
 				// initPlayerListCtrl();
-				gameState = STATE_PLAYER_LIST;
+				gameState = GameState.PlayerList;
 				println("gamestate = " + gameState);
 				break;
 			default:
@@ -1325,8 +1162,7 @@ public class Propinquity extends PApplet {
 						delay(50);
 						while (!levelSelect.allAcksIn()) {
 							println("sending again");
-							levelSelect.sendConfigMessages(level
-									.getStepInterval());
+							levelSelect.sendConfigMessages(level.getStepInterval());
 							delay(50);
 						}
 						// init hud
@@ -1336,13 +1172,13 @@ public class Propinquity extends PApplet {
 						initParticles();
 
 						// play
-						gameState = STATE_PLAY;
+						gameState = GameState.Play;
 						println("gamestate = " + gameState);
 					}
 				}
 				break;
 			}
-		} else if (gameState == STATE_PLAY) {
+		} else if (gameState == GameState.Play) {
 			switch (key) {
 			case ESC:
 				level.clear();
@@ -1362,8 +1198,7 @@ public class Propinquity extends PApplet {
 					resetLevel();
 				break;
 			case 'i': // info
-				println("Particles: "
-						+ (particles[0].size() + particles[1].size()));
+				println("Particles: " + (particles[0].size() + particles[1].size()));
 				println("Framerate: " + frameRate);
 				println("Radius: " + particleRadius);
 				println("Viscosity: " + particleViscosity);
@@ -1393,7 +1228,6 @@ public class Propinquity extends PApplet {
 				exit();
 				break;
 			}
-		} else if (gameState == STATE_HIGHSCORE) {
 		}
 	}
 
