@@ -115,9 +115,9 @@ public class Hud {
 			parent.translate(parent.width / 2 + PApplet.cos(ang) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET),
 					parent.height / 2 + PApplet.sin(ang) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET));
 			parent.rotate(ang + PConstants.HALF_PI);
-			parent.scale(parent.hudCoopPlayer.width / 2, parent.hudCoopPlayer.height / 2);
+			parent.scale(Graphics.hudCoop.width / 2, Graphics.hudCoop.height / 2);
 			parent.beginShape(PConstants.QUADS);
-			parent.texture(parent.hudCoopPlayer);
+			parent.texture(Graphics.hudCoop);
 			parent.vertex(-1, -1, 0, 0, 0);
 			parent.vertex(1, -1, 0, 1, 0);
 			parent.vertex(1, 1, 0, 1, 1);
@@ -154,9 +154,9 @@ public class Hud {
 				parent.translate(parent.width / 2 + PApplet.cos(ang) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET),
 						parent.height / 2 + PApplet.sin(ang) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET));
 				parent.rotate(ang + PConstants.HALF_PI);
-				parent.scale(parent.hudImgPlayers[i].width / 2, parent.hudImgPlayers[i].height / 2);
+				parent.scale(Graphics.hudPlayers[i].width / 2, Graphics.hudPlayers[i].height / 2);
 				parent.beginShape(PConstants.QUADS);
-				parent.texture(parent.hudImgPlayers[i]);
+				parent.texture(Graphics.hudPlayers[i]);
 				parent.vertex(-1, -1, 0, 0, 0);
 				parent.vertex(1, -1, 0, 1, 0);
 				parent.vertex(1, 1, 0, 1, 1);

@@ -124,8 +124,6 @@ public class Propinquity extends PApplet {
 
 	// HUD (Heads Up Display) -- shows the score.
 	Hud hud;
-	PImage[] hudImgPlayers;
-	PImage hudCoopPlayer;
 	PGraphics hudMask;
 	AudioPlayer compSound;
 
@@ -154,7 +152,7 @@ public class Propinquity extends PApplet {
 		pgl.endGL();
 
 		// Load artwork
-		Graphics.loadContent();
+		Graphics.loadCommonContent();
 
 		hud = new Hud(this);
 
@@ -189,10 +187,7 @@ public class Propinquity extends PApplet {
 		compSound = minim.loadFile("sounds/comp.mp3", 2048);
 		compSound.setGain(5);
 
-		hudImgPlayers = new PImage[level.getNumPlayers()];
-		for (int i = 0; i < level.getNumPlayers(); i++)
-			hudImgPlayers[i] = loadImage("data/hud/player" + (i + 1) + "score.png");
-		hudCoopPlayer = loadImage("data/hud/level.png");
+		Graphics.loadLevelContent();
 
 		hudMask = createGraphics(width, height, P2D);
 		hudMask.background(0);
@@ -324,18 +319,23 @@ public class Propinquity extends PApplet {
 		background(0);
 
 		switch (gameState) {
+
 		case XBeeInit:
 			drawXBeeManager();
 			break;
+
 		case PlayerList:
 			updatePlayerList();
 			break;
+
 		case LevelSelect:
 			drawLevelSelect();
 			break;
+
 		case Play:
 			drawPlay();
 			break;
+
 		case Highscore:
 			drawHighscore();
 			break;
@@ -434,13 +434,13 @@ public class Propinquity extends PApplet {
 				pushMatrix();
 				translate(width / 2, height / 2);
 				rotate(frameCount * Hud.PROMPT_ROT_SPEED);
-				image(Graphics.hudImgLevelComplete, 0, -25);
+				image(Graphics.hudLevelComplete, 0, -25);
 				textFont(Graphics.font, Hud.FONT_SIZE);
 				textAlign(CENTER, CENTER);
 				fill(winner != null ? winner.getColor() : NEUTRAL_COLOR);
 				noStroke();
 				text(winner != null ? winner.getName() + " won!" : "You tied!", 0, 0);
-				image(Graphics.hudImgPlayAgain, 0, 30);
+				image(Graphics.hudPlayAgain, 0, 30);
 				popMatrix();
 			} else {
 				// keep track of done time
@@ -503,7 +503,7 @@ public class Propinquity extends PApplet {
 			pushMatrix();
 			translate(width / 2, height / 2);
 			rotate(frameCount * Hud.PROMPT_ROT_SPEED);
-			image(Graphics.hudImgPlay, 0, 0);
+			image(Graphics.hudPlay, 0, 0);
 			popMatrix();
 		}
 	}
@@ -518,7 +518,7 @@ public class Propinquity extends PApplet {
 		doneTime = -1;
 		groupedParticles = false;
 		lastPeriodParticle = new Particle[level.getNumPlayers()];
-		
+
 		hud.reset();
 
 		levelSelect.reset();
@@ -1084,43 +1084,57 @@ public class Propinquity extends PApplet {
 	}
 
 	void xBeeEvent(XBeeReader xbee) {
-		if (gameState == GameState.XBeeInit) {
+
+		switch (gameState) {
+
+		case XBeeInit:
 			xbeeManager.xBeeEvent(xbee);
-		} else if (gameState == GameState.PlayerList) {
-			// println("xbee event: player list");
-		} else if (gameState == GameState.LevelSelect) {
+			break;
+
+		case LevelSelect:
 			println("xBeeEvent(): sending to level select");
 			levelSelect.xBeeEvent(xbee);
-		} else if (gameState == GameState.Play) {
-			// println("sending to level");
+			break;
+
+		case Play:
 			level.xBeeEvent(xbee);
+			break;
 		}
+
 	}
 
 	public void controlEvent(ControlEvent theEvent) {
 
-		if (gameState == GameState.XBeeInit) {
+		switch (gameState) {
+
+		case XBeeInit:
 			xbeeManager.controlEvent(theEvent);
 
 			if (xbeeManager.isDone()) {
 				gameState = GameState.PlayerList;
 				println("gamestate = " + gameState);
 			}
+			break;
 
-		} else if (gameState == GameState.PlayerList) {
+		case PlayerList:
 			playerList.controlEvent(theEvent);
 
 			if (playerList.isDone()) {
 				gameState = GameState.LevelSelect;
 				println("gamestate = " + gameState);
 			}
+			break;
 		}
+
 	}
 
 	public void keyPressed() {
 
-		if (gameState == GameState.XBeeInit) {
+		switch (gameState) {
+
+		case XBeeInit:
 			switch (key) {
+
 			case ENTER:
 				xbeeManager.save();
 				// xbeeManager.dispose();
@@ -1129,8 +1143,11 @@ public class Propinquity extends PApplet {
 				println("gamestate = " + gameState);
 				break;
 			}
-		} else if (gameState == GameState.PlayerList) {
+			break;
+
+		case PlayerList:
 			switch (key) {
+
 			case ENTER:
 				playerList.process();
 				if (playerList.isDone()) {
@@ -1139,8 +1156,11 @@ public class Propinquity extends PApplet {
 				}
 				break;
 			}
-		} else if (gameState == GameState.LevelSelect) {
+			break;
+
+		case LevelSelect:
 			switch (key) {
+
 			case BACKSPACE:
 				levelSelect.clear();
 				levelSelect = null;
@@ -1149,6 +1169,7 @@ public class Propinquity extends PApplet {
 				gameState = GameState.PlayerList;
 				println("gamestate = " + gameState);
 				break;
+
 			default:
 				if (levelSelect != null) {
 					// pass the key to the level select controller
@@ -1178,12 +1199,16 @@ public class Propinquity extends PApplet {
 				}
 				break;
 			}
-		} else if (gameState == GameState.Play) {
+			break;
+
+		case Play:
 			switch (key) {
+
 			case ESC:
 				level.clear();
 				exit();
 				break;
+
 			case ENTER:
 			case ' ':
 				if (level.isDone() && endedLevel)
@@ -1193,42 +1218,52 @@ public class Propinquity extends PApplet {
 				else if (!level.isDone())
 					level.pause();
 				break;
+
 			case BACKSPACE:
 				if (level.isPaused())
 					resetLevel();
 				break;
+
 			case 'i': // info
 				println("Particles: " + (particles[0].size() + particles[1].size()));
 				println("Framerate: " + frameRate);
 				println("Radius: " + particleRadius);
 				println("Viscosity: " + particleViscosity);
 				break;
+
 			case '8':
 				particleRadius += 0.01;
 				break;
+
 			case '2':
 				particleRadius -= 0.01;
 				if (particleRadius < 0)
 					particleViscosity = 0;
 				break;
+
 			case '4':
 				particleViscosity -= 0.001;
 				if (particleViscosity < 0)
 					particleViscosity = 0;
 				break;
+
 			case '6':
 				particleViscosity += 0.001;
 				break;
+
 			case 'e': // play stub
 				level.currentStep = level.numSteps;
 				break;
-			case 'f':// flush output and close
+
+			case 'f': // flush output and close
 				output.flush();
 				output.close();
 				exit();
 				break;
 			}
+			break;
 		}
+
 	}
 
 	static public void main(String args[]) {

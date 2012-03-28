@@ -14,9 +14,10 @@ public class Graphics {
 	public static PFont font;
 	
 	public static PImage hudInnerBoundary, hudOuterBoundary;
-	public static PImage hudImgPlay, hudImgLevelComplete, hudImgPlayAgain;
+	public static PImage hudPlay, hudLevelComplete, hudPlayAgain;
+	public static PImage hudPlayers[], hudCoop;
 	
-	private static PApplet app;
+	private static Propinquity app;
 	
 	/**
 	 * Suppress default constructor to disable instantiability.
@@ -30,7 +31,7 @@ public class Graphics {
 	 * 
 	 * @param application The PApplet to be initialized.
 	 */
-	public static void setup(PApplet application) {
+	public static void setup(Propinquity application) {
 		
 		app = application;
 		
@@ -42,9 +43,9 @@ public class Graphics {
 	}
 	
 	/**
-	 * Load graphics content such as fonts and images.
+	 * Load common graphics content such as fonts and images.
 	 */
-	public static void loadContent() {
+	public static void loadCommonContent() {
 		
 		// Load main font
 		font = app.loadFont("hud/Calibri-Bold-32.vlw");
@@ -52,9 +53,23 @@ public class Graphics {
 		hudInnerBoundary = app.loadImage("hud/innerBoundary.png");
 		hudOuterBoundary = app.loadImage("hud/outerBoundary.png");
 		
-		hudImgPlay = app.loadImage("hud/sbtoplay.png");
-		hudImgLevelComplete = app.loadImage("hud/levelcomplete.png");
-		hudImgPlayAgain = app.loadImage("hud/sbtoplayagain.png");
+		hudPlay = app.loadImage("hud/sbtoplay.png");
+		hudLevelComplete = app.loadImage("hud/levelcomplete.png");
+		hudPlayAgain = app.loadImage("hud/sbtoplayagain.png");
+	}
+	
+	/**
+	 * Load level-specific graphics content.
+	 */
+	public static void loadLevelContent() {
+		
+		// Load player HUDs
+		hudPlayers = new PImage[app.level.getNumPlayers()];
+		for (int i = 0; i < app.level.getNumPlayers(); i++)
+			hudPlayers[i] = app.loadImage("data/hud/player" + (i + 1) + "score.png");
+		
+		// Load co-op HUD
+		hudCoop = app.loadImage("data/hud/level.png");
 	}
 	
 }
