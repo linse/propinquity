@@ -9,6 +9,9 @@ import processing.core.*;
  */
 public class Graphics {
 	
+	/**
+	 * Application frame rate.
+	 */
 	public static final int FPS = 30;
 		
 	public static PFont font;

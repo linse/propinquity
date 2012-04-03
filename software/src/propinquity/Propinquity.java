@@ -69,7 +69,7 @@ public class Propinquity extends PApplet {
 
 	// Game states
 	enum GameState {
-		XBeeInit, PlayerList, LevelSelect, Play, Highscore
+		XBeeInit, PlayerList, LevelSelect, Play
 	}
 
 	GameState gameState = GameState.XBeeInit;
@@ -127,14 +127,6 @@ public class Propinquity extends PApplet {
 	PGraphics hudMask;
 	AudioPlayer compSound;
 
-	// Video output
-	MovieMaker mm;
-	boolean mmOutput = false;
-
-	// logging
-	String filename = "bin/messages.txt";
-	PrintWriter output;
-
 	// XBees
 	public XBeeManager xbeeManager;
 
@@ -157,12 +149,7 @@ public class Propinquity extends PApplet {
 		hud = new Hud(this);
 
 		// init logging
-		initLogging();
-	}
-
-	void initLogging() {
-		output = createWriter(filename);
-		output.println("Starting Logging of Propinquity Test.");
+		Logger.setup(this);
 	}
 
 	void initLevel(Player[] players, String levelFile) {
@@ -342,16 +329,9 @@ public class Propinquity extends PApplet {
 		case Play:
 			drawPlay();
 			break;
-
-		case Highscore:
-			drawHighscore();
-			break;
 		}
 
-		// TODO: To move.
-		// record frame to video
-		if (mmOutput)
-			mm.addFrame();
+		Logger.recordFrame();
 	}
 
 	public void stop() {
@@ -499,9 +479,6 @@ public class Propinquity extends PApplet {
 			image(Graphics.hudPlay, 0, 0);
 			popMatrix();
 		}
-	}
-
-	void drawHighscore() {
 	}
 
 	void resetLevel() {
@@ -1072,10 +1049,6 @@ public class Propinquity extends PApplet {
 		}
 	}
 
-	public void printToOutput(String op) {
-		output.println(op);
-	}
-
 	void xBeeEvent(XBeeReader xbee) {
 
 		switch (gameState) {
@@ -1249,8 +1222,7 @@ public class Propinquity extends PApplet {
 				break;
 
 			case 'f': // flush output and close
-				output.flush();
-				output.close();
+				Logger.close();
 				exit();
 				break;
 			}
