@@ -30,7 +30,7 @@ public class Player implements PConstants {
 	Propinquity parent;
 
 	String name;
-	int clr;
+	int color;
 
 	float hudAngle;
 	float hudVel;
@@ -81,7 +81,7 @@ public class Player implements PConstants {
 	public Player(Propinquity p, int c) {
 		this.parent = p;
 		this.name = "noname";
-		this.clr = c;
+		this.color = c;
 		this.xpansProx = new XPan[XPAN_PROX_BASES];
 		this.xpansAccel = new XPan[XPAN_ACCEL_BASES];
 		this.xpansVibe = new XPan[XPAN_VIBE_BASES];
@@ -139,22 +139,22 @@ public class Player implements PConstants {
 	}
 
 	public int getColor() {
-		return clr;
+		return color;
 	}
 
 	public void setNumPatches(int num) {
 		numPatches = num;
 	}
 
-	public void addNegSound(AudioPlayer ap) {
+	public void registerNegativePlayerSound(AudioPlayer ap) {
 		negSoundPlayer = ap;
 	}
 
-	public void addCoopNegSound(AudioPlayer ap) {
+	public void registerNegativeCoopSound(AudioPlayer ap) {
 		coopNegSoundPlayer = ap;
 	}
 
-	public void playNegSound() {
+	public void playNegativeSound() {
 		if (!parent.MUTE) {
 			if (isInCoopMode()) {
 				if (coopNegSoundPlayer != null) {
@@ -276,7 +276,7 @@ public class Player implements PConstants {
 		// keep track of the step touched
 		// and give negative audio feedback immediately
 		if (!stepTouched && touched) {
-			playNegSound();
+			playNegativeSound();
 		}
 		stepTouched |= touched;
 

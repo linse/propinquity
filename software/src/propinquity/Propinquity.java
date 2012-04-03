@@ -1,6 +1,5 @@
 package propinquity;
 
-import java.io.PrintWriter;
 import java.util.*;
 
 import javax.media.opengl.GL;
@@ -18,10 +17,8 @@ import pbox2d.*;
 
 import processing.core.*;
 import processing.opengl.PGraphicsOpenGL;
-import processing.video.MovieMaker;
 import proxml.*;
 import xbee.XBeeReader;
-import ddf.minim.*;
 
 public class Propinquity extends PApplet {
 
@@ -80,9 +77,6 @@ public class Propinquity extends PApplet {
 	// player list controller
 	PlayerList playerList = null;
 
-	// Minim
-	Minim minim;
-
 	// OpenGL
 	public PGraphicsOpenGL pgl;
 	GL gl;
@@ -125,17 +119,15 @@ public class Propinquity extends PApplet {
 	// HUD (Heads Up Display) -- shows the score.
 	Hud hud;
 	PGraphics hudMask;
-	AudioPlayer compSound;
 
 	// XBees
 	public XBeeManager xbeeManager;
 
 	public void setup() {
-
+		
+		// Setup graphics and sound
 		Graphics.setup(this);
-
-		// init minim
-		minim = new Minim(this);
+		Sounds.setup(this);
 
 		// initial opengl setup
 		pgl = (PGraphicsOpenGL) g;
@@ -143,8 +135,9 @@ public class Propinquity extends PApplet {
 		gl.glDisable(GL.GL_DEPTH_TEST);
 		pgl.endGL();
 
-		// Load artwork
+		// Load common artwork and sound
 		Graphics.loadCommonContent();
+		Sounds.loadCommonContent();
 
 		hud = new Hud(this);
 
@@ -153,6 +146,7 @@ public class Propinquity extends PApplet {
 	}
 
 	void initLevel(Player[] players, String levelFile) {
+		
 		level = new Level(this, players);
 		xmlInOut = new XMLInOut(this, level);
 		xmlInOut.loadElement(levelFile);
@@ -165,16 +159,15 @@ public class Propinquity extends PApplet {
 			System.err.println("I had some trouble reading the level file.");
 			println("Defaulting to 2 minutes of free play instead.");
 		}
+		
+		Graphics.loadLevelContent();
+		Sounds.loadLevelContent();
 
 		// send configuration message here
 		// TODO: send step length to proximity patches
 	}
 
 	void initHUD() {
-		compSound = minim.loadFile("sounds/comp.mp3", 2048);
-		compSound.setGain(5);
-
-		Graphics.loadLevelContent();
 
 		hudMask = createGraphics(width, height, P2D);
 		hudMask.background(0);
@@ -847,10 +840,8 @@ public class Propinquity extends PApplet {
 			for (int a = 0; a < neighbors.size(); a++) {
 				Integer n = neighbors.get(a);
 				int j = n.intValue();
-				float vx = xs[j] - xs[i];// liquid[j].m_sweep.c.x -
-											// liquid[i].m_sweep.c.x;
-				float vy = ys[j] - ys[i];// liquid[j].m_sweep.c.y -
-											// liquid[i].m_sweep.c.y;
+				float vx = xs[j] - xs[i];
+				float vy = ys[j] - ys[i];
 
 				// early exit check
 				if (vx > -idealRad && vx < idealRad && vy > -idealRad && vy < idealRad) {
@@ -878,10 +869,9 @@ public class Propinquity extends PApplet {
 			for (int a = 0; a < neighbors.size(); a++) {
 				Integer n = neighbors.get(a);
 				int j = n.intValue();
-				float vx = xs[j] - xs[i];// liquid[j].m_sweep.c.x -
-											// liquid[i].m_sweep.c.x;
-				float vy = ys[j] - ys[i];// liquid[j].m_sweep.c.y -
-											// liquid[i].m_sweep.c.y;
+				float vx = xs[j] - xs[i];
+				float vy = ys[j] - ys[i];
+				
 				if (vx > -idealRad && vx < idealRad && vy > -idealRad && vy < idealRad) {
 					if (vlen[a] < idealRad) {
 						float q = vlen[a] / idealRad;
@@ -894,12 +884,7 @@ public class Propinquity extends PApplet {
 						factor = particleViscosity * oneminusq * deltaT;
 						dx -= relvx * factor;
 						dy -= relvy * factor;
-						// liquid[j].m_xf.position.x += dx;//*deltaT*deltaT;
-						// liquid[j].m_xf.position.y += dy;//*deltaT*deltaT;
-						// liquid[j].m_linearVelocity.x +=
-						// dx;///deltaT;//deltaT;
-						// liquid[j].m_linearVelocity.y +=
-						// dy;///deltaT;//deltaT;
+
 						xchange[j] += dx;
 						ychange[j] += dy;
 						changex -= dx;
@@ -907,10 +892,7 @@ public class Propinquity extends PApplet {
 					}
 				}
 			}
-			// liquid[i].m_xf.position.x += changex;//*deltaT*deltaT;
-			// liquid[i].m_xf.position.y += changey;//*deltaT*deltaT;
-			// liquid[i].m_linearVelocity.x += changex;///deltaT;//deltaT;
-			// liquid[i].m_linearVelocity.y += changey;///deltaT;//deltaT;
+
 			xchange[i] += changex;
 			ychange[i] += changey;
 			i++;

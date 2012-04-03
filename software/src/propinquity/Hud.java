@@ -142,8 +142,8 @@ public class Hud {
 		} else {
 
 			if (!parent.level.getLastCoopDone()) {
-				parent.compSound.play();
-				parent.compSound.rewind();
+				Sounds.complete.play();
+				Sounds.complete.rewind();
 				parent.level.setLastCoopDone(true);
 			}
 			for (int i = 0; i < parent.level.getNumPlayers(); i++) {

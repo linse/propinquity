@@ -4,7 +4,6 @@ import processing.core.PApplet;
 import proxml.XMLElement;
 import xbee.XBeeDataFrame;
 import xbee.XBeeReader;
-import ddf.minim.AudioPlayer;
 
 public class Level {
 
@@ -32,24 +31,15 @@ public class Level {
 	final int DEFAULT_STEPS = 80;
 	final int DEFAULT_COOP_PTS = 5000;
 
-	final String SONG_FOLDER = "songs/";
-
 	// parent applet
 	Propinquity parent;
-
-	// minim player
-	AudioPlayer songPlayer;
-	AudioPlayer negSoundPlayer_coop;
-	AudioPlayer negSoundPlayer1;
-	AudioPlayer negSoundPlayer2;
-	// AudioPlayer posSoundPlayer;
 
 	// the players
 	// String[] playerNames;
 	Player[] players = null;
 
 	// level parameters
-	boolean coop;
+	boolean isCcoop;
 	boolean lastCoopDone;
 	int coopPts;
 	String songName;
@@ -62,7 +52,7 @@ public class Level {
 	int packetType;
 	long stepInterval;
 
-	boolean running;
+	boolean isRunning;
 	long time;
 	long lastUpdate;
 	long lastStep;
@@ -92,27 +82,25 @@ public class Level {
 	}
 
 	public void init(Propinquity p, Player[] plyrs) {
+		
 		parent = p;
+		
 		players = plyrs;
-		songPlayer = null;
-		negSoundPlayer_coop = parent.minim.loadFile("sounds/neg.mp3", 2048);
-		// posSoundPlayer = minim.loadFile("sounds/pos.mp3", 2048);
-		negSoundPlayer1 = parent.minim.loadFile("sounds/neg1.mp3", 2048);
-		negSoundPlayer2 = parent.minim.loadFile("sounds/neg2.mp3", 2048);
-		players[0].addNegSound(negSoundPlayer1);
-		players[0].addCoopNegSound(negSoundPlayer_coop);
-		players[1].addNegSound(negSoundPlayer2);
-		players[1].addCoopNegSound(negSoundPlayer_coop);
+		players[0].registerNegativePlayerSound(Sounds.negativeP1);
+		players[0].registerNegativeCoopSound(Sounds.negativeCoop);
+		players[1].registerNegativePlayerSound(Sounds.negativeP2);
+		players[1].registerNegativeCoopSound(Sounds.negativeCoop);
+		
 		lastCoopDone = false;
 		reset();
 	}
 
 	public boolean isCoop() {
-		return coop;
+		return isCcoop;
 	}
 
 	public boolean isInCoopMode() {
-		return (coop && (coopPts == 0 || getTotalPts() < coopPts * 2));
+		return (isCcoop && (coopPts == 0 || getTotalPts() < coopPts * 2));
 	}
 
 	public boolean isCoopDone() {
@@ -176,12 +164,12 @@ public class Level {
 		// stubReading = 0;
 		time = 0;
 		lastStep = -PApplet.MAX_INT;
-		running = false;
+		isRunning = false;
 		lastUpdate = 0;
 
-		// rewing song
-		if (songPlayer != null)
-			songPlayer.rewind();
+		// rewind song
+		if (Sounds.song != null)
+			Sounds.song.rewind();
 	}
 
 	void update() {
@@ -233,24 +221,24 @@ public class Level {
 	}
 
 	void pause() {
-		running = false;
-		songPlayer.pause();
+		isRunning = false;
+		Sounds.song.pause();
 	}
 
 	void start() {
-		running = true;
+		isRunning = true;
 		lastUpdate = parent.millis();
 
 		if (!parent.MUTE)
-			songPlayer.play();
+			Sounds.song.play();
 	}
 
 	boolean isPaused() {
-		return !running;
+		return !isRunning;
 	}
 
 	boolean isRunning() {
-		return running;
+		return isRunning;
 	}
 
 	int successfullyRead() {
@@ -326,9 +314,9 @@ public class Level {
 			l_numPlayers = MAX_PLAYERS;
 
 		// read coop parameter
-		coop = levelXML.hasAttribute("coop");
-		coopPts = coop ? levelXML.getIntAttribute("coop") : 0;
-		if (coop) {
+		isCcoop = levelXML.hasAttribute("coop");
+		coopPts = isCcoop ? levelXML.getIntAttribute("coop") : 0;
+		if (isCcoop) {
 			players[0].setCoopMode(true);
 			players[1].setCoopMode(true);
 		}
@@ -423,9 +411,7 @@ public class Level {
 			}
 		}
 
-		// load song
-		songPlayer = parent.minim.loadFile(SONG_FOLDER + songFile + ".mp3",
-				2048);
+		Sounds.loadSong(songFile + ".mp3");
 
 		// success!
 		PApplet.println("Successfully read the level file.");
@@ -513,7 +499,7 @@ public class Level {
 
 	public void processProxReading(ProxData data) {
 		// check if we are in coop mode
-		if (coop && (coopPts == 0 || getTotalPts() < coopPts * 2)) {
+		if (isCcoop && (coopPts == 0 || getTotalPts() < coopPts * 2)) {
 			for (int i = 0; i < players.length; i++)
 				players[i].processProxReading(data.patch, data.step,
 						data.touched, data.proximity);
@@ -529,7 +515,7 @@ public class Level {
 
 	public void processAccelReading(AccelData data) {
 		// check if we are in coop mode
-		if (coop && (coopPts == 0 || getTotalPts() < coopPts * 2)) {
+		if (isCcoop && (coopPts == 0 || getTotalPts() < coopPts * 2)) {
 			for (int i = 0; i < players.length; i++)
 				players[i].processAccelReading(data.patch, data.x, data.y,
 						data.z);
