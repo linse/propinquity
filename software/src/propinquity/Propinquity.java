@@ -147,6 +147,8 @@ public class Propinquity extends PApplet {
 
 	void initLevel(Player[] players, String levelFile) {
 		
+		Sounds.loadLevelContent();
+		
 		level = new Level(this, players);
 		xmlInOut = new XMLInOut(this, level);
 		xmlInOut.loadElement(levelFile);
@@ -160,8 +162,8 @@ public class Propinquity extends PApplet {
 			println("Defaulting to 2 minutes of free play instead.");
 		}
 		
+		// TODO: fix this funny order business
 		Graphics.loadLevelContent();
-		Sounds.loadLevelContent();
 
 		// send configuration message here
 		// TODO: send step length to proximity patches
