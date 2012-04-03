@@ -67,7 +67,7 @@ public class Propinquity extends PApplet {
 	final int[] PLAYER_COLORS = { color(55, 137, 254), color(255, 25, 0) };
 	final int NEUTRAL_COLOR = color(142, 20, 252);
 
-	// game states
+	// Game states
 	enum GameState {
 		XBeeInit, PlayerList, LevelSelect, Play, Highscore
 	}
@@ -329,7 +329,14 @@ public class Propinquity extends PApplet {
 			break;
 
 		case LevelSelect:
-			drawLevelSelect();
+			// TODO: To fix.
+			
+			// init level select UI
+			if (levelSelect == null) {
+				playerList.dispose();
+				levelSelect = new LevelSelect(this, playerList);
+			}
+			levelSelect.draw();
 			break;
 
 		case Play:
@@ -341,6 +348,7 @@ public class Propinquity extends PApplet {
 			break;
 		}
 
+		// TODO: To move.
 		// record frame to video
 		if (mmOutput)
 			mm.addFrame();
@@ -395,21 +403,6 @@ public class Propinquity extends PApplet {
 			playerList = new PlayerList(this);
 		}
 		playerList.update();
-	}
-
-	void drawLevelSelect() {
-		// init level select UI
-		if (levelSelect == null) {
-			playerList.dispose();
-			levelSelect = new LevelSelect(this, playerList);
-		}
-
-		drawInnerBoundary();
-		drawOuterBoundary();
-		pushMatrix();
-		translate(width / 2, height / 2);
-		levelSelect.draw();
-		popMatrix();
 	}
 
 	void drawPlay() {

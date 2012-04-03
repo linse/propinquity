@@ -11,10 +11,6 @@ import proxml.*;
 import xbee.*;
 
 public class LevelSelect implements PConstants {
-	final int LEVEL_SELECT_P1 = 1;
-	final int LEVEL_SELECT_P2 = 2;
-	final int LEVEL_SELECT_SONG = 3;
-	final int LEVEL_SELECTED = 4;
 
 	final String LEVEL_FOLDER = "levels/";
 
@@ -38,7 +34,13 @@ public class LevelSelect implements PConstants {
 	Propinquity parent;
 	PFont font;
 
-	int state;
+	// Level selection states
+	enum LevelSelectState {
+		P1, P2, Song, Done
+	}
+
+	LevelSelectState state;
+
 	int radius;
 	String[] playerNames;
 
@@ -50,7 +52,6 @@ public class LevelSelect implements PConstants {
 	PImage[] imgSelectPlayer;
 	PImage imgSelectSong;
 
-	// String[] players;
 	Player[] players = null;
 	ArrayList<String> foundProxPatches;
 	ArrayList<String> foundVibePatches;
@@ -120,8 +121,7 @@ public class LevelSelect implements PConstants {
 					break;
 
 			if (loadingLevel.successfullyRead() == 0) {
-				System.err.println("I had some trouble reading the level file:"
-						+ levelFiles[i]);
+				System.err.println("I had some trouble reading the level file:" + levelFiles[i]);
 			}
 
 			levels.add(loadingLevel);
@@ -147,11 +147,9 @@ public class LevelSelect implements PConstants {
 		// read song
 		loadingLevel.songName = levelXML.getChild(0).getAttribute("name");
 		loadingLevel.songFile = levelXML.getChild(0).getAttribute("file");
-		loadingLevel.songDuration = levelXML.getChild(0).getAttribute(
-				"duration");
+		loadingLevel.songDuration = levelXML.getChild(0).getAttribute("duration");
 		loadingLevel.tempo = levelXML.getChild(0).getIntAttribute("bpm");
-		loadingLevel.multiplier = levelXML.getChild(0).getIntAttribute(
-				"multiplier");
+		loadingLevel.multiplier = levelXML.getChild(0).getIntAttribute("multiplier");
 
 		loadingLevel.successfullyRead = 1;
 		return;
@@ -160,26 +158,21 @@ public class LevelSelect implements PConstants {
 	void initTextures() {
 		PImage[] imgParticle = new PImage[2];
 		for (int i = 0; i < imgParticle.length; i++)
-			imgParticle[i] = parent.loadImage(parent
-					.dataPath("particles/player" + (i + 1) + ".png"));
+			imgParticle[i] = parent.loadImage(parent.dataPath("particles/player" + (i + 1) + ".png"));
 
 		pgParticle = new PGraphics[2];
 		for (int i = 0; i < pgParticle.length; i++) {
-			pgParticle[i] = parent.createGraphics(imgParticle[i].width,
-					imgParticle[i].height, PApplet.P2D);
+			pgParticle[i] = parent.createGraphics(imgParticle[i].width, imgParticle[i].height, PApplet.P2D);
 			pgParticle[i].background(imgParticle[i]);
 			pgParticle[i].mask(imgParticle[i]);
 		}
 
 		imgPlayers = new PImage[2];
 		for (int i = 0; i < imgPlayers.length; i++)
-			imgPlayers[i] = parent.loadImage(parent.dataPath("hud/player"
-					+ (i + 1) + "name.png"));
+			imgPlayers[i] = parent.loadImage(parent.dataPath("hud/player" + (i + 1) + "name.png"));
 
-		PImage imgLevelParticle = parent.loadImage(parent
-				.dataPath("hud/levelParticle.png"));
-		pgLevel = parent.createGraphics(imgLevelParticle.width,
-				imgLevelParticle.height, PApplet.P2D);
+		PImage imgLevelParticle = parent.loadImage(parent.dataPath("hud/levelParticle.png"));
+		pgLevel = parent.createGraphics(imgLevelParticle.width, imgLevelParticle.height, PApplet.P2D);
 		pgLevel.background(imgLevelParticle);
 		pgLevel.mask(imgLevelParticle);
 
@@ -192,14 +185,14 @@ public class LevelSelect implements PConstants {
 	}
 
 	void initP1() {
-		state = LEVEL_SELECT_P1;
+		state = LevelSelectState.P1;
 		initPlayer(0);
 
 		selected = 0;
 	}
 
 	void initP2() {
-		state = LEVEL_SELECT_P2;
+		state = LevelSelectState.P2;
 		initPlayer(1);
 
 		selected++;
@@ -222,8 +215,7 @@ public class LevelSelect implements PConstants {
 		if (PROX_STUB[player])
 			players[player].loadProxStub(player, PROX_STUB_FILE);
 		else
-			players[player].initProxComm(XBEE_PROX_1_NI[player],
-					XBEE_PROX_2_NI[player]);
+			players[player].initProxComm(XBEE_PROX_1_NI[player], XBEE_PROX_2_NI[player]);
 		// for accelerometer
 		if (ACCEL_STUB[player])
 			players[player].loadAccelStub(player, ACCEL_STUB_FILE);
@@ -238,50 +230,53 @@ public class LevelSelect implements PConstants {
 
 		particles = new LevelSelectParticle[playerNames.length];
 		for (int i = 0; i < particles.length; i++) {
-			particles[i] = new LevelSelectParticle(parent,
-					new PVector(PApplet.cos(PApplet.TWO_PI / particles.length
-							* i)
-							* radius, PApplet.sin(PApplet.TWO_PI
-							/ particles.length * i)
-							* radius, 0), 1, pgParticle[player]);
+			particles[i] = new LevelSelectParticle(parent, new PVector(PApplet.cos(PApplet.TWO_PI / particles.length
+					* i)
+					* radius, PApplet.sin(PApplet.TWO_PI / particles.length * i) * radius, 0), 1, pgParticle[player]);
 		}
 	}
 
 	void initLevels() {
-		state = LEVEL_SELECT_SONG;
+		state = LevelSelectState.Song;
 
 		particles = new LevelSelectParticle[levels.size()];
 		for (int i = 0; i < particles.length; i++) {
-			particles[i] = new LevelSelectParticle(parent,
-					new PVector(PApplet.cos(PApplet.TWO_PI / particles.length
-							* i)
-							* radius, PApplet.sin(PApplet.TWO_PI
-							/ particles.length * i)
-							* radius, 0), 1, pgLevel);
+			particles[i] = new LevelSelectParticle(parent, new PVector(PApplet.cos(PApplet.TWO_PI / particles.length
+					* i)
+					* radius, PApplet.sin(PApplet.TWO_PI / particles.length * i) * radius, 0), 1, pgLevel);
 		}
 
 		selected = 0;
 	}
 
 	public void draw() {
+		// TODO: Fix this too
+		
+		parent.drawInnerBoundary();
+		parent.drawOuterBoundary();
+		parent.pushMatrix();
+		parent.translate(parent.width / 2, parent.height / 2);
+
 		drawParticles();
 
 		switch (state) {
-		case LEVEL_SELECT_P1:
+		case P1:
 			drawPlayerName(0);
 			drawSelectPlayerHUD(0);
 			break;
 
-		case LEVEL_SELECT_P2:
+		case P2:
 			drawPlayerName(1);
 			drawSelectPlayerHUD(1);
 			break;
 
-		case LEVEL_SELECT_SONG:
+		case Song:
 			drawLevelName();
 			drawSelectSong();
 			break;
 		}
+		
+		parent.popMatrix();
 	}
 
 	private void drawParticles() {
@@ -311,15 +306,12 @@ public class LevelSelect implements PConstants {
 		parent.rotate(parent.frameCount * Hud.PROMPT_ROT_SPEED);
 		parent.image(imgSelectPlayer[player], 0, -65);
 		parent.textFont(font, LEVEL_FONT_SIZE);
-		parent.text(foundProxPatches.size() + " proximity patch"
-				+ (foundProxPatches.size() > 1 ? "es" : ""), 0, -20);
-		parent.text(foundVibePatches.size() + " vibration patch"
-				+ (foundVibePatches.size() > 1 ? "es" : ""), 0, 15);
-		parent.text(foundAccelPatches.size() + " acceleration patch"
-				+ (foundAccelPatches.size() > 1 ? "es" : ""), 0, 50);
+		parent.text(foundProxPatches.size() + " proximity patch" + (foundProxPatches.size() > 1 ? "es" : ""), 0, -20);
+		parent.text(foundVibePatches.size() + " vibration patch" + (foundVibePatches.size() > 1 ? "es" : ""), 0, 15);
+		parent.text(foundAccelPatches.size() + " acceleration patch" + (foundAccelPatches.size() > 1 ? "es" : ""), 0,
+				50);
 		if (foundUndefPatches.size() > 0)
-			parent.text("found " + foundUndefPatches.size()
-					+ " undefined patch"
+			parent.text("found " + foundUndefPatches.size() + " undefined patch"
 					+ (foundUndefPatches.size() > 1 ? "es" : ""), 0, 85);
 		parent.popMatrix();
 	}
@@ -337,14 +329,10 @@ public class LevelSelect implements PConstants {
 		float angle = PApplet.TWO_PI / playerNames.length * selected;
 
 		parent.pushMatrix();
-		parent.translate(
-				PApplet.cos(angle)
-						* (parent.height / 2 - Hud.WIDTH + Hud.OFFSET),
-				PApplet.sin(angle)
-						* (parent.height / 2 - Hud.WIDTH + Hud.OFFSET));
+		parent.translate(PApplet.cos(angle) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET), PApplet.sin(angle)
+				* (parent.height / 2 - Hud.WIDTH + Hud.OFFSET));
 		parent.rotate(angle + PApplet.PI / 2);
-		parent.scale(imgPlayers[player].width / 2,
-				imgPlayers[player].height / 2);
+		parent.scale(imgPlayers[player].width / 2, imgPlayers[player].height / 2);
 		parent.beginShape(PApplet.QUADS);
 		parent.texture(imgPlayers[player]);
 		parent.vertex(-1, -1, 0, 0, 0);
@@ -359,14 +347,11 @@ public class LevelSelect implements PConstants {
 		parent.noStroke();
 		parent.textAlign(PApplet.CENTER, PApplet.BASELINE);
 		parent.textFont(font, LEVEL_FONT_SIZE);
-		String name = playerNames[selected].length() > 24 ? playerNames[selected]
-				.substring(0, 24) : playerNames[selected];
-		float offset = (parent.textWidth(name) / 2)
-				/ (2 * PApplet.PI * (parent.height / 2 - Hud.SCORE_RADIUS_OFFSET))
+		String name = playerNames[selected].length() > 24 ? playerNames[selected].substring(0, 24)
+				: playerNames[selected];
+		float offset = (parent.textWidth(name) / 2) / (2 * PApplet.PI * (parent.height / 2 - Hud.SCORE_RADIUS_OFFSET))
 				* PApplet.TWO_PI;
-		parent.arctext(name,
-				parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, angle
-						- offset);
+		parent.arctext(name, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, angle - offset);
 		parent.popMatrix();
 	}
 
@@ -400,11 +385,8 @@ public class LevelSelect implements PConstants {
 		float angle = PApplet.TWO_PI / levels.size() * selected;
 
 		parent.pushMatrix();
-		parent.translate(
-				PApplet.cos(angle)
-						* (parent.height / 2 - Hud.WIDTH + Hud.OFFSET),
-				PApplet.sin(angle)
-						* (parent.height / 2 - Hud.WIDTH + Hud.OFFSET));
+		parent.translate(PApplet.cos(angle) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET), PApplet.sin(angle)
+				* (parent.height / 2 - Hud.WIDTH + Hud.OFFSET));
 		parent.rotate(angle + PApplet.PI / 2);
 		parent.scale(imgLevel.width / 2, imgLevel.height / 2);
 		parent.beginShape(PApplet.QUADS);
@@ -424,12 +406,9 @@ public class LevelSelect implements PConstants {
 		Level level = levels.get(selected);
 		String name = level.songName + " (" + level.songDuration + ")";
 		name = name.length() > 24 ? name.substring(0, 24) : name;
-		float offset = (parent.textWidth(name) / 2)
-				/ (2 * PApplet.PI * (parent.height / 2 - Hud.SCORE_RADIUS_OFFSET))
+		float offset = (parent.textWidth(name) / 2) / (2 * PApplet.PI * (parent.height / 2 - Hud.SCORE_RADIUS_OFFSET))
 				* PApplet.TWO_PI;
-		parent.arctext(name,
-				parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, angle
-						- offset);
+		parent.arctext(name, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, angle - offset);
 		parent.popMatrix();
 	}
 
@@ -450,48 +429,73 @@ public class LevelSelect implements PConstants {
 	}
 
 	public void moveLeft() {
+
 		selected--;
-		if (state == LEVEL_SELECT_P1 || state == LEVEL_SELECT_P2) {
+
+		switch (state) {
+
+		case P1:
+		case P2:
 			if (selected < 0)
 				selected = particles.length - 1;
 			if (playerNames[selected] == players[0].name)
 				keyPressed(parent.key, parent.keyCode);
-		} else if (state == LEVEL_SELECT_SONG) {
+			break;
+
+		case Song:
 			if (selected < 0)
 				selected = levels.size() - 1;
+			break;
 		}
+
 	}
 
 	public void moveRight() {
+
 		selected++;
-		if (state == LEVEL_SELECT_P1 || state == LEVEL_SELECT_P2) {
+
+		switch (state) {
+
+		case P1:
+		case P2:
 			if (selected >= particles.length)
 				selected = 0;
 			if (playerNames[selected] == players[0].name)
 				keyPressed(parent.key, parent.keyCode);
-		} else if (state == LEVEL_SELECT_SONG) {
+			break;
+
+		case Song:
 			if (selected >= levels.size())
 				selected = 0;
+			break;
 		}
 	}
 
 	public void doSelect() {
-		if (state == LEVEL_SELECT_P1) {
+
+		switch (state) {
+
+		case P1:
 			players[0].name = playerNames[selected];
 			initP2();
-		} else if (state == LEVEL_SELECT_P2) {
+			break;
+
+		case P2:
 			if (playerNames[selected] != players[0].name) {
 				players[1].name = playerNames[selected];
 				initLevels();
 			}
-		} else if (state == LEVEL_SELECT_SONG) {
+			break;
+
+		case Song:
 			levelFile = LEVEL_FOLDER + levelFiles[selected];
-			state = LEVEL_SELECTED;
+			state = LevelSelectState.Done;
+			break;
 		}
 	}
 
 	public boolean isDone() {
-		return state == LEVEL_SELECTED;
+		return state == LevelSelectState.Done;
 	}
 
 	// This function returns all the files in a directory as an array of Strings
@@ -536,64 +540,71 @@ public class LevelSelect implements PConstants {
 				name += PApplet.parseChar(buffer[i]);
 
 			switch (buffer[11]) {
+
 			case 'P':
 				foundProxPatches.add(serial);
-				PApplet.println(" Found proximity patch: " + name + " ("
-						+ serial + ")");
+				PApplet.println(" Found proximity patch: " + name + " (" + serial + ")");
 				break;
+
 			case 'V':
 				foundVibePatches.add(serial);
-				PApplet.println(" Found vibration patch: " + name + " ("
-						+ serial + ")");
+				PApplet.println(" Found vibration patch: " + name + " (" + serial + ")");
 				break;
+
 			case 'A':
 				foundAccelPatches.add(serial);
-				PApplet.println(" Found acceleration patch: " + name + " ("
-						+ serial + ")");
+				PApplet.println(" Found acceleration patch: " + name + " (" + serial + ")");
 				break;
+
 			default:
 				foundUndefPatches.add(serial);
 				numProxPatches++; // change this later. should really be prox
 									// patches, not undefined.
-				PApplet.println(" Found undefined patch: " + name + " ("
-						+ serial + ")");
+				PApplet.println(" Found undefined patch: " + name + " (" + serial + ")");
 				break;
 			}
 		}
 
-		else if (buffer.length == XPan.CONFIG_ACK_LENGTH
-				&& buffer[0] == XPan.CONFIG_ACK_PACKET_TYPE) {
+		else if (buffer.length == XPan.CONFIG_ACK_LENGTH && buffer[0] == XPan.CONFIG_ACK_PACKET_TYPE) {
+
 			int myTurnLength = ((buffer[2] & 0xFF) << 8) | (buffer[3] & 0xFF);
 			numConfigAcks++;
-			PApplet.println("Config Ack Received in Level Select, Turn Length is "
-					+ myTurnLength);
+			PApplet.println("Config Ack Received in Level Select, Turn Length is " + myTurnLength);
 		}
 
-		else if (buffer.length == XPan.VIBE_IN_PACKET_LENGTH
-				&& buffer[0] == XPan.VIBE_IN_PACKET_TYPE) {
+		else if (buffer.length == XPan.VIBE_IN_PACKET_LENGTH && buffer[0] == XPan.VIBE_IN_PACKET_TYPE) {
+
 			int p = buffer[1];
 			int direction = buffer[2];
-			if (p <= 8
-					&& (state == LEVEL_SELECT_P1 || state == LEVEL_SELECT_SONG)) {
+			if (p <= 8 && (state == LevelSelectState.P1 || state == LevelSelectState.Song)) {
+
 				switch (direction) {
+
 				case 1:
 					moveLeft();
 					break;
+
 				case 2:
 					moveRight();
 					break;
+
 				default:
 					doSelect();
 					break;
 				}
-			} else if (p > 8 && state == LEVEL_SELECT_P2) {
+
+			} else if (p > 8 && state == LevelSelectState.P2) {
+
 				switch (direction) {
+
 				case 1:
 					moveLeft();
 					break;
+
 				case 2:
 					moveRight();
 					break;
+
 				default:
 					doSelect();
 					break;
@@ -612,4 +623,5 @@ public class LevelSelect implements PConstants {
 		players[0].sendConfig(turnLength);
 		players[1].sendConfig(turnLength);
 	}
+
 }

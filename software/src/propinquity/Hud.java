@@ -98,7 +98,7 @@ public class Hud {
 	 * 
 	 */
 	public void draw() {
-		// TODO: Fix dis
+		// TODO: Fix this
 		parent.pgl = (PGraphicsOpenGL) parent.g;
 		parent.gl = parent.pgl.beginGL();
 		parent.gl.glEnable(GL.GL_BLEND);
