@@ -66,15 +66,13 @@ public class PlayerList {
 			addPlayer("Player 2");
 
 		// create button to add new players
-		newButton = controlP5.addButton("NEW PLAYER", 0, parent.width / 2
-				- PLIST_WIDTH / 2, parent.height / 2, PLIST_NEW_WIDTH,
-				PLIST_NEW_HEIGHT);
+		newButton = controlP5.addButton("NEW PLAYER", 0, parent.width / 2 - PLIST_WIDTH / 2, parent.height / 2,
+				PLIST_NEW_WIDTH, PLIST_NEW_HEIGHT);
 		newButton.setId(PLIST_NEW_ID);
 
 		// create next button
-		nextButton = controlP5.addButton("NEXT", 0, parent.width / 2
-				+ PLIST_WIDTH / 2 - PLIST_NEXT_WIDTH, parent.height / 2,
-				PLIST_NEXT_WIDTH, PLIST_NEXT_HEIGHT);
+		nextButton = controlP5.addButton("NEXT", 0, parent.width / 2 + PLIST_WIDTH / 2 - PLIST_NEXT_WIDTH,
+				parent.height / 2, PLIST_NEXT_WIDTH, PLIST_NEXT_HEIGHT);
 		nextButton.setId(PLIST_NEXT_ID);
 
 		layout();
@@ -91,27 +89,22 @@ public class PlayerList {
 	public void update() {
 		// process controlP5 remove queue
 		for (int i = 0; i < removeQueue.size(); i++)
-			controlP5
-					.remove((removeQueue.get(i)).name());
+			controlP5.remove((removeQueue.get(i)).name());
 		removeQueue.clear();
 	}
 
 	void addPlayer(String name) {
 		// add a new text field to the list
-		Textfield playerField = controlP5.addTextfield(
-				"Player " + playerFields.size(), parent.width / 2 - PLIST_WIDTH
-						/ 2, parent.height / 2, PLIST_WIDTH
-						- PLIST_REMOVE_WIDTH * 2, PLIST_PLAYER_HEIGHT);
+		Textfield playerField = controlP5.addTextfield("Player " + playerFields.size(), parent.width / 2 - PLIST_WIDTH
+				/ 2, parent.height / 2, PLIST_WIDTH - PLIST_REMOVE_WIDTH * 2, PLIST_PLAYER_HEIGHT);
 		playerField.setAutoClear(false);
 		playerField.setText(name);
 		playerField.setCaptionLabel("Player " + (playerFields.size() + 1));
 		playerField.setFocus(true);
 
 		// add a matching remove button
-		Button removeBtn = controlP5.addButton("Remove " + playerFields.size(),
-				playerFields.size(), parent.width / 2 + PLIST_WIDTH / 2
-						- PLIST_REMOVE_WIDTH, parent.height / 2,
-				PLIST_REMOVE_WIDTH, PLIST_REMOVE_HEIGHT);
+		Button removeBtn = controlP5.addButton("Remove " + playerFields.size(), playerFields.size(), parent.width / 2
+				+ PLIST_WIDTH / 2 - PLIST_REMOVE_WIDTH, parent.height / 2, PLIST_REMOVE_WIDTH, PLIST_REMOVE_HEIGHT);
 		removeBtn.setCaptionLabel("x");
 
 		playerFields.add(playerField);
@@ -119,8 +112,7 @@ public class PlayerList {
 	}
 
 	public void layout() {
-		float y = parent.height / 2 - (PLIST_PLAYER_HEIGHT + PLIST_VERT_SPACER)
-				* (playerFields.size() + 1) / 2;
+		float y = parent.height / 2 - (PLIST_PLAYER_HEIGHT + PLIST_VERT_SPACER) * (playerFields.size() + 1) / 2;
 
 		// move existing player fields up
 		CVector3f pos = new CVector3f(0, 0, 0);

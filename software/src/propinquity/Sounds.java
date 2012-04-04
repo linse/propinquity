@@ -1,6 +1,5 @@
 package propinquity;
 
-import processing.core.PApplet;
 import ddf.minim.*;
 
 /**
@@ -11,29 +10,44 @@ import ddf.minim.*;
 public class Sounds {
 	
 	public static final String SONG_FOLDER = "songs/";
+	
 	public static final int BUFFER_SIZE = 2048;
 	
-	AudioPlayer complete;
-	AudioPlayer negativeCoop;
-	AudioPlayer negativeP1;
-	AudioPlayer negativeP2;
-	AudioPlayer song;
+	public static final boolean MUTE = false;
 	
-	Minim minim;
-		
+	public static AudioPlayer complete;
+	public static AudioPlayer negativeCoop;
+	public static AudioPlayer negativeP1;
+	public static AudioPlayer negativeP2;
+	public static AudioPlayer song;
+	
+	private static Minim minim;
+	
+	private static Propinquity app;
+	
+	/**
+	 * Suppress default constructor to disable instantiability.
+	 */
+	private Sounds () {
+		throw new AssertionError();
+	}
+	
 	/**
 	 * Setup the Minim audio manager.
 	 * 
 	 * @param application
 	 */
-	public Sounds(PApplet parent) {		
-		minim = new Minim(parent);
-	}
+	public static void setup(Propinquity application) {
 		
+		app = application;
+		
+		minim = new Minim(app);
+	}
+	
 	/**
 	 * Load common sound content.
 	 */
-	public void loadCommonContent() {
+	public static void loadCommonContent() {
 		
 		complete = minim.loadFile("sounds/comp.mp3", BUFFER_SIZE);
 		complete.setGain(5);
@@ -42,7 +56,7 @@ public class Sounds {
 	/**
 	 * Load level-specific sound content.
 	 */
-	public void loadLevelContent() {
+	public static void loadLevelContent() {
 		
 		negativeCoop = minim.loadFile("sounds/neg.mp3", BUFFER_SIZE);
 		negativeP1 = minim.loadFile("sounds/neg1.mp3", BUFFER_SIZE);
@@ -52,7 +66,7 @@ public class Sounds {
 	/**
 	 * Load the song for the current level.
 	 */
-	public void loadSong(String file) {
+	public static void loadSong(String file) {
 		
 		song = minim.loadFile(SONG_FOLDER + file, BUFFER_SIZE);
 	}

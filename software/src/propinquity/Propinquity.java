@@ -30,8 +30,6 @@ public class Propinquity extends PApplet {
 	final boolean DEBUG_XBEE = false;
 	final boolean DRAW_SHADOWS = false;
 	final boolean DRAW_PARTICLES = true;
-	final int FULL_SCREEN_ID = 0;
-	final public boolean MUTE = false;
 
 	// liquid constants
 	final float PARTICLE_SCALE = 0.8f;
@@ -54,7 +52,6 @@ public class Propinquity extends PApplet {
 	final int INNER_FENCE_MASK = 0x4;
 	final int OUTER_FENCE_MASK = 0x8;
 	final int PLAYERS_MASK = 0x1 | 0x2;
-	// final int NUM_STEP_PER_PERIOD = 4;
 	final float PUSH_PERIOD_ROT_SPEED = 1f;
 	final float PUSH_DAMPENING = 0.98f;
 
@@ -78,7 +75,6 @@ public class Propinquity extends PApplet {
 	PlayerList playerList = null;
 
 	// OpenGL
-	public PGraphicsOpenGL pgl;
 	GL gl;
 
 	// Box2D
@@ -123,38 +119,31 @@ public class Propinquity extends PApplet {
 	// XBees
 	public XBeeManager xbeeManager;
 
-	//Logger
-	Logger logger;
-	Sounds sounds;
-	Graphics graphics;
-
 	public void setup() {
-		
+
 		// Setup graphics and sound
-		sounds = new Sounds(this);
-		graphics = new Graphics(this);
+		Graphics.setup(this);
+		Sounds.setup(this);
 
 		// initial opengl setup
-		pgl = (PGraphicsOpenGL) g;
-		gl = pgl.beginGL();
+		gl = ((PGraphicsOpenGL) g).gl;
 		gl.glDisable(GL.GL_DEPTH_TEST);
-		pgl.endGL();
 
 		// Load common artwork and sound
-		graphics.loadCommonContent();
-		sounds.loadCommonContent();
+		Graphics.loadCommonContent();
+		Sounds.loadCommonContent();
 
-		hud = new Hud(this, sounds, graphics);
+		hud = new Hud(this);
 
 		// init logging
-		logger = new Logger(this, "bin/messages.txt");
+		Logger.setup(this);
 	}
 
 	void initLevel(Player[] players, String levelFile) {
-		
-		sounds.loadLevelContent();
-		
-		level = new Level(this, sounds, players);
+
+		Sounds.loadLevelContent();
+
+		level = new Level(this, players);
 		xmlInOut = new XMLInOut(this, level);
 		xmlInOut.loadElement(levelFile);
 		while (true)
@@ -166,9 +155,9 @@ public class Propinquity extends PApplet {
 			System.err.println("I had some trouble reading the level file.");
 			println("Defaulting to 2 minutes of free play instead.");
 		}
-		
+
 		// TODO: fix this funny order business
-		graphics.loadLevelContent();
+		Graphics.loadLevelContent();
 
 		// send configuration message here
 		// TODO: send step length to proximity patches
@@ -317,11 +306,11 @@ public class Propinquity extends PApplet {
 
 		case LevelSelect:
 			// TODO: To fix.
-			
+
 			// init level select UI
 			if (levelSelect == null) {
 				playerList.dispose();
-				levelSelect = new LevelSelect(this, sounds, playerList);
+				levelSelect = new LevelSelect(this, playerList);
 			}
 			levelSelect.draw();
 			break;
@@ -331,7 +320,7 @@ public class Propinquity extends PApplet {
 			break;
 		}
 
-		logger.recordFrame();
+		Logger.recordFrame();
 	}
 
 	public void stop() {
@@ -366,18 +355,19 @@ public class Propinquity extends PApplet {
 
 		pushMatrix();
 		translate(width / 2, height / 2);
-		textFont(graphics.font, Hud.FONT_SIZE);
+		textFont(Graphics.font, Hud.FONT_SIZE);
 		textAlign(CENTER, CENTER);
 		fill(255);
 		noStroke();
 		text("Detecting XBee modules... ", 0, 0);
 		translate(0, 30);
-		textFont(graphics.font, Hud.FONT_SIZE * 0.65f);
+		textFont(Graphics.font, Hud.FONT_SIZE * 0.65f);
 		text(msg, 0, 0);
 		popMatrix();
 	}
 
 	void updatePlayerList() {
+		// TODO: Fix this.
 		if (playerList == null) {
 			xbeeManager.dispose();
 			playerList = new PlayerList(this);
@@ -407,13 +397,13 @@ public class Propinquity extends PApplet {
 				pushMatrix();
 				translate(width / 2, height / 2);
 				rotate(frameCount * Hud.PROMPT_ROT_SPEED);
-				image(graphics.hudLevelComplete, 0, -25);
-				textFont(graphics.font, Hud.FONT_SIZE);
+				image(Graphics.hudLevelComplete, 0, -25);
+				textFont(Graphics.font, Hud.FONT_SIZE);
 				textAlign(CENTER, CENTER);
 				fill(winner != null ? winner.getColor() : NEUTRAL_COLOR);
 				noStroke();
 				text(winner != null ? winner.getName() + " won!" : "You tied!", 0, 0);
-				image(graphics.hudPlayAgain, 0, 30);
+				image(Graphics.hudPlayAgain, 0, 30);
 				popMatrix();
 			} else {
 				// keep track of done time
@@ -438,7 +428,7 @@ public class Propinquity extends PApplet {
 				groupParticles();
 
 				// flag as ended
-				if (doneTime != -1 && frameCount > doneTime + graphics.FPS * END_LEVEL_TIME)
+				if (doneTime != -1 && frameCount > doneTime + Graphics.FPS * END_LEVEL_TIME)
 					endedLevel = true;
 			}
 
@@ -465,18 +455,16 @@ public class Propinquity extends PApplet {
 			// if (USE_STUB) level.processStub();
 
 		} else {
-			pgl = (PGraphicsOpenGL) g;
-			gl = pgl.beginGL();
+			gl = ((PGraphicsOpenGL) g).gl;
 			gl.glEnable(GL.GL_BLEND);
 			gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-			pgl.endGL();
 
 			fill(255);
 			textAlign(CENTER);
 			pushMatrix();
 			translate(width / 2, height / 2);
 			rotate(frameCount * Hud.PROMPT_ROT_SPEED);
-			image(graphics.hudPlay, 0, 0);
+			image(Graphics.hudPlay, 0, 0);
 			popMatrix();
 		}
 	}
@@ -497,28 +485,24 @@ public class Propinquity extends PApplet {
 	}
 
 	void drawInnerBoundary() {
-		pgl = (PGraphicsOpenGL) g;
-		gl = pgl.beginGL();
+		gl = ((PGraphicsOpenGL) g).gl;
 		gl.glEnable(GL.GL_BLEND);
 		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-		pgl.endGL();
 
 		pushMatrix();
 		translate(width / 2 - 1, height / 2);
-		image(graphics.hudInnerBoundary, 0, 0);
+		image(Graphics.hudInnerBoundary, 0, 0);
 		popMatrix();
 	}
 
 	void drawOuterBoundary() {
-		pgl = (PGraphicsOpenGL) g;
-		gl = pgl.beginGL();
+		gl = ((PGraphicsOpenGL) g).gl;
 		gl.glEnable(GL.GL_BLEND);
 		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-		pgl.endGL();
 
 		pushMatrix();
 		translate(width / 2 - 1, height / 2);
-		image(graphics.hudOuterBoundary, 0, 0);
+		image(Graphics.hudOuterBoundary, 0, 0);
 		popMatrix();
 	}
 
@@ -558,11 +542,9 @@ public class Propinquity extends PApplet {
 	}
 
 	void drawParticles() {
-		pgl = (PGraphicsOpenGL) g;
-		gl = pgl.beginGL();
+		gl = ((PGraphicsOpenGL) g).gl;
 		gl.glEnable(GL.GL_BLEND);
 		gl.glBlendFunc(GL.GL_ONE, GL.GL_ONE_MINUS_SRC_ALPHA);
-		pgl.endGL();
 
 		for (int i = 0; i < level.getNumPlayers(); i++)
 			drawParticles(i);
@@ -579,11 +561,9 @@ public class Propinquity extends PApplet {
 	}
 
 	void drawMask() {
-		pgl = (PGraphicsOpenGL) g;
-		gl = pgl.beginGL();
+		gl = ((PGraphicsOpenGL) g).gl;
 		gl.glEnable(GL.GL_BLEND);
 		gl.glBlendFunc(GL.GL_DST_COLOR, GL.GL_ZERO);
-		pgl.endGL();
 
 		pushMatrix();
 		translate(width / 2, height / 2);
@@ -596,37 +576,6 @@ public class Propinquity extends PApplet {
 		vertex(-1, 1, 0, 0, 1);
 		endShape(CLOSE);
 		popMatrix();
-	}
-
-	void arctext(String message, float radius, float startAngle) {
-		// We must keep track of our position along the curve
-		float arclength = 0;
-
-		// For every box
-		for (int i = 0; i < message.length(); i++) {
-			// Instead of a constant width, we check the width of each
-			// character.
-			char currentChar = message.charAt(i);
-			float w = textWidth(currentChar);
-
-			// Each box is centered so we move half the width
-			arclength += w / 2;
-			// Angle in radians is the arclength divided by the radius
-			// Starting on the left side of the circle by adding PI
-			float theta = startAngle + arclength / radius;
-
-			pushMatrix();
-			// Polar to cartesian coordinate conversion
-			translate(radius * cos(theta), radius * sin(theta));
-			// Rotate the box
-			rotate(theta + PI / 2); // rotation is offset by 90 degrees
-			// Display the character
-			// fill(0);
-			text(currentChar, 0, 0);
-			popMatrix();
-			// Move halfway again
-			arclength += w / 2;
-		}
 	}
 
 	void updateParticles() {
@@ -878,7 +827,7 @@ public class Propinquity extends PApplet {
 				int j = n.intValue();
 				float vx = xs[j] - xs[i];
 				float vy = ys[j] - ys[i];
-				
+
 				if (vx > -idealRad && vx < idealRad && vy > -idealRad && vy < idealRad) {
 					if (vlen[a] < idealRad) {
 						float q = vlen[a] / idealRad;
@@ -1211,7 +1160,7 @@ public class Propinquity extends PApplet {
 				break;
 
 			case 'f': // flush output and close
-				logger.close();
+				Logger.close();
 				exit();
 				break;
 			}

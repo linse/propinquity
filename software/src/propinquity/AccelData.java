@@ -14,6 +14,7 @@ public class AccelData {
 	}
 
 	public String toString() {
-		return "[player:" + player + " patch:" + patch + " xyz:" + x + "," + y + "," + z + "]";
+		return "[player:" + player + " patch:" + patch + " xyz:" + x + "," + y
+				+ "," + z + "]";
 	}
 }
