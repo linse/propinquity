@@ -13,6 +13,8 @@ public class Sounds {
 	
 	public static final int BUFFER_SIZE = 2048;
 	
+	public static final boolean MUTE = false;
+	
 	public static AudioPlayer complete;
 	public static AudioPlayer negativeCoop;
 	public static AudioPlayer negativeP1;
