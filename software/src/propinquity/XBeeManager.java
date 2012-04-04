@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import processing.core.PApplet;
+import processing.core.PConstants;
 import processing.serial.Serial;
 import controlP5.Button;
 import controlP5.ControlEvent;
@@ -14,16 +15,13 @@ import controlP5.ControlP5;
 import xbee.*;
 
 public class XBeeManager implements Runnable {
-	PApplet parent;
+	Propinquity parent;
 	HashMap<String, String> ports;
 	boolean debug;
 	Thread thread;
 	boolean done;
 
 	boolean initialized;
-	// String[] initPorts;
-	// int initPortIndex;
-	// long initLastCheck;
 	boolean initFound;
 	String initNodeId;
 
@@ -43,13 +41,15 @@ public class XBeeManager implements Runnable {
 	Button plNextButton;
 	Button plScanButton;
 
-	public XBeeManager(PApplet p) {
+	public XBeeManager(Propinquity p) {
 		parent = p;
 		controlP5 = new ControlP5(p);
 		done = false;
 		ports = new HashMap<String, String>();
 		initialized = false;
 		debug = false;
+		
+		init();
 	}
 
 	public void init() {
@@ -260,4 +260,29 @@ public class XBeeManager implements Runnable {
 			break;
 		}
 	}
+	
+	public void draw() {
+		
+		String msg = parent.xbeeManager.foundPortIds();
+		if (msg.isEmpty()) {
+			if (parent.xbeeManager.isScanning())
+				msg = "Scanning...";
+			else
+				msg = "No Xbee found.";
+		} else if (!parent.xbeeManager.isScanning())
+			msg += ".";
+
+		parent.pushMatrix();
+		parent.translate(parent.width / 2, parent.height / 2);
+		parent.textFont(Graphics.font, Hud.FONT_SIZE);
+		parent.textAlign(PConstants.CENTER, PConstants.CENTER);
+		parent.fill(255);
+		parent.noStroke();
+		parent.text("Detecting XBee modules... ", 0, 0);
+		parent.translate(0, 30);
+		parent.textFont(Graphics.font, Hud.FONT_SIZE * 0.65f);
+		parent.text(msg, 0, 0);
+		parent.popMatrix();
+	}
+	
 }

@@ -139,6 +139,9 @@ public class Propinquity extends PApplet {
 		// Load common artwork and sound
 		graphics.loadCommonContent();
 		sounds.loadCommonContent();
+		
+		xbeeManager = new XBeeManager(this);
+		xbeeManager.debug = DEBUG_XBEE;
 
 		hud = new Hud(this, sounds, graphics);
 
@@ -304,7 +307,7 @@ public class Propinquity extends PApplet {
 		switch (gameState) {
 
 		case XBeeInit:
-			drawXBeeManager();
+			xbeeManager.draw();
 			break;
 
 		case PlayerList:
@@ -333,44 +336,6 @@ public class Propinquity extends PApplet {
 	public void stop() {
 		if (gameState == GameState.Play)
 			level.clear();
-	}
-
-	void drawXBeeManager() {
-		if (xbeeManager == null) {
-			xbeeManager = new XBeeManager(this);
-			xbeeManager.debug = DEBUG_XBEE;
-			// if port list file exists
-			// then init with the list
-			// else autodetect
-			xbeeManager.init();
-		}
-
-		// if (xbeeManager.isInitialized()) {
-		// xbeeManager.save();
-		// initPlayerListCtrl();
-		// gameState = STATE_PLAYER_LIST;
-		// }
-		// else {
-		String msg = xbeeManager.foundPortIds();
-		if (msg.isEmpty()) {
-			if (xbeeManager.isScanning())
-				msg = "Scanning...";
-			else
-				msg = "No Xbee found.";
-		} else if (!xbeeManager.isScanning())
-			msg += ".";
-
-		pushMatrix();
-		translate(width / 2, height / 2);
-		textFont(Graphics.font, Hud.FONT_SIZE);
-		textAlign(CENTER, CENTER);
-		fill(255);
-		noStroke();
-		text("Detecting XBee modules... ", 0, 0);
-		translate(0, 30);
-		textFont(Graphics.font, Hud.FONT_SIZE * 0.65f);
-		text(msg, 0, 0);
-		popMatrix();
 	}
 
 	void updatePlayerList() {
