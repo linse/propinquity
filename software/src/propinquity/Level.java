@@ -33,6 +33,7 @@ public class Level {
 
 	// parent applet
 	Propinquity parent;
+	Sounds sounds;
 
 	// the players
 	// String[] playerNames;
@@ -66,30 +67,27 @@ public class Level {
 	int successfullyRead = -1; // -1 means not read yet. 0 --> false. 1-->true
 
 	// Only used for loading level data
-	public Level(Propinquity p) {
-		this.parent = p;
+	public Level(Propinquity parent, Sounds sounds) {
 		Player[] players = new Player[2];
 		players[0] = new Player(parent, parent.PLAYER_COLORS[0]);
 		players[0].name = "Player 1";
 		players[1] = new Player(parent, parent.PLAYER_COLORS[1]);
 		players[1].name = "Player 2";
-		init(p, players);
-		reset();
+		init(parent, sounds, players);
 	}
 
-	public Level(Propinquity p, Player[] players) {
-		init(p, players);
+	public Level(Propinquity parent, Sounds sounds, Player[] players) {
+		init(parent, sounds, players);
 	}
 
-	public void init(Propinquity p, Player[] plyrs) {
-		
-		parent = p;
-		
+	public void init(Propinquity parent, Sounds sounds, Player[] plyrs) {		
+		this.parent = parent;
+		this.sounds = sounds;
 		players = plyrs;
-		players[0].registerNegativePlayerSound(Sounds.negativeP1);
-		players[0].registerNegativeCoopSound(Sounds.negativeCoop);
-		players[1].registerNegativePlayerSound(Sounds.negativeP2);
-		players[1].registerNegativeCoopSound(Sounds.negativeCoop);
+		players[0].registerNegativePlayerSound(sounds.negativeP1);
+		players[0].registerNegativeCoopSound(sounds.negativeCoop);
+		players[1].registerNegativePlayerSound(sounds.negativeP2);
+		players[1].registerNegativeCoopSound(sounds.negativeCoop);
 		
 		lastCoopDone = false;
 		reset();
@@ -168,8 +166,8 @@ public class Level {
 		lastUpdate = 0;
 
 		// rewind song
-		if (Sounds.song != null)
-			Sounds.song.rewind();
+		if (sounds.song != null)
+			sounds.song.rewind();
 	}
 
 	void update() {
@@ -222,7 +220,7 @@ public class Level {
 
 	void pause() {
 		isRunning = false;
-		Sounds.song.pause();
+		sounds.song.pause();
 	}
 
 	void start() {
@@ -230,7 +228,7 @@ public class Level {
 		lastUpdate = parent.millis();
 
 		if (!parent.MUTE)
-			Sounds.song.play();
+			sounds.song.play();
 	}
 
 	boolean isPaused() {
@@ -411,7 +409,7 @@ public class Level {
 			}
 		}
 
-		Sounds.loadSong(songFile + ".mp3");
+		sounds.loadSong(songFile + ".mp3");
 
 		// success!
 		PApplet.println("Successfully read the level file.");

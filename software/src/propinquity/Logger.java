@@ -2,6 +2,7 @@ package propinquity;
 
 import java.io.PrintWriter;
 
+import processing.core.PApplet;
 import processing.video.MovieMaker;
 
 /**
@@ -14,32 +15,22 @@ public class Logger {
 	/**
 	 * Output log file location.
 	 */
-	public static final String outputFile = "bin/messages.txt";
+	String outputFile;
 	
-	private static final boolean isRecording = false;
+	boolean isRecording = false;
 	
-	private static PrintWriter output;
-	private static MovieMaker movieMaker;
-	
-	private static Propinquity app;
-	
-	/**
-	 * Suppress default constructor to disable instantiability.
-	 */
-	private Logger () {
-		throw new AssertionError();
-	}
-	
-	/**
-	 * Setup the text logger and prepare for writing.
-	 * 
-	 * @param application The parent application to be logged.
-	 */
-	public static void setup(Propinquity application) {
+	PrintWriter output;
+	MovieMaker movieMaker;
 		
-		app = application;
-		
-		output = app.createWriter(outputFile);
+	/**
+	 * Make a new logger object.
+	 * @param p the Propinquity instance.
+	 * @param outputFile the log file to use.
+	 */
+	public Logger(PApplet parent, String outputFile) {
+		this.outputFile = outputFile;
+
+		output = parent.createWriter(outputFile);
 		output.println("Starting Logging of Propinquity Test.");
 	}
 	
@@ -48,14 +39,14 @@ public class Logger {
 	 * 
 	 * @param line The string to be logged.
 	 */
-	public static void printOutput(String line) {
+	public void printOutput(String line) {
 		output.println(line);
 	}
 	
 	/**
 	 * Record a frame of video.
 	 */
-	public static void recordFrame() {
+	public void recordFrame() {
 		if (isRecording)
 			movieMaker.addFrame();
 	}
@@ -63,7 +54,7 @@ public class Logger {
 	/**
 	 * Close the text logger.
 	 */
-	public static void close() {
+	public void close() {
 		output.flush();
 		output.close();
 	}

@@ -123,11 +123,16 @@ public class Propinquity extends PApplet {
 	// XBees
 	public XBeeManager xbeeManager;
 
+	//Logger
+	Logger logger;
+	Sounds sounds;
+	Graphics graphics;
+
 	public void setup() {
 		
 		// Setup graphics and sound
-		Graphics.setup(this);
-		Sounds.setup(this);
+		sounds = new Sounds(this);
+		graphics = new Graphics(this);
 
 		// initial opengl setup
 		pgl = (PGraphicsOpenGL) g;
@@ -136,20 +141,20 @@ public class Propinquity extends PApplet {
 		pgl.endGL();
 
 		// Load common artwork and sound
-		Graphics.loadCommonContent();
-		Sounds.loadCommonContent();
+		graphics.loadCommonContent();
+		sounds.loadCommonContent();
 
-		hud = new Hud(this);
+		hud = new Hud(this, sounds, graphics);
 
 		// init logging
-		Logger.setup(this);
+		logger = new Logger(this, "bin/messages.txt");
 	}
 
 	void initLevel(Player[] players, String levelFile) {
 		
-		Sounds.loadLevelContent();
+		sounds.loadLevelContent();
 		
-		level = new Level(this, players);
+		level = new Level(this, sounds, players);
 		xmlInOut = new XMLInOut(this, level);
 		xmlInOut.loadElement(levelFile);
 		while (true)
@@ -163,7 +168,7 @@ public class Propinquity extends PApplet {
 		}
 		
 		// TODO: fix this funny order business
-		Graphics.loadLevelContent();
+		graphics.loadLevelContent();
 
 		// send configuration message here
 		// TODO: send step length to proximity patches
@@ -316,7 +321,7 @@ public class Propinquity extends PApplet {
 			// init level select UI
 			if (levelSelect == null) {
 				playerList.dispose();
-				levelSelect = new LevelSelect(this, playerList);
+				levelSelect = new LevelSelect(this, sounds, playerList);
 			}
 			levelSelect.draw();
 			break;
@@ -326,7 +331,7 @@ public class Propinquity extends PApplet {
 			break;
 		}
 
-		Logger.recordFrame();
+		logger.recordFrame();
 	}
 
 	public void stop() {
@@ -361,13 +366,13 @@ public class Propinquity extends PApplet {
 
 		pushMatrix();
 		translate(width / 2, height / 2);
-		textFont(Graphics.font, Hud.FONT_SIZE);
+		textFont(graphics.font, Hud.FONT_SIZE);
 		textAlign(CENTER, CENTER);
 		fill(255);
 		noStroke();
 		text("Detecting XBee modules... ", 0, 0);
 		translate(0, 30);
-		textFont(Graphics.font, Hud.FONT_SIZE * 0.65f);
+		textFont(graphics.font, Hud.FONT_SIZE * 0.65f);
 		text(msg, 0, 0);
 		popMatrix();
 	}
@@ -402,13 +407,13 @@ public class Propinquity extends PApplet {
 				pushMatrix();
 				translate(width / 2, height / 2);
 				rotate(frameCount * Hud.PROMPT_ROT_SPEED);
-				image(Graphics.hudLevelComplete, 0, -25);
-				textFont(Graphics.font, Hud.FONT_SIZE);
+				image(graphics.hudLevelComplete, 0, -25);
+				textFont(graphics.font, Hud.FONT_SIZE);
 				textAlign(CENTER, CENTER);
 				fill(winner != null ? winner.getColor() : NEUTRAL_COLOR);
 				noStroke();
 				text(winner != null ? winner.getName() + " won!" : "You tied!", 0, 0);
-				image(Graphics.hudPlayAgain, 0, 30);
+				image(graphics.hudPlayAgain, 0, 30);
 				popMatrix();
 			} else {
 				// keep track of done time
@@ -433,7 +438,7 @@ public class Propinquity extends PApplet {
 				groupParticles();
 
 				// flag as ended
-				if (doneTime != -1 && frameCount > doneTime + Graphics.FPS * END_LEVEL_TIME)
+				if (doneTime != -1 && frameCount > doneTime + graphics.FPS * END_LEVEL_TIME)
 					endedLevel = true;
 			}
 
@@ -471,7 +476,7 @@ public class Propinquity extends PApplet {
 			pushMatrix();
 			translate(width / 2, height / 2);
 			rotate(frameCount * Hud.PROMPT_ROT_SPEED);
-			image(Graphics.hudPlay, 0, 0);
+			image(graphics.hudPlay, 0, 0);
 			popMatrix();
 		}
 	}
@@ -500,7 +505,7 @@ public class Propinquity extends PApplet {
 
 		pushMatrix();
 		translate(width / 2 - 1, height / 2);
-		image(Graphics.hudInnerBoundary, 0, 0);
+		image(graphics.hudInnerBoundary, 0, 0);
 		popMatrix();
 	}
 
@@ -513,7 +518,7 @@ public class Propinquity extends PApplet {
 
 		pushMatrix();
 		translate(width / 2 - 1, height / 2);
-		image(Graphics.hudOuterBoundary, 0, 0);
+		image(graphics.hudOuterBoundary, 0, 0);
 		popMatrix();
 	}
 
@@ -1206,7 +1211,7 @@ public class Propinquity extends PApplet {
 				break;
 
 			case 'f': // flush output and close
-				Logger.close();
+				logger.close();
 				exit();
 				break;
 			}

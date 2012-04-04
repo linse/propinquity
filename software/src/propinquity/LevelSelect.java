@@ -68,8 +68,11 @@ public class LevelSelect implements PConstants {
 	PGraphics pgLevel;
 	String levelFile;
 
-	public LevelSelect(Propinquity p, PlayerList playerList) {
+	Sounds sounds;
+
+	public LevelSelect(Propinquity p, Sounds sounds, PlayerList playerList) {
 		this.parent = p;
+		this.sounds = sounds;
 		this.radius = parent.height / 2 - Hud.WIDTH * 2;
 		this.playerNames = playerList.getNames();
 
@@ -113,7 +116,7 @@ public class LevelSelect implements PConstants {
 		// load each level to know the song name and duration
 		levels = new ArrayList<Level>();
 		for (int i = 0; i < levelFiles.length; i++) {
-			loadingLevel = new Level(parent);
+			loadingLevel = new Level(parent, sounds);
 			parent.xmlInOut = new XMLInOut(parent, this);
 			parent.xmlInOut.loadElement(LEVEL_FOLDER + levelFiles[i]);
 			while (true)

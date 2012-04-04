@@ -23,19 +23,23 @@ public class Hud {
 	public static final float SCORE_ROT_SPEED = 0.0001f;
 	public static final float PROMPT_ROT_SPEED = 0.002f;
 
-	private Propinquity parent;
+	Propinquity parent;
+	Sounds sounds;
+	Graphics graphics;
 	
-	private float angle = 0;
-	private float velocity = -PConstants.TWO_PI / 500f;
+	float angle = 0;
+	float velocity = -PConstants.TWO_PI / 500f;
 	
-	private boolean isSnapped = false;
+	boolean isSnapped = false;
 	
 	/**
 	 * 
 	 * @param parent
 	 */
-	public Hud(Propinquity parent) {
+	public Hud(Propinquity parent, Sounds sounds, Graphics graphics) {
 		this.parent = parent;
+		this.sounds = sounds;
+		this.graphics = graphics;
 	}
 
 	/**
@@ -115,9 +119,9 @@ public class Hud {
 			parent.translate(parent.width / 2 + PApplet.cos(ang) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET),
 					parent.height / 2 + PApplet.sin(ang) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET));
 			parent.rotate(ang + PConstants.HALF_PI);
-			parent.scale(Graphics.hudCoop.width / 2, Graphics.hudCoop.height / 2);
+			parent.scale(graphics.hudCoop.width / 2, graphics.hudCoop.height / 2);
 			parent.beginShape(PConstants.QUADS);
-			parent.texture(Graphics.hudCoop);
+			parent.texture(graphics.hudCoop);
 			parent.vertex(-1, -1, 0, 0, 0);
 			parent.vertex(1, -1, 0, 1, 0);
 			parent.vertex(1, 1, 0, 1, 1);
@@ -129,7 +133,7 @@ public class Hud {
 			parent.fill(255);
 			parent.noStroke();
 			parent.textAlign(PConstants.CENTER, PConstants.BASELINE);
-			parent.textFont(Graphics.font, Hud.FONT_SIZE);
+			parent.textFont(graphics.font, Hud.FONT_SIZE);
 			String score = String.valueOf(parent.level.getTotalPts() / 2);
 			String name = "Coop";
 			while (parent.textWidth(score + name) < 240)
@@ -142,8 +146,8 @@ public class Hud {
 		} else {
 
 			if (!parent.level.getLastCoopDone()) {
-				Sounds.complete.play();
-				Sounds.complete.rewind();
+				sounds.complete.play();
+				sounds.complete.rewind();
 				parent.level.setLastCoopDone(true);
 			}
 			for (int i = 0; i < parent.level.getNumPlayers(); i++) {
@@ -154,9 +158,9 @@ public class Hud {
 				parent.translate(parent.width / 2 + PApplet.cos(ang) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET),
 						parent.height / 2 + PApplet.sin(ang) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET));
 				parent.rotate(ang + PConstants.HALF_PI);
-				parent.scale(Graphics.hudPlayers[i].width / 2, Graphics.hudPlayers[i].height / 2);
+				parent.scale(graphics.hudPlayers[i].width / 2, graphics.hudPlayers[i].height / 2);
 				parent.beginShape(PConstants.QUADS);
-				parent.texture(Graphics.hudPlayers[i]);
+				parent.texture(graphics.hudPlayers[i]);
 				parent.vertex(-1, -1, 0, 0, 0);
 				parent.vertex(1, -1, 0, 1, 0);
 				parent.vertex(1, 1, 0, 1, 1);
@@ -168,7 +172,7 @@ public class Hud {
 				parent.fill(255);
 				parent.noStroke();
 				parent.textAlign(PConstants.CENTER, PConstants.BASELINE);
-				parent.textFont(Graphics.font, Hud.FONT_SIZE);
+				parent.textFont(graphics.font, Hud.FONT_SIZE);
 				String score = String.valueOf(player.getTotalPts());
 				String name = player.getName().length() > 12 ? player.getName().substring(0, 12) : player.getName();
 				while (parent.textWidth(score + name) < 240)
