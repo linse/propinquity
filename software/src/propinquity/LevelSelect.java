@@ -68,8 +68,11 @@ public class LevelSelect implements PConstants {
 	PGraphics pgLevel;
 	String levelFile;
 
-	public LevelSelect(Propinquity p, PlayerList playerList) {
+	Sounds sounds;
+
+	public LevelSelect(Propinquity p, Sounds sounds, PlayerList playerList) {
 		this.parent = p;
+		this.sounds = sounds;
 		this.radius = parent.height / 2 - Hud.WIDTH * 2;
 		this.playerNames = playerList.getNames();
 
@@ -113,7 +116,7 @@ public class LevelSelect implements PConstants {
 		// load each level to know the song name and duration
 		levels = new ArrayList<Level>();
 		for (int i = 0; i < levelFiles.length; i++) {
-			loadingLevel = new Level(parent);
+			loadingLevel = new Level(parent, sounds);
 			parent.xmlInOut = new XMLInOut(parent, this);
 			parent.xmlInOut.loadElement(LEVEL_FOLDER + levelFiles[i]);
 			while (true)
@@ -283,9 +286,11 @@ public class LevelSelect implements PConstants {
 		if (particles == null)
 			return;
 
-		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
+		parent.pgl = (PGraphicsOpenGL) parent.g;
+		parent.gl = parent.pgl.beginGL();
 		parent.gl.glEnable(GL.GL_BLEND);
 		parent.gl.glBlendFunc(GL.GL_ONE, GL.GL_ONE_MINUS_SRC_ALPHA);
+		parent.pgl.endGL();
 
 		for (int i = 0; i < particles.length; i++) {
 			particles[i].draw();
@@ -293,9 +298,11 @@ public class LevelSelect implements PConstants {
 	}
 
 	private void drawSelectPlayerHUD(int player) {
-		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
+		parent.pgl = (PGraphicsOpenGL) parent.g;
+		parent.gl = parent.pgl.beginGL();
 		parent.gl.glEnable(GL.GL_BLEND);
 		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+		parent.pgl.endGL();
 
 		parent.fill(255);
 		parent.pushMatrix();
@@ -313,9 +320,11 @@ public class LevelSelect implements PConstants {
 	}
 
 	private void drawPlayerName(int player) {
-		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
+		parent.pgl = (PGraphicsOpenGL) parent.g;
+		parent.gl = parent.pgl.beginGL();
 		parent.gl.glEnable(GL.GL_BLEND);
 		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+		parent.pgl.endGL();
 
 		parent.noStroke();
 		parent.noFill();
@@ -345,14 +354,16 @@ public class LevelSelect implements PConstants {
 				: playerNames[selected];
 		float offset = (parent.textWidth(name) / 2) / (2 * PApplet.PI * (parent.height / 2 - Hud.SCORE_RADIUS_OFFSET))
 				* PApplet.TWO_PI;
-		Text.drawArc(name, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, angle - offset, parent);
+		parent.arctext(name, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, angle - offset);
 		parent.popMatrix();
 	}
 
 	private void drawSelectSong() {
-		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
+		parent.pgl = (PGraphicsOpenGL) parent.g;
+		parent.gl = parent.pgl.beginGL();
 		parent.gl.glEnable(GL.GL_BLEND);
 		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+		parent.pgl.endGL();
 
 		parent.fill(255);
 		parent.pushMatrix();
@@ -365,9 +376,11 @@ public class LevelSelect implements PConstants {
 	}
 
 	private void drawLevelName() {
-		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
+		parent.pgl = (PGraphicsOpenGL) parent.g;
+		parent.gl = parent.pgl.beginGL();
 		parent.gl.glEnable(GL.GL_BLEND);
 		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+		parent.pgl.endGL();
 
 		parent.noStroke();
 		parent.noFill();
@@ -398,7 +411,7 @@ public class LevelSelect implements PConstants {
 		name = name.length() > 24 ? name.substring(0, 24) : name;
 		float offset = (parent.textWidth(name) / 2) / (2 * PApplet.PI * (parent.height / 2 - Hud.SCORE_RADIUS_OFFSET))
 				* PApplet.TWO_PI;
-		Text.drawArc(name, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, angle - offset, parent);
+		parent.arctext(name, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, angle - offset);
 		parent.popMatrix();
 	}
 

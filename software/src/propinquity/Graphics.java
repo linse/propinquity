@@ -16,63 +16,55 @@ public class Graphics {
 		
 	public static PFont font;
 	
-	public static PImage hudInnerBoundary, hudOuterBoundary;
-	public static PImage hudPlay, hudLevelComplete, hudPlayAgain;
-	public static PImage hudPlayers[], hudCoop;
+	public PImage hudInnerBoundary, hudOuterBoundary;
+	public PImage hudPlay, hudLevelComplete, hudPlayAgain;
+	public PImage hudPlayers[], hudCoop;
 	
-	private static Propinquity app;
-	
-	/**
-	 * Suppress default constructor to disable instantiability.
-	 */
-	private Graphics () {
-		throw new AssertionError();
-	}
+	Propinquity parent;
 	
 	/**
 	 * Setup the PApplet according predefined parameters such as size, frame rate, etc.
 	 * 
-	 * @param application The PApplet to be initialized.
+	 * @param parent The Propinquity to be initialized.
 	 */
-	public static void setup(Propinquity application) {
+	public Graphics (Propinquity parent) {
+		this.parent = parent;
 		
-		app = application;
-		
-		app.size(1024, 768, PConstants.OPENGL);
-		app.frameRate(FPS);
-		app.imageMode(PConstants.CENTER);
-		app.textureMode(PConstants.NORMAL);
-		app.hint(PConstants.ENABLE_OPENGL_4X_SMOOTH);
+		parent.size(1024, 768, PConstants.OPENGL);
+		parent.frameRate(FPS);
+		parent.imageMode(PConstants.CENTER);
+		parent.textureMode(PConstants.NORMAL);
+		parent.hint(PConstants.ENABLE_OPENGL_4X_SMOOTH);
 	}
 	
 	/**
 	 * Load common graphics content such as fonts and images.
 	 */
-	public static void loadCommonContent() {
+	public void loadCommonContent() {
 		
 		// Load main font
-		font = app.loadFont("hud/Calibri-Bold-32.vlw");
+		font = parent.loadFont("hud/Calibri-Bold-32.vlw");
 		
-		hudInnerBoundary = app.loadImage("hud/innerBoundary.png");
-		hudOuterBoundary = app.loadImage("hud/outerBoundary.png");
+		hudInnerBoundary = parent.loadImage("hud/innerBoundary.png");
+		hudOuterBoundary = parent.loadImage("hud/outerBoundary.png");
 		
-		hudPlay = app.loadImage("hud/sbtoplay.png");
-		hudLevelComplete = app.loadImage("hud/levelcomplete.png");
-		hudPlayAgain = app.loadImage("hud/sbtoplayagain.png");
+		hudPlay = parent.loadImage("hud/sbtoplay.png");
+		hudLevelComplete = parent.loadImage("hud/levelcomplete.png");
+		hudPlayAgain = parent.loadImage("hud/sbtoplayagain.png");
 	}
 	
 	/**
 	 * Load level-specific graphics content.
 	 */
-	public static void loadLevelContent() {
+	public void loadLevelContent() {
 		
 		// Load player HUDs
-		hudPlayers = new PImage[app.level.getNumPlayers()];
-		for (int i = 0; i < app.level.getNumPlayers(); i++)
-			hudPlayers[i] = app.loadImage("data/hud/player" + (i + 1) + "score.png");
+		hudPlayers = new PImage[parent.level.getNumPlayers()];
+		for (int i = 0; i < parent.level.getNumPlayers(); i++)
+			hudPlayers[i] = parent.loadImage("data/hud/player" + (i + 1) + "score.png");
 		
 		// Load co-op HUD
-		hudCoop = app.loadImage("data/hud/level.png");
+		hudCoop = parent.loadImage("data/hud/level.png");
 	}
 	
 }

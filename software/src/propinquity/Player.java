@@ -155,7 +155,7 @@ public class Player implements PConstants {
 	}
 
 	public void playNegativeSound() {
-		if (Sounds.MUTE) {
+		if (!parent.MUTE) {
 			if (isInCoopMode()) {
 				if (coopNegSoundPlayer != null) {
 					coopNegSoundPlayer.play();
