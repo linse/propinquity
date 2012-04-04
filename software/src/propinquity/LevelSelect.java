@@ -286,11 +286,9 @@ public class LevelSelect implements PConstants {
 		if (particles == null)
 			return;
 
-		parent.pgl = (PGraphicsOpenGL) parent.g;
-		parent.gl = parent.pgl.beginGL();
+		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
 		parent.gl.glEnable(GL.GL_BLEND);
 		parent.gl.glBlendFunc(GL.GL_ONE, GL.GL_ONE_MINUS_SRC_ALPHA);
-		parent.pgl.endGL();
 
 		for (int i = 0; i < particles.length; i++) {
 			particles[i].draw();
@@ -298,11 +296,9 @@ public class LevelSelect implements PConstants {
 	}
 
 	private void drawSelectPlayerHUD(int player) {
-		parent.pgl = (PGraphicsOpenGL) parent.g;
-		parent.gl = parent.pgl.beginGL();
+		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
 		parent.gl.glEnable(GL.GL_BLEND);
 		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-		parent.pgl.endGL();
 
 		parent.fill(255);
 		parent.pushMatrix();
@@ -320,11 +316,9 @@ public class LevelSelect implements PConstants {
 	}
 
 	private void drawPlayerName(int player) {
-		parent.pgl = (PGraphicsOpenGL) parent.g;
-		parent.gl = parent.pgl.beginGL();
+		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
 		parent.gl.glEnable(GL.GL_BLEND);
 		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-		parent.pgl.endGL();
 
 		parent.noStroke();
 		parent.noFill();
@@ -359,11 +353,9 @@ public class LevelSelect implements PConstants {
 	}
 
 	private void drawSelectSong() {
-		parent.pgl = (PGraphicsOpenGL) parent.g;
-		parent.gl = parent.pgl.beginGL();
+		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
 		parent.gl.glEnable(GL.GL_BLEND);
 		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-		parent.pgl.endGL();
 
 		parent.fill(255);
 		parent.pushMatrix();
@@ -376,11 +368,9 @@ public class LevelSelect implements PConstants {
 	}
 
 	private void drawLevelName() {
-		parent.pgl = (PGraphicsOpenGL) parent.g;
-		parent.gl = parent.pgl.beginGL();
+		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
 		parent.gl.glEnable(GL.GL_BLEND);
 		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-		parent.pgl.endGL();
 
 		parent.noStroke();
 		parent.noFill();

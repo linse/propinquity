@@ -77,7 +77,6 @@ public class Propinquity extends PApplet {
 	PlayerList playerList = null;
 
 	// OpenGL
-	public PGraphicsOpenGL pgl;
 	GL gl;
 
 	// Box2D
@@ -134,10 +133,8 @@ public class Propinquity extends PApplet {
 		graphics = new Graphics(this);
 
 		// initial opengl setup
-		pgl = (PGraphicsOpenGL) g;
-		gl = pgl.beginGL();
+		gl = ((PGraphicsOpenGL) g).gl;
 		gl.glDisable(GL.GL_DEPTH_TEST);
-		pgl.endGL();
 
 		// Load common artwork and sound
 		graphics.loadCommonContent();
@@ -464,11 +461,9 @@ public class Propinquity extends PApplet {
 			// if (USE_STUB) level.processStub();
 
 		} else {
-			pgl = (PGraphicsOpenGL) g;
-			gl = pgl.beginGL();
+			gl = ((PGraphicsOpenGL) g).gl;
 			gl.glEnable(GL.GL_BLEND);
 			gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-			pgl.endGL();
 
 			fill(255);
 			textAlign(CENTER);
@@ -496,11 +491,9 @@ public class Propinquity extends PApplet {
 	}
 
 	void drawInnerBoundary() {
-		pgl = (PGraphicsOpenGL) g;
-		gl = pgl.beginGL();
+		gl = ((PGraphicsOpenGL) g).gl;
 		gl.glEnable(GL.GL_BLEND);
 		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-		pgl.endGL();
 
 		pushMatrix();
 		translate(width / 2 - 1, height / 2);
@@ -509,11 +502,9 @@ public class Propinquity extends PApplet {
 	}
 
 	void drawOuterBoundary() {
-		pgl = (PGraphicsOpenGL) g;
-		gl = pgl.beginGL();
+		gl = ((PGraphicsOpenGL) g).gl;
 		gl.glEnable(GL.GL_BLEND);
 		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-		pgl.endGL();
 
 		pushMatrix();
 		translate(width / 2 - 1, height / 2);
@@ -557,11 +548,9 @@ public class Propinquity extends PApplet {
 	}
 
 	void drawParticles() {
-		pgl = (PGraphicsOpenGL) g;
-		gl = pgl.beginGL();
+		gl = ((PGraphicsOpenGL) g).gl;
 		gl.glEnable(GL.GL_BLEND);
 		gl.glBlendFunc(GL.GL_ONE, GL.GL_ONE_MINUS_SRC_ALPHA);
-		pgl.endGL();
 
 		for (int i = 0; i < level.getNumPlayers(); i++)
 			drawParticles(i);
@@ -578,11 +567,9 @@ public class Propinquity extends PApplet {
 	}
 
 	void drawMask() {
-		pgl = (PGraphicsOpenGL) g;
-		gl = pgl.beginGL();
+		gl = ((PGraphicsOpenGL) g).gl;
 		gl.glEnable(GL.GL_BLEND);
 		gl.glBlendFunc(GL.GL_DST_COLOR, GL.GL_ZERO);
-		pgl.endGL();
 
 		pushMatrix();
 		translate(width / 2, height / 2);

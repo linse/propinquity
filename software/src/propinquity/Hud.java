@@ -103,11 +103,9 @@ public class Hud {
 	 */
 	public void draw() {
 		// TODO: Fix this
-		parent.pgl = (PGraphicsOpenGL) parent.g;
-		parent.gl = parent.pgl.beginGL();
+		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
 		parent.gl.glEnable(GL.GL_BLEND);
 		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-		parent.pgl.endGL();
 
 		parent.noStroke();
 		parent.noFill();
