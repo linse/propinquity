@@ -227,7 +227,7 @@ public class Level {
 		isRunning = true;
 		lastUpdate = parent.millis();
 
-		if (!parent.MUTE)
+		if (!Sounds.MUTE)
 			sounds.song.play();
 	}
 

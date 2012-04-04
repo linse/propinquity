@@ -354,7 +354,7 @@ public class LevelSelect implements PConstants {
 				: playerNames[selected];
 		float offset = (parent.textWidth(name) / 2) / (2 * PApplet.PI * (parent.height / 2 - Hud.SCORE_RADIUS_OFFSET))
 				* PApplet.TWO_PI;
-		parent.arctext(name, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, angle - offset);
+		Text.drawArc(name, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, angle - offset, parent);
 		parent.popMatrix();
 	}
 
@@ -411,7 +411,7 @@ public class LevelSelect implements PConstants {
 		name = name.length() > 24 ? name.substring(0, 24) : name;
 		float offset = (parent.textWidth(name) / 2) / (2 * PApplet.PI * (parent.height / 2 - Hud.SCORE_RADIUS_OFFSET))
 				* PApplet.TWO_PI;
-		parent.arctext(name, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, angle - offset);
+		Text.drawArc(name, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, angle - offset, parent);
 		parent.popMatrix();
 	}
 

@@ -133,13 +133,13 @@ public class Hud {
 			parent.fill(255);
 			parent.noStroke();
 			parent.textAlign(PConstants.CENTER, PConstants.BASELINE);
-			parent.textFont(graphics.font, Hud.FONT_SIZE);
+			parent.textFont(Graphics.font, Hud.FONT_SIZE);
 			String score = String.valueOf(parent.level.getTotalPts() / 2);
 			String name = "Coop";
 			while (parent.textWidth(score + name) < 240)
 				name += ' ';
 
-			parent.arctext(name + score, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, ang - Hud.SCORE_ANGLE_OFFSET);
+			Text.drawArc(name + score, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, ang - Hud.SCORE_ANGLE_OFFSET, parent);
 
 			parent.popMatrix();
 
@@ -172,13 +172,13 @@ public class Hud {
 				parent.fill(255);
 				parent.noStroke();
 				parent.textAlign(PConstants.CENTER, PConstants.BASELINE);
-				parent.textFont(graphics.font, Hud.FONT_SIZE);
+				parent.textFont(Graphics.font, Hud.FONT_SIZE);
 				String score = String.valueOf(player.getTotalPts());
 				String name = player.getName().length() > 12 ? player.getName().substring(0, 12) : player.getName();
 				while (parent.textWidth(score + name) < 240)
 					name += ' ';
 
-				parent.arctext(name + score, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, ang - Hud.SCORE_ANGLE_OFFSET);
+				Text.drawArc(name + score, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, ang - Hud.SCORE_ANGLE_OFFSET, parent);
 
 				parent.popMatrix();
 			}

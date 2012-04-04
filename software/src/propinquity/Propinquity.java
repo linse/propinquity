@@ -31,7 +31,6 @@ public class Propinquity extends PApplet {
 	final boolean DRAW_SHADOWS = false;
 	final boolean DRAW_PARTICLES = true;
 	final int FULL_SCREEN_ID = 0;
-	final public boolean MUTE = false;
 
 	// liquid constants
 	final float PARTICLE_SCALE = 0.8f;
@@ -366,13 +365,13 @@ public class Propinquity extends PApplet {
 
 		pushMatrix();
 		translate(width / 2, height / 2);
-		textFont(graphics.font, Hud.FONT_SIZE);
+		textFont(Graphics.font, Hud.FONT_SIZE);
 		textAlign(CENTER, CENTER);
 		fill(255);
 		noStroke();
 		text("Detecting XBee modules... ", 0, 0);
 		translate(0, 30);
-		textFont(graphics.font, Hud.FONT_SIZE * 0.65f);
+		textFont(Graphics.font, Hud.FONT_SIZE * 0.65f);
 		text(msg, 0, 0);
 		popMatrix();
 	}
@@ -408,7 +407,7 @@ public class Propinquity extends PApplet {
 				translate(width / 2, height / 2);
 				rotate(frameCount * Hud.PROMPT_ROT_SPEED);
 				image(graphics.hudLevelComplete, 0, -25);
-				textFont(graphics.font, Hud.FONT_SIZE);
+				textFont(Graphics.font, Hud.FONT_SIZE);
 				textAlign(CENTER, CENTER);
 				fill(winner != null ? winner.getColor() : NEUTRAL_COLOR);
 				noStroke();
@@ -438,7 +437,7 @@ public class Propinquity extends PApplet {
 				groupParticles();
 
 				// flag as ended
-				if (doneTime != -1 && frameCount > doneTime + graphics.FPS * END_LEVEL_TIME)
+				if (doneTime != -1 && frameCount > doneTime + Graphics.FPS * END_LEVEL_TIME)
 					endedLevel = true;
 			}
 
@@ -596,37 +595,6 @@ public class Propinquity extends PApplet {
 		vertex(-1, 1, 0, 0, 1);
 		endShape(CLOSE);
 		popMatrix();
-	}
-
-	void arctext(String message, float radius, float startAngle) {
-		// We must keep track of our position along the curve
-		float arclength = 0;
-
-		// For every box
-		for (int i = 0; i < message.length(); i++) {
-			// Instead of a constant width, we check the width of each
-			// character.
-			char currentChar = message.charAt(i);
-			float w = textWidth(currentChar);
-
-			// Each box is centered so we move half the width
-			arclength += w / 2;
-			// Angle in radians is the arclength divided by the radius
-			// Starting on the left side of the circle by adding PI
-			float theta = startAngle + arclength / radius;
-
-			pushMatrix();
-			// Polar to cartesian coordinate conversion
-			translate(radius * cos(theta), radius * sin(theta));
-			// Rotate the box
-			rotate(theta + PI / 2); // rotation is offset by 90 degrees
-			// Display the character
-			// fill(0);
-			text(currentChar, 0, 0);
-			popMatrix();
-			// Move halfway again
-			arclength += w / 2;
-		}
 	}
 
 	void updateParticles() {

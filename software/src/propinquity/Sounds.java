@@ -12,6 +12,7 @@ public class Sounds {
 	
 	public static final String SONG_FOLDER = "songs/";
 	public static final int BUFFER_SIZE = 2048;
+	public static final boolean MUTE = false;
 	
 	AudioPlayer complete;
 	AudioPlayer negativeCoop;
