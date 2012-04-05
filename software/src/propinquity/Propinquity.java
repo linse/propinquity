@@ -984,53 +984,64 @@ public class Propinquity extends PApplet {
 	}
 
 	public void controlEvent(ControlEvent theEvent) {
-		xbeeManager.controlEvent(theEvent);
-		playerList.controlEvent(theEvent);
+		switch(gameState) {
+			case XBeeInit:
+				xbeeManager.controlEvent(theEvent);
+				break;
+			case PlayerList:
+				playerList.controlEvent(theEvent);
+				break;
+		}
 	}
 
 	public void keyPressed() {
 		switch (gameState) {
-		case LevelSelect:
-			switch (key) {
-
-			case BACKSPACE:
-				levelSelect.clear();
-				levelSelect = null;
-				playerList = null;
-				// initPlayerListCtrl();
-				gameState = GameState.PlayerList;
-				println("gamestate = " + gameState);
+			case XBeeInit:
+				xbeeManager.keyPressed(keyCode);
+				break;
+			case PlayerList:
+				playerList.keyPressed(keyCode);
 				break;
 
-			default:
-				if (levelSelect != null) {
-					// pass the key to the level select controller
-					levelSelect.keyPressed(key, keyCode);
+			case LevelSelect:
+				switch (key) {
+					case BACKSPACE:
+						levelSelect.clear();
+						levelSelect = null;
+						playerList = null;
+						// initPlayerListCtrl();
+						changeGameState(GameState.PlayerList);
+						break;
 
-					// check if the level select controller is done
-					// and ready to play
-					if (levelSelect.isDone()) {
-						// init level
-						initLevel(levelSelect.players, levelSelect.levelFile);
-						delay(50);
-						while (!levelSelect.allAcksIn()) {
-							println("sending again");
-							levelSelect.sendConfigMessages(level.getStepInterval());
-							delay(50);
+					default:
+						if (levelSelect != null) {
+							// pass the key to the level select controller
+							levelSelect.keyPressed(key, keyCode);
+
+							// check if the level select controller is done
+							// and ready to play
+							if (levelSelect.isDone()) {
+								// init level
+								initLevel(levelSelect.players, levelSelect.levelFile);
+								delay(50);
+								while (!levelSelect.allAcksIn()) {
+									println("sending again");
+									levelSelect.sendConfigMessages(level.getStepInterval());
+									delay(50);
+								}
+								// init hud
+								initHUD();
+
+								// init liquid particles
+								initParticles();
+
+								// play
+								gameState = GameState.Play;
+								println("gamestate = " + gameState);
+							}
 						}
-						// init hud
-						initHUD();
-
-						// init liquid particles
-						initParticles();
-
-						// play
-						gameState = GameState.Play;
-						println("gamestate = " + gameState);
-					}
+						break;
 				}
-				break;
-			}
 			break;
 
 		case Play:

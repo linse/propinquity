@@ -2,8 +2,6 @@ package propinquity;
 
 import java.util.ArrayList;
 
-import java.awt.event.KeyEvent;
-
 import controlP5.Button;
 import controlP5.CVector3f;
 import controlP5.ControlEvent;
@@ -76,8 +74,6 @@ public class PlayerList implements UIElement {
 		nextButton = controlP5.addButton("NEXT", 0, parent.width / 2 + PLIST_WIDTH / 2 - PLIST_NEXT_WIDTH,
 				parent.height / 2, PLIST_NEXT_WIDTH, PLIST_NEXT_HEIGHT);
 		nextButton.setId(PLIST_NEXT_ID);
-
-		parent.registerKeyEvent(this);
 
 		layout();
 	}
@@ -227,14 +223,7 @@ public class PlayerList implements UIElement {
 		}
 	}
 
-	public void keyEvent(KeyEvent e) {
-		if(isVisible) {
-			// playerList.process();
-			// if (playerList.isDone()) {
-			// 	playerList.dispose();
-			// 	gameState = GameState.LevelSelect;
-			// 	println("gamestate = " + gameState);
-			// }
-		}
+	public void keyPressed(int keycode) {
+		if(isVisible && keycode == parent.ENTER) process();
 	}
 }

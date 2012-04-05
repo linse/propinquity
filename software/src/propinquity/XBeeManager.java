@@ -3,8 +3,6 @@ package propinquity;
 import java.io.File;
 import java.util.*;
 
-import java.awt.event.KeyEvent;
-
 import processing.core.*;
 import processing.serial.*;
 import controlP5.*;
@@ -61,8 +59,6 @@ public class XBeeManager implements Runnable, UIElement {
 		plNextButton = controlP5.addButton("NEXT", 0, parent.width / 2 + 60 + XBEE_SCAN_WIDTH + 10,
 				parent.height / 2 + 50, XBEE_NEXT_WIDTH, XBEE_NEXT_HEIGHT);
 		plNextButton.setId(XBEE_NEXT_ID);
-
-		parent.registerKeyEvent(this);
 
 		// load from file if it exists
 		if (new File(parent.dataPath(XBEE_PORTS_FILE)).exists()) {
@@ -256,10 +252,7 @@ public class XBeeManager implements Runnable, UIElement {
 		if(isVisible) {
 			switch (theEvent.controller().id()) {
 			case (XBEE_NEXT_ID):
-				if (!initialized)
-					return;
-				save();
-				parent.changeGameState(GameState.PlayerList);
+				process();
 				break;
 			case (XBEE_SCAN_ID):
 				scan();
@@ -268,15 +261,16 @@ public class XBeeManager implements Runnable, UIElement {
 		}
 	}
 
-	public void keyEvent(KeyEvent e) {
-		if(isVisible) {
-			// xbeeManager.save();
-			// xbeeManager.hide();
-			// playerList.show();
-			// gameState = GameState.PlayerList;
-			// println("gamestate = " + gameState);
-		}
-	}		
+	void process() {
+		if (!initialized) return;
+		save();
+		parent.changeGameState(GameState.PlayerList);
+
+	}
+
+	public void keyPressed(int keycode) {
+		if(isVisible && keycode == parent.ENTER) process();
+	}
 
 	public void draw() {
 		if (isVisible) {
