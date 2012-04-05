@@ -2,6 +2,8 @@ package propinquity;
 
 import java.util.ArrayList;
 
+import java.awt.event.KeyEvent;
+
 import controlP5.Button;
 import controlP5.CVector3f;
 import controlP5.ControlEvent;
@@ -10,7 +12,7 @@ import controlP5.Textfield;
 
 import processing.core.*;
 
-public class PlayerList {
+public class PlayerList implements UIElement {
 	final String PLIST_FILE = "player.lst";
 	final int PLIST_MAX_PLAYERS = 12;
 	final int PLIST_WIDTH = 200;
@@ -22,10 +24,10 @@ public class PlayerList {
 	final int PLIST_REMOVE_WIDTH = 12;
 	final int PLIST_REMOVE_HEIGHT = 20;
 	final int PLIST_VERT_SPACER = 20;
-	final int PLIST_NEXT_ID = 1;
-	final int PLIST_NEW_ID = 2;
+	final int PLIST_NEXT_ID = 3;
+	final int PLIST_NEW_ID = 4;
 
-	PApplet parent;
+	Propinquity parent;
 	ControlP5 controlP5;
 	ArrayList<controlP5.Controller> removeQueue;
 
@@ -35,12 +37,11 @@ public class PlayerList {
 	Button nextButton;
 	Button newButton;
 
-	boolean done;
+	boolean isVisible;
 
-	public PlayerList(PApplet p) {
+	public PlayerList(Propinquity p) {
 		parent = p;
-		done = false;
-
+		isVisible = true;
 		removeQueue = new ArrayList<controlP5.Controller>();
 		controlP5 = new ControlP5(p);
 
@@ -51,6 +52,7 @@ public class PlayerList {
 		// load the player list
 		// playerList = new ArrayList();
 		String[] players = p.loadStrings(PLIST_FILE);
+		System.out.println(players);
 		if (players != null) {
 			for (int i = 0; i < players.length; i++) {
 				if (players[i].length() > 0) {
@@ -75,6 +77,8 @@ public class PlayerList {
 				parent.height / 2, PLIST_NEXT_WIDTH, PLIST_NEXT_HEIGHT);
 		nextButton.setId(PLIST_NEXT_ID);
 
+		parent.registerKeyEvent(this);
+
 		layout();
 	}
 
@@ -82,11 +86,7 @@ public class PlayerList {
 		return playerNames;
 	}
 
-	public boolean isDone() {
-		return done;
-	}
-
-	public void update() {
+	public void draw() {
 		// process controlP5 remove queue
 		for (int i = 0; i < removeQueue.size(); i++)
 			controlP5.remove((removeQueue.get(i)).name());
@@ -162,7 +162,7 @@ public class PlayerList {
 
 		parent.saveStrings(parent.dataPath(PLIST_FILE), playerNames);
 
-		done = true;
+		parent.changeGameState(GameState.LevelSelect);
 	}
 
 	public void dispose() {
@@ -171,51 +171,70 @@ public class PlayerList {
 	}
 
 	public void show() {
+		isVisible = true;
 		controlP5.show();
 	}
 
 	public void hide() {
+		isVisible = false;
 		controlP5.hide();
 	}
 
+	public boolean isVisible() {
+		return isVisible;
+	}
+
 	public void controlEvent(ControlEvent theEvent) {
-		switch (theEvent.controller().id()) {
-		case (PLIST_NEXT_ID):
-			process();
-			break;
-		case (PLIST_NEW_ID):
-			addPlayer("");
-			layout();
-
-			break;
-		default:
-			if (theEvent.controller() instanceof Button) {
-				// remove textfield that matches button value
-				int value = (int) theEvent.controller().value();
-				int i;
-
-				controlP5.Controller ctrl;
-				ctrl = controlP5.controller("Player " + value);
-				i = playerFields.indexOf(ctrl);
-				playerFields.remove(i);
-				ctrl.hide();
-				removeQueue.add(ctrl);
-
-				// remove button itself
-				ctrl = controlP5.controller("Remove " + value);
-				removeButtons.remove(i);
-				ctrl.hide();
-				removeQueue.add(ctrl);
-
-				// adjust values
-				for (; i < playerFields.size(); i++) {
-					Textfield rtf = playerFields.get(i);
-					rtf.setCaptionLabel("Player " + (i + 1));
-				}
-
+		if(isVisible) {
+			switch (theEvent.controller().id()) {
+			case (PLIST_NEXT_ID):
+				process();
+				break;
+			case (PLIST_NEW_ID):
+				addPlayer("");
 				layout();
+
+				break;
+			default:
+				if (theEvent.controller() instanceof Button && theEvent.controller().name().indexOf("Remove") >= 0) {
+					// remove textfield that matches button value
+					int value = (int) theEvent.controller().value();
+					int i;
+
+					controlP5.Controller ctrl;
+					ctrl = controlP5.controller("Player " + value);
+					i = playerFields.indexOf(ctrl);
+					playerFields.remove(i);
+					ctrl.hide();
+					removeQueue.add(ctrl);
+
+					// remove button itself
+					ctrl = controlP5.controller("Remove " + value);
+					removeButtons.remove(i);
+					ctrl.hide();
+					removeQueue.add(ctrl);
+
+					// adjust values
+					for (; i < playerFields.size(); i++) {
+						Textfield rtf = playerFields.get(i);
+						rtf.setCaptionLabel("Player " + (i + 1));
+					}
+
+					layout();
+				}
+				break;
 			}
-			break;
+		}
+	}
+
+	public void keyEvent(KeyEvent e) {
+		if(isVisible) {
+			// playerList.process();
+			// if (playerList.isDone()) {
+			// 	playerList.dispose();
+			// 	gameState = GameState.LevelSelect;
+			// 	println("gamestate = " + gameState);
+			// }
 		}
 	}
 }

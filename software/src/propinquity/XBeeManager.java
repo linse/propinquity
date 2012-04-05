@@ -1,27 +1,26 @@
 package propinquity;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
-import processing.core.PApplet;
-import processing.core.PConstants;
-import processing.serial.Serial;
-import controlP5.Button;
-import controlP5.ControlEvent;
-import controlP5.ControlP5;
+import java.awt.event.KeyEvent;
+
+import processing.core.*;
+import processing.serial.*;
+import controlP5.*;
 
 import xbee.*;
 
-public class XBeeManager implements Runnable {
+public class XBeeManager implements Runnable, UIElement {
 	Propinquity parent;
-	HashMap<String, String> ports;
-	boolean debug;
-	Thread thread;
-	boolean done;
 
-	boolean isHidden;
+	HashMap<String, String> xbee_ports;
+
+	Thread thread;
+
+	boolean debug;
+
+	boolean isVisible;
 
 	boolean initialized;
 	boolean initFound;
@@ -45,27 +44,25 @@ public class XBeeManager implements Runnable {
 
 	public XBeeManager(Propinquity p) {
 		parent = p;
+
 		controlP5 = new ControlP5(p);
-		done = false;
-		ports = new HashMap<String, String>();
-		initialized = false;
+
+		xbee_ports = new HashMap<String, String>();
+
 		debug = false;
+		initialized = false;
+		isVisible = true;
 
-		isHidden = false;
-
-		init();
-	}
-
-	public void init() {
 		// create button to add new players
-		plScanButton = controlP5.addButton("SCAN", 0, parent.width / 2 + 60, parent.height / 2 + 50, XBEE_SCAN_WIDTH,
-				XBEE_SCAN_HEIGHT);
+		plScanButton = controlP5.addButton("SCAN", 0, parent.width / 2 + 60, parent.height / 2 + 50, XBEE_SCAN_WIDTH, XBEE_SCAN_HEIGHT);
 		plScanButton.setId(XBEE_SCAN_ID);
 
 		// create next button
 		plNextButton = controlP5.addButton("NEXT", 0, parent.width / 2 + 60 + XBEE_SCAN_WIDTH + 10,
 				parent.height / 2 + 50, XBEE_NEXT_WIDTH, XBEE_NEXT_HEIGHT);
 		plNextButton.setId(XBEE_NEXT_ID);
+
+		parent.registerKeyEvent(this);
 
 		// load from file if it exists
 		if (new File(parent.dataPath(XBEE_PORTS_FILE)).exists()) {
@@ -90,7 +87,7 @@ public class XBeeManager implements Runnable {
 	}
 
 	public void run() {
-		ports = new HashMap<String, String>();
+		xbee_ports = new HashMap<String, String>();
 		initialized = false;
 
 		String[] initPorts = Serial.list();
@@ -135,7 +132,7 @@ public class XBeeManager implements Runnable {
 
 			if (initFound) {
 				PApplet.println(initNodeId);
-				ports.put(initNodeId, initPorts[initPortIndex]);
+				xbee_ports.put(initNodeId, initPorts[initPortIndex]);
 			} else {
 				PApplet.println("no XBee found");
 			}
@@ -172,7 +169,7 @@ public class XBeeManager implements Runnable {
 
 	// Get a XBeeReader of the XBee with the matching NodeIdentifier (NI)
 	public XBeeReader reader(String ni) {
-		String port = ports.get(ni);
+		String port = xbee_ports.get(ni);
 		if (port == null)
 			return null;
 		XBeeReader xbee = new XBeeReader(parent, new Serial(parent, port, XBEE_BAUDRATE));
@@ -195,7 +192,7 @@ public class XBeeManager implements Runnable {
 	}
 
 	public String foundPortIds() {
-		Set<String> nodes = ports.keySet();
+		Set<String> nodes = xbee_ports.keySet();
 		Iterator<String> it = nodes.iterator();
 
 		String nodesString = "";
@@ -208,12 +205,12 @@ public class XBeeManager implements Runnable {
 	}
 
 	public void save() {
-		String[] xbeeList = new String[ports.size()];
+		String[] xbeeList = new String[xbee_ports.size()];
 		int i = 0;
-		Iterator<String> it = ports.keySet().iterator();
+		Iterator<String> it = xbee_ports.keySet().iterator();
 		while (it.hasNext()) {
 			String nodeId = it.next();
-			xbeeList[i++] = nodeId + "=" + ports.get(nodeId);
+			xbeeList[i++] = nodeId + "=" + xbee_ports.get(nodeId);
 		}
 		parent.saveStrings(parent.dataPath(XBEE_PORTS_FILE), xbeeList);
 	}
@@ -227,15 +224,11 @@ public class XBeeManager implements Runnable {
 				String nodeId = xbeeList[i].substring(0, equalIndex);
 				String port = xbeeList[i].substring(equalIndex + 1);
 				PApplet.println(" Using port: " + port + " ... " + nodeId);
-				ports.put(nodeId, port);
+				xbee_ports.put(nodeId, port);
 			}
 		}
 
 		initialized = true;
-	}
-
-	public boolean isDone() {
-		return done;
 	}
 
 	public void dispose() {
@@ -246,32 +239,47 @@ public class XBeeManager implements Runnable {
 	}
 
 	public void show() {
-		isHidden = false;
+		isVisible = true;
 		controlP5.show();
 	}
 
 	public void hide() {
-		isHidden = true;
+		isVisible = false;
 		controlP5.hide();
 	}
 
+	public boolean isVisible() {
+		return isVisible;
+	}
+
 	public void controlEvent(ControlEvent theEvent) {
-		switch (theEvent.controller().id()) {
-		case (XBEE_NEXT_ID):
-			if (!initialized)
-				return;
-			save();
-			done = true;
-			break;
-		case (XBEE_SCAN_ID):
-			scan();
-			break;
+		if(isVisible) {
+			switch (theEvent.controller().id()) {
+			case (XBEE_NEXT_ID):
+				if (!initialized)
+					return;
+				save();
+				parent.changeGameState(GameState.PlayerList);
+				break;
+			case (XBEE_SCAN_ID):
+				scan();
+				break;
+			}
 		}
 	}
 
-	public void draw() {
+	public void keyEvent(KeyEvent e) {
+		if(isVisible) {
+			// xbeeManager.save();
+			// xbeeManager.hide();
+			// playerList.show();
+			// gameState = GameState.PlayerList;
+			// println("gamestate = " + gameState);
+		}
+	}		
 
-		if (!isHidden) {
+	public void draw() {
+		if (isVisible) {
 			
 			String msg = parent.xbeeManager.foundPortIds();
 			if (msg.isEmpty()) {
