@@ -72,7 +72,7 @@ public class XPan {
 	}
 
 	void nodeDiscover() {
-		PApplet.println("discovering nodes from xpan.");
+		System.out.println("discovering nodes from xpan.");
 		xbee.nodeDiscover();
 	}
 
@@ -81,7 +81,7 @@ public class XPan {
 	}
 
 	void broadcastProxConfig(int stepLength) {
-		PApplet.println("broadcasting prox config");
+		System.out.println("broadcasting prox config");
 		broadcast(getProxConfigPacket(stepLength));
 	}
 

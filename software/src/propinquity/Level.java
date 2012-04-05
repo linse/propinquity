@@ -303,7 +303,7 @@ public class Level {
 
 		// check if we have an correct level file
 		if (l_numPlayers < 2) {
-			PApplet.println("Error: Bad level file. We need data for 2 players.");
+			System.out.println("Error: Bad level file. We need data for 2 players.");
 			successfullyRead = 0;
 			return;
 		}
@@ -328,7 +328,7 @@ public class Level {
 
 		// calculate step interval
 		stepInterval = (long) (60f / tempo * multiplier * 1000);
-		PApplet.println("Step Interval: " + stepInterval);
+		System.out.println("Step Interval: " + stepInterval);
 
 		// init the number of steps
 		// this makes it possible to do 1 player, but not 3
@@ -382,7 +382,7 @@ public class Level {
 			// if (SEND_VIBE[i]) players[i].initVibeComm(XPAN_VIBE_PORT[i]);
 
 			// init player steps
-			PApplet.println("Sending Config for Step Interval " + stepInterval);
+			System.out.println("Sending Config for Step Interval " + stepInterval);
 			players[i].sendConfig((int) stepInterval);
 			players[i].initializeSteps(l_numSteps);
 			l_player = levelXML.getChild(i + 1);
@@ -412,7 +412,7 @@ public class Level {
 		sounds.loadSong(songFile + ".mp3");
 
 		// success!
-		PApplet.println("Successfully read the level file.");
+		System.out.println("Successfully read the level file.");
 		successfullyRead = 1;
 		return;
 	}
@@ -464,7 +464,7 @@ public class Level {
 				int patch = packet[1];
 				int player = getPlayerIndexForPatch(patch);
 				players[player].processConfigAck(patch, myTurnLength);
-				PApplet.println("Config Ack Received in Level, Turn Length is "
+				System.out.println("Config Ack Received in Level, Turn Length is "
 						+ myTurnLength);
 			} else if (packet.length == XPan.VIBE_IN_PACKET_LENGTH
 					&& packet[0] == XPan.VIBE_IN_PACKET_TYPE) {

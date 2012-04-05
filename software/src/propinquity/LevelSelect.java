@@ -142,7 +142,7 @@ public class LevelSelect implements PConstants {
 
 		// check if we have an correct level file
 		if (l_numPlayers < 0) {
-			PApplet.println("Error: Empty level file");
+			System.out.println("Error: Empty level file");
 			loadingLevel.successfullyRead = 0;
 			return;
 		}
@@ -204,7 +204,7 @@ public class LevelSelect implements PConstants {
 	}
 
 	void initPlayer(int player) {
-		PApplet.println("Initializing player " + player);
+		System.out.println("Initializing player " + player);
 
 		// foundPatches = 0;
 		foundProxPatches.clear();
@@ -536,24 +536,24 @@ public class LevelSelect implements PConstants {
 
 			case 'P':
 				foundProxPatches.add(serial);
-				PApplet.println(" Found proximity patch: " + name + " (" + serial + ")");
+				System.out.println(" Found proximity patch: " + name + " (" + serial + ")");
 				break;
 
 			case 'V':
 				foundVibePatches.add(serial);
-				PApplet.println(" Found vibration patch: " + name + " (" + serial + ")");
+				System.out.println(" Found vibration patch: " + name + " (" + serial + ")");
 				break;
 
 			case 'A':
 				foundAccelPatches.add(serial);
-				PApplet.println(" Found acceleration patch: " + name + " (" + serial + ")");
+				System.out.println(" Found acceleration patch: " + name + " (" + serial + ")");
 				break;
 
 			default:
 				foundUndefPatches.add(serial);
 				numProxPatches++; // change this later. should really be prox
 									// patches, not undefined.
-				PApplet.println(" Found undefined patch: " + name + " (" + serial + ")");
+				System.out.println(" Found undefined patch: " + name + " (" + serial + ")");
 				break;
 			}
 		}
@@ -562,7 +562,7 @@ public class LevelSelect implements PConstants {
 
 			int myTurnLength = ((buffer[2] & 0xFF) << 8) | (buffer[3] & 0xFF);
 			numConfigAcks++;
-			PApplet.println("Config Ack Received in Level Select, Turn Length is " + myTurnLength);
+			System.out.println("Config Ack Received in Level Select, Turn Length is " + myTurnLength);
 		}
 
 		else if (buffer.length == XPan.VIBE_IN_PACKET_LENGTH && buffer[0] == XPan.VIBE_IN_PACKET_TYPE) {

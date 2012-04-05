@@ -241,13 +241,13 @@ public class Player implements PConstants {
 
 		// if the player touched, then remove penality pts
 		if (hasTouched()) {
-			PApplet.println(name + " TOUCHED ");
+			System.out.println(name + " TOUCHED ");
 			removePts(TOUCH_PENALITY_PTS);
 			result = -1;
 		}
 		// else add pts
 		else {
-			// PApplet.println(name + " scores " +
+			// System.out.println(name + " scores " +
 			// getProximity()*accelMultiplier + " (" + accelMultiplier + ")");
 			addPts(getProximity() * accelMultiplier);
 			// if (accelMultiplier > 1) result = 1;
@@ -323,7 +323,7 @@ public class Player implements PConstants {
 			accelMultiplier = PApplet.min(
 					(avg - ACCEL_MULTIPLIER_THRESHOLD + 100) / 100, 4);
 
-		// PApplet.println(name + ": " + patch + " " + x + ", " + y + ", " + z +
+		// System.out.println(name + ": " + patch + " " + x + ", " + y + ", " + z +
 		// " : " + accelMultiplier);
 	}
 
@@ -355,7 +355,7 @@ public class Player implements PConstants {
 		if (Integer.valueOf(data[0]) >= time)
 			return null;
 
-		// PApplet.println(time + ": " + Integer.valueOf(data[2]) + " " +
+		// System.out.println(time + ": " + Integer.valueOf(data[2]) + " " +
 		// (Integer.valueOf(data[3])==1) + " " + Integer.valueOf(data[4]));
 
 		/*
@@ -397,7 +397,7 @@ public class Player implements PConstants {
 		// proximity data stub
 		String[] data = parent.loadStrings(stubFile);
 		if (data == null || data.length == 0) {
-			PApplet.println("Error: Proximity stub was empty. I don't think that's right.");
+			System.out.println("Error: Proximity stub was empty. I don't think that's right.");
 		}
 
 		proxStub = new ArrayList<String>();
@@ -408,7 +408,7 @@ public class Player implements PConstants {
 			dataline = data[i].split(",");
 
 			if (dataline.length != 5) {
-				PApplet.println("Warning: Proximity stub line " + i + " ("
+				System.out.println("Warning: Proximity stub line " + i + " ("
 						+ data[i] + ") is not formatted correctly");
 				continue;
 			}
@@ -421,14 +421,14 @@ public class Player implements PConstants {
 		// start the stub at the beginning
 		proxStubIndex = 0;
 
-		PApplet.println(" Proximity stub... " + proxStub.size());
+		System.out.println(" Proximity stub... " + proxStub.size());
 	}
 
 	void loadAccelStub(int index, String stubFile) {
 		// proximity data stub
 		String[] data = parent.loadStrings(stubFile);
 		if (data == null || data.length == 0) {
-			PApplet.println("Error: Proximity stub was empty. I don't think that's right.");
+			System.out.println("Error: Proximity stub was empty. I don't think that's right.");
 		}
 
 		accelStub = new ArrayList<String>();
@@ -439,7 +439,7 @@ public class Player implements PConstants {
 			dataline = data[i].split(",");
 
 			if (dataline.length != 6) {
-				PApplet.println("Warning: Proximity stub line " + i + " ("
+				System.out.println("Warning: Proximity stub line " + i + " ("
 						+ data[i] + ") is not formatted correctly");
 				continue;
 			}
@@ -452,7 +452,7 @@ public class Player implements PConstants {
 		// start the stub at the beginning
 		accelStubIndex = 0;
 
-		PApplet.println(" Accelerometer stub... " + accelStub.size());
+		System.out.println(" Accelerometer stub... " + accelStub.size());
 	}
 
 	void initProxComm(String ni1, String ni2) {
@@ -461,7 +461,7 @@ public class Player implements PConstants {
 			XBeeReader xbee = parent.xbeeManager.reader(ni1);
 			if (xbee != null) {
 				xpansProx[0] = new XPan(xbee, parent);
-				PApplet.println("Initialized Xbee for proximity #1: " + ni1);
+				System.out.println("Initialized Xbee for proximity #1: " + ni1);
 			} else {
 				System.err
 						.println("Could not initialize Xbee for proximity #1: "
@@ -472,7 +472,7 @@ public class Player implements PConstants {
 			XBeeReader xbee = parent.xbeeManager.reader(ni2);
 			if (xbee != null) {
 				xpansProx[1] = new XPan(xbee, parent);
-				PApplet.println("Initialized Xbee for proximity #2: " + ni2);
+				System.out.println("Initialized Xbee for proximity #2: " + ni2);
 			} else {
 				System.err
 						.println("Could not initialize Xbee for proximity #2: "
@@ -498,7 +498,7 @@ public class Player implements PConstants {
 		XBeeReader xbee = parent.xbeeManager.reader(ni);
 		if (xbee != null) {
 			xpansAccel[0] = new XPan(xbee, parent);
-			PApplet.println("Initialized Xbee for acceleration: " + ni);
+			System.out.println("Initialized Xbee for acceleration: " + ni);
 		} else {
 			System.err.println("Could not initialize Xbee for acceleration: "
 					+ ni);
@@ -512,7 +512,7 @@ public class Player implements PConstants {
 		XBeeReader xbee = parent.xbeeManager.reader(ni);
 		if (xbee != null) {
 			xpansVibe[0] = new XPan(xbee, parent);
-			PApplet.println("Initialized Xbee for vibration: " + ni);
+			System.out.println("Initialized Xbee for vibration: " + ni);
 		} else {
 			System.err
 					.println("Could not initialize Xbee for vibration: " + ni);
@@ -520,7 +520,7 @@ public class Player implements PConstants {
 	}
 
 	public void sendStep(int stepNum) {
-		// PApplet.println(name + " sending step: " + stepNum);
+		// System.out.println(name + " sending step: " + stepNum);
 		if (xpansProx[0] == null)
 			return;
 
@@ -576,22 +576,22 @@ public class Player implements PConstants {
 	// TODO replace this with configPatches to pass the step length
 	// at the same time as detecting which ones respond.
 	public void discoverPatches() {
-		PApplet.println("Discover patches...");
+		System.out.println("Discover patches...");
 		for (int i = 0; i < XPAN_PROX_BASES; i++)
 			if (xpansProx[i] != null) {
-				PApplet.println("Discover proximity " + (i + 1));
+				System.out.println("Discover proximity " + (i + 1));
 				xpansProx[i].nodeDiscover();
 			}
 
 		for (int i = 0; i < XPAN_ACCEL_BASES; i++)
 			if (xpansAccel[i] != null) {
-				PApplet.println("Discover acceleration " + (i + 1));
+				System.out.println("Discover acceleration " + (i + 1));
 				xpansAccel[i].nodeDiscover();
 			}
 
 		for (int i = 0; i < XPAN_VIBE_BASES; i++)
 			if (xpansVibe[i] != null) {
-				PApplet.println("Discover vibration " + (i + 1));
+				System.out.println("Discover vibration " + (i + 1));
 				xpansVibe[i].nodeDiscover();
 			}
 	}
