@@ -38,12 +38,6 @@ public class Sounds {
 		
 		complete = minim.loadFile("sounds/comp.mp3", BUFFER_SIZE);
 		complete.setGain(5);
-	}
-	
-	/**
-	 * Load level-specific sound content.
-	 */
-	public void loadLevelContent() {
 		
 		negativeCoop = minim.loadFile("sounds/neg.mp3", BUFFER_SIZE);
 		negativeP1 = minim.loadFile("sounds/neg1.mp3", BUFFER_SIZE);

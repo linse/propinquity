@@ -21,6 +21,8 @@ public class XBeeManager implements Runnable {
 	Thread thread;
 	boolean done;
 
+	boolean isHidden;
+
 	boolean initialized;
 	boolean initFound;
 	String initNodeId;
@@ -48,20 +50,21 @@ public class XBeeManager implements Runnable {
 		ports = new HashMap<String, String>();
 		initialized = false;
 		debug = false;
-		
+
+		isHidden = false;
+
 		init();
 	}
 
 	public void init() {
 		// create button to add new players
-		plScanButton = controlP5.addButton("SCAN", 0, parent.width / 2 + 60,
-				parent.height / 2 + 50, XBEE_SCAN_WIDTH, XBEE_SCAN_HEIGHT);
+		plScanButton = controlP5.addButton("SCAN", 0, parent.width / 2 + 60, parent.height / 2 + 50, XBEE_SCAN_WIDTH,
+				XBEE_SCAN_HEIGHT);
 		plScanButton.setId(XBEE_SCAN_ID);
 
 		// create next button
-		plNextButton = controlP5.addButton("NEXT", 0, parent.width / 2 + 60
-				+ XBEE_SCAN_WIDTH + 10, parent.height / 2 + 50,
-				XBEE_NEXT_WIDTH, XBEE_NEXT_HEIGHT);
+		plNextButton = controlP5.addButton("NEXT", 0, parent.width / 2 + 60 + XBEE_SCAN_WIDTH + 10,
+				parent.height / 2 + 50, XBEE_NEXT_WIDTH, XBEE_NEXT_HEIGHT);
 		plNextButton.setId(XBEE_NEXT_ID);
 
 		// load from file if it exists
@@ -100,16 +103,13 @@ public class XBeeManager implements Runnable {
 
 			// if we are on a Mac, then filter out the ports that don't start by
 			// tty.us
-			if ((osName.indexOf("Mac") != -1)
-					&& (initPorts[initPortIndex].indexOf("tty.usbserial") == -1)) {
+			if ((osName.indexOf("Mac") != -1) && (initPorts[initPortIndex].indexOf("tty.usbserial") == -1)) {
 				PApplet.println(" Skipping port: " + initPorts[initPortIndex]);
 				continue;
 			}
 
-			PApplet.print(" Connecting to port: " + initPorts[initPortIndex]
-					+ " ... ");
-			XBeeReader xbee = new XBeeReader(parent, new Serial(parent,
-					initPorts[initPortIndex], XBEE_BAUDRATE));
+			PApplet.print(" Connecting to port: " + initPorts[initPortIndex] + " ... ");
+			XBeeReader xbee = new XBeeReader(parent, new Serial(parent, initPorts[initPortIndex], XBEE_BAUDRATE));
 			PApplet.println();
 			PApplet.println("   -starting xbee");
 			xbee.startXBee();
@@ -126,8 +126,7 @@ public class XBeeManager implements Runnable {
 			initLastCheck = parent.millis();
 			initFound = false;
 
-			while (parent.millis() - initLastCheck < XBEE_RESPONSE_TIMEOUT
-					&& !initFound) {
+			while (parent.millis() - initLastCheck < XBEE_RESPONSE_TIMEOUT && !initFound) {
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException ie) {
@@ -176,8 +175,7 @@ public class XBeeManager implements Runnable {
 		String port = ports.get(ni);
 		if (port == null)
 			return null;
-		XBeeReader xbee = new XBeeReader(parent, new Serial(parent, port,
-				XBEE_BAUDRATE));
+		XBeeReader xbee = new XBeeReader(parent, new Serial(parent, port, XBEE_BAUDRATE));
 		xbee.DEBUG = debug;
 		return xbee;
 	}
@@ -247,6 +245,16 @@ public class XBeeManager implements Runnable {
 		}
 	}
 
+	public void show() {
+		isHidden = false;
+		controlP5.show();
+	}
+
+	public void hide() {
+		isHidden = true;
+		controlP5.hide();
+	}
+
 	public void controlEvent(ControlEvent theEvent) {
 		switch (theEvent.controller().id()) {
 		case (XBEE_NEXT_ID):
@@ -260,29 +268,32 @@ public class XBeeManager implements Runnable {
 			break;
 		}
 	}
-	
-	public void draw() {
-		
-		String msg = parent.xbeeManager.foundPortIds();
-		if (msg.isEmpty()) {
-			if (parent.xbeeManager.isScanning())
-				msg = "Scanning...";
-			else
-				msg = "No Xbee found.";
-		} else if (!parent.xbeeManager.isScanning())
-			msg += ".";
 
-		parent.pushMatrix();
-		parent.translate(parent.width / 2, parent.height / 2);
-		parent.textFont(Graphics.font, Hud.FONT_SIZE);
-		parent.textAlign(PConstants.CENTER, PConstants.CENTER);
-		parent.fill(255);
-		parent.noStroke();
-		parent.text("Detecting XBee modules... ", 0, 0);
-		parent.translate(0, 30);
-		parent.textFont(Graphics.font, Hud.FONT_SIZE * 0.65f);
-		parent.text(msg, 0, 0);
-		parent.popMatrix();
+	public void draw() {
+
+		if (!isHidden) {
+			
+			String msg = parent.xbeeManager.foundPortIds();
+			if (msg.isEmpty()) {
+				if (parent.xbeeManager.isScanning())
+					msg = "Scanning...";
+				else
+					msg = "No Xbee found.";
+			} else if (!parent.xbeeManager.isScanning())
+				msg += ".";
+
+			parent.pushMatrix();
+			parent.translate(parent.width / 2, parent.height / 2);
+			parent.textFont(Graphics.font, Hud.FONT_SIZE);
+			parent.textAlign(PConstants.CENTER, PConstants.CENTER);
+			parent.fill(255);
+			parent.noStroke();
+			parent.text("Detecting XBee modules... ", 0, 0);
+			parent.translate(0, 30);
+			parent.textFont(Graphics.font, Hud.FONT_SIZE * 0.65f);
+			parent.text(msg, 0, 0);
+			parent.popMatrix();
+		}
 	}
-	
+
 }

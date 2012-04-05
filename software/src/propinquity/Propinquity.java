@@ -140,9 +140,14 @@ public class Propinquity extends PApplet {
 		graphics.loadCommonContent();
 		sounds.loadCommonContent();
 		
+		// Create resources
 		xbeeManager = new XBeeManager(this);
+		xbeeManager.show();
 		xbeeManager.debug = DEBUG_XBEE;
 
+		playerList = new PlayerList(this);
+		playerList.hide();
+		
 		hud = new Hud(this, sounds, graphics);
 
 		// init logging
@@ -150,8 +155,6 @@ public class Propinquity extends PApplet {
 	}
 
 	void initLevel(Player[] players, String levelFile) {
-		
-		sounds.loadLevelContent();
 		
 		level = new Level(this, sounds, players);
 		xmlInOut = new XMLInOut(this, level);
@@ -304,18 +307,19 @@ public class Propinquity extends PApplet {
 		// clear
 		background(0);
 
+		xbeeManager.draw();
+		playerList.update();
+		
 		switch (gameState) {
 
 		case XBeeInit:
-			xbeeManager.draw();
 			break;
 
 		case PlayerList:
-			updatePlayerList();
 			break;
 
 		case LevelSelect:
-			// TODO: To fix.
+			// TODO: To fix next.
 			
 			// init level select UI
 			if (levelSelect == null) {
@@ -336,14 +340,6 @@ public class Propinquity extends PApplet {
 	public void stop() {
 		if (gameState == GameState.Play)
 			level.clear();
-	}
-
-	void updatePlayerList() {
-		if (playerList == null) {
-			xbeeManager.dispose();
-			playerList = new PlayerList(this);
-		}
-		playerList.update();
 	}
 
 	void drawPlay() {
@@ -871,8 +867,7 @@ public class Propinquity extends PApplet {
 		// go through particles
 		// apply the force from the previous push
 		for (int p = 0; p < level.getNumPlayers(); p++) {
-			// for(int i = 0; i < lastPeriodParticle[p]; i++) {
-			// if (particles[p][i] == null) continue;
+
 			Particle particle = null;
 			ListIterator<Particle> it = particles[p].listIterator();
 			while (it.hasNext() && particle != lastPeriodParticle[p]) {
@@ -900,17 +895,12 @@ public class Propinquity extends PApplet {
 			float angle = level.getTime() * PUSH_PERIOD_ROT_SPEED + TWO_PI / level.getNumPlayers() * p;
 			float force = random(MIN_RELEASE_FORCE, MAX_RELEASE_FORCE);
 
-			// int i;
-			// for(i = lastPeriodParticle[p]; i < pCount[p]; i++) {
-			// if (particles[p][i] == null) continue;
 			while (it.hasNext()) {
 				particle = it.next();
 
 				particle.shape.setFilterData(filter);
 				box2d.world.refilter(particle.shape);
 
-				// particles[p][i].body.m_linearVelocity.x -= cos(angle)*force;
-				// particles[p][i].body.m_linearVelocity.y -= sin(angle)*force;
 				particle.push.x -= cos(angle) * force;
 				particle.push.y -= sin(angle) * force;
 			}
@@ -986,6 +976,8 @@ public class Propinquity extends PApplet {
 			xbeeManager.controlEvent(theEvent);
 
 			if (xbeeManager.isDone()) {
+				xbeeManager.hide();
+				playerList.show();
 				gameState = GameState.PlayerList;
 				println("gamestate = " + gameState);
 			}
@@ -1012,8 +1004,8 @@ public class Propinquity extends PApplet {
 
 			case ENTER:
 				xbeeManager.save();
-				// xbeeManager.dispose();
-				// initPlayerListCtrl();
+				xbeeManager.hide();
+				playerList.show();
 				gameState = GameState.PlayerList;
 				println("gamestate = " + gameState);
 				break;
@@ -1026,6 +1018,7 @@ public class Propinquity extends PApplet {
 			case ENTER:
 				playerList.process();
 				if (playerList.isDone()) {
+					playerList.dispose();
 					gameState = GameState.LevelSelect;
 					println("gamestate = " + gameState);
 				}
