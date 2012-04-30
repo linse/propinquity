@@ -224,6 +224,6 @@ public class PlayerList implements UIElement {
 	}
 
 	public void keyPressed(int keycode) {
-		if(isVisible && keycode == parent.ENTER) process();
+		if(isVisible && keycode == PConstants.ENTER) process();
 	}
 }

@@ -1,14 +1,7 @@
 package propinquity;
 
-import java.util.*;
-
 import javax.media.opengl.GL;
 
-import org.jbox2d.collision.FilterData;
-import org.jbox2d.collision.MassData;
-import org.jbox2d.collision.shapes.*;
-import org.jbox2d.common.*;
-import org.jbox2d.dynamics.*;
 import org.jbox2d.testbed.TestSettings;
 
 import controlP5.ControlEvent;
@@ -20,49 +13,26 @@ import processing.opengl.PGraphicsOpenGL;
 import proxml.*;
 import xbee.XBeeReader;
 
+import propinquity.xbee.*;
+
 public class Propinquity extends PApplet {
 
 	// Unique serialization ID
 	private static final long serialVersionUID = 6340518174717159418L;
 
 	// debug constants
-	final boolean DEBUG = false;
-	final boolean DEBUG_XBEE = false;
-	final boolean DRAW_SHADOWS = false;
-	final boolean DRAW_PARTICLES = true;
-	final int FULL_SCREEN_ID = 0;
-
-	// liquid constants
-	final float PARTICLE_SCALE = 0.8f;
-	final float PARTICLE_SCALE_RANGE = 0.5f;
-	final int TEXTURE_HALF = 32;
-	final int AVG_PTS_PER_STEP = 250;
-	final int AVG_PARTICLE_PER_STEP = 50;
-	final int APPROX_MAX_PARTICLES = 1600;
-	final int MAX_PARTICLES_PER_FRAME = 5;
-	final Integer LIQUID_MAGIC = new Integer(12345);
-	final int FENCE_SECTIONS = 24;
-	final int INNER_FENCE_RADIUS = 100;
-	final float EMITTER_RADIUS = 0.14f;
-	final int SHADOW_X = 8;
-	final int SHADOW_Y = 8;
-	final float MIN_RELEASE_FORCE = 0.4f;
-	final float MAX_RELEASE_FORCE = 0.6f;
-	final float WORLD_SIZE = 2f;
-	final float EMITTER_ANGULAR_VELOCITY = 4 * TWO_PI;
-	final int INNER_FENCE_MASK = 0x4;
-	final int OUTER_FENCE_MASK = 0x8;
-	final int PLAYERS_MASK = 0x1 | 0x2;
-	// final int NUM_STEP_PER_PERIOD = 4;
-	final float PUSH_PERIOD_ROT_SPEED = 1f;
-	final float PUSH_DAMPENING = 0.98f;
+	public static final boolean DEBUG = false;
+	public static final boolean DEBUG_XBEE = false;
+	public static final boolean DRAW_SHADOWS = false;
+	public static final boolean DRAW_PARTICLES = true;
+	public static final int FULL_SCREEN_ID = 0;
 
 	// game constants
+	public static final float WORLD_SIZE = 2f;
 	final int END_LEVEL_TIME = 6;
 	final int BOUNDARY_WIDTH = 5;
 	final int[] PLAYER_COLORS = { color(55, 137, 254), color(255, 25, 0) };
 	final int NEUTRAL_COLOR = color(142, 20, 252);
-
 
 	GameState gameState;
 
@@ -75,48 +45,19 @@ public class Propinquity extends PApplet {
 	// OpenGL
 	GL gl;
 
-	// Box2D
+	Liquid liquid;
 	PBox2D box2d;
 	TestSettings settings;
 
-	// Liquid parameters
-	ArrayList<Integer>[][] hash;
-	int hashWidth, hashHeight;
-	float totalMass = 100.0f;
-	float particleRadius = 0.11f; // 0.11
-	float particleViscosity = 0.005f;// 0.027f;
-	float damp = 0.7f; // 0.095
-	float fluidMinX = -WORLD_SIZE / 2f;
-	float fluidMaxX = WORLD_SIZE / 2f;
-	float fluidMinY = -WORLD_SIZE / 2f;
-	float fluidMaxY = WORLD_SIZE / 2f;
-
-	// Particle graphics
-	PImage[] imgParticle;
-	PImage imgShadow;
-	PGraphics[] pgParticle;
-
 	// Level parameters
 	Level level;
-	int ptsPerParticle = 0;
-	LinkedList<Particle>[] particles;
-	int lastPeriodStep = 0;
-	Particle[] lastPeriodParticle;
 	boolean endedLevel = false;
 	long doneTime = -1;
-	boolean groupedParticles = false;
-	int numStepsPerPeriod;
 
-	// XML
+	XBeeManager xbeeManager;
 	XMLInOut xmlInOut;
-
-	// HUD (Heads Up Display) -- shows the score.
 	Hud hud;
 
-	// XBees
-	public XBeeManager xbeeManager;
-
-	//Logger
 	Logger logger;
 	Sounds sounds;
 	Graphics graphics;
@@ -150,143 +91,6 @@ public class Propinquity extends PApplet {
 		ui_elements = new UIElement[] {xbeeManager, playerList};
 
 		changeGameState(GameState.XBeeInit);
-	}
-
-	void initLevel(Player[] players, String levelFile) {
-		
-		level = new Level(this, sounds, players);
-		xmlInOut = new XMLInOut(this, level);
-		xmlInOut.loadElement(levelFile);
-		while (true)
-			if (level.successfullyRead() > -1)
-				break;
-
-		if (level.successfullyRead() == 0) {
-			level.loadDefaults();
-			System.err.println("I had some trouble reading the level file.");
-			println("Defaulting to 2 minutes of free play instead.");
-		}
-		
-		// TODO: fix this funny order business
-		graphics.loadLevelContent();
-
-		// send configuration message here
-		// TODO: send step length to proximity patches
-	}
-
-	void initBox2D() {
-		// initialize box2d physics and create the world
-		box2d = new PBox2D(this, (float) height / WORLD_SIZE);
-		box2d.createWorld(-WORLD_SIZE / 2f, -WORLD_SIZE / 2f, WORLD_SIZE, WORLD_SIZE);
-		box2d.setGravity(0.0f, 0.0f);
-
-		// load default jbox2d settings
-		settings = new TestSettings();
-	}
-
-	void initTextures() {
-		imgParticle = new PImage[level.getNumPlayers()];
-		for (int i = 0; i < level.getNumPlayers(); i++)
-			imgParticle[i] = loadImage("data/particles/player" + (i + 1) + ".png");
-
-		if (DRAW_SHADOWS)
-			imgShadow = loadImage("data/particles/shadow.png");
-
-		pgParticle = new PGraphics[level.getNumPlayers()];
-		for (int i = 0; i < level.getNumPlayers(); i++) {
-			pgParticle[i] = createGraphics(imgParticle[i].width, imgParticle[i].height, P2D);
-			pgParticle[i].background(imgParticle[i]);
-			pgParticle[i].mask(imgParticle[i]);
-		}
-	}
-
-	void initFence() {
-		Body innerFence = null;
-		{
-			BodyDef bd = new BodyDef();
-			bd.position.set(0.0f, 0.0f);
-			innerFence = box2d.createBody(bd);
-
-			PolygonDef sd = new PolygonDef();
-			// sd.filter.groupIndex = 1;
-			sd.filter.categoryBits = INNER_FENCE_MASK;
-			sd.filter.maskBits = PLAYERS_MASK;
-
-			float fenceDepth = 0.2f;
-			float worldScale = height / WORLD_SIZE;
-			float radius = INNER_FENCE_RADIUS / worldScale + fenceDepth;
-			float perimeter = 2 * PI * radius;
-
-			for (int i = 0; i < FENCE_SECTIONS; i++) {
-				float angle = 2 * PI / FENCE_SECTIONS * i;
-				sd.setAsBox(perimeter / FENCE_SECTIONS, fenceDepth, new Vec2(cos(angle) * radius, sin(angle) * radius),
-						angle + PI / 2);
-				innerFence.createShape(sd);
-			}
-		}
-
-		Body outerFence = null;
-		{
-			BodyDef bd = new BodyDef();
-			bd.position.set(0.0f, 0.0f);
-			outerFence = box2d.createBody(bd);
-
-			PolygonDef sd = new PolygonDef();
-			// sd.filter.groupIndex = 1;
-			sd.filter.categoryBits = OUTER_FENCE_MASK;
-			sd.filter.maskBits = PLAYERS_MASK;
-
-			float fenceDepth = 0.2f;
-			float worldScale = height / WORLD_SIZE;
-			float radius = (WORLD_SIZE - (Hud.WIDTH / worldScale)) / 2f + fenceDepth / 2;
-			float perimeter = 2 * PI * radius;
-
-			for (int i = 0; i < FENCE_SECTIONS; i++) {
-				float angle = 2 * PI / FENCE_SECTIONS * i;
-				sd.setAsBox(perimeter / FENCE_SECTIONS, fenceDepth, new Vec2(cos(angle) * radius, sin(angle) * radius),
-						angle + PI / 2);
-				outerFence.createShape(sd);
-			}
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	// TODO: Fix this madness
-	void initParticles() {
-		// init box2d
-		initBox2D();
-
-		// load textures
-		initTextures();
-
-		// create the boundary fence
-		initFence();
-
-		// init hash to space sort particles
-		hashWidth = 40;
-		hashHeight = 40;
-		hash = new ArrayList[hashHeight][hashWidth];
-		for (int i = 0; i < hashHeight; ++i) {
-			for (int j = 0; j < hashWidth; ++j) {
-				hash[i][j] = new ArrayList<Integer>();
-			}
-		}
-
-		// init particles
-		// particles = new Particle[level.getNumPlayers()][MAX_PARTICLES /
-		// level.getNumPlayers()];
-		particles = new LinkedList[level.getNumPlayers()];
-		for (int i = 0; i < particles.length; i++)
-			particles[i] = new LinkedList<Particle>();
-
-		ptsPerParticle = (level.getNumSteps() * AVG_PTS_PER_STEP * level.getNumPlayers()) / APPROX_MAX_PARTICLES;
-		// pCount = new int[level.getNumPlayers()];
-		numStepsPerPeriod = round(AVG_PARTICLE_PER_STEP * ptsPerParticle / AVG_PTS_PER_STEP);
-		if (numStepsPerPeriod == 0)
-			++numStepsPerPeriod;
-		lastPeriodParticle = new Particle[level.getNumPlayers()];
-
-		println("Points per particle: " + ptsPerParticle);
 	}
 
 	public void draw() {
@@ -323,13 +127,12 @@ public class Propinquity extends PApplet {
 	void drawPlay() {
 		drawInnerBoundary();
 		if (DRAW_PARTICLES)
-			drawParticles();
+			liquid.drawParticles();
 		drawMask();
 		drawOuterBoundary();
 
-		// drawOuterFence();
 		if (DEBUG)
-			drawDebugFence();
+			liquid.fences.drawDebugFence();
 
 		hud.draw();
 
@@ -358,19 +161,19 @@ public class Propinquity extends PApplet {
 				}
 
 				// give the last push
-				pushPeriod(true);
+				liquid.pushPeriod(true);
 
 				// step through time
 				box2d.step();
 
 				// liquify
-				liquify();
+				liquid.liquify();
 
 				// snap score in final position
 				hud.snap();
 
 				// pull particles into groups
-				groupParticles();
+				liquid.groupParticles();
 
 				// flag as ended
 				if (doneTime != -1 && frameCount > doneTime + Graphics.FPS * END_LEVEL_TIME)
@@ -382,16 +185,16 @@ public class Propinquity extends PApplet {
 			hud.update(hud.getAngle() + HALF_PI, TWO_PI / 10000f, TWO_PI / 2000f);
 
 			// push particles of current period out
-			pushPeriod();
+			liquid.pushPeriod();
 
 			// release balls
-			updateParticles();
+			liquid.updateParticles();
 
 			// step through time
 			box2d.step();
 
 			// liquify
-			liquify();
+			liquid.liquify();
 
 			// process level
 			level.update();
@@ -415,12 +218,12 @@ public class Propinquity extends PApplet {
 	}
 
 	void resetLevel() {
-		resetLiquid();
+		liquid.resetLiquid();
 		level.reset();
 		endedLevel = false;
 		doneTime = -1;
-		groupedParticles = false;
-		lastPeriodParticle = new Particle[level.getNumPlayers()];
+		liquid.groupedParticles = false;
+		liquid.lastPeriodParticle = new Particle[level.getNumPlayers()];
 
 		hud.reset();
 
@@ -451,60 +254,6 @@ public class Propinquity extends PApplet {
 		popMatrix();
 	}
 
-	void drawDebugFence() {
-		noFill();
-		stroke(0, 255, 0);
-		strokeWeight(1);
-
-		rectMode(CENTER);
-		float radius = height / 2 - Hud.WIDTH;
-		float perimeter = 2 * PI * radius;
-		float w = perimeter / FENCE_SECTIONS;
-		float h = 5f;
-		float angle = 0;
-		for (int i = 0; i < FENCE_SECTIONS; i++) {
-			angle = 2f * PI / FENCE_SECTIONS * i;
-			pushMatrix();
-			translate(width / 2 + cos(angle) * radius, height / 2 + sin(angle) * radius);
-			rotate(angle + PI / 2);
-			rect(0, 0, w, h);
-			popMatrix();
-		}
-
-		radius = INNER_FENCE_RADIUS;
-		perimeter = 2 * PI * radius;
-		w = perimeter / FENCE_SECTIONS;
-		h = 5f;
-		angle = 0;
-		for (int i = 0; i < FENCE_SECTIONS; i++) {
-			angle = 2f * PI / FENCE_SECTIONS * i;
-			pushMatrix();
-			translate(width / 2 + cos(angle) * radius, height / 2 + sin(angle) * radius);
-			rotate(angle + PI / 2);
-			rect(0, 0, w, h);
-			popMatrix();
-		}
-	}
-
-	void drawParticles() {
-		gl = ((PGraphicsOpenGL) g).gl;
-		gl.glEnable(GL.GL_BLEND);
-		gl.glBlendFunc(GL.GL_ONE, GL.GL_ONE_MINUS_SRC_ALPHA);
-
-		for (int i = 0; i < level.getNumPlayers(); i++)
-			drawParticles(i);
-	}
-
-	void drawParticles(int p) {
-		// draw balls
-		noStroke();
-		noFill();
-
-		ListIterator<Particle> it = particles[p].listIterator();
-		while (it.hasNext())
-			(it.next()).draw();
-	}
-
 	void drawMask() {
 		gl = ((PGraphicsOpenGL) g).gl;
 		gl.glEnable(GL.GL_BLEND);
@@ -521,409 +270,6 @@ public class Propinquity extends PApplet {
 		vertex(-1, 1, 0, 0, 1);
 		endShape(CLOSE);
 		popMatrix();
-	}
-
-	void updateParticles() {
-		for (int i = 0; i < level.getNumPlayers(); i++)
-			updateParticles(i);
-	}
-
-	void updateParticles(int p) {
-		Player player = level.getPlayer(p);
-		int nParticles;
-
-		// release particles if the player has accumulated period pts
-		nParticles = min(player.getPeriodPts() / ptsPerParticle, MAX_PARTICLES_PER_FRAME);
-		if (nParticles > 0) {
-			// if (pCount[p]+nParticles > MAX_PARTICLES/2)
-			// nParticles = MAX_PARTICLES/2-pCount[p];
-
-			releaseParticles(p, nParticles);
-		}
-
-		// kill particles if the player touched
-		nParticles = min(player.getKillPts() / ptsPerParticle, MAX_PARTICLES_PER_FRAME);
-		if (nParticles > 0) {
-			killParticles(p, nParticles);
-		}
-	}
-
-	void releaseParticles(int p, int nParticles) {
-		Player player = level.getPlayer(p);
-
-		float releaseAngle = level.getTime() * Hud.SCORE_ROT_SPEED / EMITTER_ANGULAR_VELOCITY;
-		if (p % 2 == 1)
-			releaseAngle += PI;
-
-		float massPerParticle = totalMass / APPROX_MAX_PARTICLES;
-
-		CircleDef pd = new CircleDef();
-		pd.filter.categoryBits = p + 1;
-		pd.filter.maskBits = INNER_FENCE_MASK | OUTER_FENCE_MASK | PLAYERS_MASK;
-		pd.filter.groupIndex = -(p + 1);
-		// pd.filter.groupIndex = -1;
-		pd.density = 1.0f;
-		// pd.radius = 0.020f;
-		pd.radius = 0.040f;
-		pd.restitution = 0.1f;
-		pd.friction = 0.0f;
-		// float radiusMult = random(0.5, 1);
-		// float cx = cos(releaseAngle)*(EMITTER_RADIUS*radiusMult);
-		// float cy = sin(releaseAngle)*(EMITTER_RADIUS*radiusMult);
-
-		for (int i = 0; i < nParticles; ++i) {
-			BodyDef bd = new BodyDef();
-			bd.position = new Vec2(cos(releaseAngle) * (EMITTER_RADIUS * random(0.8f, 1)), sin(releaseAngle)
-					* (EMITTER_RADIUS * random(0.8f, 1)));
-			// bd.position = new Vec2(cx, cy);
-			bd.fixedRotation = true;
-			Body b = box2d.createBody(bd);
-			Shape sh = b.createShape(pd);
-			sh.setUserData(LIQUID_MAGIC);
-			MassData md = new MassData();
-			md.mass = massPerParticle;
-			md.I = 1.0f;
-			b.setMass(md);
-			b.allowSleeping(false);
-
-			// particles[p][i] = new Particle(b, sh,
-			// PARTICLE_SCALE*random(1.0-PARTICLE_SCALE_RANGE, 1.0),
-			// pgParticle[p]);
-			particles[p].add(new Particle(this, b, sh, PARTICLE_SCALE * random(1.0f - PARTICLE_SCALE_RANGE, 1.0f),
-					pgParticle[p]));
-		}
-
-		// keep track of the released particles
-		player.subPeriodPts(nParticles * ptsPerParticle);
-		// pCount[p] += nParticles;
-		// totalParticles += nParticles;
-	}
-
-	void killParticles(int p, int nParticles) {
-		// get player
-		Player player = level.getPlayer(p);
-
-		// clear kill pts
-		player.subKillPts(nParticles * ptsPerParticle);
-
-		Particle particle;
-		boolean killedLastPeriodParticle = false;
-		while (nParticles > 0 && particles[p].size() > 0) {
-			particle = particles[p].removeFirst();
-			if (particle == lastPeriodParticle[p])
-				killedLastPeriodParticle = true;
-			box2d.destroyBody(particle.body);
-			nParticles--;
-		}
-
-		// adjust the last period particle push in case
-		// we killed some particles that were within the
-		// inner fence. if we don't do that the new particles
-		// will get trapped in.
-		if (killedLastPeriodParticle) {
-			if (particles[p].isEmpty())
-				lastPeriodParticle[p] = null;
-			else
-				lastPeriodParticle[p] = particles[p].getLast();
-		}
-	}
-
-	void liquify() {
-		for (int i = 0; i < level.getNumPlayers(); i++)
-			liquify(i);
-	}
-
-	void liquify(int p) {
-		float dt = 1.0f / this.settings.hz;
-
-		hashLocations(p);
-		applyLiquidConstraint(p, dt);
-		dampenLiquid(p);
-	}
-
-	void hashLocations(int p) {
-		for (int a = 0; a < hashWidth; a++) {
-			for (int b = 0; b < hashHeight; b++) {
-				hash[a][b].clear();
-			}
-		}
-
-		Particle particle;
-		// for(int a = 0; a < particles[p].size(); a++)
-		// {
-		// particle = particles[p].get(a);
-		int i = 0;
-		ListIterator<Particle> it = particles[p].listIterator();
-		while (it.hasNext()) {
-			particle = it.next();
-			int hcell = hashX(particle.body.m_sweep.c.x);
-			int vcell = hashY(particle.body.m_sweep.c.y);
-			if (hcell > -1 && hcell < hashWidth && vcell > -1 && vcell < hashHeight)
-				hash[hcell][vcell].add(new Integer(i));
-			i++;
-		}
-	}
-
-	int hashX(float x) {
-		float f = PApplet.map(x, fluidMinX, fluidMaxX, 0, hashWidth - .001f);
-		return (int) f;
-	}
-
-	int hashY(float y) {
-		float f = PApplet.map(y, fluidMinY, fluidMaxY, 0, hashHeight - .001f);
-		return (int) f;
-	}
-
-	void applyLiquidConstraint(int p, float deltaT) {
-		//
-		// Unfortunately, this simulation method is not actually scale
-		// invariant, and it breaks down for rad < ~3 or so. So we need
-		// to scale everything to an ideal rad and then scale it back after.
-		//
-		final float idealRad = 50.0f;
-		float multiplier = idealRad / particleRadius;
-
-		int count = particles[p].size();
-		float[] xchange = new float[count];
-		float[] ychange = new float[count];
-		Arrays.fill(xchange, 0.0f);
-		Arrays.fill(ychange, 0.0f);
-
-		float[] xs = new float[count];
-		float[] ys = new float[count];
-		float[] vxs = new float[count];
-		float[] vys = new float[count];
-
-		// for (int i=0; i<count; ++i) {
-		// particle = particles[p][i];
-		Particle particle;
-		ListIterator<Particle> it;
-
-		it = particles[p].listIterator();
-		int i = 0;
-		while (it.hasNext()) {
-			particle = it.next();
-			xs[i] = multiplier * particle.body.m_sweep.c.x;
-			ys[i] = multiplier * particle.body.m_sweep.c.y;
-			vxs[i] = multiplier * particle.body.m_linearVelocity.x;
-			vys[i] = multiplier * particle.body.m_linearVelocity.y;
-			i++;
-		}
-
-		it = particles[p].listIterator();
-		i = 0;
-		while (it.hasNext()) {
-			particle = it.next();
-			// Populate the neighbor list from the 9 proximate cells
-			ArrayList<Integer> neighbors = new ArrayList<Integer>();
-			int hcell = hashX(particle.body.m_sweep.c.x);
-			int vcell = hashY(particle.body.m_sweep.c.y);
-			for (int nx = -1; nx < 2; nx++) {
-				for (int ny = -1; ny < 2; ny++) {
-					int xc = hcell + nx;
-					int yc = vcell + ny;
-					if (xc > -1 && xc < hashWidth && yc > -1 && yc < hashHeight && hash[xc][yc].size() > 0) {
-						for (int a = 0; a < hash[xc][yc].size(); a++) {
-							Integer ne = hash[xc][yc].get(a);
-							if (ne != null && ne.intValue() != i)
-								neighbors.add(ne);
-						}
-					}
-				}
-			}
-
-			// Particle pressure calculated by particle proximity
-			// Pressures = 0 iff all particles within range are idealRad
-			// distance away
-			float[] vlen = new float[neighbors.size()];
-			float pres = 0.0f;
-			float pnear = 0.0f;
-			for (int a = 0; a < neighbors.size(); a++) {
-				Integer n = neighbors.get(a);
-				int j = n.intValue();
-				float vx = xs[j] - xs[i];
-				float vy = ys[j] - ys[i];
-
-				// early exit check
-				if (vx > -idealRad && vx < idealRad && vy > -idealRad && vy < idealRad) {
-					float vlensqr = (vx * vx + vy * vy);
-					// within idealRad check
-					if (vlensqr < idealRad * idealRad) {
-						vlen[a] = (float) Math.sqrt(vlensqr);
-						if (vlen[a] < Settings.EPSILON)
-							vlen[a] = idealRad - .01f;
-						float oneminusq = 1.0f - (vlen[a] / idealRad);
-						pres = (pres + oneminusq * oneminusq);
-						pnear = (pnear + oneminusq * oneminusq * oneminusq);
-					} else {
-						vlen[a] = Float.MAX_VALUE;
-					}
-				}
-			}
-
-			// Now actually apply the forces
-			// System.out.println(p);
-			float pressure = (pres - 5F) / 2.0F; // normal pressure term
-			float presnear = pnear / 2.0F; // near particles term
-			float changex = 0.0F;
-			float changey = 0.0F;
-			for (int a = 0; a < neighbors.size(); a++) {
-				Integer n = neighbors.get(a);
-				int j = n.intValue();
-				float vx = xs[j] - xs[i];
-				float vy = ys[j] - ys[i];
-				
-				if (vx > -idealRad && vx < idealRad && vy > -idealRad && vy < idealRad) {
-					if (vlen[a] < idealRad) {
-						float q = vlen[a] / idealRad;
-						float oneminusq = 1.0f - q;
-						float factor = oneminusq * (pressure + presnear * oneminusq) / (2.0F * vlen[a]);
-						float dx = vx * factor;
-						float dy = vy * factor;
-						float relvx = vxs[j] - vxs[i];
-						float relvy = vys[j] - vys[i];
-						factor = particleViscosity * oneminusq * deltaT;
-						dx -= relvx * factor;
-						dy -= relvy * factor;
-
-						xchange[j] += dx;
-						ychange[j] += dy;
-						changex -= dx;
-						changey -= dy;
-					}
-				}
-			}
-
-			xchange[i] += changex;
-			ychange[i] += changey;
-			i++;
-		}
-		// multiplier *= deltaT;
-		it = particles[p].listIterator();
-		i = 0;
-		while (it.hasNext()) {
-			particle = it.next();
-			particle.body.m_xf.position.x += xchange[i] / multiplier;
-			particle.body.m_xf.position.y += ychange[i] / multiplier;
-			particle.body.m_linearVelocity.x += xchange[i] / (multiplier * deltaT);
-			particle.body.m_linearVelocity.y += ychange[i] / (multiplier * deltaT);
-			i++;
-		}
-	}
-
-	void dampenLiquid(int p) {
-		Particle particle;
-		ListIterator<Particle> it = particles[p].listIterator();
-		while (it.hasNext()) {
-			particle = it.next();
-			particle.body.setLinearVelocity(particle.body.getLinearVelocity().mul(damp));
-		}
-	}
-
-	void resetLiquid() {
-		for (int p = 0; p < level.getNumPlayers(); p++) {
-			// for (int i=0; i<particles[p].size(); ++i) {
-			// box2d.destroyBody((particles[p].removeFirst()).body);
-			// }
-			Particle particle;
-			ListIterator<Particle> it = particles[p].listIterator();
-			while (it.hasNext()) {
-				particle = it.next();
-				box2d.destroyBody(particle.body);
-				it.remove();
-			}
-		}
-	}
-
-	void pushPeriod() {
-		pushPeriod(false);
-	}
-
-	void pushPeriod(boolean override) {
-		int cStep = level.getCurrentStep();
-
-		// go through particles
-		// apply the force from the previous push
-		for (int p = 0; p < level.getNumPlayers(); p++) {
-
-			Particle particle = null;
-			ListIterator<Particle> it = particles[p].listIterator();
-			while (it.hasNext() && particle != lastPeriodParticle[p]) {
-				particle = it.next();
-
-				particle.body.m_linearVelocity.x += particle.push.x;
-				particle.body.m_linearVelocity.y += particle.push.y;
-				particle.push.x *= PUSH_DAMPENING;
-				particle.push.y *= PUSH_DAMPENING;
-			}
-			// println("last period step " + lastPeriodStep);
-			// println("num steps per period: " + numStepsPerPeriod);
-
-			if (!override && (lastPeriodStep == cStep || cStep % numStepsPerPeriod != 0))
-				continue;
-
-			// go through particles
-			// remove collision with inner fence
-			// and apply push outward
-			FilterData filter = new FilterData();
-			filter.groupIndex = -(p + 1);
-			filter.categoryBits = p + 1;
-			filter.maskBits = OUTER_FENCE_MASK | PLAYERS_MASK;
-
-			float angle = level.getTime() * PUSH_PERIOD_ROT_SPEED + TWO_PI / level.getNumPlayers() * p;
-			float force = random(MIN_RELEASE_FORCE, MAX_RELEASE_FORCE);
-
-			while (it.hasNext()) {
-				particle = it.next();
-
-				particle.shape.setFilterData(filter);
-				box2d.world.refilter(particle.shape);
-
-				particle.push.x -= cos(angle) * force;
-				particle.push.y -= sin(angle) * force;
-			}
-
-			lastPeriodParticle[p] = particle;
-		}
-
-		lastPeriodStep = cStep;
-	}
-
-	void groupParticles() {
-		Particle particle;
-
-		if (!groupedParticles) {
-			for (int p = 0; p < level.getNumPlayers(); p++) {
-				FilterData filter = new FilterData();
-				filter.groupIndex = -1;
-				filter.categoryBits = p + 1;
-				filter.maskBits = OUTER_FENCE_MASK;
-
-				ListIterator<Particle> it = particles[p].listIterator();
-				while (it.hasNext()) {
-					particle = it.next();
-					particle.shape.setFilterData(filter);
-					box2d.world.refilter(particle.shape);
-				}
-			}
-
-			groupedParticles = true;
-		}
-
-		for (int p = 0; p < level.getNumPlayers(); p++) {
-			ListIterator<Particle> it = particles[p].listIterator();
-			while (it.hasNext()) {
-				particle = it.next();
-
-				Body b = particle.body;
-
-				// if (p == 0 && pos.x < width/2)
-				if (p == 0)
-					b.m_linearVelocity.x += 0.20f;
-				else if (p == 1)
-					b.m_linearVelocity.x -= 0.20f;
-			}
-		}
 	}
 
 	public void changeGameState(GameState new_state) {
@@ -1008,7 +354,22 @@ public class Propinquity extends PApplet {
 							// and ready to play
 							if (levelSelect.isDone()) {
 								// init level
-								initLevel(levelSelect.players, levelSelect.levelFile);
+								level = new Level(this, sounds, levelSelect.players, levelSelect.levelFile);
+								graphics.loadLevelContent();
+								
+								while (true)
+									if (level.successfullyRead() > -1)
+										break;
+
+								if (level.successfullyRead() == 0) {
+									level.loadDefaults();
+									System.err.println("I had some trouble reading the level file.");
+									System.err.println("Defaulting to 2 minutes of free play instead.");
+								}
+								
+								// send configuration message here
+								// TODO: send step length to proximity patches
+								
 								delay(50);
 								while (!levelSelect.allAcksIn()) {
 									println("sending again");
@@ -1017,7 +378,7 @@ public class Propinquity extends PApplet {
 								}
 
 								// init liquid particles
-								initParticles();
+								liquid = new Liquid(this);
 
 								// play
 								gameState = GameState.Play;
@@ -1052,30 +413,30 @@ public class Propinquity extends PApplet {
 				break;
 
 			case 'i': // info
-				println("Particles: " + (particles[0].size() + particles[1].size()));
+				println("Particles: " + (liquid.particles[0].size() + liquid.particles[1].size()));
 				println("Framerate: " + frameRate);
-				println("Radius: " + particleRadius);
-				println("Viscosity: " + particleViscosity);
+				println("Radius: " + liquid.particleRadius);
+				println("Viscosity: " + liquid.particleViscosity);
 				break;
 
 			case '8':
-				particleRadius += 0.01;
+				liquid.particleRadius += 0.01;
 				break;
 
 			case '2':
-				particleRadius -= 0.01;
-				if (particleRadius < 0)
-					particleViscosity = 0;
+				liquid.particleRadius -= 0.01;
+				if (liquid.particleRadius < 0)
+					liquid.particleViscosity = 0;
 				break;
 
 			case '4':
-				particleViscosity -= 0.001;
-				if (particleViscosity < 0)
-					particleViscosity = 0;
+				liquid.particleViscosity -= 0.001;
+				if (liquid.particleViscosity < 0)
+					liquid.particleViscosity = 0;
 				break;
 
 			case '6':
-				particleViscosity += 0.001;
+				liquid.particleViscosity += 0.001;
 				break;
 
 			case 'e': // play stub
