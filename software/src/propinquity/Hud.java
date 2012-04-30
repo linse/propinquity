@@ -28,12 +28,12 @@ public class Hud {
 	Sounds sounds;
 	Graphics graphics;
 	PGraphics hudMask;
-	
+
 	float angle = 0;
 	float velocity = -PConstants.TWO_PI / 500f;
-	
+
 	boolean isSnapped = false;
-	
+
 	/**
 	 * 
 	 * 
@@ -43,14 +43,14 @@ public class Hud {
 		this.parent = parent;
 		this.sounds = sounds;
 		this.graphics = graphics;
-		
+
 		hudMask = parent.createGraphics(parent.width, parent.height, PConstants.P2D);
 		hudMask.background(0);
 		hudMask.beginDraw();
 		hudMask.noStroke();
 		hudMask.fill(255);
-		hudMask.ellipse(parent.width / 2, parent.height / 2, parent.height - Hud.WIDTH * 2 + parent.BOUNDARY_WIDTH, parent.height - Hud.WIDTH * 2
-				+ parent.BOUNDARY_WIDTH);
+		hudMask.ellipse(parent.width / 2, parent.height / 2, parent.height - Hud.WIDTH * 2 + parent.BOUNDARY_WIDTH,
+				parent.height - Hud.WIDTH * 2 + parent.BOUNDARY_WIDTH);
 		hudMask.endDraw();
 	}
 
@@ -62,7 +62,7 @@ public class Hud {
 	public float getAngle() {
 		return angle;
 	}
-	
+
 	/**
 	 * Reset the HUD to its default angle and velocity.
 	 */
@@ -70,12 +70,12 @@ public class Hud {
 		isSnapped = false;
 		velocity = -PConstants.TWO_PI / 500f;
 	}
-	
+
 	/**
 	 * 
 	 */
 	public void snap() {
-		
+
 		if (!isSnapped) {
 			angle -= ((int) (angle / PConstants.TWO_PI)) * PConstants.TWO_PI;
 			isSnapped = true;
@@ -83,7 +83,7 @@ public class Hud {
 
 		update(PConstants.TWO_PI, PConstants.TWO_PI / 500f, PConstants.TWO_PI / 10f);
 	}
-	
+
 	/**
 	 * 
 	 * 
@@ -92,7 +92,7 @@ public class Hud {
 	 * @param maxVelocity
 	 */
 	public void update(float targetAngle, float targetAcceleration, float maxVelocity) {
-		
+
 		float diff = targetAngle - angle;
 		int dir = diff < 0 ? -1 : 1;
 
@@ -149,7 +149,8 @@ public class Hud {
 			while (parent.textWidth(score + name) < 240)
 				name += ' ';
 
-			Text.drawArc(name + score, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, ang - Hud.SCORE_ANGLE_OFFSET, parent);
+			Text.drawArc(name + score, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, ang - Hud.SCORE_ANGLE_OFFSET,
+					parent);
 
 			parent.popMatrix();
 
@@ -188,7 +189,8 @@ public class Hud {
 				while (parent.textWidth(score + name) < 240)
 					name += ' ';
 
-				Text.drawArc(name + score, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, ang - Hud.SCORE_ANGLE_OFFSET, parent);
+				Text.drawArc(name + score, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, ang - Hud.SCORE_ANGLE_OFFSET,
+						parent);
 
 				parent.popMatrix();
 			}

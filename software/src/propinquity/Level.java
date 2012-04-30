@@ -75,27 +75,27 @@ public class Level {
 	public Level(Propinquity parent, Sounds sounds, Player[] players, String levelFile) {
 		this.parent = parent;
 		this.sounds = sounds;
-		
+
 		if (players == null) {
 			players = new Player[2];
 			players[0] = new Player(parent, parent.PLAYER_COLORS[0]);
 			players[0].name = "Player 1";
 			players[1] = new Player(parent, parent.PLAYER_COLORS[1]);
 			players[1].name = "Player 2";
-		} else { 
+		} else {
 			this.players = players;
 		}
-		
+
 		if (levelFile != null) {
 			parent.xmlInOut = new XMLInOut(parent, this);
 			parent.xmlInOut.loadElement(levelFile);
 		}
-		
+
 		players[0].registerNegativePlayerSound(sounds.negativeP1);
 		players[0].registerNegativeCoopSound(sounds.negativeCoop);
 		players[1].registerNegativePlayerSound(sounds.negativeP2);
 		players[1].registerNegativeCoopSound(sounds.negativeCoop);
-		
+
 		lastCoopDone = false;
 		reset();
 	}
@@ -398,20 +398,13 @@ public class Level {
 				if (j < l_numStepsEach[i]) {
 					l_step = l_sequence.getChild(j);
 					players[i].addStep(
-							new Step(PApplet.parseBoolean(l_step
-									.getIntAttribute("pad1")), PApplet
-									.parseBoolean(l_step
-											.getIntAttribute("pad2")), PApplet
-									.parseBoolean(l_step
-											.getIntAttribute("pad3")), PApplet
-									.parseBoolean(l_step
-											.getIntAttribute("pad4")), PApplet
-									.parseBoolean(l_step
+							new Step(PApplet.parseBoolean(l_step.getIntAttribute("pad1")), PApplet.parseBoolean(l_step
+									.getIntAttribute("pad2")), PApplet.parseBoolean(l_step.getIntAttribute("pad3")),
+									PApplet.parseBoolean(l_step.getIntAttribute("pad4")), PApplet.parseBoolean(l_step
 											.getIntAttribute("free"))), j);
 				} else {
 					// give them free play. All lights on.
-					players[i].addStep(new Step(true, true, true, true, true),
-							j);
+					players[i].addStep(new Step(true, true, true, true, true), j);
 				}
 			}
 		}
@@ -430,8 +423,7 @@ public class Level {
 
 		if (data.getApiID() == XBeeReader.SERIES1_RX16PACKET) {
 			int[] packet = data.getBytes();
-			if (packet.length == XPan.PROX_IN_PACKET_LENGTH
-					&& packet[0] == XPan.PROX_IN_PACKET_TYPE) {
+			if (packet.length == XPan.PROX_IN_PACKET_LENGTH && packet[0] == XPan.PROX_IN_PACKET_TYPE) {
 				// println("prox message received");
 				int patch = (packet[1] >> 1);
 				int player = getPlayerIndexForPatch(patch);
@@ -442,21 +434,16 @@ public class Level {
 					// println(touched);
 					int step = ((packet[2] & 0xFF) << 8) | (packet[3] & 0xFF);
 					// println(step);
-					int proximity = ((packet[4] & 0xFF) << 8)
-							| (packet[5] & 0xFF);
+					int proximity = ((packet[4] & 0xFF) << 8) | (packet[5] & 0xFF);
 					;
 					// println(proximity);
 					// player.processProxReading(patch, step, touched,
 					// proximity);
-					processProxReading(new ProxData(player, patch, step,
-							touched, proximity));
+					processProxReading(new ProxData(player, patch, step, touched, proximity));
 				} else
-					System.err
-							.println("Trouble in paradise, we received a packet from patch '"
-									+ patch
-									+ "', which is not assigned to a player");
-			} else if (packet.length == XPan.ACCEL_IN_PACKET_LENGTH
-					&& packet[0] == XPan.ACCEL_IN_PACKET_TYPE) {
+					System.err.println("Trouble in paradise, we received a packet from patch '" + patch
+							+ "', which is not assigned to a player");
+			} else if (packet.length == XPan.ACCEL_IN_PACKET_LENGTH && packet[0] == XPan.ACCEL_IN_PACKET_TYPE) {
 				// TODO
 				int patch = packet[1];
 				int x = packet[2];
@@ -464,17 +451,13 @@ public class Level {
 				int z = packet[4];
 				int player = getPlayerIndexForPatch(patch);
 				processAccelReading(new AccelData(player, patch, x, y, z));
-			} else if (packet.length == XPan.CONFIG_ACK_LENGTH
-					&& packet[0] == XPan.CONFIG_ACK_PACKET_TYPE) {
-				int myTurnLength = ((packet[2] & 0xFF) << 8)
-						| (packet[3] & 0xFF);
+			} else if (packet.length == XPan.CONFIG_ACK_LENGTH && packet[0] == XPan.CONFIG_ACK_PACKET_TYPE) {
+				int myTurnLength = ((packet[2] & 0xFF) << 8) | (packet[3] & 0xFF);
 				int patch = packet[1];
 				int player = getPlayerIndexForPatch(patch);
 				players[player].processConfigAck(patch, myTurnLength);
-				System.out.println("Config Ack Received in Level, Turn Length is "
-						+ myTurnLength);
-			} else if (packet.length == XPan.VIBE_IN_PACKET_LENGTH
-					&& packet[0] == XPan.VIBE_IN_PACKET_TYPE) {
+				System.out.println("Config Ack Received in Level, Turn Length is " + myTurnLength);
+			} else if (packet.length == XPan.VIBE_IN_PACKET_LENGTH && packet[0] == XPan.VIBE_IN_PACKET_TYPE) {
 				if (packet[2] == 4)
 					doPause();
 			} else {
@@ -506,14 +489,12 @@ public class Level {
 		// check if we are in coop mode
 		if (isCcoop && (coopPts == 0 || getTotalPts() < coopPts * 2)) {
 			for (int i = 0; i < players.length; i++)
-				players[i].processProxReading(data.patch, data.step,
-						data.touched, data.proximity);
+				players[i].processProxReading(data.patch, data.step, data.touched, data.proximity);
 			// println("Proximity reading: " + data + " (coop)");
 		}
 		// if not only need to process for incoming player
 		else {
-			players[data.player].processProxReading(data.patch, data.step,
-					data.touched, data.proximity);
+			players[data.player].processProxReading(data.patch, data.step, data.touched, data.proximity);
 			// println("Proximity reading: " + data);
 		}
 	}
@@ -522,14 +503,12 @@ public class Level {
 		// check if we are in coop mode
 		if (isCcoop && (coopPts == 0 || getTotalPts() < coopPts * 2)) {
 			for (int i = 0; i < players.length; i++)
-				players[i].processAccelReading(data.patch, data.x, data.y,
-						data.z);
+				players[i].processAccelReading(data.patch, data.x, data.y, data.z);
 			// println("Acceleration reading: " + data + " (coop)");
 		}
 		// if not only need to process for incoming player
 		else {
-			players[data.player].processAccelReading(data.patch, data.x,
-					data.y, data.z);
+			players[data.player].processAccelReading(data.patch, data.x, data.y, data.z);
 			// println("Acceleration reading: " + data);
 		}
 	}
@@ -544,5 +523,5 @@ public class Level {
 		else if (!isDone())
 			pause();
 	}
-	
+
 }

@@ -58,7 +58,7 @@ public class Liquid {
 	float fluidMaxX = Propinquity.WORLD_SIZE / 2f;
 	float fluidMinY = -Propinquity.WORLD_SIZE / 2f;
 	float fluidMaxY = Propinquity.WORLD_SIZE / 2f;
-	
+
 	// Particles
 	int ptsPerParticle = 0;
 	LinkedList<Particle>[] particles;
@@ -80,7 +80,7 @@ public class Liquid {
 
 		initBox2D();
 		initTextures();
-		
+
 		// create the boundary fences
 		fences = new Fences(parent);
 
@@ -99,7 +99,8 @@ public class Liquid {
 		for (int i = 0; i < particles.length; i++)
 			particles[i] = new LinkedList<Particle>();
 
-		ptsPerParticle = (parent.level.getNumSteps() * AVG_PTS_PER_STEP * parent.level.getNumPlayers()) / APPROX_MAX_PARTICLES;
+		ptsPerParticle = (parent.level.getNumSteps() * AVG_PTS_PER_STEP * parent.level.getNumPlayers())
+				/ APPROX_MAX_PARTICLES;
 		// pCount = new int[level.getNumPlayers()];
 		numStepsPerPeriod = PApplet.round(AVG_PARTICLE_PER_STEP * ptsPerParticle / AVG_PTS_PER_STEP);
 		if (numStepsPerPeriod == 0)
@@ -129,14 +130,14 @@ public class Liquid {
 			imgShadow = parent.loadImage("data/particles/shadow.png");
 
 		pgParticle = new PGraphics[parent.level.getNumPlayers()];
-		
+
 		for (int i = 0; i < parent.level.getNumPlayers(); i++) {
 			pgParticle[i] = parent.createGraphics(imgParticle[i].width, imgParticle[i].height, PConstants.P2D);
 			pgParticle[i].background(imgParticle[i]);
 			pgParticle[i].mask(imgParticle[i]);
 		}
 	}
-	
+
 	void updateParticles() {
 		for (int i = 0; i < parent.level.getNumPlayers(); i++)
 			updateParticles(i);
@@ -161,7 +162,7 @@ public class Liquid {
 			killParticles(p, nParticles);
 		}
 	}
-	
+
 	void releaseParticles(int p, int nParticles) {
 		Player player = parent.level.getPlayer(p);
 
@@ -182,8 +183,8 @@ public class Liquid {
 
 		for (int i = 0; i < nParticles; ++i) {
 			BodyDef bd = new BodyDef();
-			bd.position = new Vec2(PApplet.cos(releaseAngle) * (EMITTER_RADIUS * parent.random(0.8f, 1)), PApplet.sin(releaseAngle)
-					* (EMITTER_RADIUS * parent.random(0.8f, 1)));
+			bd.position = new Vec2(PApplet.cos(releaseAngle) * (EMITTER_RADIUS * parent.random(0.8f, 1)),
+					PApplet.sin(releaseAngle) * (EMITTER_RADIUS * parent.random(0.8f, 1)));
 			// bd.position = new Vec2(cx, cy);
 			bd.fixedRotation = true;
 			Body b = parent.box2d.createBody(bd);
@@ -198,8 +199,8 @@ public class Liquid {
 			// particles[p][i] = new Particle(b, sh,
 			// PARTICLE_SCALE*random(1.0-PARTICLE_SCALE_RANGE, 1.0),
 			// pgParticle[p]);
-			particles[p].add(new Particle(parent, b, sh, PARTICLE_SCALE * parent.random(1.0f - PARTICLE_SCALE_RANGE, 1.0f),
-					pgParticle[p]));
+			particles[p].add(new Particle(parent, b, sh, PARTICLE_SCALE
+					* parent.random(1.0f - PARTICLE_SCALE_RANGE, 1.0f), pgParticle[p]));
 		}
 
 		// keep track of the released particles
@@ -377,7 +378,7 @@ public class Liquid {
 				int j = n.intValue();
 				float vx = xs[j] - xs[i];
 				float vy = ys[j] - ys[i];
-				
+
 				if (vx > -idealRad && vx < idealRad && vy > -idealRad && vy < idealRad) {
 					if (vlen[a] < idealRad) {
 						float q = vlen[a] / idealRad;
@@ -436,7 +437,7 @@ public class Liquid {
 			}
 		}
 	}
-	
+
 	void pushPeriod() {
 		pushPeriod(false);
 	}
@@ -472,7 +473,8 @@ public class Liquid {
 			filter.categoryBits = p + 1;
 			filter.maskBits = Fences.OUTER_MASK | Fences.PLAYERS_MASK;
 
-			float angle = parent.level.getTime() * PUSH_PERIOD_ROT_SPEED + PConstants.TWO_PI / parent.level.getNumPlayers() * p;
+			float angle = parent.level.getTime() * PUSH_PERIOD_ROT_SPEED + PConstants.TWO_PI
+					/ parent.level.getNumPlayers() * p;
 			float force = parent.random(Liquid.MIN_RELEASE_FORCE, Liquid.MAX_RELEASE_FORCE);
 
 			while (it.hasNext()) {
@@ -527,7 +529,7 @@ public class Liquid {
 			}
 		}
 	}
-	
+
 	void drawParticles() {
 		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
 		parent.gl.glEnable(GL.GL_BLEND);
@@ -536,7 +538,7 @@ public class Liquid {
 		for (int i = 0; i < parent.level.getNumPlayers(); i++)
 			drawParticles(i);
 	}
-	
+
 	void drawParticles(int p) {
 		// draw balls
 		parent.noStroke();
