@@ -41,8 +41,6 @@ public class Propinquity extends PApplet {
 	final int APPROX_MAX_PARTICLES = 1600;
 	final int MAX_PARTICLES_PER_FRAME = 5;
 	final Integer LIQUID_MAGIC = new Integer(12345);
-	final int FENCE_SECTIONS = 24;
-	final int INNER_FENCE_RADIUS = 100;
 	final float EMITTER_RADIUS = 0.14f;
 	final int SHADOW_X = 8;
 	final int SHADOW_Y = 8;
@@ -50,9 +48,7 @@ public class Propinquity extends PApplet {
 	final float MAX_RELEASE_FORCE = 0.6f;
 	final float WORLD_SIZE = 2f;
 	final float EMITTER_ANGULAR_VELOCITY = 4 * TWO_PI;
-	final int INNER_FENCE_MASK = 0x4;
-	final int OUTER_FENCE_MASK = 0x8;
-	final int PLAYERS_MASK = 0x1 | 0x2;
+
 	// final int NUM_STEP_PER_PERIOD = 4;
 	final float PUSH_PERIOD_ROT_SPEED = 1f;
 	final float PUSH_DAMPENING = 0.98f;
@@ -115,6 +111,8 @@ public class Propinquity extends PApplet {
 
 	// XBees
 	public XBeeManager xbeeManager;
+	
+	Fences fences;
 
 	//Logger
 	Logger logger;
@@ -178,56 +176,6 @@ public class Propinquity extends PApplet {
 		}
 	}
 
-	void initFence() {
-		Body innerFence = null;
-		{
-			BodyDef bd = new BodyDef();
-			bd.position.set(0.0f, 0.0f);
-			innerFence = box2d.createBody(bd);
-
-			PolygonDef sd = new PolygonDef();
-			// sd.filter.groupIndex = 1;
-			sd.filter.categoryBits = INNER_FENCE_MASK;
-			sd.filter.maskBits = PLAYERS_MASK;
-
-			float fenceDepth = 0.2f;
-			float worldScale = height / WORLD_SIZE;
-			float radius = INNER_FENCE_RADIUS / worldScale + fenceDepth;
-			float perimeter = 2 * PI * radius;
-
-			for (int i = 0; i < FENCE_SECTIONS; i++) {
-				float angle = 2 * PI / FENCE_SECTIONS * i;
-				sd.setAsBox(perimeter / FENCE_SECTIONS, fenceDepth, new Vec2(cos(angle) * radius, sin(angle) * radius),
-						angle + PI / 2);
-				innerFence.createShape(sd);
-			}
-		}
-
-		Body outerFence = null;
-		{
-			BodyDef bd = new BodyDef();
-			bd.position.set(0.0f, 0.0f);
-			outerFence = box2d.createBody(bd);
-
-			PolygonDef sd = new PolygonDef();
-			// sd.filter.groupIndex = 1;
-			sd.filter.categoryBits = OUTER_FENCE_MASK;
-			sd.filter.maskBits = PLAYERS_MASK;
-
-			float fenceDepth = 0.2f;
-			float worldScale = height / WORLD_SIZE;
-			float radius = (WORLD_SIZE - (Hud.WIDTH / worldScale)) / 2f + fenceDepth / 2;
-			float perimeter = 2 * PI * radius;
-
-			for (int i = 0; i < FENCE_SECTIONS; i++) {
-				float angle = 2 * PI / FENCE_SECTIONS * i;
-				sd.setAsBox(perimeter / FENCE_SECTIONS, fenceDepth, new Vec2(cos(angle) * radius, sin(angle) * radius),
-						angle + PI / 2);
-				outerFence.createShape(sd);
-			}
-		}
-	}
-
 	@SuppressWarnings("unchecked")
 	// TODO: Fix this madness
 	void initParticles() {
@@ -237,8 +185,8 @@ public class Propinquity extends PApplet {
 		// load textures
 		initTextures();
 
-		// create the boundary fence
-		initFence();
+		// create the boundary fences
+		fences = new Fences(this);
 
 		// init hash to space sort particles
 		hashWidth = 40;
@@ -305,9 +253,8 @@ public class Propinquity extends PApplet {
 		drawMask();
 		drawOuterBoundary();
 
-		// drawOuterFence();
 		if (DEBUG)
-			drawDebugFence();
+			fences.drawDebugFence();
 
 		hud.draw();
 
@@ -429,41 +376,6 @@ public class Propinquity extends PApplet {
 		popMatrix();
 	}
 
-	void drawDebugFence() {
-		noFill();
-		stroke(0, 255, 0);
-		strokeWeight(1);
-
-		rectMode(CENTER);
-		float radius = height / 2 - Hud.WIDTH;
-		float perimeter = 2 * PI * radius;
-		float w = perimeter / FENCE_SECTIONS;
-		float h = 5f;
-		float angle = 0;
-		for (int i = 0; i < FENCE_SECTIONS; i++) {
-			angle = 2f * PI / FENCE_SECTIONS * i;
-			pushMatrix();
-			translate(width / 2 + cos(angle) * radius, height / 2 + sin(angle) * radius);
-			rotate(angle + PI / 2);
-			rect(0, 0, w, h);
-			popMatrix();
-		}
-
-		radius = INNER_FENCE_RADIUS;
-		perimeter = 2 * PI * radius;
-		w = perimeter / FENCE_SECTIONS;
-		h = 5f;
-		angle = 0;
-		for (int i = 0; i < FENCE_SECTIONS; i++) {
-			angle = 2f * PI / FENCE_SECTIONS * i;
-			pushMatrix();
-			translate(width / 2 + cos(angle) * radius, height / 2 + sin(angle) * radius);
-			rotate(angle + PI / 2);
-			rect(0, 0, w, h);
-			popMatrix();
-		}
-	}
-
 	void drawParticles() {
 		gl = ((PGraphicsOpenGL) g).gl;
 		gl.glEnable(GL.GL_BLEND);
@@ -537,17 +449,12 @@ public class Propinquity extends PApplet {
 
 		CircleDef pd = new CircleDef();
 		pd.filter.categoryBits = p + 1;
-		pd.filter.maskBits = INNER_FENCE_MASK | OUTER_FENCE_MASK | PLAYERS_MASK;
+		pd.filter.maskBits = Fences.INNER_MASK | Fences.OUTER_MASK | Fences.PLAYERS_MASK;
 		pd.filter.groupIndex = -(p + 1);
-		// pd.filter.groupIndex = -1;
 		pd.density = 1.0f;
-		// pd.radius = 0.020f;
 		pd.radius = 0.040f;
 		pd.restitution = 0.1f;
 		pd.friction = 0.0f;
-		// float radiusMult = random(0.5, 1);
-		// float cx = cos(releaseAngle)*(EMITTER_RADIUS*radiusMult);
-		// float cy = sin(releaseAngle)*(EMITTER_RADIUS*radiusMult);
 
 		for (int i = 0; i < nParticles; ++i) {
 			BodyDef bd = new BodyDef();
@@ -846,7 +753,7 @@ public class Propinquity extends PApplet {
 			FilterData filter = new FilterData();
 			filter.groupIndex = -(p + 1);
 			filter.categoryBits = p + 1;
-			filter.maskBits = OUTER_FENCE_MASK | PLAYERS_MASK;
+			filter.maskBits = Fences.OUTER_MASK | Fences.PLAYERS_MASK;
 
 			float angle = level.getTime() * PUSH_PERIOD_ROT_SPEED + TWO_PI / level.getNumPlayers() * p;
 			float force = random(MIN_RELEASE_FORCE, MAX_RELEASE_FORCE);
@@ -875,7 +782,7 @@ public class Propinquity extends PApplet {
 				FilterData filter = new FilterData();
 				filter.groupIndex = -1;
 				filter.categoryBits = p + 1;
-				filter.maskBits = OUTER_FENCE_MASK;
+				filter.maskBits = Fences.OUTER_MASK;
 
 				ListIterator<Particle> it = particles[p].listIterator();
 				while (it.hasNext()) {

@@ -36,6 +36,7 @@ public class Hud {
 	
 	/**
 	 * 
+	 * 
 	 * @param parent
 	 */
 	public Hud(Propinquity parent, Sounds sounds, Graphics graphics) {
