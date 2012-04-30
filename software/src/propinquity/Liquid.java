@@ -122,12 +122,9 @@ public class Liquid {
 	}
 
 	void initTextures() {
-		imgParticle = new PImage[parent.level.getNumPlayers()];
-		for (int i = 0; i < parent.level.getNumPlayers(); i++)
-			imgParticle[i] = parent.loadImage("data/particles/player" + (i + 1) + ".png");
 
-		if (Propinquity.DRAW_SHADOWS)
-			imgShadow = parent.loadImage("data/particles/shadow.png");
+		imgParticle = parent.graphics.loadParticles();
+		imgShadow = parent.graphics.loadParticleShadow();
 
 		pgParticle = new PGraphics[parent.level.getNumPlayers()];
 
@@ -149,12 +146,8 @@ public class Liquid {
 
 		// release particles if the player has accumulated period pts
 		nParticles = PApplet.min(player.getPeriodPts() / ptsPerParticle, MAX_PARTICLES_PER_FRAME);
-		if (nParticles > 0) {
-			// if (pCount[p]+nParticles > MAX_PARTICLES/2)
-			// nParticles = MAX_PARTICLES/2-pCount[p];
-
+		if (nParticles > 0)
 			releaseParticles(p, nParticles);
-		}
 
 		// kill particles if the player touched
 		nParticles = PApplet.min(player.getKillPts() / ptsPerParticle, MAX_PARTICLES_PER_FRAME);

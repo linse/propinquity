@@ -67,5 +67,35 @@ public class Graphics {
 		// Load co-op HUD
 		hudCoop = parent.loadImage("data/hud/level.png");
 	}
+	
+	/**
+	 * Loads the particle images used for each player.
+	 * 
+	 * @return The array of particle images.
+	 */
+	public PImage[] loadParticles() {
+		
+		PImage[] particles = new PImage[parent.level.getNumPlayers()];
+		
+		for (int i = 0; i < parent.level.getNumPlayers(); i++)
+			particles[i] = parent.loadImage("data/particles/player" + (i + 1) + ".png");
+		
+		return particles;
+	}
+	
+	/**
+	 * Loads the image of a particle shadow.
+	 * 
+	 * @return The image used as the particle's shadow.
+	 */
+	public PImage loadParticleShadow() {
+		
+		PImage img = null;
+		
+		if (Propinquity.DRAW_SHADOWS) 
+			img = parent.loadImage("data/particles/shadow.png");
+		
+		return img;
+	}
 
 }
