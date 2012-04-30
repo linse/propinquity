@@ -1,97 +1,62 @@
+// Airplanes
+
 // THIS IS THE PATCH CODE - BOARD CHOICE IS
 // Arduino Pro or Pro Mini (3.3V, 8 mHz) with Atmega 328
 
 #include <XBee.h>
 
-struct Blinker {
-	bool _state;
-	uint16_t millisOn;
-	uint16_t millisOff;
-	uint16_t interval;
-	unsigned long prevMillis;
-
-	Blinker() : _state(false), millisOn(0), millisOff(0), interval(100), prevMillis(0) {}
-
-	void init(uint16_t millisOn, uint16_t millisOff) {
-		this->millisOn = millisOn;
-		this->millisOff = millisOff;
-	}
-
-	bool state() {
-		if (millis() - prevMillis > interval) {
-			if (!_state && millisOn > 0) {
-				_state = true;
-				setInterval(millisOn);
-			}
-			else {
-				_state = false;
-				setInterval(millisOff);
-			}
-		}
-		return _state;
-	}
-
-	void setInterval(uint16_t newinterval) {
-		prevMillis = millis();
-		interval = newinterval;
-	}
-};
+/* #define DEBUG */
+#define DEBUG_LED
 
 /* ---- Pin List ---- */
-
-#define RED_LED_PIN 8 //D11, 15 of 20
-#define BLUE_LED_PIN 10 //D10, 14 of 20
-#define GREEN_LED_PIN 9 //D9, 13 of 20
-#define VIBE_PIN 6 //D6, 7 of 20
+#define RED_LED_PIN    8 //D11, 15 of 20
+#define BLUE_LED_PIN   10 //D10, 14 of 20
+#define GREEN_LED_PIN  9 //D9, 13 of 20
+#define VIBE_PIN       6 //D6, 7 of 20
 #define STATUS_LED_PIN 7 // D8, red LED on seeduino film
 
-/* ---- Communication defines ---- */
+/* ---- Protocol ---- */
+#define PACKET_TYPE 0
+#define PROX_STATE_PACKET_TYPE   8
+#define VIBE_STATE_PACKET_TYPE   9
 
-#define PROX_STATE_PACKET_TYPE 8
-#define PROX_STATE_PACKET_LENGTH 8
-#define VIBE_STATE_PACKET_TYPE 9
-#define VIBE_STATE_PACKET_LENGTH 4
-
-#define PROX_IN_PACKET_TYPE 2 //sending this
-#define CONFIG_OUT_PACKET_TYPE 5 //listening for this
+#define PROX_IN_PACKET_TYPE    2 // Sending this
+#define CONFIG_OUT_PACKET_TYPE 5 // Listening for this
 #define CONFIG_ACK_PACKET_TYPE 6
 
-//Communication variables
-const int g_outPacketSize = 6;
-const int g_configPacketSize = 3;
-const int g_configAckSize = 4;
-static uint8_t vibeStatePacket[VIBE_STATE_PACKET_LENGTH];
-static uint8_t proxStatePacket[PROX_STATE_PACKET_LENGTH];
-static uint8_t outPacket[g_outPacketSize];
-static uint8_t configPacket[g_configPacketSize];
-static int packet_cnt;
+// Communication variables
+#define g_outPacketSize    6
+#define g_configPacketSize 3
+#define g_configAckSize    4
+
+#define RED_COLOR  1
+#define BLUE_COLOR 2
+
+uint8_t outPacket[g_outPacketSize];
+uint8_t configPacket[g_configPacketSize];
+int packet_cnt;
 
 XBee xbee = XBee();
-XBeeResponse response = XBeeResponse();
 Rx16Response rx = Rx16Response();
 Tx16Request tx;
-uint16_t base_address = 0;
 TxStatusResponse txStatus = TxStatusResponse();
-const int RED_COLOR = 1;
-const int BLUE_COLOR = 2;
+uint16_t base_address = 0;
 
-Blinker vibeBlinker;
-Blinker colorBlinker;
 uint8_t rgb[3] = {0, 0, 0};
 bool active = false;
 
 //Communication -- addressing (need to be changed for each patch)
 //PROX1_PLAYER1
 int myColor = RED_COLOR;
-static int myAddress = 1;
-static int initialDelay = 0; //for staggering messages from sensors to avoid packet collision
-static int ledFilter1 = 0x80; //128, 64, 32, and 16 -- for higher order bits
-static int ledFilter2 = 0x08; //8, 4, 2, and 1 -- for lower order bits
+int myAddress = 1;
+int initialDelay = 0; //for staggering messages from sensors to avoid packet collision
+int ledFilter1 = 0x80; //128, 64, 32, and 16 -- for higher order bits
+int ledFilter2 = 0x08; //8, 4, 2, and 1 -- for lower order bits
 
-long dataInterval = 50; // 20 Hz
+long dataInterval = 50; // 20 Hz max
 long prevDataMillis = 0;
 
-long xCheckInterval = 20; // 50 Hz
+long xCheckInterval = 20; // 50 Hz max
 long prevCheckMillis = 0;
 
 long turnLength; // will have to be set by config message
@@ -103,10 +68,41 @@ int proxReading = 0;
 int touchThreshold = 1250;
 //might need to establish running average for capsense and look for spikes
 
-//debug
-boolean testing = false; // actually it's specifically testing sensors
-
 uint8_t frameId = 0;
+
+/* struct Blinker { */
+/* 	bool _state; */
+/* 	uint16_t millisOn; */
+/* 	uint16_t millisOff; */
+/* 	uint16_t interval; */
+/* 	unsigned long prevMillis; */
+
+/* Blinker() : _state(false), millisOn(0), millisOff(0), interval(100), prevMillis(0) {} */
+
+/* 	void init(uint16_t millisOn, uint16_t millisOff) { */
+/* 		this->millisOn = millisOn; */
+/* 		this->millisOff = millisOff; */
+/* 	} */
+
+/* 	bool state() { */
+/* 		if (millis() - prevMillis > interval) { */
+/* 			if (!_state && millisOn > 0) { */
+/* 				_state = true; */
+/* 				setInterval(millisOn); */
+/* 			} */
+/* 			else { */
+/* 				_state = false; */
+/* 				setInterval(millisOff); */
+/* 			} */
+/* 		} */
+/* 		return _state; */
+/* 	} */
+
+/* 	void setInterval(uint16_t newinterval) { */
+/* 		prevMillis = millis(); */
+/* 		interval = newinterval; */
+/* 	} */
+/* }; */
 
 void setup() {
 	pinMode(RED_LED_PIN, OUTPUT);
@@ -123,28 +119,58 @@ void setup() {
 
 	xbee.begin(9600);
 
-	if (testing) Serial.begin(9600);//testing*/
+#ifdef DEBUG
+	Serial.begin(9600);//testing*/
 
 	Serial.print("patch_playtest_march (addr = ");
 	Serial.print(myAddress);
 	Serial.println(")");
+#endif
+}
+
+/**
+ * Blinks the status according the a specific delay to display error statuses.
+ */
+void debug_blink(uint8_t d) {
+	statusLED(1);
+	delay(d);
+	statusLED(0);
+	delay(d);
 }
 
 void loop() {
-	if (millis() - prevCheckMillis > xCheckInterval) {
-		xbee.readPacket();
+	xbee.readPacket(1000); // Read packet, return after 500ms timeout
 
-		if (xbee.getResponse().isAvailable()) {
-			get_data(); 
-		}
-
-		prevCheckMillis = millis();
+	XBeeResponse resp = xbee.getResponse(); // Get the response
+	if(resp.isAvailable()) { // Response is valid and readable
+		get_data(resp); // Parse
 	}
+#ifdef DEBUG_LED // Status LED blinking
+	else if(resp.isError()) { // Response contains an error
+		// Blink StatusLED for debugging.
+		uint8_t error_code = resp.getErrorCode();
+		switch(error_code) {
+		case CHECKSUM_FAILURE:
+			debug_blink(200);
+			break;
+		case PACKET_EXCEEDS_BYTE_ARRAY_LENGTH:
+			debug_blink(800);
+			break;
+		case UNEXPECTED_START_BYTE:
+			debug_blink(1000);
+			break;
+		}
+	}
+#endif
+	else {
+		// dot dot dot
+	}
+	
 
-	if (active) {
-		if (millis() - prevDataMillis > dataInterval) {
+	if(active) { // transmit
+		if(millis() - prevDataMillis > dataInterval) { // Maximum transmition speed
 			proxReading = analogRead(proxPin);
-			if (proxReading < proxBaseline) proxReading = 0;
+			if(proxReading < proxBaseline) proxReading = 0;  // Game logic?
 			else proxReading -= proxBaseline;
 			send_data();
 			prevDataMillis = millis();
@@ -153,10 +179,10 @@ void loop() {
 
 	updateVibe();
 	updateLEDs();
+	/* delay(10); // Ya?  */
 }
 
 /* ---- Xbee ---- */
-
 void send_data() {
 	outPacket[0] = PROX_IN_PACKET_TYPE;
 	outPacket[1] = uint8_t(myAddress << 1);
@@ -165,11 +191,12 @@ void send_data() {
 	outPacket[4] = uint8_t(proxReading >> 8);
 	outPacket[5] = uint8_t(proxReading);
 	tx = Tx16Request(base_address, outPacket, g_outPacketSize);
-	if (testing) {
+
+#ifdef DEBUG
 		Serial.print((int)millis()+"\t");
 		Serial.print((int)outPacket[1]+"\t");
 		Serial.println(proxReading);
-	}
+#endif
 
 	xbee.send(tx);
 }
@@ -181,77 +208,95 @@ void ack_config() {
 	configAck[2] = uint8_t(turnLength >> 8);
 	configAck[3] = uint8_t(turnLength);
 	tx = Tx16Request(base_address, ACK_OPTION, configAck, g_configAckSize, frameId++);
-	if (testing) {
+
+#ifdef DEBUG	
 		Serial.print("Turn length \t");
-		Serial.println(turnLength); 
-	}
+		Serial.println(turnLength);
+		Serial.println("ack_config()");
+#endif
+
 	xbee.send(tx);
-	Serial.println("ack_config()");
 	statusLED(1);
 }
 
-void get_data() {
+void get_data(XBeeResponse resp) {
+#ifdef DEBUG
 	Serial.println("get_data()");
-	if (xbee.getResponse().getApiId() == RX_16_RESPONSE) {
+#endif
+	if(resp.getApiId() == RX_16_RESPONSE) {
+#ifdef DEBUG
 		Serial.println("RX_16_RESPONSE");
-		int packet_cnt = 0;
-		xbee.getResponse().getRx16Response(rx);
-		if (rx.getData(0) == VIBE_STATE_PACKET_TYPE) {
-			Serial.println("VIBE_STATE_PACKET_TYPE");
-			while (packet_cnt < VIBE_STATE_PACKET_LENGTH) {
-				vibeStatePacket[packet_cnt] = rx.getData(packet_cnt++);
-			}
-			statusLED(1);
-			uint16_t period  = vibeStatePacket[1] << 8 | vibeStatePacket[2];
-			uint8_t duty = vibeStatePacket[3];
-			uint16_t millisOn = 1L * period * duty / 255;
-			vibeBlinker.init(millisOn, period - millisOn);
-		} else if (rx.getData(0) == PROX_STATE_PACKET_TYPE) {
-			Serial.println("PROX_STATE_PACKET_TYPE");
-			while (packet_cnt < PROX_STATE_PACKET_LENGTH) {
-				proxStatePacket[packet_cnt] = rx.getData(packet_cnt++);
-			}
-			active = proxStatePacket[1];
-			Serial.print("Active: "); Serial.println(active);
-			rgb[0] = proxStatePacket[2];
-			rgb[1] = proxStatePacket[3];
-			rgb[2] = proxStatePacket[4];
+#endif		
+				
+		resp.getRx16Response(rx); // Get RX response
+		uint8_t * pckt = rx.getData(); // Retrive RX data
 
-			uint16_t period  = proxStatePacket[5] << 8 | proxStatePacket[6];
-			uint8_t duty = proxStatePacket[7];
+		if(pckt[PACKET_TYPE] == VIBE_STATE_PACKET_TYPE) { // Vibration motor update packet
+			// Vibe: set period (16 bits) and duty cycle
+#define VIBE_PERIOD_MSB 1
+#define VIBE_PERIOD_LSB 2
+#define VIBE_DUTY       3
+			statusLED(1); 
+			uint16_t period  = pckt[VIBE_PERIOD_MSB] << 8 | pckt[VIBE_PERIOD_LSB];
+			uint8_t duty = pckt[VIBE_DUTY];
 			uint16_t millisOn = 1L * period * duty / 255;
-			colorBlinker.init(millisOn, period - millisOn);
-		} else {
-			Serial.print("Unknown packet type: ");
-			Serial.println(rx.getData(0), HEX);
+			/* /\* vibeBlinker.init(millisOn, period - millisOn); *\/ */
+
 		}
-	} else if (xbee.getResponse().getApiId() != TX_STATUS_RESPONSE) {
-		Serial.print("Unknown API ID: ");
-		Serial.println(xbee.getResponse().getApiId(), HEX);
+		else if(pckt[PACKET_TYPE] == PROX_STATE_PACKET_TYPE) { // Proximity sensor update packet
+			// Prox: set active, set color and blinking on LEDs
+#define PROX_ACTIVE     1
+#define PROX_RED        2
+#define PROX_GREEN      3
+#define PROX_BLUE       4
+#define PROX_PERIOD_MSB 5
+#define PROX_PERIOD_LSB 6
+#define PROX_DUTY       7
+
+			active = pckt[PROX_ACTIVE];
+			rgb[0] = pckt[PROX_RED];
+			rgb[1] = pckt[PROX_GREEN];
+			rgb[2] = pckt[PROX_BLUE];
+			uint16_t period  = pckt[PROX_PERIOD_MSB] << 8 | pckt[PROX_PERIOD_LSB];
+			uint8_t duty = pckt[PROX_DUTY];
+			uint16_t millisOn = 1L * period * duty / 255;
+			/* colorBlinker.init(millisOn, period - millisOn); */
+		}
+#ifdef DEBUG
+		else {
+			Serial.print("Unknown packet type: ");
+			Serial.println(pckt[PACKET_TYPE], HEX);
+		}
+#endif
 	}
+#ifdef DEBUG
+	else if(resp.getApiId() != TX_STATUS_RESPONSE) {
+		Serial.print("Unknown API ID: ");
+		Serial.println(resp.getApiId(), HEX);
+	}
+#endif
 }
 
 /* ---- Blinking ---- */
 
 void updateVibe() {
-	if (vibeBlinker.state()) {
-		statusLED(1);
-	} else {
-		vibe(0);
-		statusLED(0);
-	}
+	/* if (vibeBlinker.state()) { */
+	/* 	statusLED(1); */
+	/* } else { */
+	/* 	vibe(0); */
+	/* 	statusLED(0); */
+	/* } */
 }
 
 void updateLEDs() {
-	if (colorBlinker.state()) {
-		color(rgb[0], rgb[1], rgb[2]);
-	} else {
-		color(0, 0, 0);
-	}
+	/* if (colorBlinker.state()) { */
+	/* 	color(rgb[0], rgb[1], rgb[2]); */
+	/* } else { */
+	/* 	color(0, 0, 0); */
+	/* } */
 }
 
 /* ---- Low Level ---- */
-
 void color(unsigned char red, unsigned char green, unsigned char blue) {
 	analogWrite(RED_LED_PIN, 255-red);	 
 	analogWrite(BLUE_LED_PIN, 255-blue);
@@ -265,3 +310,5 @@ void vibe(unsigned char level) {
 void statusLED(unsigned char state) {
 	digitalWrite(STATUS_LED_PIN, state);
 }
+
+// James Cameron
