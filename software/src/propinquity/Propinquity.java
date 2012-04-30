@@ -20,6 +20,8 @@ import processing.opengl.PGraphicsOpenGL;
 import proxml.*;
 import xbee.XBeeReader;
 
+import propinquity.xbee.*;
+
 public class Propinquity extends PApplet {
 
 	// Unique serialization ID
