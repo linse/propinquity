@@ -15,7 +15,7 @@ public class Logger {
 	/**
 	 * Output log file location.
 	 */
-	String outputFile;
+	public static final String outputFile = "bin/messages.txt";
 	
 	boolean isRecording = false;
 	
@@ -24,11 +24,9 @@ public class Logger {
 		
 	/**
 	 * Make a new logger object.
-	 * @param p the Propinquity instance.
-	 * @param outputFile the log file to use.
+	 * @param p The Propinquity instance.
 	 */
-	public Logger(PApplet parent, String outputFile) {
-		this.outputFile = outputFile;
+	public Logger(PApplet parent) {
 
 		output = parent.createWriter(outputFile);
 		output.println("Starting Logging of Propinquity Test.");
