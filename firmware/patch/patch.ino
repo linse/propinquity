@@ -3,8 +3,16 @@
 
 #include <XBee.h>
 
-//Communication Type Constants
-//listening for these
+/* ---- Pin List ---- */
+
+#define RED_LED_PIN 8 //D11, 15 of 20
+#define BLUE_LED_PIN 10 //D10, 14 of 20
+#define GREEN_LED_PIN 9 //D9, 13 of 20
+#define VIBE_PIN 6 //D6, 7 of 20
+#define STATUS_LED_PIN 7 // D8, red LED on seeduino film
+
+/* ---- Communication defines ---- */
+
 #define PROX_STATE_PACKET_TYPE 8
 #define PROX_STATE_PACKET_LENGTH 8
 #define VIBE_STATE_PACKET_TYPE 9
@@ -32,40 +40,6 @@ uint16_t base_address = 0;
 TxStatusResponse txStatus = TxStatusResponse();
 const int RED_COLOR = 1;
 const int BLUE_COLOR = 2;
-
-struct Blinker {
-  bool _state;
-  uint16_t millisOn;
-  uint16_t millisOff;
-  uint16_t interval;
-  unsigned long prevMillis;
-
-  Blinker() : _state(false), millisOn(0), millisOff(0), interval(100), prevMillis(0) {}
-
-  void init(uint16_t millisOn, uint16_t millisOff) {
-    this->millisOn = millisOn;
-    this->millisOff = millisOff;
-  }
-
-  bool state() {
-    if (millis() - prevMillis > interval) {
-      if (!_state && millisOn > 0) {
-          _state = true;
-          setInterval(millisOn);
-      }
-      else {
-        _state = false;
-        setInterval(millisOff);
-      }
-    }
-    return _state;
-  }
-
-  void setInterval(uint16_t newinterval) {
-    prevMillis = millis();
-    interval = newinterval;
-  }
-};
 
 Blinker vibeBlinker;
 Blinker colorBlinker;
@@ -150,230 +124,206 @@ int proxReading = 0;
 int touchThreshold = 1250;
 //might need to establish running average for capsense and look for spikes
 
-//Feedback
-int redLedPin = 8; //D11, 15 of 20
-int blueLedPin = 10; //D10, 14 of 20
-int greenLedPin = 9; //D9, 13 of 20
-int vibePin = 6; //D6, 7 of 20
-int ledPin = 7; // D8, red LED on seeduino film
-
-//LED handling
-int ledState;
-
 //debug
 boolean testing = false; // actually it's specifically testing sensors
 boolean testingLights = false;
 
+uint8_t frameId = 0;
+
+struct Blinker {
+	bool _state;
+	uint16_t millisOn;
+	uint16_t millisOff;
+	uint16_t interval;
+	unsigned long prevMillis;
+
+	Blinker() : _state(false), millisOn(0), millisOff(0), interval(100), prevMillis(0) {}
+
+	void init(uint16_t millisOn, uint16_t millisOff) {
+		this->millisOn = millisOn;
+		this->millisOff = millisOff;
+	}
+
+	bool state() {
+		if (millis() - prevMillis > interval) {
+			if (!_state && millisOn > 0) {
+				_state = true;
+				setInterval(millisOn);
+			}
+			else {
+				_state = false;
+				setInterval(millisOff);
+			}
+		}
+		return _state;
+	}
+
+	void setInterval(uint16_t newinterval) {
+		prevMillis = millis();
+		interval = newinterval;
+	}
+};
+
 void setup() {
-  initOutputs();
-  // blink every color, buzz
-  debugCycle();
-  prevCheckMillis = prevTurnMillis = prevDataMillis = prevBlinkMillis = millis();
+	pinMode(RED_LED_PIN, OUTPUT);
+	pinMode(BLUE_LED_PIN, OUTPUT);
+	pinMode(GREEN_LED_PIN, OUTPUT);
+	pinMode(STATUS_LED_PIN, OUTPUT);
+	pinMode(VIBE_PIN, OUTPUT);
 
-  xbee.begin(9600);
-  Serial.print("patch_playtest_march (addr = ");
-  Serial.print(myAddress);
-  Serial.println(")");
-  packet_cnt = 0;
-  if (testing) {
-    Serial.begin(9600);//testing*/
-  }
+	color(0, 0, 0);
+	vibe(0);
 
-}
+	prevCheckMillis = prevTurnMillis = prevDataMillis = prevBlinkMillis = millis();
+	packet_cnt = 0;
 
-void initOutputs() {
-  pinMode(redLedPin, OUTPUT);
-  pinMode(blueLedPin, OUTPUT);
-  pinMode(greenLedPin, OUTPUT);
-  pinMode(ledPin, OUTPUT);
-  pinMode(vibePin, OUTPUT);
-  color(0, 0, 0);
-  analogWrite(vibePin, 0);
-  ledState = LOW;
-}
+	xbee.begin(9600);
 
-void debugCycle() {
-  // Red + debug
-  color(255,0,0);
-  digitalWrite(ledPin, 1);
-  delay(500);
-  digitalWrite(ledPin, 0);
-  delay(500);
+	if (testing) Serial.begin(9600);//testing*/
 
-  // Green + debug
-  color(0,255,0);
-  digitalWrite(ledPin, 1);
-  delay(500);
-  digitalWrite(ledPin, 0);
-  delay(500);
-
-  // Blue + debug
-  color(0,0,255);
-  digitalWrite(ledPin, 1);
-  delay(500);
-  digitalWrite(ledPin, 0);
-  delay(500);
-  color(0,0,0);
-
-  // Vibe + debug
-  analogWrite(vibePin, 255); 
-  digitalWrite(ledPin, 1);
-  delay(500);
-  digitalWrite(ledPin, 0);
-  delay(500);
-  analogWrite(vibePin, 0); 
+	Serial.print("patch_playtest_march (addr = ");
+	Serial.print(myAddress);
+	Serial.println(")");
 }
 
 void loop() {
-  if (millis() - prevCheckMillis > xCheckInterval) {
-    checkXbee();
-    prevCheckMillis = millis();
-  }
+	if (millis() - prevCheckMillis > xCheckInterval) {
+		checkXbee();
+		prevCheckMillis = millis();
+	}
 
-  if (active) {
-    if (millis() - prevDataMillis > dataInterval) {
-      readProx();
-      send_data();
-      prevDataMillis = millis();
-    }
-  }
-  blinkVibe();
-  blinkColor();
+	if (active) {
+		if (millis() - prevDataMillis > dataInterval) {
+			readProx();
+			send_data();
+			prevDataMillis = millis();
+		}
+	}
+
+	blinkVibe();
+	blinkColor();
 }
 
+/* ---- Xbee ---- */
+
 void checkXbee() {
-  xbee.readPacket();
-  if (xbee.getResponse().isAvailable()) {
-     get_data(); 
-  }
+	xbee.readPacket();
+	if (xbee.getResponse().isAvailable()) {
+		get_data(); 
+	}
 }
 
 void readProx() {
-  proxReading = analogRead(proxPin);
-  if (proxReading < proxBaseline) proxReading = 0;
-  else proxReading -= proxBaseline;
+	proxReading = analogRead(proxPin);
+	if (proxReading < proxBaseline) proxReading = 0;
+	else proxReading -= proxBaseline;
 }
 
 void send_data() {
-  outPacket[0] = PROX_IN_PACKET_TYPE;
-  outPacket[1] = uint8_t(myAddress << 1);
-  outPacket[2] = 0;
-  outPacket[3] = 0;
-  outPacket[4] = uint8_t(proxReading >> 8);
-  outPacket[5] = uint8_t(proxReading);
-  tx = Tx16Request(base_address, outPacket, g_outPacketSize);
-  if (testing) {
-    Serial.print((int)millis()+"\t");
-    Serial.print((int)outPacket[1]+"\t");
-    Serial.println(proxReading);
-  }
+	outPacket[0] = PROX_IN_PACKET_TYPE;
+	outPacket[1] = uint8_t(myAddress << 1);
+	outPacket[2] = 0;
+	outPacket[3] = 0;
+	outPacket[4] = uint8_t(proxReading >> 8);
+	outPacket[5] = uint8_t(proxReading);
+	tx = Tx16Request(base_address, outPacket, g_outPacketSize);
+	if (testing) {
+		Serial.print((int)millis()+"\t");
+		Serial.print((int)outPacket[1]+"\t");
+		Serial.println(proxReading);
+	}
 
-  xbee.send(tx);
+	xbee.send(tx);
 }
 
-uint8_t frameId = 0;
-
 void ack_config() {
-  static uint8_t configAck[g_configAckSize];
-  configAck[0] = CONFIG_ACK_PACKET_TYPE;
-  configAck[1] = uint8_t(myAddress);
-  configAck[2] = uint8_t(turnLength >> 8);
-  configAck[3] = uint8_t(turnLength);
-  tx = Tx16Request(base_address, ACK_OPTION, configAck, g_configAckSize, frameId++);
-  if (testing) {
-    Serial.print("Turn length \t");
-    Serial.println(turnLength); 
-  }
-  xbee.send(tx);
-  Serial.println("ack_config()");
-  digitalWrite(ledPin, 1);
+	static uint8_t configAck[g_configAckSize];
+	configAck[0] = CONFIG_ACK_PACKET_TYPE;
+	configAck[1] = uint8_t(myAddress);
+	configAck[2] = uint8_t(turnLength >> 8);
+	configAck[3] = uint8_t(turnLength);
+	tx = Tx16Request(base_address, ACK_OPTION, configAck, g_configAckSize, frameId++);
+	if (testing) {
+		Serial.print("Turn length \t");
+		Serial.println(turnLength); 
+	}
+	xbee.send(tx);
+	Serial.println("ack_config()");
+	statusLED(1);
 }
 
 void get_data() {
-  Serial.println("get_data()");
-  if (xbee.getResponse().getApiId() == RX_16_RESPONSE) {
-    Serial.println("RX_16_RESPONSE");
-    int packet_cnt = 0;
-    xbee.getResponse().getRx16Response(rx);
-    if (rx.getData(0) == VIBE_STATE_PACKET_TYPE) {
-      Serial.println("VIBE_STATE_PACKET_TYPE");
-      while (packet_cnt < VIBE_STATE_PACKET_LENGTH) {
-        vibeStatePacket[packet_cnt] = rx.getData(packet_cnt++);
-      }
-      digitalWrite(ledPin, true); // Turn on on first received package
-      uint16_t period  = vibeStatePacket[1] << 8 | vibeStatePacket[2];
-      uint8_t duty = vibeStatePacket[3];
-      uint16_t millisOn = 1L * period * duty / 255;
-      vibeBlinker.init(millisOn, period - millisOn);
-    }
-    else if (rx.getData(0) == PROX_STATE_PACKET_TYPE) {
-      Serial.println("PROX_STATE_PACKET_TYPE");
-      while (packet_cnt < PROX_STATE_PACKET_LENGTH) {
-        proxStatePacket[packet_cnt] = rx.getData(packet_cnt++);
-      }
-      active = proxStatePacket[1];
-      Serial.print("Active: "); Serial.println(active);
-      rgb[0] = proxStatePacket[2];
-      rgb[1] = proxStatePacket[3];
-      rgb[2] = proxStatePacket[4];
-      
-      uint16_t period  = proxStatePacket[5] << 8 | proxStatePacket[6];
-      uint8_t duty = proxStatePacket[7];
-      uint16_t millisOn = 1L * period * duty / 255;
-      colorBlinker.init(millisOn, period - millisOn);
-    }
-    // else if (rx.getData(0) == PROX_OUT_PACKET_TYPE) {
-    //   Serial.println("PROX_OUT_PACKET_TYPE");
-    //   while (packet_cnt < g_inPacketSize) {
-    //     inPacket[packet_cnt] = rx.getData(packet_cnt++);
-    //   }
-    //   setLeds(inPacket[3], inPacket[4]);
-    //   turnNum = inPacket[1] << 8 | inPacket[2];
-    //   turnSeqNum = 0;
-    //   prevTurnMillis = millis();
-    // }
-    // else if (rx.getData(0) == CONFIG_OUT_PACKET_TYPE) {
-    //   Serial.println("CONFIG_OUT_PACKET_TYPE");
-    //   while (packet_cnt < g_configPacketSize) {
-    //     configPacket[packet_cnt] = rx.getData(packet_cnt++);
-    //   }
-    //   int stepLength = configPacket[1] << 8 | configPacket[2];
-    //   turnLength = stepLength-10;
-    //   ack_config();
-    // }
-    else {
-      Serial.print("Unknown packet type: ");
-      Serial.println(rx.getData(0), HEX);
-    }
-  }
-  else if (xbee.getResponse().getApiId() != TX_STATUS_RESPONSE) {
-    Serial.print("Unknown API ID: ");
-    Serial.println(xbee.getResponse().getApiId(), HEX);
-  }
+	Serial.println("get_data()");
+	if (xbee.getResponse().getApiId() == RX_16_RESPONSE) {
+		Serial.println("RX_16_RESPONSE");
+		int packet_cnt = 0;
+		xbee.getResponse().getRx16Response(rx);
+		if (rx.getData(0) == VIBE_STATE_PACKET_TYPE) {
+			Serial.println("VIBE_STATE_PACKET_TYPE");
+			while (packet_cnt < VIBE_STATE_PACKET_LENGTH) {
+				vibeStatePacket[packet_cnt] = rx.getData(packet_cnt++);
+			}
+			statusLED(1);
+			uint16_t period  = vibeStatePacket[1] << 8 | vibeStatePacket[2];
+			uint8_t duty = vibeStatePacket[3];
+			uint16_t millisOn = 1L * period * duty / 255;
+			vibeBlinker.init(millisOn, period - millisOn);
+		} else if (rx.getData(0) == PROX_STATE_PACKET_TYPE) {
+			Serial.println("PROX_STATE_PACKET_TYPE");
+			while (packet_cnt < PROX_STATE_PACKET_LENGTH) {
+				proxStatePacket[packet_cnt] = rx.getData(packet_cnt++);
+			}
+			active = proxStatePacket[1];
+			Serial.print("Active: "); Serial.println(active);
+			rgb[0] = proxStatePacket[2];
+			rgb[1] = proxStatePacket[3];
+			rgb[2] = proxStatePacket[4];
+
+			uint16_t period  = proxStatePacket[5] << 8 | proxStatePacket[6];
+			uint8_t duty = proxStatePacket[7];
+			uint16_t millisOn = 1L * period * duty / 255;
+			colorBlinker.init(millisOn, period - millisOn);
+		} else {
+			Serial.print("Unknown packet type: ");
+			Serial.println(rx.getData(0), HEX);
+		}
+	} else if (xbee.getResponse().getApiId() != TX_STATUS_RESPONSE) {
+		Serial.print("Unknown API ID: ");
+		Serial.println(xbee.getResponse().getApiId(), HEX);
+	}
 }
 
-void color(unsigned char red, unsigned char green, unsigned char blue) {
-  analogWrite(redLedPin, 255-red);	 
-  analogWrite(blueLedPin, 255-blue);
-  analogWrite(greenLedPin, 255-green);
-}
+/* ---- Blinking ---- */
 
 void blinkVibe() {
-  if (vibeBlinker.state()) {
-    analogWrite(vibePin, 255);
-    digitalWrite(ledPin, 1);
-  }
-  else {
-    analogWrite(vibePin, 0);
-    digitalWrite(ledPin, 0);
-  }
+	if (vibeBlinker.state()) {
+		statusLED(1);
+	} else {
+		vibe(0);
+		statusLED(0);
+	}
 }
 
 void blinkColor() {
-  if (colorBlinker.state()) {
-    color(rgb[0], rgb[1], rgb[2]);
-  }
-  else {
-    color(0, 0, 0);
-  }
+	if (colorBlinker.state()) {
+		color(rgb[0], rgb[1], rgb[2]);
+	} else {
+		color(0, 0, 0);
+	}
+}
+
+/* ---- Low Level ---- */
+
+void color(unsigned char red, unsigned char green, unsigned char blue) {
+	analogWrite(RED_LED_PIN, 255-red);	 
+	analogWrite(BLUE_LED_PIN, 255-blue);
+	analogWrite(GREEN_LED_PIN, 255-green);
+}
+
+void vibe(unsigned char level) {
+	analogWrite(VIBE_PIN, level);
+}
+
+void statusLED(unsigned char state) {
+	digitalWrite(STATUS_LED_PIN, state);
 }
