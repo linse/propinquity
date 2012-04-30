@@ -112,7 +112,6 @@ public class Propinquity extends PApplet {
 
 	// HUD (Heads Up Display) -- shows the score.
 	Hud hud;
-	PGraphics hudMask;
 
 	// XBees
 	public XBeeManager xbeeManager;
@@ -173,18 +172,6 @@ public class Propinquity extends PApplet {
 
 		// send configuration message here
 		// TODO: send step length to proximity patches
-	}
-
-	void initHUD() {
-
-		hudMask = createGraphics(width, height, P2D);
-		hudMask.background(0);
-		hudMask.beginDraw();
-		hudMask.noStroke();
-		hudMask.fill(255);
-		hudMask.ellipse(width / 2, height / 2, height - Hud.WIDTH * 2 + BOUNDARY_WIDTH, height - Hud.WIDTH * 2
-				+ BOUNDARY_WIDTH);
-		hudMask.endDraw();
 	}
 
 	void initBox2D() {
@@ -527,7 +514,7 @@ public class Propinquity extends PApplet {
 		translate(width / 2, height / 2);
 		scale(width / 2, height / 2);
 		beginShape(QUADS);
-		texture(hudMask);
+		texture(hud.hudMask);
 		vertex(-1, -1, 0, 0, 0);
 		vertex(1, -1, 0, 1, 0);
 		vertex(1, 1, 0, 1, 1);
@@ -1028,8 +1015,6 @@ public class Propinquity extends PApplet {
 									levelSelect.sendConfigMessages(level.getStepInterval());
 									delay(50);
 								}
-								// init hud
-								initHUD();
 
 								// init liquid particles
 								initParticles();
