@@ -153,9 +153,9 @@ public class Propinquity extends PApplet {
 	}
 
 	void initLevel(Player[] players, String levelFile) {
+
 		
-		level = new Level(this, sounds, players);
-		xmlInOut = new XMLInOut(this, level);
+		level = new Level(this, sounds, players);		xmlInOut = new XMLInOut(this, level);
 		xmlInOut.loadElement(levelFile);
 		while (true)
 			if (level.successfullyRead() > -1)
@@ -173,6 +173,7 @@ public class Propinquity extends PApplet {
 		// send configuration message here
 		// TODO: send step length to proximity patches
 	}
+
 
 	void initBox2D() {
 		// initialize box2d physics and create the world
@@ -1008,6 +1009,7 @@ public class Propinquity extends PApplet {
 							// and ready to play
 							if (levelSelect.isDone()) {
 								// init level
+								//level = new Level();
 								initLevel(levelSelect.players, levelSelect.levelFile);
 								delay(50);
 								while (!levelSelect.allAcksIn()) {
