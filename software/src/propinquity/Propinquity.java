@@ -152,29 +152,6 @@ public class Propinquity extends PApplet {
 		changeGameState(GameState.XBeeInit);
 	}
 
-	void initLevel(Player[] players, String levelFile) {
-
-		
-		level = new Level(this, sounds, players);		xmlInOut = new XMLInOut(this, level);
-		xmlInOut.loadElement(levelFile);
-		while (true)
-			if (level.successfullyRead() > -1)
-				break;
-
-		if (level.successfullyRead() == 0) {
-			level.loadDefaults();
-			System.err.println("I had some trouble reading the level file.");
-			println("Defaulting to 2 minutes of free play instead.");
-		}
-		
-		// TODO: fix this funny order business
-		graphics.loadLevelContent();
-
-		// send configuration message here
-		// TODO: send step length to proximity patches
-	}
-
-
 	void initBox2D() {
 		// initialize box2d physics and create the world
 		box2d = new PBox2D(this, (float) height / WORLD_SIZE);
@@ -1009,8 +986,22 @@ public class Propinquity extends PApplet {
 							// and ready to play
 							if (levelSelect.isDone()) {
 								// init level
-								//level = new Level();
-								initLevel(levelSelect.players, levelSelect.levelFile);
+								level = new Level(this, sounds, levelSelect.players, levelSelect.levelFile);
+								graphics.loadLevelContent();
+								
+								while (true)
+									if (level.successfullyRead() > -1)
+										break;
+
+								if (level.successfullyRead() == 0) {
+									level.loadDefaults();
+									System.err.println("I had some trouble reading the level file.");
+									System.err.println("Defaulting to 2 minutes of free play instead.");
+								}
+								
+								// send configuration message here
+								// TODO: send step length to proximity patches
+								
 								delay(50);
 								while (!levelSelect.allAcksIn()) {
 									println("sending again");

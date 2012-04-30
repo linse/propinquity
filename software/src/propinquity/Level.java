@@ -2,6 +2,7 @@ package propinquity;
 
 import processing.core.PApplet;
 import proxml.XMLElement;
+import proxml.XMLInOut;
 import xbee.XBeeDataFrame;
 import xbee.XBeeReader;
 
@@ -68,10 +69,10 @@ public class Level {
 
 	// Only used for loading level data
 	public Level(Propinquity parent, Sounds sounds) {
-		this(parent, sounds, null);
+		this(parent, sounds, null, null);
 	}
 
-	public Level(Propinquity parent, Sounds sounds, Player[] players) {
+	public Level(Propinquity parent, Sounds sounds, Player[] players, String levelFile) {
 		this.parent = parent;
 		this.sounds = sounds;
 		
@@ -83,6 +84,11 @@ public class Level {
 			players[1].name = "Player 2";
 		} else { 
 			this.players = players;
+		}
+		
+		if (levelFile != null) {
+			parent.xmlInOut = new XMLInOut(parent, this);
+			parent.xmlInOut.loadElement(levelFile);
 		}
 		
 		players[0].registerNegativePlayerSound(sounds.negativeP1);
@@ -538,5 +544,5 @@ public class Level {
 		else if (!isDone())
 			pause();
 	}
-}// end class
-
+	
+}
