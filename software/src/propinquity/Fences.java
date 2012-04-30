@@ -71,41 +71,4 @@ public class Fences {
 		}
 	}
 
-	public void drawDebugFence() {
-		parent.noFill();
-		parent.stroke(0, 255, 0);
-		parent.strokeWeight(1);
-
-		parent.rectMode(PApplet.CENTER);
-		float radius = parent.height / 2 - Hud.WIDTH;
-		float perimeter = 2 * PConstants.PI * radius;
-		float w = perimeter / SECTIONS;
-		float h = 5f;
-		float angle = 0;
-		for (int i = 0; i < SECTIONS; i++) {
-			angle = 2f * PConstants.PI / SECTIONS * i;
-			parent.pushMatrix();
-			parent.translate(parent.width / 2 + PApplet.cos(angle) * radius, parent.height / 2 + PApplet.sin(angle)
-					* radius);
-			parent.rotate(angle + PConstants.PI / 2);
-			parent.rect(0, 0, w, h);
-			parent.popMatrix();
-		}
-
-		radius = INNER_RADIUS;
-		perimeter = 2 * PConstants.PI * radius;
-		w = perimeter / SECTIONS;
-		h = 5f;
-		angle = 0;
-		for (int i = 0; i < SECTIONS; i++) {
-			angle = 2f * PConstants.PI / SECTIONS * i;
-			parent.pushMatrix();
-			parent.translate(parent.width / 2 + PApplet.cos(angle) * radius, parent.height / 2 + PApplet.sin(angle)
-					* radius);
-			parent.rotate(angle + PConstants.PI / 2);
-			parent.rect(0, 0, w, h);
-			parent.popMatrix();
-		}
-	}
-
 }
