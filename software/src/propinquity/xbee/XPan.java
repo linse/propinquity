@@ -1,8 +1,8 @@
-package propinquity;
+package propinquity.xbee;
 
 import processing.core.PApplet;
-import processing.serial.Serial;
 import xbee.XBeeReader;
+import propinquity.*;
 
 public class XPan {
 	// xbee
@@ -31,20 +31,11 @@ public class XPan {
 	static final int VIBE_IN_PACKET_TYPE = 7; // THIS IS NEW. For button
 												// presses.
 
-	PApplet parent;
 	// Serial g_port;
 	XBeeReader xbee;
 
-	public XPan(XBeeReader xbee, PApplet parent) {
-		this.parent = parent;
+	public XPan(XBeeReader xbee) {
 		this.xbee = xbee;
-		xbee.startXBee();
-	}
-
-	public XPan(Serial port, PApplet parent) {
-		this.parent = parent;
-		// g_port = port;
-		xbee = new XBeeReader(parent, port);
 		xbee.startXBee();
 	}
 

@@ -19,7 +19,8 @@ public class XBeeManager implements Runnable, UIElement {
 	final int XBEE_BAUDRATE = 115200;
 	final int XBEE_RESPONSE_TIMEOUT = 1000;
 
-	Propinquity parent;
+	PApplet parent;
+	Propinquity propinquity;
 
 	boolean isVisible;
 
@@ -38,20 +39,21 @@ public class XBeeManager implements Runnable, UIElement {
 	/**
 	 * Create a new XBeeManager with xbeeDebug turned off.
 	 *
-	 * @param parent the parent Propinquity object.
+	 * @param parent the parent PApplet object.
 	 */
-	public XBeeManager(Propinquity parent) {
-		this(parent, false);
+	public XBeeManager(PApplet parent) {
+		this(parent, null, false);
 	}
 
 	/**
 	 * Create a new XBeeManager.
 	 *
-	 * @param parent the parent Propinquity object.
+	 * @param parent the parent PApplet object.
 	 * @param xbeeDebug the Xbee xbeeDebug mode.
 	 */
-	public XBeeManager(Propinquity parent, boolean xbeeDebug) {
+	public XBeeManager(PApplet parent, Propinquity propinquity, boolean xbeeDebug) {
 		this.parent = parent;
+		this.propinquity = propinquity;
 
 		isVisible = true;
 
@@ -64,6 +66,8 @@ public class XBeeManager implements Runnable, UIElement {
 		//Next button
 		plNextButton = controlP5.addButton("XbeeManager Next", 0, parent.width / 2 + 60 + 50 + 10, parent.height / 2 + 50, 50, 20);
 		plNextButton.setCaptionLabel("NEXT");
+
+		hide();
 
 		this.xbeeDebug = xbeeDebug;
 		xbeePorts = new HashMap<String, Serial>();
@@ -244,7 +248,7 @@ public class XBeeManager implements Runnable, UIElement {
 	*/
 	void processUIEvent() {
 		if(isScanning()) return;
-		parent.changeGameState(GameState.PlayerList);
+		else if(propinquity != null) propinquity.changeGameState(GameState.PlayerList); //TODO Fix this is horrid.
 	}
 
 	/* --- Graphics --- */
