@@ -1,6 +1,5 @@
 package propinquity;
 
-import java.io.File;
 import java.util.*;
 
 import processing.core.*;
@@ -208,7 +207,7 @@ public class XBeeManager implements Runnable, UIElement {
 	}
 
 	public void keyPressed(int keycode) {
-		if(isVisible && keycode == parent.ENTER) process();
+		if(isVisible && keycode == PConstants.ENTER) process();
 	}
 
 	public void draw() {
