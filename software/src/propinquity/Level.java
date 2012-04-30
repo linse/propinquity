@@ -2,6 +2,7 @@ package propinquity;
 
 import processing.core.PApplet;
 import proxml.XMLElement;
+import proxml.XMLInOut;
 import xbee.XBeeDataFrame;
 import xbee.XBeeReader;
 
@@ -68,22 +69,28 @@ public class Level {
 
 	// Only used for loading level data
 	public Level(Propinquity parent, Sounds sounds) {
-		Player[] players = new Player[2];
-		players[0] = new Player(parent, parent.PLAYER_COLORS[0]);
-		players[0].name = "Player 1";
-		players[1] = new Player(parent, parent.PLAYER_COLORS[1]);
-		players[1].name = "Player 2";
-		init(parent, sounds, players);
+		this(parent, sounds, null, null);
 	}
 
-	public Level(Propinquity parent, Sounds sounds, Player[] players) {
-		init(parent, sounds, players);
-	}
-
-	public void init(Propinquity parent, Sounds sounds, Player[] plyrs) {		
+	public Level(Propinquity parent, Sounds sounds, Player[] players, String levelFile) {
 		this.parent = parent;
 		this.sounds = sounds;
-		players = plyrs;
+		
+		if (players == null) {
+			players = new Player[2];
+			players[0] = new Player(parent, parent.PLAYER_COLORS[0]);
+			players[0].name = "Player 1";
+			players[1] = new Player(parent, parent.PLAYER_COLORS[1]);
+			players[1].name = "Player 2";
+		} else { 
+			this.players = players;
+		}
+		
+		if (levelFile != null) {
+			parent.xmlInOut = new XMLInOut(parent, this);
+			parent.xmlInOut.loadElement(levelFile);
+		}
+		
 		players[0].registerNegativePlayerSound(sounds.negativeP1);
 		players[0].registerNegativeCoopSound(sounds.negativeCoop);
 		players[1].registerNegativePlayerSound(sounds.negativeP2);
@@ -537,5 +544,5 @@ public class Level {
 		else if (!isDone())
 			pause();
 	}
-}// end class
-
+	
+}
