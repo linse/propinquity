@@ -1,6 +1,7 @@
-<project name="propinquity.Propinquity" basedir="." default="main">
+<project name="Propinquity" basedir="." default="main">
 
-	<property name="main-class" value="${ant.project.name}"/>
+	<property name="propinquity-class" value="propinquity.Propinquity"/>
+	<property name="xbee-debug-class" value="propinquity.xbee.XBeeDebugger"/>
 
 	<property name="src.dir" value="src"/>
 	<property name="build.dir" value="bin"/>
@@ -32,8 +33,8 @@
 		</javac>
 	</target>
 
-	<target name="run" depends="compile">
-		<java classname="${main-class}" fork="true">
+	<target name="propinquity" depends="compile">
+		<java classname="${propinquity-class}" fork="true">
 			<sysproperty key="java.library.path" value="${java.library.path}:${nativepath.prop}"/>
 			<jvmarg value="-d32"/>
 			<classpath>
@@ -43,6 +44,20 @@
 		</java>
 	</target>
 	
+	<target name="xbee-debug" depends="compile">
+		<java classname="${xbee-debug-class}" fork="true">
+			<sysproperty key="java.library.path" value="${java.library.path}:${nativepath.prop}"/>
+			<jvmarg value="-d32"/>
+			<classpath>
+				<path refid="classpath"/>
+				<path location="${build.dir}"/>
+			</classpath>
+		</java>
+	</target>
+
+	<target name="run" depends="propinquity">
+	</target>
+
 	<target name="main" depends="run">
 	</target>
 
