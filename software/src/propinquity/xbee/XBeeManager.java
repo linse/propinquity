@@ -166,7 +166,7 @@ public class XBeeManager implements Runnable, UIElement {
 				continue;
 			}
 
-			PApplet.print("\tConnecting to port: " + availablePorts[portNum] + " ... ");
+			PApplet.println("\tConnecting to port: " + availablePorts[portNum] + " ... ");
 			Serial xbeePort = new Serial(parent, availablePorts[portNum], XBEE_BAUDRATE);
 			XBeeReader xbeeReader = new XBeeReader(parent, xbeePort);
 			xbeeReader.DEBUG = xbeeDebug;

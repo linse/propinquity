@@ -5,9 +5,6 @@
 
 #include <XBee.h>
 
-/* #define DEBUG */
-#define DEBUG_LED
-
 struct Blinker {
 	bool _state;
 	uint16_t millisOn;
@@ -42,12 +39,16 @@ struct Blinker {
 	}
 };
 
+/* #define DEBUG */
+#define DEBUG_LED
+
 /* ---- Pin List ---- */
 #define RED_LED_PIN    8 //D11, 15 of 20
 #define BLUE_LED_PIN   10 //D10, 14 of 20
 #define GREEN_LED_PIN  9 //D9, 13 of 20
 #define VIBE_PIN       6 //D6, 7 of 20
 #define STATUS_LED_PIN 7 // D8, red LED on seeduino film
+#define PROX_PIN 4 //A4, 18 of 20
 
 /* ---- Protocol ---- */
 #define PACKET_TYPE 0
@@ -96,47 +97,12 @@ long prevCheckMillis = 0;
 long turnLength; // will have to be set by config message
 
 // Sensing
-int proxPin = 4; //A4, 18 of 20
 int proxBaseline = 250;
 int proxReading = 0;
 int touchThreshold = 1250;
 //might need to establish running average for capsense and look for spikes
 
 uint8_t frameId = 0;
-
-/* struct Blinker { */
-/* 	bool _state; */
-/* 	uint16_t millisOn; */
-/* 	uint16_t millisOff; */
-/* 	uint16_t interval; */
-/* 	unsigned long prevMillis; */
-
-/* Blinker() : _state(false), millisOn(0), millisOff(0), interval(100), prevMillis(0) {} */
-
-/* 	void init(uint16_t millisOn, uint16_t millisOff) { */
-/* 		this->millisOn = millisOn; */
-/* 		this->millisOff = millisOff; */
-/* 	} */
-
-/* 	bool state() { */
-/* 		if (millis() - prevMillis > interval) { */
-/* 			if (!_state && millisOn > 0) { */
-/* 				_state = true; */
-/* 				setInterval(millisOn); */
-/* 			} */
-/* 			else { */
-/* 				_state = false; */
-/* 				setInterval(millisOff); */
-/* 			} */
-/* 		} */
-/* 		return _state; */
-/* 	} */
-
-/* 	void setInterval(uint16_t newinterval) { */
-/* 		prevMillis = millis(); */
-/* 		interval = newinterval; */
-/* 	} */
-/* }; */
 
 void setup() {
 	pinMode(RED_LED_PIN, OUTPUT);
@@ -196,14 +162,11 @@ void loop() {
 		}
 	}
 #endif
-	else {
-		// dot dot dot
-	}
 	
 
 	if(active) { // transmit
 		if(millis() - prevDataMillis > dataInterval) { // Maximum transmition speed
-			proxReading = analogRead(proxPin);
+			proxReading = analogRead(PROX_PIN);
 			if(proxReading < proxBaseline) proxReading = 0;  // Game logic?
 			else proxReading -= proxBaseline;
 

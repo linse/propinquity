@@ -11,15 +11,11 @@ public class XBeeDebugger extends PApplet {
 
 	XBeeManager xbeeManager;
 	XBeeReader xbee;
-	XPan xpan;
 
 	public void setup() {
 		size(1024, 768);
 
 		xbeeManager = new XBeeManager(this);
-		while(xbeeManager.isScanning());
-		xbee = xbeeManager.reader("P1_PROX1");
-		xpan = new XPan(xbee);
 	}
 
 	public void draw() {
@@ -37,6 +33,11 @@ public class XBeeDebugger extends PApplet {
 	public void keyPressed() {
 		if(key == 's') {
 			xbeeManager.scan();
+		} else if(key == 'm') {
+			xbee = xbeeManager.reader("P1_PROX1");
+		} else if(key == 't') {
+			System.out.println("Sending");
+			xbee.sendDataString16(0xFFFF, new int[] {8, 1, 255});
 		}
 	}
 
@@ -45,10 +46,11 @@ public class XBeeDebugger extends PApplet {
 			xbeeManager.xBeeEvent(reader);
 		} else {
 			XBeeDataFrame data = reader.getXBeeReading();
-
+			System.out.println("Got something");
 			if (data.getApiID() == XBeeReader.SERIES1_RX16PACKET) {
 				int[] packet = data.getBytes();
-				System.out.println(packet);
+				System.out.println("Series 16");
+				println(packet);
 			}
 		}
 	}

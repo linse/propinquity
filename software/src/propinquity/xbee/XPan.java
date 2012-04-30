@@ -36,7 +36,7 @@ public class XPan {
 
 	public XPan(XBeeReader xbee) {
 		this.xbee = xbee;
-		xbee.startXBee();
+		// xbee.startXBee();
 	}
 
 	void broadcast(int[] data, int turnNum, int baseNum) {
@@ -46,7 +46,7 @@ public class XPan {
 	void sendOutgoing(int adl, int[] data, int turnNum, int baseNum) {
 		// println("SEND OUTGOING: " + xbee + " " + xbee.getPort());
 		int[] myData = data;
-		data[1] = turnNum;
+		// data[1] = turnNum;
 		xbee.sendDataString16(adl, myData);
 		// add to output queue
 		// printToOutput("SENT at " + millis() + ": turn number " + turnNum +

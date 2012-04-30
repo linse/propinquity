@@ -79,7 +79,7 @@ public class Propinquity extends PApplet {
 		sounds.loadCommonContent();
 
 		// Create resources
-		xbeeManager = new XBeeManager(this, DEBUG_XBEE);
+		xbeeManager = new XBeeManager(this, this, DEBUG_XBEE);
 
 		playerList = new PlayerList(this);
 

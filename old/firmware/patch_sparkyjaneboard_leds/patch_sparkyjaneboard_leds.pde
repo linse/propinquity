@@ -11,29 +11,30 @@ int vibePin = 6;
 int proxPin = 4;
 
 void setup() {
-  pinMode(onboardLedPin, OUTPUT);
-  pinMode(redLedPin, OUTPUT);
-  pinMode(greenLedPin, OUTPUT);
-  pinMode(blueLedPin, OUTPUT);
-  
-  pinMode(vibePin, OUTPUT);
-  
-  //pinMode(prox, INPUT);
+pinMode(onboardLedPin, OUTPUT);
+pinMode(redLedPin, OUTPUT);
+pinMode(greenLedPin, OUTPUT);
+pinMode(blueLedPin, OUTPUT);
+
+pinMode(vibePin, OUTPUT);
+
+//pinMode(prox, INPUT);
 }
 
 void loop() {
-  analogWrite(redLedPin, 255);
-  digitalWrite(vibePin, 0);	
-  delay(500);
-  digitalWrite(redLedPin, 0);
-  digitalWrite(vibePin, 1);
-  delay(500);
-  color(255, 255, 0);
+	delay(500);
+	color(255, 0, 0);
+	delay(500);
+	color(0, 255, 0);
+	delay(500);
+	color(0, 0, 255);
+	delay(500);
+	color(0, 0, 0);
 }
 
 
 void color(unsigned char red, unsigned char green, unsigned char blue) {
-  analogWrite(redLedPin, 255-red);	
-  analogWrite(greenLedPin, 255-green); 
-  analogWrite(blueLedPin, 255-blue);
+analogWrite(redLedPin, 255-red);	
+analogWrite(greenLedPin, 255-green); 
+analogWrite(blueLedPin, 255-blue);
 }
