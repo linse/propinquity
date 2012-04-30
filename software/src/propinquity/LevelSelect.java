@@ -255,8 +255,8 @@ public class LevelSelect implements PConstants {
 	public void draw() {
 		// TODO: Fix this too
 		
-		parent.drawInnerBoundary();
-		parent.drawOuterBoundary();
+		parent.graphics.drawInnerBoundary();
+		parent.graphics.drawOuterBoundary();
 		parent.pushMatrix();
 		parent.translate(parent.width / 2, parent.height / 2);
 

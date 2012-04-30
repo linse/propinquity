@@ -523,7 +523,7 @@ public class Liquid {
 		}
 	}
 
-	void drawParticles() {
+	void draw() {
 		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
 		parent.gl.glEnable(GL.GL_BLEND);
 		parent.gl.glBlendFunc(GL.GL_ONE, GL.GL_ONE_MINUS_SRC_ALPHA);

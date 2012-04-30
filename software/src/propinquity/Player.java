@@ -6,8 +6,6 @@ import processing.core.PApplet;
 import processing.core.PConstants;
 import xbee.*;
 
-import propinquity.xbee.*;
-
 import ddf.minim.AudioPlayer;
 
 public class Player implements PConstants {

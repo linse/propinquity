@@ -126,14 +126,14 @@ public class Propinquity extends PApplet {
 	}
 
 	void drawPlay() {
-		drawInnerBoundary();
+		graphics.drawInnerBoundary();
 		if (DRAW_PARTICLES)
-			liquid.drawParticles();
+			liquid.draw();
 		drawMask();
-		drawOuterBoundary();
+		graphics.drawOuterBoundary();
 
 		if (DEBUG)
-			liquid.fences.drawDebugFence();
+			graphics.drawDebugFence();
 
 		hud.draw();
 
@@ -231,28 +231,6 @@ public class Propinquity extends PApplet {
 		levelSelect.reset();
 		gameState = GameState.LevelSelect;
 		println("gamestate = " + gameState);
-	}
-
-	void drawInnerBoundary() {
-		gl = ((PGraphicsOpenGL) g).gl;
-		gl.glEnable(GL.GL_BLEND);
-		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-
-		pushMatrix();
-		translate(width / 2 - 1, height / 2);
-		image(graphics.hudInnerBoundary, 0, 0);
-		popMatrix();
-	}
-
-	void drawOuterBoundary() {
-		gl = ((PGraphicsOpenGL) g).gl;
-		gl.glEnable(GL.GL_BLEND);
-		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-
-		pushMatrix();
-		translate(width / 2 - 1, height / 2);
-		image(graphics.hudOuterBoundary, 0, 0);
-		popMatrix();
 	}
 
 	void drawMask() {
