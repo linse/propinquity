@@ -3,133 +3,6 @@
 
 #include <XBee.h>
 
-/* ---- Pin List ---- */
-
-#define RED_LED_PIN 8 //D11, 15 of 20
-#define BLUE_LED_PIN 10 //D10, 14 of 20
-#define GREEN_LED_PIN 9 //D9, 13 of 20
-#define VIBE_PIN 6 //D6, 7 of 20
-#define STATUS_LED_PIN 7 // D8, red LED on seeduino film
-
-/* ---- Communication defines ---- */
-
-#define PROX_STATE_PACKET_TYPE 8
-#define PROX_STATE_PACKET_LENGTH 8
-#define VIBE_STATE_PACKET_TYPE 9
-#define VIBE_STATE_PACKET_LENGTH 4
-
-const int PROX_IN_PACKET_TYPE = 2; //sending this
-const int CONFIG_OUT_PACKET_TYPE = 5; //listening for this
-const int CONFIG_ACK_PACKET_TYPE = 6;
-
-//Communication variables
-const int g_outPacketSize = 6;
-const int g_configPacketSize = 3;
-const int g_configAckSize = 4;
-static uint8_t vibeStatePacket[VIBE_STATE_PACKET_LENGTH];
-static uint8_t proxStatePacket[PROX_STATE_PACKET_LENGTH];
-static uint8_t outPacket[g_outPacketSize];
-static uint8_t configPacket[g_configPacketSize];
-static int packet_cnt;
-
-XBee xbee = XBee();
-XBeeResponse response = XBeeResponse();
-Rx16Response rx = Rx16Response();
-Tx16Request tx;
-uint16_t base_address = 0;
-TxStatusResponse txStatus = TxStatusResponse();
-const int RED_COLOR = 1;
-const int BLUE_COLOR = 2;
-
-Blinker vibeBlinker;
-Blinker colorBlinker;
-uint8_t rgb[3] = {0, 0, 0};
-bool active = false;
-
-//Communication -- addressing (need to be changed for each patch)
-//PROX1_PLAYER1
-int myColor = RED_COLOR;
-static int myAddress = 1;
-static int initialDelay = 0; //for staggering messages from sensors to avoid packet collision
-static int ledFilter1 = 0x80; //128, 64, 32, and 16 -- for higher order bits
-static int ledFilter2 = 0x08; //8, 4, 2, and 1 -- for lower order bits
-
-// PROX2_PLAYER1
-// int myColor = RED_COLOR;
-// static int myAddress = 2;
-// static int initialDelay = 10; //for staggering messages from sensors to avoid packet collision
-// static int ledFilter1 = 0x40; //128, 64, 32, and 16 -- for higher order bits
-// static int ledFilter2 = 0x04; //8, 4, 2, and 1 -- for lower order bits
-
-// PROX3_PLAYER1
-//int myColor = RED_COLOR;
-//static int myAddress = 3;
-//static int initialDelay = 20; //for staggering messages from sensors to avoid packet collision
-//static int ledFilter1 = 0x20; //128, 64, 32, and 16 -- for higher order bits
-//static int ledFilter2 = 0x02; //8, 4, 2, and 1 -- for lower order bits
-
-// PROX4_PLAYER1
-// int myColor = RED_COLOR;
-// static int myAddress = 4;
-// static int initialDelay = 30; //for staggering messages from sensors to avoid packet collision
-// static int ledFilter1 = 0x10; //128, 64, 32, and 16 -- for higher order bits
-// static int ledFilter2 = 0x01; //8, 4, 2, and 1 -- for lower order bits
-
-// PROX1_PLAYER2
-// int myColor = BLUE_COLOR;
-// static int myAddress = 9;
-// static int initialDelay = 0; //for staggering messages from sensors to avoid packet collision
-// static int ledFilter1 = 0x80; //128, 64, 32, and 16 -- for higher order bits
-// static int ledFilter2 = 0x08; //8, 4, 2, and 1 -- for lower order bits
-
-// PROX2_PLAYER2
-//int myColor = BLUE_COLOR;
-//static int myAddress = 0x0A;
-//static int initialDelay = 10; //for staggering messages from sensors to avoid packet collision
-//static int ledFilter1 = 0x40; //128, 64, 32, and 16 -- for higher order bits
-//static int ledFilter2 = 0x04; //8, 4, 2, and 1 -- for lower order bits
-
-// PROX3_PLAYER2
-// int myColor = BLUE_COLOR;
-// static int myAddress = 0x0B;
-// static int initialDelay = 20; //for staggering messages from sensors to avoid packet collision
-// static int ledFilter1 = 0x20; //128, 64, 32, and 16 -- for higher order bits
-// static int ledFilter2 = 0x02; //8, 4, 2, and 1 -- for lower order bits
-
-// PROX4_PLAYER2
-// int myColor = BLUE_COLOR;
-// static int myAddress = 0x0C;
-// static int initialDelay = 30; //for staggering messages from sensors to avoid packet collision
-// static int ledFilter1 = 0x10; //128, 64, 32, and 16 -- for higher order bits
-// static int ledFilter2 = 0x01; //8, 4, 2, and 1 -- for lower order bits
-
-
-long dataInterval = 50; // 20 Hz
-long prevDataMillis = 0;
-long xCheckInterval = 20; // 50 Hz
-long prevCheckMillis = 0;
-long blinkInterval = 100; // 10 Hz
-long prevBlinkMillis = 0;
-long turnLength; // will have to be set by config message
-long prevTurnMillis = 0;
-unsigned long currentMillis = 0;
-
-// State variables
-boolean waiting = false;
-
-// Sensing
-int proxPin = 4; //A4, 18 of 20
-int proxBaseline = 250;
-int proxReading = 0;
-int touchThreshold = 1250;
-//might need to establish running average for capsense and look for spikes
-
-//debug
-boolean testing = false; // actually it's specifically testing sensors
-boolean testingLights = false;
-
-uint8_t frameId = 0;
-
 struct Blinker {
 	bool _state;
 	uint16_t millisOn;
@@ -164,6 +37,77 @@ struct Blinker {
 	}
 };
 
+/* ---- Pin List ---- */
+
+#define RED_LED_PIN 8 //D11, 15 of 20
+#define BLUE_LED_PIN 10 //D10, 14 of 20
+#define GREEN_LED_PIN 9 //D9, 13 of 20
+#define VIBE_PIN 6 //D6, 7 of 20
+#define STATUS_LED_PIN 7 // D8, red LED on seeduino film
+
+/* ---- Communication defines ---- */
+
+#define PROX_STATE_PACKET_TYPE 8
+#define PROX_STATE_PACKET_LENGTH 8
+#define VIBE_STATE_PACKET_TYPE 9
+#define VIBE_STATE_PACKET_LENGTH 4
+
+#define PROX_IN_PACKET_TYPE 2 //sending this
+#define CONFIG_OUT_PACKET_TYPE 5 //listening for this
+#define CONFIG_ACK_PACKET_TYPE 6
+
+//Communication variables
+const int g_outPacketSize = 6;
+const int g_configPacketSize = 3;
+const int g_configAckSize = 4;
+static uint8_t vibeStatePacket[VIBE_STATE_PACKET_LENGTH];
+static uint8_t proxStatePacket[PROX_STATE_PACKET_LENGTH];
+static uint8_t outPacket[g_outPacketSize];
+static uint8_t configPacket[g_configPacketSize];
+static int packet_cnt;
+
+XBee xbee = XBee();
+XBeeResponse response = XBeeResponse();
+Rx16Response rx = Rx16Response();
+Tx16Request tx;
+uint16_t base_address = 0;
+TxStatusResponse txStatus = TxStatusResponse();
+const int RED_COLOR = 1;
+const int BLUE_COLOR = 2;
+
+Blinker vibeBlinker;
+Blinker colorBlinker;
+uint8_t rgb[3] = {0, 0, 0};
+bool active = false;
+
+//Communication -- addressing (need to be changed for each patch)
+//PROX1_PLAYER1
+int myColor = RED_COLOR;
+static int myAddress = 1;
+static int initialDelay = 0; //for staggering messages from sensors to avoid packet collision
+static int ledFilter1 = 0x80; //128, 64, 32, and 16 -- for higher order bits
+static int ledFilter2 = 0x08; //8, 4, 2, and 1 -- for lower order bits
+
+long dataInterval = 50; // 20 Hz
+long prevDataMillis = 0;
+
+long xCheckInterval = 20; // 50 Hz
+long prevCheckMillis = 0;
+
+long turnLength; // will have to be set by config message
+
+// Sensing
+int proxPin = 4; //A4, 18 of 20
+int proxBaseline = 250;
+int proxReading = 0;
+int touchThreshold = 1250;
+//might need to establish running average for capsense and look for spikes
+
+//debug
+boolean testing = false; // actually it's specifically testing sensors
+
+uint8_t frameId = 0;
+
 void setup() {
 	pinMode(RED_LED_PIN, OUTPUT);
 	pinMode(BLUE_LED_PIN, OUTPUT);
@@ -174,7 +118,7 @@ void setup() {
 	color(0, 0, 0);
 	vibe(0);
 
-	prevCheckMillis = prevTurnMillis = prevDataMillis = prevBlinkMillis = millis();
+	prevCheckMillis = prevDataMillis = millis();
 	packet_cnt = 0;
 
 	xbee.begin(9600);
@@ -188,36 +132,30 @@ void setup() {
 
 void loop() {
 	if (millis() - prevCheckMillis > xCheckInterval) {
-		checkXbee();
+		xbee.readPacket();
+
+		if (xbee.getResponse().isAvailable()) {
+			get_data(); 
+		}
+
 		prevCheckMillis = millis();
 	}
 
 	if (active) {
 		if (millis() - prevDataMillis > dataInterval) {
-			readProx();
+			proxReading = analogRead(proxPin);
+			if (proxReading < proxBaseline) proxReading = 0;
+			else proxReading -= proxBaseline;
 			send_data();
 			prevDataMillis = millis();
 		}
 	}
 
-	blinkVibe();
-	blinkColor();
+	updateVibe();
+	updateLEDs();
 }
 
 /* ---- Xbee ---- */
-
-void checkXbee() {
-	xbee.readPacket();
-	if (xbee.getResponse().isAvailable()) {
-		get_data(); 
-	}
-}
-
-void readProx() {
-	proxReading = analogRead(proxPin);
-	if (proxReading < proxBaseline) proxReading = 0;
-	else proxReading -= proxBaseline;
-}
 
 void send_data() {
 	outPacket[0] = PROX_IN_PACKET_TYPE;
@@ -295,7 +233,7 @@ void get_data() {
 
 /* ---- Blinking ---- */
 
-void blinkVibe() {
+void updateVibe() {
 	if (vibeBlinker.state()) {
 		statusLED(1);
 	} else {
@@ -304,7 +242,7 @@ void blinkVibe() {
 	}
 }
 
-void blinkColor() {
+void updateLEDs() {
 	if (colorBlinker.state()) {
 		color(rgb[0], rgb[1], rgb[2]);
 	} else {
