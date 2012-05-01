@@ -13,7 +13,7 @@ public class XBeeDebugger extends PApplet {
 	XBeeReader xbee;
 
 	public void setup() {
-		size(1024, 768);
+		size(200, 200);
 
 		xbeeManager = new XBeeManager(this);
 	}
@@ -33,11 +33,30 @@ public class XBeeDebugger extends PApplet {
 	public void keyPressed() {
 		if(key == 's') {
 			xbeeManager.scan();
-		} else if(key == 'm') {
-			xbee = xbeeManager.reader("P1_PROX1");
-		} else if(key == 't') {
-			System.out.println("Sending");
-			xbee.sendDataString16(0xFFFF, new int[] {8, 1, 255});
+		} else if(key == '1') {
+			System.out.println("Sending 1");
+			xbeeManager.reader("P2_PROX2").sendDataString16(0xFFFF, new int[] {1, 0});
+		} else if(key == '2') {
+			System.out.println("Sending 2");
+			xbeeManager.reader("P2_PROX2").sendDataString16(0xFFFF, new int[] {1, 1});
+		} else if(key == '3') {
+			System.out.println("Sending 3");
+			xbeeManager.reader("P2_PROX2").sendDataString16(0xFFFF, new int[] {2, 255, 0, 0});
+		} else if(key == '4') {
+			System.out.println("Sending 4");
+			xbeeManager.reader("P2_PROX2").sendDataString16(0xFFFF, new int[] {2, 0, 255, 0});
+		} else if(key == '5') {
+			System.out.println("Sending 5");
+			xbeeManager.reader("P2_PROX2").sendDataString16(0xFFFF, new int[] {2, 0, 0, 255});
+		} else if(key == '6') {
+			System.out.println("Sending 6");
+			xbeeManager.reader("P2_PROX2").sendDataString16(0xFFFF, new int[] {2, 0, 0, 0});
+		} else if(key == '7') {
+			System.out.println("Sending 7");
+			xbeeManager.reader("P2_PROX2").sendDataString16(0xFFFF, new int[] {3, 255});
+		} else if(key == '8') {
+			System.out.println("Sending 8");
+			xbeeManager.reader("P2_PROX2").sendDataString16(0xFFFF, new int[] {3, 0});
 		}
 	}
 
@@ -47,6 +66,7 @@ public class XBeeDebugger extends PApplet {
 		} else {
 			XBeeDataFrame data = reader.getXBeeReading();
 			System.out.println("Got something");
+			System.out.println(data.getAddress16());
 			if (data.getApiID() == XBeeReader.SERIES1_RX16PACKET) {
 				int[] packet = data.getBytes();
 				System.out.println("Series 16");
