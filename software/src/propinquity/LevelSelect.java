@@ -20,16 +20,13 @@ public class LevelSelect implements PConstants {
 	final int PLAYERNAME_FONT_SIZE = 30;
 
 	final String PROX_STUB_FILE = "stubs/sequence4/readings.txt";
-	final String ACCEL_STUB_FILE = "stubs/sequence4/accelReadings.txt";
 	final boolean[] PROX_STUB = { true, true }; // true = stub, false = live
-	final boolean[] ACCEL_STUB = { true, true }; // true = stub, false = live
 	final boolean[] SEND_VIBE = { true, true }; // true = vibe, false = don't
 												// vibe
 
 	// tmp until we use the xbee's serial
 	final String[] XBEE_PROX_1_NI = { "P1_PROX1", "P2_PROX1" };
 	final String[] XBEE_PROX_2_NI = { "P1_PROX2", "P2_PROX2" };
-	final String[] XBEE_ACCEL_NI = { "P1_ACCEL", "P2_ACCEL" };
 	final String[] XBEE_VIBE_NI = { "P1_VIBE", "P2_VIBE" };
 
 	Propinquity parent;
@@ -56,7 +53,6 @@ public class LevelSelect implements PConstants {
 	Player[] players = null;
 	ArrayList<String> foundProxPatches;
 	ArrayList<String> foundVibePatches;
-	ArrayList<String> foundAccelPatches;
 	ArrayList<String> foundUndefPatches;
 	int numProxPatches;
 	int numConfigAcks;
@@ -81,7 +77,6 @@ public class LevelSelect implements PConstants {
 
 		this.foundProxPatches = new ArrayList<String>();
 		this.foundVibePatches = new ArrayList<String>();
-		this.foundAccelPatches = new ArrayList<String>();
 		this.foundUndefPatches = new ArrayList<String>();
 		this.numConfigAcks = 0;
 
@@ -210,7 +205,6 @@ public class LevelSelect implements PConstants {
 		// foundPatches = 0;
 		foundProxPatches.clear();
 		foundVibePatches.clear();
-		foundAccelPatches.clear();
 		foundUndefPatches.clear();
 		players[player] = new Player(parent, parent.PLAYER_COLORS[player]);
 
@@ -220,11 +214,6 @@ public class LevelSelect implements PConstants {
 			players[player].loadProxStub(player, PROX_STUB_FILE);
 		else
 			players[player].initProxComm(XBEE_PROX_1_NI[player], XBEE_PROX_2_NI[player]);
-		// for accelerometer
-		if (ACCEL_STUB[player])
-			players[player].loadAccelStub(player, ACCEL_STUB_FILE);
-		else
-			players[player].initAccelComm(XBEE_ACCEL_NI[player]);
 		// for vibration
 		if (SEND_VIBE[player])
 			players[player].initVibeComm(XBEE_VIBE_NI[player]);
@@ -308,8 +297,6 @@ public class LevelSelect implements PConstants {
 		parent.textFont(font, LEVEL_FONT_SIZE);
 		parent.text(foundProxPatches.size() + " proximity patch" + (foundProxPatches.size() > 1 ? "es" : ""), 0, -20);
 		parent.text(foundVibePatches.size() + " vibration patch" + (foundVibePatches.size() > 1 ? "es" : ""), 0, 15);
-		parent.text(foundAccelPatches.size() + " acceleration patch" + (foundAccelPatches.size() > 1 ? "es" : ""), 0,
-				50);
 		if (foundUndefPatches.size() > 0)
 			parent.text("found " + foundUndefPatches.size() + " undefined patch"
 					+ (foundUndefPatches.size() > 1 ? "es" : ""), 0, 85);
@@ -543,11 +530,6 @@ public class LevelSelect implements PConstants {
 			case 'V':
 				foundVibePatches.add(serial);
 				System.out.println(" Found vibration patch: " + name + " (" + serial + ")");
-				break;
-
-			case 'A':
-				foundAccelPatches.add(serial);
-				System.out.println(" Found acceleration patch: " + name + " (" + serial + ")");
 				break;
 
 			default:

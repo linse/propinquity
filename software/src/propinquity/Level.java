@@ -194,11 +194,6 @@ public class Level {
 				// proxStubIndex++;
 			}
 
-			AccelData asd;
-			while ((asd = players[i].nextAccelStub(time)) != null) {
-				processAccelReading(asd);
-				// accelStubIndex++;
-			}
 		}
 
 		// process step
@@ -384,8 +379,6 @@ public class Level {
 			// if (PROX_STUB[i]) players[i].loadProxStub(i, PROX_STUB_FILE);
 			// else players[i].initProxComm(XPAN_PROX_1_PORT[i]);
 
-			// if (ACCEL_STUB[i]) players[i].loadAccelStub(i, ACCEL_STUB_FILE);
-			// else players[i].initAccelComm();
 
 			// if (SEND_VIBE[i]) players[i].initVibeComm(XPAN_VIBE_PORT[i]);
 
@@ -444,14 +437,6 @@ public class Level {
 				} else
 					System.err.println("Trouble in paradise, we received a packet from patch '" + patch
 							+ "', which is not assigned to a player");
-			} else if (packet.length == XPan.ACCEL_IN_PACKET_LENGTH && packet[0] == XPan.ACCEL_IN_PACKET_TYPE) {
-				// TODO
-				int patch = packet[1];
-				int x = packet[2];
-				int y = packet[3];
-				int z = packet[4];
-				int player = getPlayerIndexForPatch(patch);
-				processAccelReading(new AccelData(player, patch, x, y, z));
 			} else if (packet.length == XPan.CONFIG_ACK_LENGTH && packet[0] == XPan.CONFIG_ACK_PACKET_TYPE) {
 				int myTurnLength = ((packet[2] & 0xFF) << 8) | (packet[3] & 0xFF);
 				int patch = packet[1];
@@ -497,20 +482,6 @@ public class Level {
 		else {
 			players[data.player].processProxReading(data.patch, data.step, data.touched, data.proximity);
 			// println("Proximity reading: " + data);
-		}
-	}
-
-	public void processAccelReading(AccelData data) {
-		// check if we are in coop mode
-		if (isCcoop && (coopPts == 0 || getTotalPts() < coopPts * 2)) {
-			for (int i = 0; i < players.length; i++)
-				players[i].processAccelReading(data.patch, data.x, data.y, data.z);
-			// println("Acceleration reading: " + data + " (coop)");
-		}
-		// if not only need to process for incoming player
-		else {
-			players[data.player].processAccelReading(data.patch, data.x, data.y, data.z);
-			// println("Acceleration reading: " + data);
 		}
 	}
 

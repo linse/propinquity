@@ -15,11 +15,8 @@ public class Player implements PConstants {
 
 	// xbee
 	final int XPAN_PROX_BASES = 1; // 2;
-	final int XPAN_ACCEL_BASES = 1;
 	final int XPAN_VIBE_BASES = 1;
 
-	final boolean USE_ACCEL = false; // when false, touch event triggers when
-										// proximity is 0
 
 	final int VIBE_DIFF_THRESHOLD = 15;
 
@@ -45,11 +42,6 @@ public class Player implements PConstants {
 	boolean stepTouched;
 	int stepReadings;
 
-	final int NUM_ACCEL_READINGS = 4;
-	final int ACCEL_MULTIPLIER_THRESHOLD = 250;
-	int[] accelReadings = new int[NUM_ACCEL_READINGS];
-	int accelReadingsIndex = 0;
-	int accelMultiplier;
 
 	// boolean stubbed;
 	final int NUM_PROX_READINGS = 4;
@@ -61,7 +53,6 @@ public class Player implements PConstants {
 
 	// xbee
 	XPan[] xpansProx;
-	XPan[] xpansAccel;
 	XPan[] xpansVibe;
 	// int[] outdata;
 	int numPatches;
@@ -69,8 +60,6 @@ public class Player implements PConstants {
 	// stubs
 	ArrayList<String> proxStub = null;
 	int proxStubIndex = 0;
-	ArrayList<String> accelStub = null;
-	int accelStubIndex = 0;
 
 	// audio feedback
 	AudioPlayer negSoundPlayer = null;
@@ -84,7 +73,6 @@ public class Player implements PConstants {
 		this.name = "noname";
 		this.color = c;
 		this.xpansProx = new XPan[XPAN_PROX_BASES];
-		this.xpansAccel = new XPan[XPAN_ACCEL_BASES];
 		this.xpansVibe = new XPan[XPAN_VIBE_BASES];
 		this.numPatches = 0;
 		reset();
@@ -101,10 +89,6 @@ public class Player implements PConstants {
 		hudAngle = 0; // same as coop default angle
 		hudVel = 0;
 
-		accelMultiplier = 1;
-		accelReadingsIndex = 0;
-		for (int i = 0; i < NUM_ACCEL_READINGS; i++)
-			accelReadings[i] = 0;
 
 		ri = 0;
 		for (int i = 0; i < NUM_PROX_READINGS; i++)
@@ -115,8 +99,6 @@ public class Player implements PConstants {
 		// reset stub
 		if (proxStub != null)
 			proxStubIndex = 0;
-		if (accelStub != null)
-			accelStubIndex = 0;
 	}
 
 	public void clear() {
@@ -130,9 +112,6 @@ public class Player implements PConstants {
 		for (int i = 0; i < xpansVibe.length; i++)
 			if (xpansVibe[i] != null)
 				xpansVibe[i].stop();
-		for (int i = 0; i < xpansAccel.length; i++)
-			if (xpansAccel[i] != null)
-				xpansAccel[i].stop();
 	}
 
 	public String getName() {
@@ -249,13 +228,8 @@ public class Player implements PConstants {
 		// else add pts
 		else {
 			// System.out.println(name + " scores " +
-			// getProximity()*accelMultiplier + " (" + accelMultiplier + ")");
-			addPts(getProximity() * accelMultiplier);
-			// if (accelMultiplier > 1) result = 1;
 			if (getProximity() > 180)
 				result = 1;
-			else if (!USE_ACCEL && getProximity() == 0 && stepReadings > 1)
-				result = -1;
 		}
 
 		stepTouched = false;
@@ -306,28 +280,6 @@ public class Player implements PConstants {
 		sendVibes(averageReading);
 	}
 
-	public void processAccelReading(int patch, int x, int y, int z) {
-		// keep track of values
-		accelReadings[accelReadingsIndex++] = x + y + z;
-		if (accelReadingsIndex >= NUM_ACCEL_READINGS)
-			accelReadingsIndex = 0;
-
-		// calculate average
-		int avg = 0;
-		for (int i = 0; i < NUM_ACCEL_READINGS; i++)
-			avg += accelReadings[i];
-		avg /= NUM_ACCEL_READINGS;
-
-		if (avg < ACCEL_MULTIPLIER_THRESHOLD)
-			accelMultiplier = 1;
-		else
-			accelMultiplier = PApplet.min(
-					(avg - ACCEL_MULTIPLIER_THRESHOLD + 100) / 100, 4);
-
-		// System.out.println(name + ": " + patch + " " + x + ", " + y + ", " + z +
-		// " : " + accelMultiplier);
-	}
-
 	public boolean hasTouched() {
 		return stepTouched;
 	}
@@ -369,31 +321,6 @@ public class Player implements PConstants {
 				Integer.valueOf(data[4]));
 	}
 
-	AccelData nextAccelStub(long time) {
-		if (accelStub == null)
-			return null;
-		if (accelStubIndex >= accelStub.size())
-			return null;
-
-		String[] data = (accelStub.get(accelStubIndex)).split(",");
-
-		// check if we reached the time for this step
-		if (Integer.valueOf(data[0]) >= time)
-			return null;
-
-		/*
-		 * processAccelReading(Integer.valueOf(data[2]),
-		 * Integer.valueOf(data[3]), Integer.valueOf(data[4]),
-		 * Integer.valueOf(data[5]));
-		 */
-
-		accelStubIndex++;
-
-		return new AccelData(Integer.valueOf(data[1]),
-				Integer.valueOf(data[2]), Integer.valueOf(data[3]),
-				Integer.valueOf(data[4]), Integer.valueOf(data[5]));
-	}
-
 	void loadProxStub(int index, String stubFile) {
 		// proximity data stub
 		String[] data = parent.loadStrings(stubFile);
@@ -423,37 +350,6 @@ public class Player implements PConstants {
 		proxStubIndex = 0;
 
 		System.out.println(" Proximity stub... " + proxStub.size());
-	}
-
-	void loadAccelStub(int index, String stubFile) {
-		// proximity data stub
-		String[] data = parent.loadStrings(stubFile);
-		if (data == null || data.length == 0) {
-			System.out.println("Error: Proximity stub was empty. I don't think that's right.");
-		}
-
-		accelStub = new ArrayList<String>();
-
-		// parse to keep only data for this player
-		String[] dataline;
-		for (int i = 0; i < data.length; i++) {
-			dataline = data[i].split(",");
-
-			if (dataline.length != 6) {
-				System.out.println("Warning: Proximity stub line " + i + " ("
-						+ data[i] + ") is not formatted correctly");
-				continue;
-			}
-
-			if (Integer.valueOf(dataline[1]) == index) {
-				accelStub.add(data[i]);
-			}
-		}
-
-		// start the stub at the beginning
-		accelStubIndex = 0;
-
-		System.out.println(" Accelerometer stub... " + accelStub.size());
 	}
 
 	void initProxComm(String ni1, String ni2) {
@@ -492,19 +388,6 @@ public class Player implements PConstants {
 		return xpansProx;
 	}
 
-	void initAccelComm(String ni) {
-		if (ni == null)
-			return;
-
-		XBeeReader xbee = parent.xbeeManager.reader(ni);
-		if (xbee != null) {
-			xpansAccel[0] = new XPan(xbee);
-			System.out.println("Initialized Xbee for acceleration: " + ni);
-		} else {
-			System.err.println("Could not initialize Xbee for acceleration: "
-					+ ni);
-		}
-	}
 
 	void initVibeComm(String ni) {
 		if (ni == null)
@@ -582,12 +465,6 @@ public class Player implements PConstants {
 			if (xpansProx[i] != null) {
 				System.out.println("Discover proximity " + (i + 1));
 				xpansProx[i].nodeDiscover();
-			}
-
-		for (int i = 0; i < XPAN_ACCEL_BASES; i++)
-			if (xpansAccel[i] != null) {
-				System.out.println("Discover acceleration " + (i + 1));
-				xpansAccel[i].nodeDiscover();
 			}
 
 		for (int i = 0; i < XPAN_VIBE_BASES; i++)

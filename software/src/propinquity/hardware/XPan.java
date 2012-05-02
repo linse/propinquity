@@ -14,9 +14,6 @@ public class XPan {
 	static public final int CONFIG_OUT_PACKET_LENGTH = 3; // length (bytes) of outgoing
 													// config packet for
 													// proximity
-	static public final int ACCEL_IN_PACKET_LENGTH = 5; // length (bytes) of incoming
-													// packet for proximity
-													// readings
 	static public final int CONFIG_ACK_LENGTH = 4;
 	static public final int VIBE_IN_PACKET_LENGTH = 3;
 
@@ -25,7 +22,6 @@ public class XPan {
 	static public final int PROX_OUT_PACKET_TYPE = 1;
 	static public final int PROX_IN_PACKET_TYPE = 2;
 	static public final int VIBE_OUT_PACKET_TYPE = 3;
-	static public final int ACCEL_IN_PACKET_TYPE = 4;
 	static public final int CONFIG_OUT_PACKET_TYPE = 5;
 	static public final int CONFIG_ACK_PACKET_TYPE = 6;
 	static public final int VIBE_IN_PACKET_TYPE = 7; // THIS IS NEW. For button
