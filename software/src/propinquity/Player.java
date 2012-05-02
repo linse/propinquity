@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import xbee.*;
+import propinquity.xbee.*;
 
 import ddf.minim.AudioPlayer;
 
@@ -460,7 +461,7 @@ public class Player implements PConstants {
 		if (ni1 != null) {
 			XBeeReader xbee = parent.xbeeManager.reader(ni1);
 			if (xbee != null) {
-				xpansProx[0] = new XPan(xbee, parent);
+				xpansProx[0] = new XPan(xbee);
 				System.out.println("Initialized Xbee for proximity #1: " + ni1);
 			} else {
 				System.err
@@ -471,7 +472,7 @@ public class Player implements PConstants {
 		if (ni2 != null) {
 			XBeeReader xbee = parent.xbeeManager.reader(ni2);
 			if (xbee != null) {
-				xpansProx[1] = new XPan(xbee, parent);
+				xpansProx[1] = new XPan(xbee);
 				System.out.println("Initialized Xbee for proximity #2: " + ni2);
 			} else {
 				System.err
@@ -497,7 +498,7 @@ public class Player implements PConstants {
 
 		XBeeReader xbee = parent.xbeeManager.reader(ni);
 		if (xbee != null) {
-			xpansAccel[0] = new XPan(xbee, parent);
+			xpansAccel[0] = new XPan(xbee);
 			System.out.println("Initialized Xbee for acceleration: " + ni);
 		} else {
 			System.err.println("Could not initialize Xbee for acceleration: "
@@ -511,7 +512,7 @@ public class Player implements PConstants {
 
 		XBeeReader xbee = parent.xbeeManager.reader(ni);
 		if (xbee != null) {
-			xpansVibe[0] = new XPan(xbee, parent);
+			xpansVibe[0] = new XPan(xbee);
 			System.out.println("Initialized Xbee for vibration: " + ni);
 		} else {
 			System.err

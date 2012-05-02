@@ -3,19 +3,76 @@ package propinquity.xbee;
 import processing.core.*;
 import propinquity.*;
 import xbee.*;
+import controlP5.*;
 
 public class XBeeDebugger extends PApplet {
 
 	// Unique serialization ID
 	private static final long serialVersionUID = 6340508174717159418L;
 
+	static final int[] PATCH_ADDR = new int[] { 1, 2};
+	static final int NUM_PATCHES = PATCH_ADDR.length;
+
 	XBeeManager xbeeManager;
 	XBeeReader xbee;
 
+	ControlP5 controlP5;
+	boolean show_controls;
+
+	boolean[] active;
+	int[][] colors;
+	int[] vibe;
+
 	public void setup() {
-		size(200, 200);
+		size(1024, 768);
+
+		active = new boolean[NUM_PATCHES];
+		colors = new int[NUM_PATCHES][3];
+		vibe = new int[NUM_PATCHES];
+
+		controlP5 = new ControlP5(this);
+
+		for(int i = 0;i < NUM_PATCHES;i++) {
+			int x_offset = (width-100)/NUM_PATCHES*i+50;
+			int y_offset = 100;
+			int local_width = (width-200)/NUM_PATCHES;
+
+			ControlGroup group = controlP5.addGroup("Patch "+i, x_offset, y_offset, local_width);
+
+			Toggle toggle = controlP5.addToggle("Active "+i, 10, 10, 50, 20);
+			toggle.setMode(ControlP5.SWITCH);
+			toggle.setGroup(group);
+
+			Slider r_slider = controlP5.addSlider("Red "+i, 0, 255, colors[i][0], 10, 60, local_width-40, 15);
+			r_slider.setGroup(group);
+			Slider g_slider = controlP5.addSlider("Green "+i, 0, 255, colors[i][1], 10, 80, local_width-40, 15);
+			g_slider.setGroup(group);
+			Slider b_slider = controlP5.addSlider("Blue "+i, 0, 255, colors[i][2], 10, 100, local_width-40, 15);
+			b_slider.setGroup(group);
+
+			Slider vibe_slider = controlP5.addSlider("Vibe "+i, 0, 255, vibe[i], 10, 130, local_width-40, 15);
+			vibe_slider.setGroup(group);
+
+		}
+
+		if(!show_controls) controlP5.hide();
 
 		xbeeManager = new XBeeManager(this);
+	}
+
+	public void controlEvent(ControlEvent theEvent) {
+		// System.out.println(theEvent.getName());
+		// System.out.println(theEvent.getValue());
+		// for(int i = 0;i < NUM_PATCHES;i++) {
+		// 	if(theEvent.controller().name().equals("Active "+i)) {
+		// 		if(theEvent.controller().value() != 0) active[i] = true;
+		// 		else active[i] = false;
+		// 	}
+		// 	else if(theEvent.controller().name().equals("Red "+i)) colors[i][0] = (int)theEvent.controller().value();
+		// 	else if(theEvent.controller().name().equals("Green "+i)) colors[i][1] = (int)theEvent.controller().value();
+		// 	else if(theEvent.controller().name().equals("Blue "+i)) colors[i][2] = (int)theEvent.controller().value();
+		// 	else if(theEvent.controller().name().equals("Vibe "+i)) vibe[i] = (int)theEvent.controller().value();
+		// }
 	}
 
 	public void draw() {
@@ -24,40 +81,49 @@ public class XBeeDebugger extends PApplet {
 		if(xbeeManager.isScanning()) {
 
 		} else {
-			stroke(255);
-			fill(200, 0, 0);
-			rect(10, height/2, 100, 100);
+
 		}
 	}
-
+	
 	public void keyPressed() {
 		if(key == 's') {
 			xbeeManager.scan();
-		} else if(key == '1') {
-			System.out.println("Sending 1");
-			xbeeManager.reader("P2_PROX2").sendDataString16(0xFFFF, new int[] {1, 0});
-		} else if(key == '2') {
-			System.out.println("Sending 2");
-			xbeeManager.reader("P2_PROX2").sendDataString16(0xFFFF, new int[] {1, 1});
-		} else if(key == '3') {
-			System.out.println("Sending 3");
-			xbeeManager.reader("P2_PROX2").sendDataString16(0xFFFF, new int[] {2, 255, 0, 0});
-		} else if(key == '4') {
-			System.out.println("Sending 4");
-			xbeeManager.reader("P2_PROX2").sendDataString16(0xFFFF, new int[] {2, 0, 255, 0});
-		} else if(key == '5') {
-			System.out.println("Sending 5");
-			xbeeManager.reader("P2_PROX2").sendDataString16(0xFFFF, new int[] {2, 0, 0, 255});
-		} else if(key == '6') {
-			System.out.println("Sending 6");
-			xbeeManager.reader("P2_PROX2").sendDataString16(0xFFFF, new int[] {2, 0, 0, 0});
-		} else if(key == '7') {
-			System.out.println("Sending 7");
-			xbeeManager.reader("P2_PROX2").sendDataString16(0xFFFF, new int[] {3, 255});
-		} else if(key == '8') {
-			System.out.println("Sending 8");
-			xbeeManager.reader("P2_PROX2").sendDataString16(0xFFFF, new int[] {3, 0});
+		} else if(key == 'h') {
+			show_controls = !show_controls;
+			if(!show_controls) controlP5.hide();
+			else controlP5.show();
+		} else if(key == 'p') {
+			for(int i = 0;i < NUM_PATCHES;i++) {
+				System.out.println(active[i]);
+				System.out.println(vibe[i]);
+			}
 		}
+
+		//  else if(key == '1') {
+		// 	System.out.println("Sending 1");
+		// 	xbeeManager.reader("P2_PROX2").sendDataString16(addr, new int[] {1, 0});
+		// } else if(key == '2') {
+		// 	System.out.println("Sending 2");
+		// 	xbeeManager.reader("P2_PROX2").sendDataString16(addr, new int[] {1, 1});
+		// } else if(key == '3') {
+		// 	System.out.println("Sending 3");
+		// 	xbeeManager.reader("P2_PROX2").sendDataString16(addr, new int[] {2, 255, 0, 0});
+		// } else if(key == '4') {
+		// 	System.out.println("Sending 4");
+		// 	xbeeManager.reader("P2_PROX2").sendDataString16(addr, new int[] {2, 0, 255, 0});
+		// } else if(key == '5') {
+		// 	System.out.println("Sending 5");
+		// 	xbeeManager.reader("P2_PROX2").sendDataString16(addr, new int[] {2, 0, 0, 255});
+		// } else if(key == '6') {
+		// 	System.out.println("Sending 6");
+		// 	xbeeManager.reader("P2_PROX2").sendDataString16(addr, new int[] {2, 0, 0, 0});
+		// } else if(key == '7') {
+		// 	System.out.println("Sending 7");
+		// 	xbeeManager.reader("P2_PROX2").sendDataString16(addr, new int[] {3, 255});
+		// } else if(key == '8') {
+		// 	System.out.println("Sending 8");
+		// 	xbeeManager.reader("P2_PROX2").sendDataString16(addr, new int[] {3, 0});
+		// }
 	}
 
 	public void xBeeEvent(XBeeReader reader) {
