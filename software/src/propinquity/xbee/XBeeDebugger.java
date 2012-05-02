@@ -23,7 +23,11 @@ public class XBeeDebugger extends PApplet {
 
 	boolean[] active;
 	int[][] colors;
+	int[] duty;
+	int[] period;
 	int[] vibe;
+	int[] vibe_duty;
+	int[] vibe_period;
 
 	int[] prox;
 
@@ -32,7 +36,11 @@ public class XBeeDebugger extends PApplet {
 
 		active = new boolean[NUM_PATCHES];
 		colors = new int[NUM_PATCHES][3];
+		duty = new int[NUM_PATCHES];
+		period = new int[NUM_PATCHES];
 		vibe = new int[NUM_PATCHES];
+		vibe_duty = new int[NUM_PATCHES];
+		vibe_period = new int[NUM_PATCHES];
 		prox = new int[NUM_PATCHES];
 
 		controlP5 = new ControlP5(this);
@@ -59,10 +67,20 @@ public class XBeeDebugger extends PApplet {
 			g_slider.setGroup(group);
 			Slider b_slider = controlP5.addSlider("Blue "+i, 0, 255, colors[i][2], (local_width-20)/num*3+10, 10, 15, 200);
 			b_slider.setGroup(group);
+			Slider duty_slider = controlP5.addSlider("Duty "+i, 0, 255, duty[i], (local_width-20)/num*1+10, 240, 15, 200);
+			duty_slider.setGroup(group);
+			Slider period_slider = controlP5.addSlider("Period "+i, 0, 255, period[i], (local_width-20)/num*2+10, 240, 15, 200);
+			period_slider.setGroup(group);
 
+			
 			Slider vibe_slider = controlP5.addSlider("Vibe "+i, 0, 255, vibe[i], (local_width-20)/num*4+10, 10, 15, 200);
 			vibe_slider.setGroup(group);
+			Slider vibe_duty_slider = controlP5.addSlider("Vibe Duty "+i, 0, 255, vibe_duty[i], (local_width-20)/num*4+10, 240, 15, 200);
+			vibe_duty_slider.setGroup(group);
+			Slider vibe_period_slider = controlP5.addSlider("Vibe Period"+i, 0, 255, vibe_period[i], (local_width-20)/num*5+10, 240, 15, 200);
+			vibe_period_slider.setGroup(group);
 
+			
 			prox_sliders[i] = controlP5.addSlider("Prox "+i, 0, 1024, vibe[i], (local_width-20)/num*5+10, 10, 15, 200);
 			prox_sliders[i].lock();
 			prox_sliders[i].setGroup(group);
@@ -99,6 +117,14 @@ public class XBeeDebugger extends PApplet {
 					colors[i][2] = value;
 					sendColor(i, colors[i][0], colors[i][1], colors[i][2]);
 					return;
+				} else if(name.equals("Period "+i)) {
+					period[i] = i;
+					sendPeriod(i, period[i]);
+					return;
+				} else if(name.equals("Duty "+i)) {
+					duty[i] = i;
+					sendDuty(i, duty[i]);
+					return;
 				} else if(name.equals("Vibe "+i)) {
 					vibe[i] = value;
 					sendVibe(i, vibe[i]);
@@ -117,7 +143,18 @@ public class XBeeDebugger extends PApplet {
 		index = constrain(index, 0, NUM_PATCHES-1);
 		xbeeManager.reader("P2_PROX2").sendDataString16(PATCH_ADDR[index], new int[] {2, r&0xFF, g&0xFF, b&0xFF});
 	}
-
+	void sendDuty(int index, int duty) {
+		index = constrain(index, 0, NUM_PATCHES-1);
+		if(duty > period[index]) {
+			duty = period[index];
+		} else if(duty == 0) duty = 1;
+		xbeeManager.reader("P2_PROX2").sendDataString16(PATCH_ADDR[index], new int[] {5, duty&0xFF});
+	}
+	void sendPeriod(int index, int period) {
+		index = constrain(index, 0, NUM_PATCHES-1);
+		if(period == 0) period = 1;
+		xbeeManager.reader("P2_PROX2").sendDataString16(PATCH_ADDR[index], new int[] {6, period&0xFF});
+	}
 	void sendVibe(int index, int vibe) {
 		index = constrain(index, 0, NUM_PATCHES-1);
 		xbeeManager.reader("P2_PROX2").sendDataString16(PATCH_ADDR[index], new int[] {3, vibe&0xFF});
