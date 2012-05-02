@@ -1,4 +1,4 @@
-package propinquity;
+package propinquity.hardware;
 
 public enum PacketType {
 	

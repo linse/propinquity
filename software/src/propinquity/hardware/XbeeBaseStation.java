@@ -14,7 +14,7 @@ import propinquity.*;
  * This class scans for XBees connected to the computer. It then instantiates and holds XBeeReader objects for each such device.
  *
 */
-public class XbeeBaseStation implements Runnable, HardwareInterface, UIElement {
+public class XbeeBaseStation implements Runnable, UIElement {
 
 	final int XBEE_BAUDRATE = 115200;
 	final int XBEE_RESPONSE_TIMEOUT = 1000;

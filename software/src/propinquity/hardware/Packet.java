@@ -1,6 +1,6 @@
 package propinquity.hardware;
 
-public void Packet {
+public class Packet {
 
 	final PacketType type;
 	final int[] payload;
