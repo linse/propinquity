@@ -94,7 +94,6 @@ public class XBeeDebugger extends PApplet {
 	public void controlEvent(ControlEvent theEvent) {
 		String name = theEvent.controller().name();
 		int value = (int)theEvent.controller().value();
-
 		if(name.equals("Re-Scan")) {
 			xbeeManager.scan();
 			return;
@@ -118,11 +117,11 @@ public class XBeeDebugger extends PApplet {
 					sendColor(i, colors[i][0], colors[i][1], colors[i][2]);
 					return;
 				} else if(name.equals("Period "+i)) {
-					period[i] = i;
+					period[i] = value;
 					sendPeriod(i, period[i]);
 					return;
 				} else if(name.equals("Duty "+i)) {
-					duty[i] = i;
+					duty[i] = value;
 					sendDuty(i, duty[i]);
 					return;
 				} else if(name.equals("Vibe "+i)) {
@@ -145,14 +144,15 @@ public class XBeeDebugger extends PApplet {
 	}
 	void sendDuty(int index, int duty) {
 		index = constrain(index, 0, NUM_PATCHES-1);
-		if(duty > period[index]) {
-			duty = period[index];
-		} else if(duty == 0) duty = 1;
+		// if(duty > period[index]) {
+		// 	duty = period[index];
+		// } else if(duty == 0) duty = 1;
+		println(duty&0xFF);
 		xbeeManager.reader("P2_PROX2").sendDataString16(PATCH_ADDR[index], new int[] {5, duty&0xFF});
 	}
 	void sendPeriod(int index, int period) {
 		index = constrain(index, 0, NUM_PATCHES-1);
-		if(period == 0) period = 1;
+		// if(period == 0) period = 1;
 		xbeeManager.reader("P2_PROX2").sendDataString16(PATCH_ADDR[index], new int[] {6, period&0xFF});
 	}
 	void sendVibe(int index, int vibe) {

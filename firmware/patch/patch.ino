@@ -150,7 +150,6 @@ void parse_data(uint8_t* data, uint8_t len) {
 	} else if(data[0] == COLOR_DUTY && len > 1) {
 		led_duty = data[1];
 	} else if(data[0] == COLOR_PERIOD && len > 1) {
-		time_counter = 0;
 		led_period = data[1];
 	} else if(data[0] == VIBE_PACKET && len > 1) {
 		vibe_level = data[1];
