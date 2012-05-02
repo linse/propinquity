@@ -10,14 +10,14 @@ public class XBeeDebugger extends PApplet {
 	// Unique serialization ID
 	private static final long serialVersionUID = 6340508174717159418L;
 
-	static final int[] PATCH_ADDR = new int[] { 1, 2};
+	static final int[] PATCH_ADDR = new int[] { 1, 2 };
 	static final int NUM_PATCHES = PATCH_ADDR.length;
 
 	XBeeManager xbeeManager;
 	XBeeReader xbee;
 
 	ControlP5 controlP5;
-	boolean show_controls;
+	boolean show_controls = true;
 
 	boolean[] active;
 	int[][] colors;
@@ -43,14 +43,14 @@ public class XBeeDebugger extends PApplet {
 			toggle.setMode(ControlP5.SWITCH);
 			toggle.setGroup(group);
 
-			Slider r_slider = controlP5.addSlider("Red "+i, 0, 255, colors[i][0], 10, 60, local_width-40, 15);
+			Slider r_slider = controlP5.addSlider("Red "+i, 0, 255, colors[i][0], 10, 90, 15, 200);
 			r_slider.setGroup(group);
-			Slider g_slider = controlP5.addSlider("Green "+i, 0, 255, colors[i][1], 10, 80, local_width-40, 15);
+			Slider g_slider = controlP5.addSlider("Green "+i, 0, 255, colors[i][1], 60, 90, 15, 200);
 			g_slider.setGroup(group);
-			Slider b_slider = controlP5.addSlider("Blue "+i, 0, 255, colors[i][2], 10, 100, local_width-40, 15);
+			Slider b_slider = controlP5.addSlider("Blue "+i, 0, 255, colors[i][2], 110, 90, 15, 200);
 			b_slider.setGroup(group);
 
-			Slider vibe_slider = controlP5.addSlider("Vibe "+i, 0, 255, vibe[i], 10, 130, local_width-40, 15);
+			Slider vibe_slider = controlP5.addSlider("Vibe "+i, 0, 255, vibe[i], 175, 90, 15, 200);
 			vibe_slider.setGroup(group);
 
 		}
@@ -61,18 +61,18 @@ public class XBeeDebugger extends PApplet {
 	}
 
 	public void controlEvent(ControlEvent theEvent) {
-		// System.out.println(theEvent.getName());
-		// System.out.println(theEvent.getValue());
-		// for(int i = 0;i < NUM_PATCHES;i++) {
-		// 	if(theEvent.controller().name().equals("Active "+i)) {
-		// 		if(theEvent.controller().value() != 0) active[i] = true;
-		// 		else active[i] = false;
-		// 	}
-		// 	else if(theEvent.controller().name().equals("Red "+i)) colors[i][0] = (int)theEvent.controller().value();
-		// 	else if(theEvent.controller().name().equals("Green "+i)) colors[i][1] = (int)theEvent.controller().value();
-		// 	else if(theEvent.controller().name().equals("Blue "+i)) colors[i][2] = (int)theEvent.controller().value();
-		// 	else if(theEvent.controller().name().equals("Vibe "+i)) vibe[i] = (int)theEvent.controller().value();
-		// }
+		String name = theEvent.controller().name();
+		int value = (int)theEvent.controller().value();
+		for(int i = 0;i < NUM_PATCHES;i++) {
+			if(name.equals("Active "+i)) {
+				if(value != 0) active[i] = true;
+				else active[i] = false;
+			}
+			else if(name.equals("Red "+i)) colors[i][0] = value;
+			else if(name.equals("Green "+i)) colors[i][1] = value;
+			else if(name.equals("Blue "+i)) colors[i][2] = value;
+			else if(name.equals("Vibe "+i)) vibe[i] = value;
+		}
 	}
 
 	public void draw() {
