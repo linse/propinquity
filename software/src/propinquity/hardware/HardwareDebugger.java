@@ -1,11 +1,11 @@
-package propinquity.xbee;
+package propinquity.hardware;
 
 import processing.core.*;
 import propinquity.*;
 import xbee.*;
 import controlP5.*;
 
-public class XBeeDebugger extends PApplet {
+public class HardwareDebugger extends PApplet {
 
 	// Unique serialization ID
 	private static final long serialVersionUID = 6340508174717159418L;
@@ -13,7 +13,7 @@ public class XBeeDebugger extends PApplet {
 	static final int[] PATCH_ADDR = new int[] { 1, 2 };
 	static final int NUM_PATCHES = PATCH_ADDR.length;
 
-	XBeeManager xbeeManager;
+	XbeeBaseStation xbeeManager;
 	XBeeReader xbee;
 
 	ControlP5 controlP5;
@@ -70,7 +70,7 @@ public class XBeeDebugger extends PApplet {
 
 		if(!show_controls) controlP5.hide();
 
-		xbeeManager = new XBeeManager(this);
+		xbeeManager = new XbeeBaseStation(this);
 	}
 
 	public void controlEvent(ControlEvent theEvent) {
@@ -165,7 +165,7 @@ public class XBeeDebugger extends PApplet {
 	}
 
 	static public void main(String args[]) {
-		PApplet.main(new String[] { "propinquity.xbee.XBeeDebugger" });
+		PApplet.main(new String[] { "propinquity.hardware.XBeeDebugger" });
 	}
 
 }

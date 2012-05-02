@@ -1,7 +1,7 @@
 <project name="Propinquity" basedir="." default="main">
 
 	<property name="propinquity-class" value="propinquity.Propinquity"/>
-	<property name="xbee-debug-class" value="propinquity.xbee.XBeeDebugger"/>
+	<property name="xbee-debug-class" value="propinquity.hardware.HardwareDebugger"/>
 
 	<property name="src.dir" value="src"/>
 	<property name="build.dir" value="bin"/>
@@ -55,7 +55,7 @@
 		</java>
 	</target>
 
-	<target name="run" depends="propinquity">
+	<target name="run" depends="xbee-debug">
 	</target>
 
 	<target name="main" depends="run">

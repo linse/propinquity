@@ -1,4 +1,4 @@
-package propinquity.xbee;
+package propinquity.hardware;
 
 import java.util.*;
 
@@ -14,7 +14,7 @@ import propinquity.*;
  * This class scans for XBees connected to the computer. It then instantiates and holds XBeeReader objects for each such device.
  *
 */
-public class XBeeManager implements Runnable, UIElement {
+public class XbeeBaseStation implements Runnable, UIElement {
 
 	final int XBEE_BAUDRATE = 115200;
 	final int XBEE_RESPONSE_TIMEOUT = 1000;
@@ -37,21 +37,21 @@ public class XBeeManager implements Runnable, UIElement {
 	HashMap<String, XBeeReader> xbeeReaders;
 
 	/**
-	 * Create a new XBeeManager with xbeeDebug turned off.
+	 * Create a new XbeeBaseStation with xbeeDebug turned off.
 	 *
 	 * @param parent the parent PApplet object.
 	 */
-	public XBeeManager(PApplet parent) {
+	public XbeeBaseStation(PApplet parent) {
 		this(parent, null, false);
 	}
 
 	/**
-	 * Create a new XBeeManager.
+	 * Create a new XbeeBaseStation.
 	 *
 	 * @param parent the parent PApplet object.
 	 * @param xbeeDebug the Xbee xbeeDebug mode.
 	 */
-	public XBeeManager(PApplet parent, Propinquity propinquity, boolean xbeeDebug) {
+	public XbeeBaseStation(PApplet parent, Propinquity propinquity, boolean xbeeDebug) {
 		this.parent = parent;
 		this.propinquity = propinquity;
 
@@ -60,11 +60,11 @@ public class XBeeManager implements Runnable, UIElement {
 		controlP5 = new ControlP5(parent);
 
 		//Button to scan for Xbees
-		plScanButton = controlP5.addButton("XbeeManager Scan", 0, parent.width / 2 + 60, parent.height / 2 + 50, 50, 20);
+		plScanButton = controlP5.addButton("XbeeBaseStation Scan", 0, parent.width / 2 + 60, parent.height / 2 + 50, 50, 20);
 		plScanButton.setCaptionLabel("SCAN");
 
 		//Next button
-		plNextButton = controlP5.addButton("XbeeManager Next", 0, parent.width / 2 + 60 + 50 + 10, parent.height / 2 + 50, 50, 20);
+		plNextButton = controlP5.addButton("XbeeBaseStation Next", 0, parent.width / 2 + 60 + 50 + 10, parent.height / 2 + 50, 50, 20);
 		plNextButton.setCaptionLabel("NEXT");
 
 		hide();
@@ -96,9 +96,9 @@ public class XBeeManager implements Runnable, UIElement {
 	}
 
 	/**
-	 * Checks if the XbeeManager object is currently scanning for Xbees
+	 * Checks if the XbeeBaseStation object is currently scanning for Xbees
 	 *
-	 * @return true if the XbeeManager is currently scanning. False otherwise.
+	 * @return true if the XbeeBaseStation is currently scanning. False otherwise.
 	*/
 	public boolean isScanning() {
 		if(scanningThread != null && scanningThread.isAlive()) return true;
@@ -122,7 +122,7 @@ public class XBeeManager implements Runnable, UIElement {
 	 *
 	*/
 	public void reset() {
-		System.out.print("XbeeManager Reset ");
+		System.out.print("XbeeBaseStation Reset ");
 
 		for(XBeeReader reader : xbeeReaders.values()) {
 			reader.stopXBee();
@@ -155,7 +155,7 @@ public class XBeeManager implements Runnable, UIElement {
 	public void run() {
 		reset();
 
-		System.out.println("XbeeManager Scan");
+		System.out.println("XbeeBaseStation Scan");
 
 		String[] availablePorts = Serial.list();
 		String osName = System.getProperty("os.name");
@@ -228,8 +228,8 @@ public class XBeeManager implements Runnable, UIElement {
 	*/
 	public void controlEvent(ControlEvent event) {
 		if(isVisible) {
-			if(event.controller().name().equals("XbeeManager Scan")) scan();
-			else if(event.controller().name().equals("XbeeManager Next")) processUIEvent();
+			if(event.controller().name().equals("XbeeBaseStation Scan")) scan();
+			else if(event.controller().name().equals("XbeeBaseStation Next")) processUIEvent();
 		}
 	}
 

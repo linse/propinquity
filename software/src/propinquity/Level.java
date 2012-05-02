@@ -5,7 +5,7 @@ import proxml.XMLElement;
 import proxml.XMLInOut;
 import xbee.XBeeDataFrame;
 import xbee.XBeeReader;
-import propinquity.xbee.*;
+import propinquity.hardware.*;
 
 public class Level {
 

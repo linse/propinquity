@@ -1,4 +1,4 @@
-package propinquity.xbee;
+package propinquity.hardware;
 
 import processing.core.PApplet;
 import xbee.XBeeReader;

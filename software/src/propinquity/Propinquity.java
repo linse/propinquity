@@ -13,7 +13,7 @@ import processing.opengl.PGraphicsOpenGL;
 import proxml.*;
 import xbee.XBeeReader;
 
-import propinquity.xbee.*;
+import propinquity.hardware.*;
 
 public class Propinquity extends PApplet {
 
@@ -54,7 +54,7 @@ public class Propinquity extends PApplet {
 	boolean endedLevel = false;
 	long doneTime = -1;
 
-	XBeeManager xbeeManager;
+	XbeeBaseStation xbeeManager;
 	XMLInOut xmlInOut;
 	Hud hud;
 
@@ -79,7 +79,7 @@ public class Propinquity extends PApplet {
 		sounds.loadCommonContent();
 
 		// Create resources
-		xbeeManager = new XBeeManager(this, this, DEBUG_XBEE);
+		xbeeManager = new XbeeBaseStation(this, this, DEBUG_XBEE);
 
 		playerList = new PlayerList(this);
 

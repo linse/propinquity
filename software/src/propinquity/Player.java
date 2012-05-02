@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import xbee.*;
-import propinquity.xbee.*;
+import propinquity.hardware.*;
 
 import ddf.minim.AudioPlayer;
 
