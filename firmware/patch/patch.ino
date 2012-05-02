@@ -4,7 +4,7 @@
 */
 
 #include <XBee.h>
-#include <TimerOne.h>
+// #include <TimerOne.h>
 
 /* ---- Pin List ---- */
 
@@ -52,8 +52,8 @@ void setup() {
 	color(0, 0, 0);
 	vibe(0);
 
-	Timer1.initialize(100000);
-	Timer1.attachInterrupt(callback);
+	// Timer1.initialize(100000);
+	// Timer1.attachInterrupt(callback);
 
 	xbee.begin(9600);
 }
@@ -63,26 +63,47 @@ void callback() {
 }
 
 void loop() {
-	xbee.readPacket(); // Read packet, return after 500ms timeout
-
-	XBeeResponse response = xbee.getResponse();
-	if(response.isAvailable() && response.getApiId() == RX_16_RESPONSE) {
-		response.getRx16Response(rx); // Get RX response
-		parse_data(rx.getData(), rx.getDataLength());
+	for(int i = 0;i < 255;i++) {
+		color(i, 0, 0);
+		delay(5);
 	}
 
-	if(active && out_flag) {
-		prox_val = analogRead(PROX_PIN);
-		if(prox_val < prox_adju) prox_val = 0;
-		else prox_val -= prox_adju;
+	color(0, 0, 0);
 
-		send_data();
-
-		out_flag = 0;
+	for(int i = 0;i < 255;i++) {
+		color(0, i, 0);
+		delay(5);
 	}
 
-	updateVibe();
-	updateLEDs();
+	color(0, 0, 0);
+
+	for(int i = 0;i < 255;i++) {
+		color(0, 0, i);
+		delay(5);
+	}
+
+	// color(0, 0, 0);
+
+	// xbee.readPacket(); // Read packet, return after 500ms timeout
+
+	// XBeeResponse response = xbee.getResponse();
+	// if(response.isAvailable() && response.getApiId() == RX_16_RESPONSE) {
+	// 	response.getRx16Response(rx); // Get RX response
+	// 	parse_data(rx.getData(), rx.getDataLength());
+	// }
+
+	// if(active && out_flag) {
+	// 	prox_val = analogRead(PROX_PIN);
+	// 	if(prox_val < prox_adju) prox_val = 0;
+	// 	else prox_val -= prox_adju;
+
+	// 	send_data();
+
+	// 	out_flag = 0;
+	// }
+
+	// updateVibe();
+	// updateLEDs();
 }
 
 /* ---- Xbee ---- */
