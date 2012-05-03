@@ -165,7 +165,7 @@ public class HardwareDebugger extends PApplet {
 	}
 
 	static public void main(String args[]) {
-		PApplet.main(new String[] { "propinquity.hardware.XBeeDebugger" });
+		PApplet.main(new String[] { "propinquity.hardware.HardwareDebugger" });
 	}
 
 }

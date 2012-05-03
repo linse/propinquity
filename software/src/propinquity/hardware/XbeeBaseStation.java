@@ -7,6 +7,7 @@ import processing.serial.*;
 import controlP5.*;
 
 import xbee.*;
+import com.rapplogic.xbee.api.*;
 
 import propinquity.*;
 
@@ -35,6 +36,7 @@ public class XbeeBaseStation implements Runnable, UIElement {
 	String nodeID;
 	HashMap<String, Serial> xbeePorts;
 	HashMap<String, XBeeReader> xbeeReaders;
+	HashMap<String, XBee> xbees;
 
 	/**
 	 * Create a new XbeeBaseStation with xbeeDebug turned off.
@@ -72,6 +74,7 @@ public class XbeeBaseStation implements Runnable, UIElement {
 		this.xbeeDebug = xbeeDebug;
 		xbeePorts = new HashMap<String, Serial>();
 		xbeeReaders = new HashMap<String, XBeeReader>();
+		xbees = new HashMap<String, XBee>();
 
 		scan();
 	}
@@ -167,33 +170,42 @@ public class XbeeBaseStation implements Runnable, UIElement {
 			}
 
 			PApplet.println("\tConnecting to port: " + availablePorts[portNum] + " ... ");
-			Serial xbeePort = new Serial(parent, availablePorts[portNum], XBEE_BAUDRATE);
-			XBeeReader xbeeReader = new XBeeReader(parent, xbeePort);
-			xbeeReader.DEBUG = xbeeDebug;
+			// Serial xbeePort = new Serial(parent, availablePorts[portNum], XBEE_BAUDRATE);
+			// XBeeReader xbeeReader = new XBeeReader(parent, xbeePort);
+			// xbeeReader.DEBUG = xbeeDebug;
+			XBee xbee = new XBee();
 
 			System.out.println("\t\tStarting XBee");
-			xbeeReader.startXBee();
-
-			System.out.println(" \t\tGetting NI");
-			xbeeReader.getNI();
-
-			synchronized(this) {
-				nodeID = null;
-
-				try {
-					this.wait(XBEE_RESPONSE_TIMEOUT);
-				} catch(InterruptedException ie) {
-
-				}
+			// xbeeReader.startXBee();
+			try {
+				xbee.open(availablePorts[portNum], 115200);
+			} catch(XBeeException e) {
+				System.out.println(e.getMessage());
+				System.out.println("Fail");
+				continue;
 			}
+			System.out.println("Yay");
+			// System.out.println(" \t\tGetting NI");
+			// xbeeReader.getNI();
 
-			if(nodeID != null) {
-				System.out.println("\t\tFound XBee: "+nodeID);
-				xbeePorts.put(nodeID, xbeePort);
-				xbeeReaders.put(nodeID, xbeeReader);
-			} else {
-				System.out.println("\t\tDevice is not an XBee");
-			}
+			// synchronized(this) {
+			// 	nodeID = null;
+
+			// 	try {
+			// 		this.wait(XBEE_RESPONSE_TIMEOUT);
+			// 	} catch(InterruptedException ie) {
+
+			// 	}
+			// }
+
+			// if(nodeID != null) {
+				// System.out.println("\t\tFound XBee: "+nodeID);
+				// xbeePorts.put(nodeID, xbeePort);
+				// xbeeReaders.put(nodeID, xbeeReader);
+				xbees.put(availablePorts[portNum], xbee);
+			// } else {
+				// System.out.println("\t\tDevice is not an XBee");
+			// }
 		}
 
 		System.out.println("Scan Complete");
