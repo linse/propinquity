@@ -31,6 +31,9 @@
 			<classpath refid="classpath"/>
 			<compilerarg value="-Xlint"/>
 		</javac>
+		<copy flatten="true" todir="${build.dir}">
+			<fileset dir="${lib.dir}" includes="**/*.properties" />
+		</copy>
 	</target>
 
 	<target name="propinquity" depends="compile">
@@ -55,7 +58,7 @@
 		</java>
 	</target>
 
-	<target name="run" depends="xbee-debug">
+	<target name="run" depends="propinquity">
 	</target>
 
 	<target name="main" depends="run">
