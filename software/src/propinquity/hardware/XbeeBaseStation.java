@@ -139,6 +139,9 @@ public class XbeeBaseStation implements Runnable, UIElement {
 			}
 		}
 
+		for(XBee xbee : xbees.values()) {
+			xbee.close();
+		}
 
 		for(Serial port : xbeePorts.values()) {
 			port.stop();
@@ -147,8 +150,15 @@ public class XbeeBaseStation implements Runnable, UIElement {
 
 		xbeeReaders.clear();
 		xbeePorts.clear();
+		xbees.clear();
 
 		System.out.println("");
+
+		try {
+			Thread.sleep(1000);
+		} catch(Exception e) {
+
+		}
 	}
 
 	/**
@@ -178,13 +188,50 @@ public class XbeeBaseStation implements Runnable, UIElement {
 			System.out.println("\t\tStarting XBee");
 			// xbeeReader.startXBee();
 			try {
-				xbee.open(availablePorts[portNum], 115200);
+				xbee.open(availablePorts[portNum], XBEE_BAUDRATE);
 			} catch(XBeeException e) {
 				System.out.println(e.getMessage());
 				System.out.println("Fail");
 				continue;
 			}
-			System.out.println("Yay");
+
+			System.out.println("Opened");
+			XBeeResponse response = null;
+
+			try {
+				Thread.sleep(250);
+			} catch(Exception e) {
+
+			}
+
+			try {
+				response = xbee.sendSynchronous(new AtCommand("NI"), XBEE_RESPONSE_TIMEOUT);
+			} catch (XBeeTimeoutException e) {
+			    // no response was received in the allotted time
+			    System.out.println("Timeout");
+			    continue;
+			} catch (XBeeException e) {
+				continue;
+			}
+
+			System.out.println("Got NI");
+
+			if (response != null && response.getApiId() == ApiId.AT_RESPONSE) {
+			   // since this API ID is AT_RESPONSE, we know to cast to AtCommandResponse
+			    AtCommandResponse atResponse = (AtCommandResponse) response;
+
+			    if (atResponse.isOk()) {
+			        // command was successful
+			        System.out.println("Command returned ");
+			        for(int i = 0;i < atResponse.getValue().length;i++) {
+			        	System.out.print((char)atResponse.getValue()[i]);
+			        }
+			        System.out.println();
+			    } else {
+			        // command failed!
+			    }
+			}
+
 			// System.out.println(" \t\tGetting NI");
 			// xbeeReader.getNI();
 
