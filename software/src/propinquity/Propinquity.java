@@ -42,9 +42,7 @@ public class Propinquity extends PApplet {
 	// player list controller
 	PlayerList playerList = null;
 
-	// OpenGL
 	GL gl;
-
 	Liquid liquid;
 	PBox2D box2d;
 	TestSettings settings;
@@ -252,6 +250,7 @@ public class Propinquity extends PApplet {
 	}
 
 	public void changeGameState(GameState new_state) {
+		
 		for (int i = 0; i < ui_elements.length; i++)
 			ui_elements[i].hide();
 
