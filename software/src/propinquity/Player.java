@@ -31,7 +31,7 @@ public class Player implements PConstants {
 	Propinquity parent;
 
 	String name;
-	int color;
+	Colour colour;
 
 	float hudAngle;
 	float hudVel;
@@ -78,11 +78,10 @@ public class Player implements PConstants {
 
 	boolean coopMode;
 
-	// public Player(PApplet p, String n, color c)
-	public Player(Propinquity p, int c) {
+	public Player(Propinquity p, Colour colour) {
 		this.parent = p;
 		this.name = "noname";
-		this.color = c;
+		this.colour = colour;
 		this.xpansProx = new XPan[XPAN_PROX_BASES];
 		this.xpansAccel = new XPan[XPAN_ACCEL_BASES];
 		this.xpansVibe = new XPan[XPAN_VIBE_BASES];
@@ -139,8 +138,8 @@ public class Player implements PConstants {
 		return name;
 	}
 
-	public int getColor() {
-		return color;
+	public Colour getColor() {
+		return colour;
 	}
 
 	public void setNumPatches(int num) {

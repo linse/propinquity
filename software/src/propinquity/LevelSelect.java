@@ -212,7 +212,7 @@ public class LevelSelect implements PConstants {
 		foundVibePatches.clear();
 		foundAccelPatches.clear();
 		foundUndefPatches.clear();
-		players[player] = new Player(parent, parent.PLAYER_COLORS[player]);
+		players[player] = new Player(parent, parent.playerColours[player]);
 
 		// init xbee comm or stubs
 		// for proximity
