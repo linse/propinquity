@@ -37,10 +37,10 @@ public class Propinquity extends PApplet {
 	GameState gameState;
 
 	// level select controller
-	LevelSelect levelSelect = null;
+	LevelSelect levelSelect;
 
 	// player list controller
-	PlayerList playerList = null;
+	PlayerList playerList;
 
 	GL gl;
 	Liquid liquid;
@@ -99,14 +99,8 @@ public class Propinquity extends PApplet {
 			ui_elements[i].draw();
 
 		switch (gameState) {
+		
 		case LevelSelect:
-			// TODO: To fix next.
-
-			// init level select UI
-			if (levelSelect == null) {
-				playerList.dispose();
-				levelSelect = new LevelSelect(this, sounds, playerList);
-			}
 			levelSelect.draw();
 			break;
 
@@ -255,15 +249,20 @@ public class Propinquity extends PApplet {
 			ui_elements[i].hide();
 
 		switch (new_state) {
+		
 		case XBeeInit:
 			xbeeManager.show();
 			break;
+			
 		case PlayerList:
 			playerList.show();
 			break;
+			
 		case LevelSelect:
-
+			playerList.dispose();
+			levelSelect = new LevelSelect(this, sounds, playerList);
 			break;
+			
 		case Play:
 
 			break;
@@ -294,33 +293,38 @@ public class Propinquity extends PApplet {
 
 	}
 
-	public void controlEvent(ControlEvent theEvent) {
+	public void controlEvent(ControlEvent event) {
+		
 		switch (gameState) {
+		
 		case XBeeInit:
-			xbeeManager.controlEvent(theEvent);
+			xbeeManager.controlEvent(event);
 			break;
+			
 		case PlayerList:
-			playerList.controlEvent(theEvent);
+			playerList.controlEvent(event);
 			break;
 		}
 	}
 
 	public void keyPressed() {
+		
 		switch (gameState) {
+		
 		case XBeeInit:
 			xbeeManager.keyPressed(keyCode);
 			break;
+			
 		case PlayerList:
 			playerList.keyPressed(keyCode);
 			break;
 
 		case LevelSelect:
+			
 			switch (key) {
+			
 			case BACKSPACE:
 				levelSelect.clear();
-				levelSelect = null;
-				playerList = null;
-				// initPlayerListCtrl();
 				changeGameState(GameState.PlayerList);
 				break;
 
@@ -365,10 +369,12 @@ public class Propinquity extends PApplet {
 					}
 				}
 				break;
+				
 			}
 			break;
 
 		case Play:
+			
 			switch (key) {
 
 			case ESC:

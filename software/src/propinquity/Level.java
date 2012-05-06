@@ -60,11 +60,6 @@ public class Level {
 	long lastUpdate;
 	long lastStep;
 
-	// stub parameters
-	// String[] stubReadings;
-	// int stubReading = 0;
-
-	// the XML
 	XMLElement levelXML;
 	int successfullyRead = -1; // -1 means not read yet. 0 --> false. 1-->true
 
