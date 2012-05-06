@@ -123,6 +123,8 @@ public class Level {
 	public Player getWinner() {
 		int maxScore = -1;
 		int winner = -1;
+		
+		// TODO: This "loop" looks a little fishy...
 		for (int i = 0; i < players.length; i++)
 			// check if we have a winner
 			if (players[i].getTotalPts() > maxScore) {

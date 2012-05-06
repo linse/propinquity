@@ -255,7 +255,7 @@ public class LevelSelect implements PConstants {
 
 	public void draw() {
 		// TODO: Fix this too
-		
+
 		parent.graphics.drawInnerBoundary();
 		parent.graphics.drawOuterBoundary();
 		parent.pushMatrix();
@@ -279,7 +279,7 @@ public class LevelSelect implements PConstants {
 			drawSelectSong();
 			break;
 		}
-		
+
 		parent.popMatrix();
 	}
 

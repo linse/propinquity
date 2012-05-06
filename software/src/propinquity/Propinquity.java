@@ -36,12 +36,6 @@ public class Propinquity extends PApplet {
 
 	GameState gameState;
 
-	// level select controller
-	LevelSelect levelSelect;
-
-	// player list controller
-	PlayerList playerList;
-
 	GL gl;
 	Liquid liquid;
 	PBox2D box2d;
@@ -52,13 +46,16 @@ public class Propinquity extends PApplet {
 	boolean endedLevel = false;
 	long doneTime = -1;
 
-	XBeeManager xbeeManager;
 	XMLInOut xmlInOut;
 	Hud hud;
 
 	Logger logger;
 	Sounds sounds;
 	Graphics graphics;
+	
+	XBeeManager xbeeManager;
+	LevelSelect levelSelect;
+	PlayerList playerList;
 
 	UIElement[] ui_elements;
 
@@ -99,7 +96,7 @@ public class Propinquity extends PApplet {
 			ui_elements[i].draw();
 
 		switch (gameState) {
-		
+
 		case LevelSelect:
 			levelSelect.draw();
 			break;
@@ -244,25 +241,25 @@ public class Propinquity extends PApplet {
 	}
 
 	public void changeGameState(GameState new_state) {
-		
+
 		for (int i = 0; i < ui_elements.length; i++)
 			ui_elements[i].hide();
 
 		switch (new_state) {
-		
+
 		case XBeeInit:
 			xbeeManager.show();
 			break;
-			
+
 		case PlayerList:
 			playerList.show();
 			break;
-			
+
 		case LevelSelect:
 			playerList.dispose();
 			levelSelect = new LevelSelect(this, sounds, playerList);
 			break;
-			
+
 		case Play:
 
 			break;
@@ -294,13 +291,13 @@ public class Propinquity extends PApplet {
 	}
 
 	public void controlEvent(ControlEvent event) {
-		
+
 		switch (gameState) {
-		
+
 		case XBeeInit:
 			xbeeManager.controlEvent(event);
 			break;
-			
+
 		case PlayerList:
 			playerList.controlEvent(event);
 			break;
@@ -308,73 +305,71 @@ public class Propinquity extends PApplet {
 	}
 
 	public void keyPressed() {
-		
+
 		switch (gameState) {
-		
+
 		case XBeeInit:
 			xbeeManager.keyPressed(keyCode);
 			break;
-			
+
 		case PlayerList:
 			playerList.keyPressed(keyCode);
 			break;
 
 		case LevelSelect:
-			
+
 			switch (key) {
-			
+
 			case BACKSPACE:
 				levelSelect.clear();
 				changeGameState(GameState.PlayerList);
 				break;
 
 			default:
-				if (levelSelect != null) {
-					// pass the key to the level select controller
-					levelSelect.keyPressed(key, keyCode);
+				// pass the key to the level select controller
+				levelSelect.keyPressed(key, keyCode);
 
-					// check if the level select controller is done
-					// and ready to play
-					if (levelSelect.isDone()) {
-						// init level
-						level = new Level(this, sounds, levelSelect.players, levelSelect.levelFile);
-						graphics.loadLevelContent();
+				// check if the level select controller is done
+				// and ready to play
+				if (levelSelect.isDone()) {
+					// init level
+					level = new Level(this, sounds, levelSelect.players, levelSelect.levelFile);
+					graphics.loadLevelContent();
 
-						while (true)
-							if (level.successfullyRead() > -1)
-								break;
+					while (true)
+						if (level.successfullyRead() > -1)
+							break;
 
-						if (level.successfullyRead() == 0) {
-							level.loadDefaults();
-							System.err.println("I had some trouble reading the level file.");
-							System.err.println("Defaulting to 2 minutes of free play instead.");
-						}
-
-						// send configuration message here
-						// TODO: send step length to proximity patches
-
-						delay(50);
-						while (!levelSelect.allAcksIn()) {
-							println("sending again");
-							levelSelect.sendConfigMessages(level.getStepInterval());
-							delay(50);
-						}
-
-						// init liquid particles
-						liquid = new Liquid(this);
-
-						// play
-						gameState = GameState.Play;
-						println("gamestate = " + gameState);
+					if (level.successfullyRead() == 0) {
+						level.loadDefaults();
+						System.err.println("I had some trouble reading the level file.");
+						System.err.println("Defaulting to 2 minutes of free play instead.");
 					}
+
+					// send configuration message here
+					// TODO: send step length to proximity patches
+
+					delay(50);
+					while (!levelSelect.allAcksIn()) {
+						println("sending again");
+						levelSelect.sendConfigMessages(level.getStepInterval());
+						delay(50);
+					}
+
+					// init liquid particles
+					liquid = new Liquid(this);
+
+					// play
+					gameState = GameState.Play;
+					println("gamestate = " + gameState);
 				}
 				break;
-				
+
 			}
 			break;
 
 		case Play:
-			
+
 			switch (key) {
 
 			case ESC:
