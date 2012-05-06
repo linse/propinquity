@@ -54,7 +54,7 @@ public class Propinquity extends PApplet {
 	boolean endedLevel = false;
 	long doneTime = -1;
 
-	XbeeBaseStation xbeeManager;
+	XBeeBaseStation xbeeManager;
 	XMLInOut xmlInOut;
 	Hud hud;
 
@@ -79,7 +79,7 @@ public class Propinquity extends PApplet {
 		sounds.loadCommonContent();
 
 		// Create resources
-		xbeeManager = new XbeeBaseStation(this, this, DEBUG_XBEE);
+		xbeeManager = new XBeeBaseStation(this, this, DEBUG_XBEE);
 
 		playerList = new PlayerList(this);
 

@@ -15,7 +15,7 @@ import propinquity.*;
  * This class scans for XBees connected to the computer. It then instantiates and holds XBeeReader objects for each such device.
  *
 */
-public class XbeeBaseStation implements Runnable, UIElement {
+public class XBeeBaseStation implements Runnable, UIElement {
 
 	final int XBEE_BAUDRATE = 115200;
 	final int XBEE_RESPONSE_TIMEOUT = 1000;
@@ -39,21 +39,21 @@ public class XbeeBaseStation implements Runnable, UIElement {
 	HashMap<String, XBee> xbees;
 
 	/**
-	 * Create a new XbeeBaseStation with xbeeDebug turned off.
+	 * Create a new XBeeBaseStation with xbeeDebug turned off.
 	 *
 	 * @param parent the parent PApplet object.
 	 */
-	public XbeeBaseStation(PApplet parent) {
+	public XBeeBaseStation(PApplet parent) {
 		this(parent, null, false);
 	}
 
 	/**
-	 * Create a new XbeeBaseStation.
+	 * Create a new XBeeBaseStation.
 	 *
 	 * @param parent the parent PApplet object.
-	 * @param xbeeDebug the Xbee xbeeDebug mode.
+	 * @param xbeeDebug the XBee xbeeDebug mode.
 	 */
-	public XbeeBaseStation(PApplet parent, Propinquity propinquity, boolean xbeeDebug) {
+	public XBeeBaseStation(PApplet parent, Propinquity propinquity, boolean xbeeDebug) {
 		this.parent = parent;
 		this.propinquity = propinquity;
 
@@ -61,12 +61,12 @@ public class XbeeBaseStation implements Runnable, UIElement {
 
 		controlP5 = new ControlP5(parent);
 
-		//Button to scan for Xbees
-		plScanButton = controlP5.addButton("XbeeBaseStation Scan", 0, parent.width / 2 + 60, parent.height / 2 + 50, 50, 20);
+		//Button to scan for XBees
+		plScanButton = controlP5.addButton("XBeeBaseStation Scan", 0, parent.width / 2 + 60, parent.height / 2 + 50, 50, 20);
 		plScanButton.setCaptionLabel("SCAN");
 
 		//Next button
-		plNextButton = controlP5.addButton("XbeeBaseStation Next", 0, parent.width / 2 + 60 + 50 + 10, parent.height / 2 + 50, 50, 20);
+		plNextButton = controlP5.addButton("XBeeBaseStation Next", 0, parent.width / 2 + 60 + 50 + 10, parent.height / 2 + 50, 50, 20);
 		plNextButton.setCaptionLabel("NEXT");
 
 		hide();
@@ -82,26 +82,26 @@ public class XbeeBaseStation implements Runnable, UIElement {
 	/**
 	 * Get the XBeeReader for the XBee with the matching NodeIdentifier (NI).
 	 * 
-	 * @param ni the NodeIdentifier of the requested Xbee.
-	 * @return the XBeeReader for the Xbee with the matching NodeIdentifier.
+	 * @param ni the NodeIdentifier of the requested XBee.
+	 * @return the XBeeReader for the XBee with the matching NodeIdentifier.
 	*/
 	public XBeeReader reader(String ni) {
 		return xbeeReaders.get(ni);
 	}
 
 	/**
-	 * Get a list of NodeIdentifier (NI) for all available Xbees.
+	 * Get a list of NodeIdentifier (NI) for all available XBees.
 	 *
-	 * @return an array of the valid NodeIdentifier for available Xbees.
+	 * @return an array of the valid NodeIdentifier for available XBees.
 	*/
-	public String[] listXbees() {
+	public String[] listXBees() {
 		return xbeeReaders.keySet().toArray(new String[0]);
 	}
 
 	/**
-	 * Checks if the XbeeBaseStation object is currently scanning for Xbees
+	 * Checks if the XBeeBaseStation object is currently scanning for XBees
 	 *
-	 * @return true if the XbeeBaseStation is currently scanning. False otherwise.
+	 * @return true if the XBeeBaseStation is currently scanning. False otherwise.
 	*/
 	public boolean isScanning() {
 		if(scanningThread != null && scanningThread.isAlive()) return true;
@@ -109,7 +109,7 @@ public class XbeeBaseStation implements Runnable, UIElement {
 	}
 
 	/**
-	 * Triggers a new scan cycle, unless one is already running. The scan cycle will search all serial ports for available Xbees
+	 * Triggers a new scan cycle, unless one is already running. The scan cycle will search all serial ports for available XBees
 	 *
 	*/
 	public void scan() {
@@ -121,11 +121,11 @@ public class XbeeBaseStation implements Runnable, UIElement {
 	}
 
 	/**
-	 * Closes/forgets all the Xbee connections that may previously have been established.
+	 * Closes/forgets all the XBee connections that may previously have been established.
 	 *
 	*/
 	public void reset() {
-		System.out.print("XbeeBaseStation Reset ");
+		System.out.print("XBeeBaseStation Reset ");
 
 		for(XBeeReader reader : xbeeReaders.values()) {
 			reader.stopXBee();
@@ -168,25 +168,21 @@ public class XbeeBaseStation implements Runnable, UIElement {
 	public void run() {
 		reset();
 
-		System.out.println("XbeeBaseStation Scan");
+		System.out.println("XBeeBaseStation Scan");
 
 		String[] availablePorts = Serial.list();
 		String osName = System.getProperty("os.name");
 
-		for(int portNum = 0; portNum < availablePorts.length; portNum++) {
+		for(int portNum = 0;portNum < availablePorts.length;portNum++) {
 			if((osName.indexOf("Mac") != -1) && (availablePorts[portNum].indexOf("tty.usbserial") == -1)) {
 				System.out.println("\tSkipping port: " + availablePorts[portNum]);
 				continue;
 			}
 
-			PApplet.println("\tConnecting to port: " + availablePorts[portNum] + " ... ");
-			// Serial xbeePort = new Serial(parent, availablePorts[portNum], XBEE_BAUDRATE);
-			// XBeeReader xbeeReader = new XBeeReader(parent, xbeePort);
-			// xbeeReader.DEBUG = xbeeDebug;
+			System.out.println("\tConnecting to port: " + availablePorts[portNum] + " ... ");
+
 			XBee xbee = new XBee();
 
-			System.out.println("\t\tStarting XBee");
-			// xbeeReader.startXBee();
 			try {
 				xbee.open(availablePorts[portNum], XBEE_BAUDRATE);
 			} catch(XBeeException e) {
@@ -195,7 +191,8 @@ public class XbeeBaseStation implements Runnable, UIElement {
 				continue;
 			}
 
-			System.out.println("Opened");
+			System.out.println("\t\tConnected to XBee");
+
 			XBeeResponse response = null;
 
 			try {
@@ -287,8 +284,8 @@ public class XbeeBaseStation implements Runnable, UIElement {
 	*/
 	public void controlEvent(ControlEvent event) {
 		if(isVisible) {
-			if(event.controller().name().equals("XbeeBaseStation Scan")) scan();
-			else if(event.controller().name().equals("XbeeBaseStation Next")) processUIEvent();
+			if(event.controller().name().equals("XBeeBaseStation Scan")) scan();
+			else if(event.controller().name().equals("XBeeBaseStation Next")) processUIEvent();
 		}
 	}
 

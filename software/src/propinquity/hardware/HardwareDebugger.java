@@ -13,7 +13,7 @@ public class HardwareDebugger extends PApplet {
 	static final int[] PATCH_ADDR = new int[] { 1, 2 };
 	static final int NUM_PATCHES = PATCH_ADDR.length;
 
-	XbeeBaseStation xbeeManager;
+	XBeeBaseStation xbeeManager;
 	XBeeReader xbee;
 
 	ControlP5 controlP5;
@@ -88,7 +88,7 @@ public class HardwareDebugger extends PApplet {
 
 		if(!show_controls) controlP5.hide();
 
-		xbeeManager = new XbeeBaseStation(this);
+		xbeeManager = new XBeeBaseStation(this);
 	}
 
 	public void controlEvent(ControlEvent theEvent) {

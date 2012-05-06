@@ -358,10 +358,10 @@ public class Player implements PConstants {
 			XBeeReader xbee = parent.xbeeManager.reader(ni1);
 			if (xbee != null) {
 				xpansProx[0] = new XPan(xbee);
-				System.out.println("Initialized Xbee for proximity #1: " + ni1);
+				System.out.println("Initialized XBee for proximity #1: " + ni1);
 			} else {
 				System.err
-						.println("Could not initialize Xbee for proximity #1: "
+						.println("Could not initialize XBee for proximity #1: "
 								+ ni1);
 			}
 		}
@@ -369,10 +369,10 @@ public class Player implements PConstants {
 			XBeeReader xbee = parent.xbeeManager.reader(ni2);
 			if (xbee != null) {
 				xpansProx[1] = new XPan(xbee);
-				System.out.println("Initialized Xbee for proximity #2: " + ni2);
+				System.out.println("Initialized XBee for proximity #2: " + ni2);
 			} else {
 				System.err
-						.println("Could not initialize Xbee for proximity #2: "
+						.println("Could not initialize XBee for proximity #2: "
 								+ ni2);
 			}
 		}
@@ -396,10 +396,10 @@ public class Player implements PConstants {
 		XBeeReader xbee = parent.xbeeManager.reader(ni);
 		if (xbee != null) {
 			xpansVibe[0] = new XPan(xbee);
-			System.out.println("Initialized Xbee for vibration: " + ni);
+			System.out.println("Initialized XBee for vibration: " + ni);
 		} else {
 			System.err
-					.println("Could not initialize Xbee for vibration: " + ni);
+					.println("Could not initialize XBee for vibration: " + ni);
 		}
 	}
 
