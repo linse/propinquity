@@ -14,9 +14,6 @@ public class Player implements PConstants {
 	final int PROXIMITY_LOW_THRESHOLD = 80;
 
 	// xbee
-	final int XPAN_PROX_BASES = 1; // 2;
-	final int XPAN_VIBE_BASES = 1;
-
 
 	final int VIBE_DIFF_THRESHOLD = 15;
 
@@ -52,8 +49,6 @@ public class Player implements PConstants {
 	// int totalVibe;
 
 	// xbee
-	XPan[] xpansProx;
-	XPan[] xpansVibe;
 	// int[] outdata;
 	int numPatches;
 
@@ -71,8 +66,6 @@ public class Player implements PConstants {
 		this.parent = p;
 		this.name = "noname";
 		this.colour = colour;
-		this.xpansProx = new XPan[XPAN_PROX_BASES];
-		this.xpansVibe = new XPan[XPAN_VIBE_BASES];
 		this.numPatches = 0;
 		reset();
 	}
@@ -105,12 +98,6 @@ public class Player implements PConstants {
 		sendVibes(0);
 
 		// close xbee comm
-		for (int i = 0; i < xpansProx.length; i++)
-			if (xpansProx[i] != null)
-				xpansProx[i].stop();
-		for (int i = 0; i < xpansVibe.length; i++)
-			if (xpansVibe[i] != null)
-				xpansVibe[i].stop();
 	}
 
 	public String getName() {
@@ -357,7 +344,6 @@ public class Player implements PConstants {
 			XBeeReader xbee = null;
 			// XBeeReader xbee = parent.xbeeManager.reader(ni1);
 			if (xbee != null) {
-				xpansProx[0] = new XPan(xbee);
 				System.out.println("Initialized XBee for proximity #1: " + ni1);
 			} else {
 				System.err
@@ -369,7 +355,6 @@ public class Player implements PConstants {
 			XBeeReader xbee = null;
 			// XBeeReader xbee = parent.xbeeManager.reader(ni2);
 			if (xbee != null) {
-				xpansProx[1] = new XPan(xbee);
 				System.out.println("Initialized XBee for proximity #2: " + ni2);
 			} else {
 				System.err
@@ -379,14 +364,8 @@ public class Player implements PConstants {
 		}
 
 		// create the data packet that requests proximity values
-		// outdata = new int[XPan.PROX_OUT_PACKET_LENGTH];
-		// outdata[0] = XPan.PROX_OUT_PACKET_TYPE;
 		// for (int i=1; i < outdata.length; i++)
 		// outdata[i] = 0;
-	}
-
-	XPan[] getProxXPans() {
-		return xpansProx;
 	}
 
 
@@ -397,7 +376,6 @@ public class Player implements PConstants {
 		XBeeReader xbee = null;
 		// XBeeReader xbee = parent.xbeeManager.reader(ni);
 		if (xbee != null) {
-			xpansVibe[0] = new XPan(xbee);
 			System.out.println("Initialized XBee for vibration: " + ni);
 		} else {
 			System.err
@@ -407,21 +385,13 @@ public class Player implements PConstants {
 
 	public void sendStep(int stepNum) {
 		// System.out.println(name + " sending step: " + stepNum);
-		if (xpansProx[0] == null)
-			return;
-
 		// broadcast step to patches
-		// xpansProx[0].sendOutgoing(XPan.BROADCAST_ADDR, outdata, stepNum,
 		// 0/*???*/);
 		Step step1 = stepNum < steps.length ? steps[stepNum] : null;
 		Step step2 = stepNum + 1 < steps.length ? steps[stepNum + 1] : null;
 		Step step3 = stepNum + 2 < steps.length ? steps[stepNum + 2] : null;
 		Step step4 = stepNum + 3 < steps.length ? steps[stepNum + 3] : null;
-		// xpansProx[0].broadcastStep(stepNum, step1, step2, step3, step4);
 		// //Does this only broadcast to two of the prox sensors then?
-		for (int i = 0; i < xpansProx.length; i++)
-			if (xpansProx[i] != null)
-				xpansProx[i].broadcastStep(stepNum, step1, step2, step3, step4);
 	}
 
 	public void sendVibes(int avgReading) {
@@ -430,8 +400,6 @@ public class Player implements PConstants {
 
 	public void sendVibes(int avgReading, boolean override) {
 		// make sure the vibe xbee is present
-		if (xpansVibe[0] == null)
-			return;
 
 		// if we are not overriding the threshold filter
 		if (!override) {
@@ -445,34 +413,17 @@ public class Player implements PConstants {
 		}
 
 		// broadcast vibe paket
-		// int[] myData = { XPan.VIBE_OUT_PACKET_TYPE, avgReading };
-		// xpansVibe[0].sendOutgoing(XPan.BROADCAST_ADDR, myData);
-		xpansVibe[0].broadcastVibe(avgReading);
 
 		// keep track of last sent value
 		lastVibe = avgReading;
 	}
 
 	public void sendConfig(int stepLength) {
-		for (int i = 0; i < xpansProx.length; i++)
-			if (xpansProx[i] != null)
-				xpansProx[i].broadcastProxConfig(stepLength);
 	}
 
 	// TODO replace this with configPatches to pass the step length
 	// at the same time as detecting which ones respond.
 	public void discoverPatches() {
 		System.out.println("Discover patches...");
-		for (int i = 0; i < XPAN_PROX_BASES; i++)
-			if (xpansProx[i] != null) {
-				System.out.println("Discover proximity " + (i + 1));
-				xpansProx[i].nodeDiscover();
-			}
-
-		for (int i = 0; i < XPAN_VIBE_BASES; i++)
-			if (xpansVibe[i] != null) {
-				System.out.println("Discover vibration " + (i + 1));
-				xpansVibe[i].nodeDiscover();
-			}
 	}
 }

@@ -410,43 +410,43 @@ public class Level {
 
 	public void xBeeEvent(XBeeReader xbee) {
 
-		XBeeDataFrame data = xbee.getXBeeReading();
+		// XBeeDataFrame data = xbee.getXBeeReading();
 
-		if (data.getApiID() == XBeeReader.SERIES1_RX16PACKET) {
-			int[] packet = data.getBytes();
-			if (packet.length == XPan.PROX_IN_PACKET_LENGTH && packet[0] == XPan.PROX_IN_PACKET_TYPE) {
-				// println("prox message received");
-				int patch = (packet[1] >> 1);
-				int player = getPlayerIndexForPatch(patch);
+		// if (data.getApiID() == XBeeReader.SERIES1_RX16PACKET) {
+		// 	int[] packet = data.getBytes();
+		// 	if (packet.length == XPan.PROX_IN_PACKET_LENGTH && packet[0] == XPan.PROX_IN_PACKET_TYPE) {
+		// 		// println("prox message received");
+		// 		int patch = (packet[1] >> 1);
+		// 		int player = getPlayerIndexForPatch(patch);
 
-				if (player != -1) {
-					boolean touched = (packet[1] & 1) == 1;
-					// println(packet[1]);
-					// println(touched);
-					int step = ((packet[2] & 0xFF) << 8) | (packet[3] & 0xFF);
-					// println(step);
-					int proximity = ((packet[4] & 0xFF) << 8) | (packet[5] & 0xFF);
-					;
-					// println(proximity);
-					// player.processProxReading(patch, step, touched,
-					// proximity);
-					processProxReading(new ProxData(player, patch, step, touched, proximity));
-				} else
-					System.err.println("Trouble in paradise, we received a packet from patch '" + patch
-							+ "', which is not assigned to a player");
-			} else if (packet.length == XPan.CONFIG_ACK_LENGTH && packet[0] == XPan.CONFIG_ACK_PACKET_TYPE) {
-				int myTurnLength = ((packet[2] & 0xFF) << 8) | (packet[3] & 0xFF);
-				int patch = packet[1];
-				int player = getPlayerIndexForPatch(patch);
-				players[player].processConfigAck(patch, myTurnLength);
-				System.out.println("Config Ack Received in Level, Turn Length is " + myTurnLength);
-			} else if (packet.length == XPan.VIBE_IN_PACKET_LENGTH && packet[0] == XPan.VIBE_IN_PACKET_TYPE) {
-				if (packet[2] == 4)
-					doPause();
-			} else {
-				System.err.println("Level received a bad packet.");
-			}
-		}
+		// 		if (player != -1) {
+		// 			boolean touched = (packet[1] & 1) == 1;
+		// 			// println(packet[1]);
+		// 			// println(touched);
+		// 			int step = ((packet[2] & 0xFF) << 8) | (packet[3] & 0xFF);
+		// 			// println(step);
+		// 			int proximity = ((packet[4] & 0xFF) << 8) | (packet[5] & 0xFF);
+		// 			;
+		// 			// println(proximity);
+		// 			// player.processProxReading(patch, step, touched,
+		// 			// proximity);
+		// 			processProxReading(new ProxData(player, patch, step, touched, proximity));
+		// 		} else
+		// 			System.err.println("Trouble in paradise, we received a packet from patch '" + patch
+		// 					+ "', which is not assigned to a player");
+		// 	} else if (packet.length == XPan.CONFIG_ACK_LENGTH && packet[0] == XPan.CONFIG_ACK_PACKET_TYPE) {
+		// 		int myTurnLength = ((packet[2] & 0xFF) << 8) | (packet[3] & 0xFF);
+		// 		int patch = packet[1];
+		// 		int player = getPlayerIndexForPatch(patch);
+		// 		players[player].processConfigAck(patch, myTurnLength);
+		// 		System.out.println("Config Ack Received in Level, Turn Length is " + myTurnLength);
+		// 	} else if (packet.length == XPan.VIBE_IN_PACKET_LENGTH && packet[0] == XPan.VIBE_IN_PACKET_TYPE) {
+		// 		if (packet[2] == 4)
+		// 			doPause();
+		// 	} else {
+		// 		System.err.println("Level received a bad packet.");
+		// 	}
+		// }
 	}
 
 	// TODO make this work with patch detection in LevelSelect
