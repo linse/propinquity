@@ -22,7 +22,6 @@ public class Propinquity extends PApplet {
 
 	// debug constants
 	public static final boolean DEBUG = false;
-	public static final boolean DEBUG_XBEE = false;
 	public static final boolean DRAW_SHADOWS = false;
 	public static final boolean DRAW_PARTICLES = true;
 	public static final int FULL_SCREEN_ID = 0;
@@ -46,7 +45,8 @@ public class Propinquity extends PApplet {
 	boolean endedLevel = false;
 	long doneTime = -1;
 
-	XBeeBaseStation xbeeManager;
+	XBeeBaseStation xbeeBaseStation;
+	XBeeManager xbeeManager;
 
 	XMLInOut xmlInOut;
 	Hud hud;
@@ -75,7 +75,8 @@ public class Propinquity extends PApplet {
 		sounds.loadCommonContent();
 
 		// Create resources
-		xbeeManager = new XBeeBaseStation(this, DEBUG_XBEE);
+		xbeeBaseStation = new XBeeBaseStation();
+		xbeeManager = new XBeeManager(this, xbeeBaseStation);
 
 		playerList = new PlayerList(this);
 
@@ -255,26 +256,6 @@ public class Propinquity extends PApplet {
 		gameState = new_state;
 
 		println("gamestate = " + gameState);
-	}
-
-	public void xBeeEvent(XBeeReader xbee) {
-
-		switch (gameState) {
-
-		case XBeeInit:
-			// xbeeManager.xBeeEvent(xbee);
-			break;
-
-		case LevelSelect:
-			println("xBeeEvent(): sending to level select");
-			levelSelect.xBeeEvent(xbee);
-			break;
-
-		case Play:
-			level.xBeeEvent(xbee);
-			break;
-		}
-
 	}
 
 	public void controlEvent(ControlEvent event) {

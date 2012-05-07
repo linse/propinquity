@@ -88,7 +88,7 @@ public class HardwareDebugger extends PApplet {
 
 		if(!show_controls) controlP5.hide();
 
-		// xbeeManager = new XBeeBaseStation(this);
+		xbeeManager = new XBeeBaseStation();
 	}
 
 	public void controlEvent(ControlEvent theEvent) {
