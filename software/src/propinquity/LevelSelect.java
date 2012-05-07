@@ -9,7 +9,6 @@ import processing.core.*;
 import processing.opengl.PGraphicsOpenGL;
 import proxml.*;
 import xbee.*;
-import propinquity.hardware.*;
 
 public class LevelSelect implements PConstants {
 

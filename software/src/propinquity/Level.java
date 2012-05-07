@@ -3,9 +3,7 @@ package propinquity;
 import processing.core.PApplet;
 import proxml.XMLElement;
 import proxml.XMLInOut;
-import xbee.XBeeDataFrame;
 import xbee.XBeeReader;
-import propinquity.hardware.*;
 
 public class Level {
 
