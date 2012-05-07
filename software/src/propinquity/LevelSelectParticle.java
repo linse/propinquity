@@ -10,8 +10,7 @@ public class LevelSelectParticle {
 	float[][] texVertices;
 	private Propinquity parent;
 
-	public LevelSelectParticle(Propinquity p, PVector pos, float sca,
-			PGraphics tex) {
+	public LevelSelectParticle(Propinquity p, PVector pos, float sca, PGraphics tex) {
 		this.parent = p;
 		this.position = pos;
 		this.scale = sca;

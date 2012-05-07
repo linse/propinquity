@@ -9,14 +9,14 @@ import processing.core.PConstants;
  * @author Stephane Beniak
  */
 public class Text {
-	
+
 	/**
 	 * Suppress default constructor to disable instantiability.
 	 */
-	private Text () {
+	private Text() {
 		throw new AssertionError();
 	}
-	
+
 	/**
 	 * 
 	 * @param message
@@ -26,7 +26,7 @@ public class Text {
 	 */
 	public static void drawArc(String message, float radius, float startAngle, Propinquity parent) {
 		// TODO: Fix this parental issue.
-		
+
 		// We must keep track of our position along the curve
 		float arclength = 0;
 
@@ -47,7 +47,8 @@ public class Text {
 			// Polar to cartesian coordinate conversion
 			parent.translate(radius * PApplet.cos(theta), radius * PApplet.sin(theta));
 			// Rotate the box
-			parent.rotate(theta + PConstants.PI / 2); // rotation is offset by 90 degrees
+			parent.rotate(theta + PConstants.PI / 2); // rotation is offset by
+														// 90 degrees
 			// Display the character
 			// fill(0);
 			parent.text(currentChar, 0, 0);
@@ -56,5 +57,5 @@ public class Text {
 			arclength += w / 2;
 		}
 	}
-	
+
 }

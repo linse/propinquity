@@ -36,7 +36,6 @@ public class Player implements PConstants {
 	boolean stepTouched;
 	int stepReadings;
 
-
 	// boolean stubbed;
 	final int NUM_PROX_READINGS = 4;
 	int[] recentReadings = new int[NUM_PROX_READINGS];
@@ -77,7 +76,6 @@ public class Player implements PConstants {
 
 		hudAngle = 0; // same as coop default angle
 		hudVel = 0;
-
 
 		ri = 0;
 		for (int i = 0; i < NUM_PROX_READINGS; i++)
@@ -226,8 +224,7 @@ public class Player implements PConstants {
 
 	}
 
-	public void processProxReading(int patch, int step, boolean touched,
-			int proximity) {
+	public void processProxReading(int patch, int step, boolean touched, int proximity) {
 		// check if the reading is for the current step or if it's too late
 		// TODO
 
@@ -299,9 +296,8 @@ public class Player implements PConstants {
 		 * Integer.valueOf(data[3])==1, Integer.valueOf(data[4]));
 		 */
 
-		return new ProxData(Integer.valueOf(data[1]), Integer.valueOf(data[2]),
-				proxStubIndex++, Integer.valueOf(data[3]) == 1,
-				Integer.valueOf(data[4]));
+		return new ProxData(Integer.valueOf(data[1]), Integer.valueOf(data[2]), proxStubIndex++,
+				Integer.valueOf(data[3]) == 1, Integer.valueOf(data[4]));
 	}
 
 	void loadProxStub(int index, String stubFile) {
@@ -319,8 +315,8 @@ public class Player implements PConstants {
 			dataline = data[i].split(",");
 
 			if (dataline.length != 5) {
-				System.out.println("Warning: Proximity stub line " + i + " ("
-						+ data[i] + ") is not formatted correctly");
+				System.out.println("Warning: Proximity stub line " + i + " (" + data[i]
+						+ ") is not formatted correctly");
 				continue;
 			}
 
@@ -341,22 +337,22 @@ public class Player implements PConstants {
 			// XBeeReader xbee = null;
 			// XBeeReader xbee = parent.xbeeManager.reader(ni1);
 			// if (xbee != null) {
-			// 	System.out.println("Initialized XBee for proximity #1: " + ni1);
+			// System.out.println("Initialized XBee for proximity #1: " + ni1);
 			// } else {
-			// 	System.err
-			// 			.println("Could not initialize XBee for proximity #1: "
-			// 					+ ni1);
+			// System.err
+			// .println("Could not initialize XBee for proximity #1: "
+			// + ni1);
 			// }
 		}
 		if (ni2 != null) {
 			// XBeeReader xbee = null;
 			// XBeeReader xbee = parent.xbeeManager.reader(ni2);
 			// if (xbee != null) {
-			// 	System.out.println("Initialized XBee for proximity #2: " + ni2);
+			// System.out.println("Initialized XBee for proximity #2: " + ni2);
 			// } else {
-			// 	System.err
-			// 			.println("Could not initialize XBee for proximity #2: "
-			// 					+ ni2);
+			// System.err
+			// .println("Could not initialize XBee for proximity #2: "
+			// + ni2);
 			// }
 		}
 
@@ -365,7 +361,6 @@ public class Player implements PConstants {
 		// outdata[i] = 0;
 	}
 
-
 	void initVibeComm(String ni) {
 		if (ni == null)
 			return;
@@ -373,10 +368,10 @@ public class Player implements PConstants {
 		// XBeeReader xbee = null;
 		// XBeeReader xbee = parent.xbeeManager.reader(ni);
 		// if (xbee != null) {
-		// 	System.out.println("Initialized XBee for vibration: " + ni);
+		// System.out.println("Initialized XBee for vibration: " + ni);
 		// } else {
-		// 	System.err
-		// 			.println("Could not initialize XBee for vibration: " + ni);
+		// System.err
+		// .println("Could not initialize XBee for vibration: " + ni);
 		// }
 	}
 

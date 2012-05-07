@@ -11,7 +11,7 @@ import controlP5.Textfield;
 import processing.core.*;
 
 public class PlayerList implements UIElement {
-	
+
 	private static final String PLIST_FILE = "player.lst";
 	private static final int MAX_PLAYERS = 12;
 	private static final int WIDTH = 200;
@@ -67,13 +67,13 @@ public class PlayerList implements UIElement {
 			addPlayer("Player 2");
 
 		// create button to add new players
-		newButton = controlP5.addButton("NEW PLAYER", 0, parent.width / 2 - WIDTH / 2, parent.height / 2,
-				NEW_WIDTH, NEW_HEIGHT);
+		newButton = controlP5.addButton("NEW PLAYER", 0, parent.width / 2 - WIDTH / 2, parent.height / 2, NEW_WIDTH,
+				NEW_HEIGHT);
 		newButton.setId(NEW_ID);
 
 		// create next button
-		nextButton = controlP5.addButton("NEXT", 0, parent.width / 2 + WIDTH / 2 - NEXT_WIDTH,
-				parent.height / 2, NEXT_WIDTH, NEXT_HEIGHT);
+		nextButton = controlP5.addButton("NEXT", 0, parent.width / 2 + WIDTH / 2 - NEXT_WIDTH, parent.height / 2,
+				NEXT_WIDTH, NEXT_HEIGHT);
 		nextButton.setId(NEXT_ID);
 
 		layout();
@@ -92,8 +92,8 @@ public class PlayerList implements UIElement {
 
 	void addPlayer(String name) {
 		// add a new text field to the list
-		Textfield playerField = controlP5.addTextfield("Player " + playerFields.size(), parent.width / 2 - WIDTH
-				/ 2, parent.height / 2, WIDTH - REMOVE_WIDTH * 2, PLAYER_HEIGHT);
+		Textfield playerField = controlP5.addTextfield("Player " + playerFields.size(), parent.width / 2 - WIDTH / 2,
+				parent.height / 2, WIDTH - REMOVE_WIDTH * 2, PLAYER_HEIGHT);
 		playerField.setAutoClear(false);
 		playerField.setText(name);
 		playerField.setCaptionLabel("Player " + (playerFields.size() + 1));
@@ -162,11 +162,6 @@ public class PlayerList implements UIElement {
 		parent.changeGameState(GameState.LevelSelect);
 	}
 
-	public void dispose() {
-		controlP5.dispose();
-		controlP5 = null;
-	}
-
 	public void show() {
 		isVisible = true;
 		controlP5.show();
@@ -182,7 +177,7 @@ public class PlayerList implements UIElement {
 	}
 
 	public void controlEvent(ControlEvent theEvent) {
-		if(isVisible) {
+		if (isVisible) {
 			switch (theEvent.controller().id()) {
 			case (NEXT_ID):
 				process();
@@ -225,6 +220,7 @@ public class PlayerList implements UIElement {
 	}
 
 	public void keyPressed(int keycode) {
-		if(isVisible && keycode == PConstants.ENTER) process();
+		if (isVisible && keycode == PConstants.ENTER)
+			process();
 	}
 }

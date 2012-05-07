@@ -7,8 +7,7 @@ public class ProxData {
 	boolean touched;
 	int proximity;
 
-	public ProxData(int player, int patch, int step, boolean touched,
-			int proximity) {
+	public ProxData(int player, int patch, int step, boolean touched, int proximity) {
 		this.player = player;
 		this.patch = patch;
 		this.step = step;
@@ -17,7 +16,7 @@ public class ProxData {
 	}
 
 	public String toString() {
-		return "[player:" + player + " patch:" + patch + " step:" + step
-				+ " touched:" + touched + " proximity:" + proximity + "]";
+		return "[player:" + player + " patch:" + patch + " step:" + step + " touched:" + touched + " proximity:"
+				+ proximity + "]";
 	}
 }

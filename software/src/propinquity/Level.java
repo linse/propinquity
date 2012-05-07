@@ -20,48 +20,42 @@ public class Level {
 	 * Byte 4: ____ next+1 LED states ____ next+2 LED states
 	 */
 
+	// level parameters
+	public String songName;
+	public String songFile;
+	public String songDuration;
+	public int tempo;
+	public int multiplier;
+	public int stepCount;
+	public int currentStep;
+	
+	public int successfullyRead = -1; // -1 -> not read yet, 0 -> false, 1 -> true
+
+	private boolean isCoop;
+	private boolean lastCoopDone;
+	private boolean isRunning;
+	private int coopPoints;
+	private long time;
+	private long lastUpdate;
+	private long lastStep;
+	private long stepInterval;
+
 	// if there is nothing in the file, we want to default to 2 min of lights-on
 	// free play.
-	final int FREE = 1;
-	final int MAX_PLAYERS = 2;
-	final int MAX_STEPS = 256;
-	final int DEFAULT_PLAYERS = 2;
-	final int DEFAULT_TEMPO = 120;
-	final int DEFAULT_MULTIPLIER = 4;
-	final int DEFAULT_STEPS = 80;
-	final int DEFAULT_COOP_PTS = 5000;
+	private static final int MAX_PLAYERS = 2;
+	private static final int MAX_STEPS = 256;
+	private static final int DEFAULT_PLAYERS = 2;
+	private static final int DEFAULT_TEMPO = 120;
+	private static final int DEFAULT_MULTIPLIER = 4;
+	private static final int DEFAULT_STEPS = 80;
 
 	// parent applet
-	Propinquity parent;
-	Sounds sounds;
+	private Propinquity parent;
+	private Sounds sounds;
 
-	// the players
-	// String[] playerNames;
-	Player[] players = null;
+	private XMLElement levelXML;
+	private Player[] players;
 
-	// level parameters
-	boolean isCcoop;
-	boolean lastCoopDone;
-	int coopPts;
-	String songName;
-	String songFile;
-	String songDuration;
-	int tempo;
-	int multiplier;
-	int numSteps;
-	int currentStep;
-	int packetType;
-	long stepInterval;
-
-	boolean isRunning;
-	long time;
-	long lastUpdate;
-	long lastStep;
-
-	XMLElement levelXML;
-	int successfullyRead = -1; // -1 means not read yet. 0 --> false. 1-->true
-
-	// Only used for loading level data
 	public Level(Propinquity parent, Sounds sounds) {
 		this(parent, sounds, null, null);
 	}
@@ -94,60 +88,12 @@ public class Level {
 		reset();
 	}
 
-	public boolean isCoop() {
-		return isCcoop;
-	}
-
-	public boolean isInCoopMode() {
-		return (isCcoop && (coopPts == 0 || getTotalPts() < coopPts * 2));
-	}
-
-	public boolean isCoopDone() {
-		return (coopPts != 0) && (getTotalPts() / 2) >= coopPts;
-	}
-
-	public boolean getLastCoopDone() {
-		return lastCoopDone;
-	}
-
-	public void setLastCoopDone(boolean b) {
-		lastCoopDone = b;
-		if (b) {
-			players[0].setCoopMode(!b);
-			players[1].setCoopMode(!b);
-		}
-	}
-
-	public Player getWinner() {
-		int maxScore = -1;
-		int winner = -1;
-		
-		// TODO: This "loop" looks a little fishy...
+	public void clear() {
 		for (int i = 0; i < players.length; i++)
-			// check if we have a winner
-			if (players[i].getTotalPts() > maxScore) {
-				maxScore = players[i].getTotalPts();
-				winner = i;
-			}
-			// if not check if we have a tie
-			else if (players[i].getTotalPts() == maxScore) {
-				winner = -1;
-			}
-
-		if (winner == -1)
-			return null;
-		else
-			return players[winner];
+			players[i].clear();
 	}
 
-	public int getTotalPts() {
-		int total = 0;
-		for (int i = 0; i < players.length; i++)
-			total += players[i].getTotalPts();
-		return total;
-	}
-
-	void reset() {
+	public void reset() {
 		if (players != null) {
 			for (int i = 0; i < players.length; i++)
 				players[i].reset();
@@ -155,10 +101,10 @@ public class Level {
 			// println("set stubbed to false");
 		}
 
+		// TODO: hmm...
 		// For March 28 playtest, setting one player to take prox data
 		// one is faked
 		currentStep = 0;
-		packetType = 0;
 		tempo = DEFAULT_TEMPO;
 		multiplier = DEFAULT_MULTIPLIER;
 		stepInterval = (long) (60f / tempo * multiplier * 1000);
@@ -173,7 +119,20 @@ public class Level {
 			sounds.song.rewind();
 	}
 
-	void update() {
+	public void pause() {
+		isRunning = false;
+		sounds.song.pause();
+	}
+
+	public void start() {
+		isRunning = true;
+		lastUpdate = parent.millis();
+
+		if (!Sounds.MUTE)
+			sounds.song.play();
+	}
+
+	public void update() {
 		long now = parent.millis();
 		long dt = now - lastUpdate;
 		if (dt > 0)
@@ -196,19 +155,14 @@ public class Level {
 			step();
 	}
 
-	void clear() {
-		for (int i = 0; i < players.length; i++)
-			players[i].clear();
-	}
-
-	void step() {
+	private void step() {
 		// println("Step " + currentStep + " ("+time+")");
 
 		// keep track of time
 		lastStep = time;
 
 		// process each player step
-		if (currentStep < numSteps)
+		if (currentStep < stepCount)
 			for (int i = 0; i < players.length; i++)
 				players[i].sendStep(currentStep);
 
@@ -216,103 +170,161 @@ public class Level {
 		currentStep++;
 	}
 
-	void pause() {
-		isRunning = false;
-		sounds.song.pause();
+	public boolean isCoop() {
+		return isCoop;
 	}
 
-	void start() {
-		isRunning = true;
-		lastUpdate = parent.millis();
-
-		if (!Sounds.MUTE)
-			sounds.song.play();
+	public boolean isInCoopMode() {
+		return (isCoop && (coopPoints == 0 || getTotalPoints() < coopPoints * 2));
 	}
 
-	boolean isPaused() {
-		return !isRunning;
+	public boolean isCoopDone() {
+		return (coopPoints != 0) && (getTotalPoints() / 2) >= coopPoints;
 	}
 
-	boolean isRunning() {
-		return isRunning;
+	public boolean getLastCoopDone() {
+		return lastCoopDone;
 	}
 
-	int successfullyRead() {
-		return successfullyRead;
+	public void setLastCoopDone(boolean b) {
+		lastCoopDone = b;
+		if (b) {
+			players[0].setCoopMode(!b);
+			players[1].setCoopMode(!b);
+		}
 	}
 
-	int getTempo() {
-		return tempo;
-	}
-
-	int getMultiplier() {
-		return multiplier;
-	}
-
-	int getNumPlayers() {
+	public int getNumberOfPlayers() {
 		return players.length;
 	}
 
-	int getNumSteps() {
-		return numSteps;
+	public int getNumberOfSteps() {
+		return stepCount;
 	}
 
-	boolean isDone() {
-		return (currentStep > numSteps);
-	} // extra step to make sure the last one got in
-
-	int getCurrentStep() {
-		return currentStep;
+	public long getStepInterval() {
+		return stepInterval;
 	}
 
-	Player getPlayer(int i) {
+	public Player getPlayer(int i) {
 		return players[i];
 	}
 
-	long getTime() {
+	public Player getWinner() {
+		int maxScore = -1;
+		int winner = -1;
+
+		// TODO: This "loop" looks a little fishy...
+		for (int i = 0; i < players.length; i++)
+			// check if we have a winner
+			if (players[i].getTotalPts() > maxScore) {
+				maxScore = players[i].getTotalPts();
+				winner = i;
+			}
+			// if not check if we have a tie
+			else if (players[i].getTotalPts() == maxScore) {
+				winner = -1;
+			}
+
+		if (winner == -1)
+			return null;
+		else
+			return players[winner];
+	}
+
+	public int getTotalPoints() {
+		int total = 0;
+		for (int i = 0; i < players.length; i++)
+			total += players[i].getTotalPts();
+		return total;
+	}
+
+	public boolean isRunning() {
+		return isRunning;
+	}
+
+	public boolean isDone() {
+		return (currentStep > stepCount);
+	} // extra step to make sure the last one got in
+
+	public long getTime() {
 		return time;
 	}
 
-	void loadDefaults() {
+	public void load() {
+
+		while (true)
+			if (successfullyRead > -1)
+				break;
+
+		if (successfullyRead == 0) {
+			loadDefaults();
+			System.err.println("I had some trouble reading the level file.");
+			System.err.println("Defaulting to 2 minutes of free play instead.");
+		}
+	}
+
+	public void loadSong(XMLElement songXML) {
+		// load number of players
+		int numPlayers = songXML.countChildren() - 1;
+
+		// check if we have an correct level file
+		if (numPlayers < 0) {
+			System.out.println("Error: Empty level file");
+			successfullyRead = 0;
+			return;
+		}
+
+		// read song
+		songName = songXML.getChild(0).getAttribute("name");
+		songFile = songXML.getChild(0).getAttribute("file");
+		songDuration = songXML.getChild(0).getAttribute("duration");
+		tempo = songXML.getChild(0).getIntAttribute("bpm");
+		multiplier = songXML.getChild(0).getIntAttribute("multiplier");
+
+		successfullyRead = 1;
+	}
+
+	private void loadDefaults() {
+
 		tempo = DEFAULT_TEMPO;
 		multiplier = DEFAULT_MULTIPLIER;
-		numSteps = DEFAULT_STEPS;
+		stepCount = DEFAULT_STEPS;
 		stepInterval = (long) (60f / tempo * multiplier * 1000);
 
 		for (int i = 0; i < DEFAULT_PLAYERS; i++) {
-			players[i].initializeSteps(numSteps);
-			for (int j = 0; j < numSteps; j++) {
-				Step s = new Step(true, true, true, true, true);
-				players[i].addStep(s, j);
+			players[i].initializeSteps(stepCount);
+			for (int j = 0; j < stepCount; j++) {
+				Step step = new Step(true, true, true, true, true);
+				players[i].addStep(step, j);
 			}
 		}
 	}
 
-	public void xmlEvent(proxml.XMLElement p_xmlElement) {
-		levelXML = p_xmlElement;
-		// levelXML.printElementTree();
-		proxml.XMLElement l_player;
-		proxml.XMLElement l_sequence;
-		proxml.XMLElement l_step;
-		int l_numPlayers, l_numSteps, i;
+	public void xmlEvent(XMLElement songXML) {
+		levelXML = songXML;
+		XMLElement player;
+		XMLElement sequence;
+		XMLElement step;
+		int numPlayers, numSteps;
 
 		// load number of players
-		l_numPlayers = levelXML.countChildren() - 1;
+		numPlayers = levelXML.countChildren() - 1;
 
 		// check if we have an correct level file
-		if (l_numPlayers < 2) {
+		if (numPlayers < 2) {
 			System.out.println("Error: Bad level file. We need data for 2 players.");
 			successfullyRead = 0;
 			return;
 		}
 		// limit number of players to default (?)
-		else if (l_numPlayers > MAX_PLAYERS)
-			l_numPlayers = MAX_PLAYERS;
+		else if (numPlayers > MAX_PLAYERS)
+			numPlayers = MAX_PLAYERS;
 
 		// read coop parameter
-		isCcoop = levelXML.hasAttribute("coop");
-		coopPts = isCcoop ? levelXML.getIntAttribute("coop") : 0;
-		if (isCcoop) {
+		isCoop = levelXML.hasAttribute("coop");
+		coopPoints = isCoop ? levelXML.getIntAttribute("coop") : 0;
+		if (isCoop) {
 			players[0].setCoopMode(true);
 			players[1].setCoopMode(true);
 		}
@@ -330,67 +342,56 @@ public class Level {
 
 		// init the number of steps
 		// this makes it possible to do 1 player, but not 3
-		int[] l_numStepsEach = new int[l_numPlayers];
-		for (i = 0; i < l_numPlayers; i++) {
-			l_player = levelXML.getChild(i + 1);
-			l_sequence = l_player.getChild(0);
-			l_numStepsEach[i] = l_sequence.countChildren();
-			if (l_numStepsEach[i] > MAX_STEPS)
-				l_numStepsEach[i] = MAX_STEPS;
-			// max out at 256
+		int[] numStepsEach = new int[numPlayers];
+		for (int i = 0; i < numPlayers; i++) {
+			player = levelXML.getChild(i + 1);
+			sequence = player.getChild(0);
+			numStepsEach[i] = sequence.countChildren();
+			if (numStepsEach[i] > MAX_STEPS)
+				numStepsEach[i] = MAX_STEPS;
 		}
 
 		// Now make sure that both players have the same number of steps.
 		// if not, we'll let the other player have free play.
-		l_numSteps = l_numStepsEach[0]; // stays this way if there is only one
-										// player.
-		if (l_numPlayers > 1) {
-			for (i = 0; i < l_numPlayers; i++) {
+		numSteps = numStepsEach[0]; // stays this way if there is only one
+									// player.
+		if (numPlayers > 1) {
+			for (int i = 0; i < numPlayers; i++) {
 				// for now this will only go up to 2
 				// but let's keep the possibility of increasing the max number
 				// of players
-				if (l_numStepsEach[i] > l_numSteps)
-					l_numSteps = l_numStepsEach[i];
+				if (numStepsEach[i] > numSteps)
+					numSteps = numStepsEach[i];
 			}
 		}
 
 		// save number of steps
-		numSteps = l_numSteps;
-
-		// init players' steps
-		// players = new Player[l_numPlayers];
+		stepCount = numSteps;
 
 		// read the steps
 		int readStepsUntil = 0;
-		if (l_numSteps > 0)
-			readStepsUntil = l_numSteps;
+		if (numSteps > 0)
+			readStepsUntil = numSteps;
 		else
 			readStepsUntil = DEFAULT_STEPS;
-		for (i = 0; i < l_numPlayers; i++) {
-			// create player
-			// players[i] = new Player(parent, playerNames[i], COLORS[i]);
-
-			// activate stubs if needed
-			// if (PROX_STUB[i]) players[i].loadProxStub(i, PROX_STUB_FILE);
-			// else players[i].initProxComm(XPAN_PROX_1_PORT[i]);
-
-
-			// if (SEND_VIBE[i]) players[i].initVibeComm(XPAN_VIBE_PORT[i]);
+		for (int i = 0; i < numPlayers; i++) {
 
 			// init player steps
 			System.out.println("Sending Config for Step Interval " + stepInterval);
 			players[i].sendConfig((int) stepInterval);
-			players[i].initializeSteps(l_numSteps);
-			l_player = levelXML.getChild(i + 1);
-			l_sequence = l_player.getChild(0);
+			players[i].initializeSteps(numSteps);
+			player = levelXML.getChild(i + 1);
+			sequence = player.getChild(0);
 			for (int j = 0; j < readStepsUntil; j++) {
-				if (j < l_numStepsEach[i]) {
-					l_step = l_sequence.getChild(j);
-					players[i].addStep(
-							new Step(PApplet.parseBoolean(l_step.getIntAttribute("pad1")), PApplet.parseBoolean(l_step
-									.getIntAttribute("pad2")), PApplet.parseBoolean(l_step.getIntAttribute("pad3")),
-									PApplet.parseBoolean(l_step.getIntAttribute("pad4")), PApplet.parseBoolean(l_step
-											.getIntAttribute("free"))), j);
+				if (j < numStepsEach[i]) {
+					step = sequence.getChild(j);
+					boolean pad1 = PApplet.parseBoolean(step.getIntAttribute("pad1"));
+					boolean pad2 = PApplet.parseBoolean(step.getIntAttribute("pad2"));
+					boolean pad3 = PApplet.parseBoolean(step.getIntAttribute("pad3"));
+					boolean pad4 = PApplet.parseBoolean(step.getIntAttribute("pad4"));
+					boolean free = PApplet.parseBoolean(step.getIntAttribute("free"));
+					players[i].addStep(new Step(pad1, pad2, pad3, pad4, free), j);
+					
 				} else {
 					// give them free play. All lights on.
 					players[i].addStep(new Step(true, true, true, true, true), j);
@@ -411,39 +412,45 @@ public class Level {
 		// XBeeDataFrame data = xbee.getXBeeReading();
 
 		// if (data.getApiID() == XBeeReader.SERIES1_RX16PACKET) {
-		// 	int[] packet = data.getBytes();
-		// 	if (packet.length == XPan.PROX_IN_PACKET_LENGTH && packet[0] == XPan.PROX_IN_PACKET_TYPE) {
-		// 		// println("prox message received");
-		// 		int patch = (packet[1] >> 1);
-		// 		int player = getPlayerIndexForPatch(patch);
+		// int[] packet = data.getBytes();
+		// if (packet.length == XPan.PROX_IN_PACKET_LENGTH && packet[0] ==
+		// XPan.PROX_IN_PACKET_TYPE) {
+		// // println("prox message received");
+		// int patch = (packet[1] >> 1);
+		// int player = getPlayerIndexForPatch(patch);
 
-		// 		if (player != -1) {
-		// 			boolean touched = (packet[1] & 1) == 1;
-		// 			// println(packet[1]);
-		// 			// println(touched);
-		// 			int step = ((packet[2] & 0xFF) << 8) | (packet[3] & 0xFF);
-		// 			// println(step);
-		// 			int proximity = ((packet[4] & 0xFF) << 8) | (packet[5] & 0xFF);
-		// 			;
-		// 			// println(proximity);
-		// 			// player.processProxReading(patch, step, touched,
-		// 			// proximity);
-		// 			processProxReading(new ProxData(player, patch, step, touched, proximity));
-		// 		} else
-		// 			System.err.println("Trouble in paradise, we received a packet from patch '" + patch
-		// 					+ "', which is not assigned to a player");
-		// 	} else if (packet.length == XPan.CONFIG_ACK_LENGTH && packet[0] == XPan.CONFIG_ACK_PACKET_TYPE) {
-		// 		int myTurnLength = ((packet[2] & 0xFF) << 8) | (packet[3] & 0xFF);
-		// 		int patch = packet[1];
-		// 		int player = getPlayerIndexForPatch(patch);
-		// 		players[player].processConfigAck(patch, myTurnLength);
-		// 		System.out.println("Config Ack Received in Level, Turn Length is " + myTurnLength);
-		// 	} else if (packet.length == XPan.VIBE_IN_PACKET_LENGTH && packet[0] == XPan.VIBE_IN_PACKET_TYPE) {
-		// 		if (packet[2] == 4)
-		// 			doPause();
-		// 	} else {
-		// 		System.err.println("Level received a bad packet.");
-		// 	}
+		// if (player != -1) {
+		// boolean touched = (packet[1] & 1) == 1;
+		// // println(packet[1]);
+		// // println(touched);
+		// int step = ((packet[2] & 0xFF) << 8) | (packet[3] & 0xFF);
+		// // println(step);
+		// int proximity = ((packet[4] & 0xFF) << 8) | (packet[5] & 0xFF);
+		// ;
+		// // println(proximity);
+		// // player.processProxReading(patch, step, touched,
+		// // proximity);
+		// processProxReading(new ProxData(player, patch, step, touched,
+		// proximity));
+		// } else
+		// System.err.println("Trouble in paradise, we received a packet from patch '"
+		// + patch
+		// + "', which is not assigned to a player");
+		// } else if (packet.length == XPan.CONFIG_ACK_LENGTH && packet[0] ==
+		// XPan.CONFIG_ACK_PACKET_TYPE) {
+		// int myTurnLength = ((packet[2] & 0xFF) << 8) | (packet[3] & 0xFF);
+		// int patch = packet[1];
+		// int player = getPlayerIndexForPatch(patch);
+		// players[player].processConfigAck(patch, myTurnLength);
+		// System.out.println("Config Ack Received in Level, Turn Length is " +
+		// myTurnLength);
+		// } else if (packet.length == XPan.VIBE_IN_PACKET_LENGTH && packet[0]
+		// == XPan.VIBE_IN_PACKET_TYPE) {
+		// if (packet[2] == 4)
+		// doPause();
+		// } else {
+		// System.err.println("Level received a bad packet.");
+		// }
 		// }
 	}
 
@@ -468,7 +475,7 @@ public class Level {
 
 	public void processProxReading(ProxData data) {
 		// check if we are in coop mode
-		if (isCcoop && (coopPts == 0 || getTotalPts() < coopPts * 2)) {
+		if (isCoop && (coopPoints == 0 || getTotalPoints() < coopPoints * 2)) {
 			for (int i = 0; i < players.length; i++)
 				players[i].processProxReading(data.patch, data.step, data.touched, data.proximity);
 			// println("Proximity reading: " + data + " (coop)");
@@ -478,17 +485,6 @@ public class Level {
 			players[data.player].processProxReading(data.patch, data.step, data.touched, data.proximity);
 			// println("Proximity reading: " + data);
 		}
-	}
-
-	public int getStepInterval() {
-		return (int) stepInterval;
-	}
-
-	public void doPause() {
-		if (!isDone() && isPaused())
-			start();
-		else if (!isDone())
-			pause();
 	}
 
 }

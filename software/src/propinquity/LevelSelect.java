@@ -56,7 +56,6 @@ public class LevelSelect implements PConstants, UIElement {
 	int numProxPatches;
 	int numConfigAcks;
 
-	XMLElement levelXML;
 	String[] levelFiles;
 	ArrayList<Level> levels;
 	Level loadingLevel;
@@ -67,11 +66,11 @@ public class LevelSelect implements PConstants, UIElement {
 	Sounds sounds;
 
 	private boolean isVisible;
-	
+
 	public LevelSelect(Propinquity p, Sounds sounds) {
-		
+
 		isVisible = true;
-		
+
 		this.parent = p;
 		this.sounds = sounds;
 		this.radius = parent.height / 2 - Hud.WIDTH * 2;
@@ -86,7 +85,7 @@ public class LevelSelect implements PConstants, UIElement {
 		loadLevels();
 		initTextures();
 	}
-	
+
 	public void registerPlayers(PlayerList playerList) {
 		this.playerNames = playerList.getNames();
 	}
@@ -121,10 +120,10 @@ public class LevelSelect implements PConstants, UIElement {
 			parent.xmlInOut = new XMLInOut(parent, this);
 			parent.xmlInOut.loadElement(LEVEL_FOLDER + levelFiles[i]);
 			while (true)
-				if (loadingLevel.successfullyRead() > -1)
+				if (loadingLevel.successfullyRead > -1)
 					break;
 
-			if (loadingLevel.successfullyRead() == 0) {
+			if (loadingLevel.successfullyRead == 0) {
 				System.err.println("I had some trouble reading the level file:" + levelFiles[i]);
 			}
 
@@ -133,30 +132,8 @@ public class LevelSelect implements PConstants, UIElement {
 		}
 	}
 
-	public void xmlEvent(XMLElement p_xmlElement) {
-		levelXML = p_xmlElement;
-
-		int l_numPlayers;
-
-		// load number of players
-		l_numPlayers = levelXML.countChildren() - 1;
-
-		// check if we have an correct level file
-		if (l_numPlayers < 0) {
-			System.out.println("Error: Empty level file");
-			loadingLevel.successfullyRead = 0;
-			return;
-		}
-
-		// read song
-		loadingLevel.songName = levelXML.getChild(0).getAttribute("name");
-		loadingLevel.songFile = levelXML.getChild(0).getAttribute("file");
-		loadingLevel.songDuration = levelXML.getChild(0).getAttribute("duration");
-		loadingLevel.tempo = levelXML.getChild(0).getIntAttribute("bpm");
-		loadingLevel.multiplier = levelXML.getChild(0).getIntAttribute("multiplier");
-
-		loadingLevel.successfullyRead = 1;
-		return;
+	public void xmlEvent(XMLElement levelXML) {
+		loadingLevel.loadSong(levelXML);
 	}
 
 	void initTextures() {
@@ -258,12 +235,12 @@ public class LevelSelect implements PConstants, UIElement {
 	public boolean isVisible() {
 		return isVisible;
 	}
-	
+
 	public void draw() {
-		
+
 		if (!isVisible)
 			return;
-		
+
 		// TODO: Fix this too
 		parent.graphics.drawInnerBoundary();
 		parent.graphics.drawOuterBoundary();
@@ -561,51 +538,55 @@ public class LevelSelect implements PConstants, UIElement {
 			}
 		}
 
-		// else if (buffer.length == XPan.CONFIG_ACK_LENGTH && buffer[0] == XPan.CONFIG_ACK_PACKET_TYPE) {
+		// else if (buffer.length == XPan.CONFIG_ACK_LENGTH && buffer[0] ==
+		// XPan.CONFIG_ACK_PACKET_TYPE) {
 
-		// 	int myTurnLength = ((buffer[2] & 0xFF) << 8) | (buffer[3] & 0xFF);
-		// 	numConfigAcks++;
-		// 	System.out.println("Config Ack Received in Level Select, Turn Length is " + myTurnLength);
+		// int myTurnLength = ((buffer[2] & 0xFF) << 8) | (buffer[3] & 0xFF);
+		// numConfigAcks++;
+		// System.out.println("Config Ack Received in Level Select, Turn Length is "
+		// + myTurnLength);
 		// }
 
-		// else if (buffer.length == XPan.VIBE_IN_PACKET_LENGTH && buffer[0] == XPan.VIBE_IN_PACKET_TYPE) {
+		// else if (buffer.length == XPan.VIBE_IN_PACKET_LENGTH && buffer[0] ==
+		// XPan.VIBE_IN_PACKET_TYPE) {
 
-		// 	int p = buffer[1];
-		// 	int direction = buffer[2];
-		// 	if (p <= 8 && (state == LevelSelectState.P1 || state == LevelSelectState.Song)) {
+		// int p = buffer[1];
+		// int direction = buffer[2];
+		// if (p <= 8 && (state == LevelSelectState.P1 || state ==
+		// LevelSelectState.Song)) {
 
-		// 		switch (direction) {
+		// switch (direction) {
 
-		// 		case 1:
-		// 			moveLeft();
-		// 			break;
+		// case 1:
+		// moveLeft();
+		// break;
 
-		// 		case 2:
-		// 			moveRight();
-		// 			break;
+		// case 2:
+		// moveRight();
+		// break;
 
-		// 		default:
-		// 			doSelect();
-		// 			break;
-		// 		}
+		// default:
+		// doSelect();
+		// break;
+		// }
 
-		// 	} else if (p > 8 && state == LevelSelectState.P2) {
+		// } else if (p > 8 && state == LevelSelectState.P2) {
 
-		// 		switch (direction) {
+		// switch (direction) {
 
-		// 		case 1:
-		// 			moveLeft();
-		// 			break;
+		// case 1:
+		// moveLeft();
+		// break;
 
-		// 		case 2:
-		// 			moveRight();
-		// 			break;
+		// case 2:
+		// moveRight();
+		// break;
 
-		// 		default:
-		// 			doSelect();
-		// 			break;
-		// 		}
-		// 	}
+		// default:
+		// doSelect();
+		// break;
+		// }
+		// }
 		// }
 
 	}

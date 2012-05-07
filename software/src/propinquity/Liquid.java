@@ -95,17 +95,17 @@ public class Liquid {
 		}
 
 		// init particles
-		particles = new LinkedList[parent.level.getNumPlayers()];
+		particles = new LinkedList[parent.level.getNumberOfPlayers()];
 		for (int i = 0; i < particles.length; i++)
 			particles[i] = new LinkedList<Particle>();
 
-		ptsPerParticle = (parent.level.getNumSteps() * AVG_PTS_PER_STEP * parent.level.getNumPlayers())
+		ptsPerParticle = (parent.level.getNumberOfSteps() * AVG_PTS_PER_STEP * parent.level.getNumberOfPlayers())
 				/ APPROX_MAX_PARTICLES;
 		// pCount = new int[level.getNumPlayers()];
 		numStepsPerPeriod = PApplet.round(AVG_PARTICLE_PER_STEP * ptsPerParticle / AVG_PTS_PER_STEP);
 		if (numStepsPerPeriod == 0)
 			++numStepsPerPeriod;
-		lastPeriodParticle = new Particle[parent.level.getNumPlayers()];
+		lastPeriodParticle = new Particle[parent.level.getNumberOfPlayers()];
 
 		System.out.println("Points per particle: " + ptsPerParticle);
 	}
@@ -126,9 +126,9 @@ public class Liquid {
 		imgParticle = parent.graphics.loadParticles();
 		imgShadow = parent.graphics.loadParticleShadow();
 
-		pgParticle = new PGraphics[parent.level.getNumPlayers()];
+		pgParticle = new PGraphics[parent.level.getNumberOfPlayers()];
 
-		for (int i = 0; i < parent.level.getNumPlayers(); i++) {
+		for (int i = 0; i < parent.level.getNumberOfPlayers(); i++) {
 			pgParticle[i] = parent.createGraphics(imgParticle[i].width, imgParticle[i].height, PConstants.P2D);
 			pgParticle[i].background(imgParticle[i]);
 			pgParticle[i].mask(imgParticle[i]);
@@ -136,7 +136,7 @@ public class Liquid {
 	}
 
 	void updateParticles() {
-		for (int i = 0; i < parent.level.getNumPlayers(); i++)
+		for (int i = 0; i < parent.level.getNumberOfPlayers(); i++)
 			updateParticles(i);
 	}
 
@@ -189,17 +189,12 @@ public class Liquid {
 			b.setMass(md);
 			b.allowSleeping(false);
 
-			// particles[p][i] = new Particle(b, sh,
-			// PARTICLE_SCALE*random(1.0-PARTICLE_SCALE_RANGE, 1.0),
-			// pgParticle[p]);
 			particles[p].add(new Particle(parent, b, sh, PARTICLE_SCALE
 					* parent.random(1.0f - PARTICLE_SCALE_RANGE, 1.0f), pgParticle[p]));
 		}
 
 		// keep track of the released particles
 		player.subPeriodPts(nParticles * ptsPerParticle);
-		// pCount[p] += nParticles;
-		// totalParticles += nParticles;
 	}
 
 	void killParticles(int p, int nParticles) {
@@ -232,7 +227,7 @@ public class Liquid {
 	}
 
 	void liquify() {
-		for (int i = 0; i < parent.level.getNumPlayers(); i++)
+		for (int i = 0; i < parent.level.getNumberOfPlayers(); i++)
 			liquify(i);
 	}
 
@@ -420,7 +415,7 @@ public class Liquid {
 	}
 
 	void resetLiquid() {
-		for (int p = 0; p < parent.level.getNumPlayers(); p++) {
+		for (int p = 0; p < parent.level.getNumberOfPlayers(); p++) {
 			Particle particle;
 			ListIterator<Particle> it = particles[p].listIterator();
 			while (it.hasNext()) {
@@ -436,11 +431,11 @@ public class Liquid {
 	}
 
 	void pushPeriod(boolean override) {
-		int cStep = parent.level.getCurrentStep();
+		int cStep = parent.level.currentStep;
 
 		// go through particles
 		// apply the force from the previous push
-		for (int p = 0; p < parent.level.getNumPlayers(); p++) {
+		for (int p = 0; p < parent.level.getNumberOfPlayers(); p++) {
 
 			Particle particle = null;
 			ListIterator<Particle> it = particles[p].listIterator();
@@ -467,7 +462,7 @@ public class Liquid {
 			filter.maskBits = Fences.OUTER_MASK | Fences.PLAYERS_MASK;
 
 			float angle = parent.level.getTime() * PUSH_PERIOD_ROT_SPEED + PConstants.TWO_PI
-					/ parent.level.getNumPlayers() * p;
+					/ parent.level.getNumberOfPlayers() * p;
 			float force = parent.random(Liquid.MIN_RELEASE_FORCE, Liquid.MAX_RELEASE_FORCE);
 
 			while (it.hasNext()) {
@@ -490,7 +485,7 @@ public class Liquid {
 		Particle particle;
 
 		if (!groupedParticles) {
-			for (int p = 0; p < parent.level.getNumPlayers(); p++) {
+			for (int p = 0; p < parent.level.getNumberOfPlayers(); p++) {
 				FilterData filter = new FilterData();
 				filter.groupIndex = -1;
 				filter.categoryBits = p + 1;
@@ -507,18 +502,18 @@ public class Liquid {
 			groupedParticles = true;
 		}
 
-		for (int p = 0; p < parent.level.getNumPlayers(); p++) {
+		for (int p = 0; p < parent.level.getNumberOfPlayers(); p++) {
 			ListIterator<Particle> it = particles[p].listIterator();
 			while (it.hasNext()) {
 				particle = it.next();
 
-				Body b = particle.body;
+				Body body = particle.body;
 
 				// if (p == 0 && pos.x < width/2)
 				if (p == 0)
-					b.m_linearVelocity.x += 0.20f;
+					body.m_linearVelocity.x += 0.20f;
 				else if (p == 1)
-					b.m_linearVelocity.x -= 0.20f;
+					body.m_linearVelocity.x -= 0.20f;
 			}
 		}
 	}
@@ -528,7 +523,7 @@ public class Liquid {
 		parent.gl.glEnable(GL.GL_BLEND);
 		parent.gl.glBlendFunc(GL.GL_ONE, GL.GL_ONE_MINUS_SRC_ALPHA);
 
-		for (int i = 0; i < parent.level.getNumPlayers(); i++)
+		for (int i = 0; i < parent.level.getNumberOfPlayers(); i++)
 			drawParticles(i);
 	}
 
