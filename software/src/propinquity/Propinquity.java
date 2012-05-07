@@ -233,7 +233,6 @@ public class Propinquity extends PApplet {
 
 		case LevelSelect:
 			levelSelect.registerPlayers(playerList);
-			playerList.dispose();
 			levelSelect.reset();
 			levelSelect.show();
 			break;
@@ -314,12 +313,9 @@ public class Propinquity extends PApplet {
 						delay(50);
 					}
 
-					// init liquid particles
 					liquid = new Liquid(this);
-
-					// play
-					gameState = GameState.Play;
-					println("gamestate = " + gameState);
+					changeGameState(GameState.Play);
+					
 				}
 				break;
 

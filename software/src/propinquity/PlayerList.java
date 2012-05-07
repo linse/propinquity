@@ -162,11 +162,6 @@ public class PlayerList implements UIElement {
 		parent.changeGameState(GameState.LevelSelect);
 	}
 
-	public void dispose() {
-		controlP5.dispose();
-		controlP5 = null;
-	}
-
 	public void show() {
 		isVisible = true;
 		controlP5.show();
