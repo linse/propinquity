@@ -11,7 +11,6 @@ import pbox2d.*;
 import processing.core.*;
 import processing.opengl.PGraphicsOpenGL;
 import proxml.*;
-import xbee.XBeeReader;
 
 import propinquity.hardware.*;
 
@@ -22,7 +21,6 @@ public class Propinquity extends PApplet {
 
 	// debug constants
 	public static final boolean DEBUG = false;
-	public static final boolean DEBUG_XBEE = false;
 	public static final boolean DRAW_SHADOWS = false;
 	public static final boolean DRAW_PARTICLES = true;
 	public static final int FULL_SCREEN_ID = 0;
@@ -46,6 +44,9 @@ public class Propinquity extends PApplet {
 	boolean endedLevel = false;
 	long doneTime = -1;
 
+	XBeeBaseStation xbeeBaseStation;
+	XBeeManager xbeeManager;
+
 	XMLInOut xmlInOut;
 	Hud hud;
 
@@ -53,9 +54,8 @@ public class Propinquity extends PApplet {
 	Sounds sounds;
 	Graphics graphics;
 	
-	XBeeBaseStation xbeeBaseStation;
-	PlayerList playerList;
 	LevelSelect levelSelect;
+	PlayerList playerList;
 
 	UIElement[] ui_elements;
 
@@ -74,13 +74,18 @@ public class Propinquity extends PApplet {
 		sounds.loadCommonContent();
 
 		// Create resources
-		xbeeBaseStation = new XBeeBaseStation(this, DEBUG_XBEE);
+		xbeeBaseStation = new XBeeBaseStation();
+		xbeeBaseStation.scan();
+		xbeeManager = new XBeeManager(this, xbeeBaseStation);
+
 		playerList = new PlayerList(this);
+
 		levelSelect = new LevelSelect(this, sounds);
 		hud = new Hud(this, sounds, graphics);
+
 		logger = new Logger(this);
 
-		ui_elements = new UIElement[] { xbeeBaseStation, playerList, levelSelect };
+		ui_elements = new UIElement[] { xbeeManager, playerList, levelSelect };
 
 		changeGameState(GameState.XBeeInit);
 	}
@@ -231,7 +236,7 @@ public class Propinquity extends PApplet {
 		switch (new_state) {
 
 		case XBeeInit:
-			xbeeBaseStation.show();
+			xbeeManager.show();
 			break;
 
 		case PlayerList:
@@ -255,32 +260,12 @@ public class Propinquity extends PApplet {
 		println("gamestate = " + gameState);
 	}
 
-	public void xBeeEvent(XBeeReader xbee) {
-
-		switch (gameState) {
-
-		case XBeeInit:
-			// xbeeManager.xBeeEvent(xbee);
-			break;
-
-		case LevelSelect:
-			println("xBeeEvent(): sending to level select");
-			levelSelect.xBeeEvent(xbee);
-			break;
-
-		case Play:
-			level.xBeeEvent(xbee);
-			break;
-		}
-
-	}
-
 	public void controlEvent(ControlEvent event) {
 
 		switch (gameState) {
 
 		case XBeeInit:
-			xbeeBaseStation.controlEvent(event);
+			xbeeManager.controlEvent(event);
 			break;
 
 		case PlayerList:
@@ -294,7 +279,7 @@ public class Propinquity extends PApplet {
 		switch (gameState) {
 
 		case XBeeInit:
-			xbeeBaseStation.keyPressed(keyCode);
+			xbeeManager.keyPressed(keyCode);
 			break;
 
 		case PlayerList:

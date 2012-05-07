@@ -10,6 +10,10 @@ public interface HardwareInterface {
 
 	public void removeGlove(Glove glove);
 
+	public void addProxEventListener(ProxEventListener listener);
+
+	public void removeProxEventListener(ProxEventListener listener);
+
 	public void sendPacket(Packet packet);
 
 }
