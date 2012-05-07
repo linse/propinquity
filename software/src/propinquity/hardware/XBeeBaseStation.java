@@ -24,8 +24,6 @@ public class XBeeBaseStation implements Runnable {
 	 */
 	public XBeeBaseStation() {
 		xbees = new HashMap<String, XBee>();
-
-		scan();
 	}
 
 	/**

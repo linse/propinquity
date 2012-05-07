@@ -76,6 +76,7 @@ public class Propinquity extends PApplet {
 
 		// Create resources
 		xbeeBaseStation = new XBeeBaseStation();
+		xbeeBaseStations.scan();
 		xbeeManager = new XBeeManager(this, xbeeBaseStation);
 
 		playerList = new PlayerList(this);
