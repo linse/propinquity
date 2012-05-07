@@ -63,8 +63,8 @@ public class Graphics {
 	public void loadLevelContent() {
 
 		// Load player HUDs
-		hudPlayers = new PImage[parent.level.getNumPlayers()];
-		for (int i = 0; i < parent.level.getNumPlayers(); i++)
+		hudPlayers = new PImage[parent.level.getNumberOfPlayers()];
+		for (int i = 0; i < parent.level.getNumberOfPlayers(); i++)
 			hudPlayers[i] = parent.loadImage("data/hud/player" + (i + 1) + "score.png");
 
 		// Load co-op HUD
@@ -78,9 +78,9 @@ public class Graphics {
 	 */
 	public PImage[] loadParticles() {
 
-		PImage[] particles = new PImage[parent.level.getNumPlayers()];
+		PImage[] particles = new PImage[parent.level.getNumberOfPlayers()];
 
-		for (int i = 0; i < parent.level.getNumPlayers(); i++)
+		for (int i = 0; i < parent.level.getNumberOfPlayers(); i++)
 			particles[i] = parent.loadImage("data/particles/player" + (i + 1) + ".png");
 
 		return particles;

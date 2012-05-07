@@ -121,10 +121,10 @@ public class LevelSelect implements PConstants, UIElement {
 			parent.xmlInOut = new XMLInOut(parent, this);
 			parent.xmlInOut.loadElement(LEVEL_FOLDER + levelFiles[i]);
 			while (true)
-				if (loadingLevel.successfullyRead() > -1)
+				if (loadingLevel.successfullyRead > -1)
 					break;
 
-			if (loadingLevel.successfullyRead() == 0) {
+			if (loadingLevel.successfullyRead == 0) {
 				System.err.println("I had some trouble reading the level file:" + levelFiles[i]);
 			}
 

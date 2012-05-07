@@ -144,7 +144,7 @@ public class Hud {
 			parent.noStroke();
 			parent.textAlign(PConstants.CENTER, PConstants.BASELINE);
 			parent.textFont(Graphics.font, Hud.FONT_SIZE);
-			String score = String.valueOf(parent.level.getTotalPts() / 2);
+			String score = String.valueOf(parent.level.getTotalPoints() / 2);
 			String name = "Coop";
 			while (parent.textWidth(score + name) < 240)
 				name += ' ';
@@ -161,9 +161,9 @@ public class Hud {
 				sounds.complete.rewind();
 				parent.level.setLastCoopDone(true);
 			}
-			for (int i = 0; i < parent.level.getNumPlayers(); i++) {
+			for (int i = 0; i < parent.level.getNumberOfPlayers(); i++) {
 				Player player = parent.level.getPlayer(i);
-				player.approachHudTo(-PConstants.HALF_PI + PConstants.TWO_PI / parent.level.getNumPlayers() * i);
+				player.approachHudTo(-PConstants.HALF_PI + PConstants.TWO_PI / parent.level.getNumberOfPlayers() * i);
 				float ang = angle - PConstants.HALF_PI + player.hudAngle;
 				parent.pushMatrix();
 				parent.translate(parent.width / 2 + PApplet.cos(ang) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET),

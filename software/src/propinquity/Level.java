@@ -20,48 +20,43 @@ public class Level {
 	 * Byte 4: ____ next+1 LED states ____ next+2 LED states
 	 */
 
-	// if there is nothing in the file, we want to default to 2 min of lights-on
-	// free play.
-	final int FREE = 1;
-	final int MAX_PLAYERS = 2;
-	final int MAX_STEPS = 256;
-	final int DEFAULT_PLAYERS = 2;
-	final int DEFAULT_TEMPO = 120;
-	final int DEFAULT_MULTIPLIER = 4;
-	final int DEFAULT_STEPS = 80;
-	final int DEFAULT_COOP_PTS = 5000;
-
-	// parent applet
-	Propinquity parent;
-	Sounds sounds;
-
-	// the players
-	// String[] playerNames;
-	Player[] players = null;
-
 	// level parameters
-	boolean isCcoop;
-	boolean lastCoopDone;
-	int coopPts;
+	private boolean isCoop;
+	private boolean lastCoopDone;
+	private int coopPoints;
 	String songName;
 	String songFile;
 	String songDuration;
-	int tempo;
-	int multiplier;
+	public int tempo;
+	public int multiplier;
 	int numSteps;
-	int currentStep;
+	public int currentStep;
 	int packetType;
-	long stepInterval;
+	private long stepInterval;
 
-	boolean isRunning;
-	long time;
+	private boolean isRunning;
+	private long time;
 	long lastUpdate;
 	long lastStep;
 
 	XMLElement levelXML;
-	int successfullyRead = -1; // -1 means not read yet. 0 --> false. 1-->true
+	int successfullyRead = -1; // -1 -> not read yet, 0 -> false, 1 -> true
 
-	// Only used for loading level data
+	// if there is nothing in the file, we want to default to 2 min of lights-on
+	// free play.
+	private static final int MAX_PLAYERS = 2;
+	private static final int MAX_STEPS = 256;
+	private static final int DEFAULT_PLAYERS = 2;
+	private static final int DEFAULT_TEMPO = 120;
+	private static final int DEFAULT_MULTIPLIER = 4;
+	private static final int DEFAULT_STEPS = 80;
+
+	// parent applet
+	private Propinquity parent;
+	private Sounds sounds;
+
+	private Player[] players;
+
 	public Level(Propinquity parent, Sounds sounds) {
 		this(parent, sounds, null, null);
 	}
@@ -94,60 +89,12 @@ public class Level {
 		reset();
 	}
 
-	public boolean isCoop() {
-		return isCcoop;
-	}
-
-	public boolean isInCoopMode() {
-		return (isCcoop && (coopPts == 0 || getTotalPts() < coopPts * 2));
-	}
-
-	public boolean isCoopDone() {
-		return (coopPts != 0) && (getTotalPts() / 2) >= coopPts;
-	}
-
-	public boolean getLastCoopDone() {
-		return lastCoopDone;
-	}
-
-	public void setLastCoopDone(boolean b) {
-		lastCoopDone = b;
-		if (b) {
-			players[0].setCoopMode(!b);
-			players[1].setCoopMode(!b);
-		}
-	}
-
-	public Player getWinner() {
-		int maxScore = -1;
-		int winner = -1;
-
-		// TODO: This "loop" looks a little fishy...
+	public void clear() {
 		for (int i = 0; i < players.length; i++)
-			// check if we have a winner
-			if (players[i].getTotalPts() > maxScore) {
-				maxScore = players[i].getTotalPts();
-				winner = i;
-			}
-			// if not check if we have a tie
-			else if (players[i].getTotalPts() == maxScore) {
-				winner = -1;
-			}
-
-		if (winner == -1)
-			return null;
-		else
-			return players[winner];
+			players[i].clear();
 	}
-
-	public int getTotalPts() {
-		int total = 0;
-		for (int i = 0; i < players.length; i++)
-			total += players[i].getTotalPts();
-		return total;
-	}
-
-	void reset() {
+	
+	public void reset() {
 		if (players != null) {
 			for (int i = 0; i < players.length; i++)
 				players[i].reset();
@@ -155,6 +102,7 @@ public class Level {
 			// println("set stubbed to false");
 		}
 
+		// TODO: hmm...
 		// For March 28 playtest, setting one player to take prox data
 		// one is faked
 		currentStep = 0;
@@ -172,8 +120,21 @@ public class Level {
 		if (sounds.song != null)
 			sounds.song.rewind();
 	}
+	
+	public void pause() {
+		isRunning = false;
+		sounds.song.pause();
+	}
 
-	void update() {
+	public void start() {
+		isRunning = true;
+		lastUpdate = parent.millis();
+
+		if (!Sounds.MUTE)
+			sounds.song.play();
+	}
+
+	public void update() {
 		long now = parent.millis();
 		long dt = now - lastUpdate;
 		if (dt > 0)
@@ -196,12 +157,7 @@ public class Level {
 			step();
 	}
 
-	void clear() {
-		for (int i = 0; i < players.length; i++)
-			players[i].clear();
-	}
-
-	void step() {
+	private void step() {
 		// println("Step " + currentStep + " ("+time+")");
 
 		// keep track of time
@@ -216,64 +172,102 @@ public class Level {
 		currentStep++;
 	}
 
-	void pause() {
-		isRunning = false;
-		sounds.song.pause();
+	public boolean isCoop() {
+		return isCoop;
 	}
 
-	void start() {
-		isRunning = true;
-		lastUpdate = parent.millis();
-
-		if (!Sounds.MUTE)
-			sounds.song.play();
+	public boolean isInCoopMode() {
+		return (isCoop && (coopPoints == 0 || getTotalPoints() < coopPoints * 2));
 	}
 
-	boolean isPaused() {
-		return !isRunning;
+	public boolean isCoopDone() {
+		return (coopPoints != 0) && (getTotalPoints() / 2) >= coopPoints;
 	}
 
-	boolean isRunning() {
-		return isRunning;
+	public boolean getLastCoopDone() {
+		return lastCoopDone;
 	}
 
-	int successfullyRead() {
-		return successfullyRead;
+	public void setLastCoopDone(boolean b) {
+		lastCoopDone = b;
+		if (b) {
+			players[0].setCoopMode(!b);
+			players[1].setCoopMode(!b);
+		}
 	}
 
-	int getTempo() {
-		return tempo;
-	}
-
-	int getMultiplier() {
-		return multiplier;
-	}
-
-	int getNumPlayers() {
+	public int getNumberOfPlayers() {
 		return players.length;
 	}
 
-	int getNumSteps() {
+	public int getNumberOfSteps() {
 		return numSteps;
 	}
+	
+	public long getStepInterval() {
+		return stepInterval;
+	}
+	
+	public Player getPlayer(int i) {
+		return players[i];
+	}
+	
+	public Player getWinner() {
+		int maxScore = -1;
+		int winner = -1;
 
-	boolean isDone() {
+		// TODO: This "loop" looks a little fishy...
+		for (int i = 0; i < players.length; i++)
+			// check if we have a winner
+			if (players[i].getTotalPts() > maxScore) {
+				maxScore = players[i].getTotalPts();
+				winner = i;
+			}
+			// if not check if we have a tie
+			else if (players[i].getTotalPts() == maxScore) {
+				winner = -1;
+			}
+
+		if (winner == -1)
+			return null;
+		else
+			return players[winner];
+	}
+
+	public int getTotalPoints() {
+		int total = 0;
+		for (int i = 0; i < players.length; i++)
+			total += players[i].getTotalPts();
+		return total;
+	}
+
+	public boolean isRunning() {
+		return isRunning;
+	}
+
+	public boolean isDone() {
 		return (currentStep > numSteps);
 	} // extra step to make sure the last one got in
 
-	int getCurrentStep() {
-		return currentStep;
-	}
-
-	Player getPlayer(int i) {
-		return players[i];
-	}
-
-	long getTime() {
+	public long getTime() {
 		return time;
 	}
 
-	void loadDefaults() {
+	public void load() {
+		
+		while (true)
+			if (successfullyRead > -1)
+				break;
+		
+		if (successfullyRead == 0) {
+			loadDefaults();
+			System.err.println("I had some trouble reading the level file.");
+			System.err.println("Defaulting to 2 minutes of free play instead.");
+		}
+	}
+	
+	private void loadDefaults() {
+		
 		tempo = DEFAULT_TEMPO;
 		multiplier = DEFAULT_MULTIPLIER;
 		numSteps = DEFAULT_STEPS;
@@ -282,8 +276,8 @@ public class Level {
 		for (int i = 0; i < DEFAULT_PLAYERS; i++) {
 			players[i].initializeSteps(numSteps);
 			for (int j = 0; j < numSteps; j++) {
-				Step s = new Step(true, true, true, true, true);
-				players[i].addStep(s, j);
+				Step step = new Step(true, true, true, true, true);
+				players[i].addStep(step, j);
 			}
 		}
 	}
@@ -310,9 +304,9 @@ public class Level {
 			l_numPlayers = MAX_PLAYERS;
 
 		// read coop parameter
-		isCcoop = levelXML.hasAttribute("coop");
-		coopPts = isCcoop ? levelXML.getIntAttribute("coop") : 0;
-		if (isCcoop) {
+		isCoop = levelXML.hasAttribute("coop");
+		coopPoints = isCoop ? levelXML.getIntAttribute("coop") : 0;
+		if (isCoop) {
 			players[0].setCoopMode(true);
 			players[1].setCoopMode(true);
 		}
@@ -473,7 +467,7 @@ public class Level {
 
 	public void processProxReading(ProxData data) {
 		// check if we are in coop mode
-		if (isCcoop && (coopPts == 0 || getTotalPts() < coopPts * 2)) {
+		if (isCoop && (coopPoints == 0 || getTotalPoints() < coopPoints * 2)) {
 			for (int i = 0; i < players.length; i++)
 				players[i].processProxReading(data.patch, data.step, data.touched, data.proximity);
 			// println("Proximity reading: " + data + " (coop)");
@@ -483,17 +477,6 @@ public class Level {
 			players[data.player].processProxReading(data.patch, data.step, data.touched, data.proximity);
 			// println("Proximity reading: " + data);
 		}
-	}
-
-	public int getStepInterval() {
-		return (int) stepInterval;
-	}
-
-	public void doPause() {
-		if (!isDone() && isPaused())
-			start();
-		else if (!isDone())
-			pause();
 	}
 
 }
