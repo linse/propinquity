@@ -46,8 +46,6 @@ public class Propinquity extends PApplet {
 	boolean endedLevel = false;
 	long doneTime = -1;
 
-	XBeeBaseStation xbeeManager;
-
 	XMLInOut xmlInOut;
 	Hud hud;
 
@@ -55,8 +53,9 @@ public class Propinquity extends PApplet {
 	Sounds sounds;
 	Graphics graphics;
 	
-	LevelSelect levelSelect;
+	XBeeBaseStation xbeeBaseStation;
 	PlayerList playerList;
+	LevelSelect levelSelect;
 
 	UIElement[] ui_elements;
 
@@ -75,16 +74,13 @@ public class Propinquity extends PApplet {
 		sounds.loadCommonContent();
 
 		// Create resources
-		xbeeManager = new XBeeBaseStation(this, DEBUG_XBEE);
-
+		xbeeBaseStation = new XBeeBaseStation(this, DEBUG_XBEE);
 		playerList = new PlayerList(this);
-
+		levelSelect = new LevelSelect(this, sounds);
 		hud = new Hud(this, sounds, graphics);
-
-		// init logging
 		logger = new Logger(this);
 
-		ui_elements = new UIElement[] { xbeeManager, playerList };
+		ui_elements = new UIElement[] { xbeeBaseStation, playerList, levelSelect };
 
 		changeGameState(GameState.XBeeInit);
 	}
@@ -235,7 +231,7 @@ public class Propinquity extends PApplet {
 		switch (new_state) {
 
 		case XBeeInit:
-			xbeeManager.show();
+			xbeeBaseStation.show();
 			break;
 
 		case PlayerList:
@@ -243,8 +239,10 @@ public class Propinquity extends PApplet {
 			break;
 
 		case LevelSelect:
+			levelSelect.registerPlayers(playerList);
 			playerList.dispose();
-			levelSelect = new LevelSelect(this, sounds, playerList);
+			levelSelect.reset();
+			levelSelect.show();
 			break;
 
 		case Play:
@@ -282,7 +280,7 @@ public class Propinquity extends PApplet {
 		switch (gameState) {
 
 		case XBeeInit:
-			xbeeManager.controlEvent(event);
+			xbeeBaseStation.controlEvent(event);
 			break;
 
 		case PlayerList:
@@ -296,7 +294,7 @@ public class Propinquity extends PApplet {
 		switch (gameState) {
 
 		case XBeeInit:
-			xbeeManager.keyPressed(keyCode);
+			xbeeBaseStation.keyPressed(keyCode);
 			break;
 
 		case PlayerList:

@@ -36,7 +36,7 @@ public class PlayerList implements UIElement {
 	Button nextButton;
 	Button newButton;
 
-	boolean isVisible;
+	private boolean isVisible;
 
 	public PlayerList(Propinquity p) {
 		parent = p;
