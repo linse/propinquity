@@ -88,7 +88,7 @@ public class HardwareDebugger extends PApplet {
 
 		if(!show_controls) controlP5.hide();
 
-		xbeeManager = new XBeeBaseStation(this);
+		// xbeeManager = new XBeeBaseStation(this);
 	}
 
 	public void controlEvent(ControlEvent theEvent) {
@@ -135,12 +135,12 @@ public class HardwareDebugger extends PApplet {
 
 	void sendActive(int index, boolean active) {
 		index = constrain(index, 0, NUM_PATCHES-1);
-		xbeeManager.reader("P2_PROX2").sendDataString16(PATCH_ADDR[index], new int[] {1, active?1:0});
+		// xbeeManager.reader("P2_PROX2").sendDataString16(PATCH_ADDR[index], new int[] {1, active?1:0});
 	}
 
 	void sendColor(int index, int r, int g, int b) {
 		index = constrain(index, 0, NUM_PATCHES-1);
-		xbeeManager.reader("P2_PROX2").sendDataString16(PATCH_ADDR[index], new int[] {2, r&0xFF, g&0xFF, b&0xFF});
+		// xbeeManager.reader("P2_PROX2").sendDataString16(PATCH_ADDR[index], new int[] {2, r&0xFF, g&0xFF, b&0xFF});
 	}
 	void sendDuty(int index, int duty) {
 		index = constrain(index, 0, NUM_PATCHES-1);
@@ -148,16 +148,16 @@ public class HardwareDebugger extends PApplet {
 		// 	duty = period[index];
 		// } else if(duty == 0) duty = 1;
 		println(duty&0xFF);
-		xbeeManager.reader("P2_PROX2").sendDataString16(PATCH_ADDR[index], new int[] {5, duty&0xFF});
+		// xbeeManager.reader("P2_PROX2").sendDataString16(PATCH_ADDR[index], new int[] {5, duty&0xFF});
 	}
 	void sendPeriod(int index, int period) {
 		index = constrain(index, 0, NUM_PATCHES-1);
 		// if(period == 0) period = 1;
-		xbeeManager.reader("P2_PROX2").sendDataString16(PATCH_ADDR[index], new int[] {6, period&0xFF});
+		// xbeeManager.reader("P2_PROX2").sendDataString16(PATCH_ADDR[index], new int[] {6, period&0xFF});
 	}
 	void sendVibe(int index, int vibe) {
 		index = constrain(index, 0, NUM_PATCHES-1);
-		xbeeManager.reader("P2_PROX2").sendDataString16(PATCH_ADDR[index], new int[] {3, vibe&0xFF});
+		// xbeeManager.reader("P2_PROX2").sendDataString16(PATCH_ADDR[index], new int[] {3, vibe&0xFF});
 	}
 
 	public void draw() {
@@ -182,7 +182,7 @@ public class HardwareDebugger extends PApplet {
 
 	public void xBeeEvent(XBeeReader reader) {
 		if(xbeeManager.isScanning()) {
-			xbeeManager.xBeeEvent(reader);
+			// xbeeManager.xBeeEvent(reader);
 		} else {
 			XBeeDataFrame data = reader.getXBeeReading();
 			if (data.getApiID() == XBeeReader.SERIES1_RX16PACKET) {

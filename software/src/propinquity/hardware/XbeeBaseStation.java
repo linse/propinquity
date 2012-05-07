@@ -6,13 +6,12 @@ import processing.core.*;
 import processing.serial.*;
 import controlP5.*;
 
-import xbee.*;
 import com.rapplogic.xbee.api.*;
 
 import propinquity.*;
 
 /**
- * This class scans for XBees connected to the computer. It then instantiates and holds XBeeReader objects for each such device.
+ * This class scans for XBees connected to the computer. It then instantiates and holds Xbee objects for each such device.
  *
 */
 public class XBeeBaseStation implements Runnable, UIElement {
@@ -20,8 +19,7 @@ public class XBeeBaseStation implements Runnable, UIElement {
 	final int XBEE_BAUDRATE = 115200;
 	final int XBEE_RESPONSE_TIMEOUT = 1000;
 
-	PApplet parent;
-	Propinquity propinquity;
+	Propinquity parent;
 
 	boolean isVisible;
 
@@ -32,31 +30,23 @@ public class XBeeBaseStation implements Runnable, UIElement {
 	Thread scanningThread;
 
 	boolean xbeeDebug;
-
-	String nodeID;
-	HashMap<String, Serial> xbeePorts;
-	HashMap<String, XBeeReader> xbeeReaders;
 	HashMap<String, XBee> xbees;
 
 	/**
 	 * Create a new XBeeBaseStation with xbeeDebug turned off.
 	 *
-	 * @param parent the parent PApplet object.
 	 */
-	public XBeeBaseStation(PApplet parent) {
-		this(parent, null, false);
+	public XBeeBaseStation() {
+		this(null, false);
 	}
 
 	/**
 	 * Create a new XBeeBaseStation.
 	 *
-	 * @param parent the parent PApplet object.
 	 * @param xbeeDebug the XBee xbeeDebug mode.
 	 */
-	public XBeeBaseStation(PApplet parent, Propinquity propinquity, boolean xbeeDebug) {
+	public XBeeBaseStation(Propinquity parent, boolean xbeeDebug) {
 		this.parent = parent;
-		this.propinquity = propinquity;
-
 		isVisible = true;
 
 		controlP5 = new ControlP5(parent);
@@ -72,21 +62,19 @@ public class XBeeBaseStation implements Runnable, UIElement {
 		hide();
 
 		this.xbeeDebug = xbeeDebug;
-		xbeePorts = new HashMap<String, Serial>();
-		xbeeReaders = new HashMap<String, XBeeReader>();
 		xbees = new HashMap<String, XBee>();
 
 		scan();
 	}
 
 	/**
-	 * Get the XBeeReader for the XBee with the matching NodeIdentifier (NI).
+	 * Get the XBee object for the XBee with the matching NodeIdentifier (NI).
 	 * 
 	 * @param ni the NodeIdentifier of the requested XBee.
-	 * @return the XBeeReader for the XBee with the matching NodeIdentifier.
+	 * @return the XBee for the XBee with the matching NodeIdentifier.
 	*/
-	public XBeeReader reader(String ni) {
-		return xbeeReaders.get(ni);
+	public XBee getXbee(String ni) {
+		return xbees.get(ni);
 	}
 
 	/**
@@ -95,7 +83,7 @@ public class XBeeBaseStation implements Runnable, UIElement {
 	 * @return an array of the valid NodeIdentifier for available XBees.
 	*/
 	public String[] listXBees() {
-		return xbeeReaders.keySet().toArray(new String[0]);
+		return xbees.keySet().toArray(new String[0]);
 	}
 
 	/**
@@ -115,6 +103,7 @@ public class XBeeBaseStation implements Runnable, UIElement {
 	public void scan() {
 		if(scanningThread != null && scanningThread.isAlive()) return;
 		else {
+			//TODO add reset here
 			scanningThread = new Thread(this);
 			scanningThread.start();
 		}
@@ -125,40 +114,23 @@ public class XBeeBaseStation implements Runnable, UIElement {
 	 *
 	*/
 	public void reset() {
-		System.out.print("XBeeBaseStation Reset ");
-
-		for(XBeeReader reader : xbeeReaders.values()) {
-			reader.stopXBee();
-			while(reader.isAlive()) {
-				try {
-					Thread.sleep(100);
-				} catch(InterruptedException ie) {
-
-				}
-				System.out.print(".");
-			}
-		}
+		System.out.print("XBeeBaseStation Reset");
 
 		for(XBee xbee : xbees.values()) {
+			System.out.print(".");
 			xbee.close();
 		}
 
-		for(Serial port : xbeePorts.values()) {
-			port.stop();
-			System.out.print(".");
-		}
-
-		xbeeReaders.clear();
-		xbeePorts.clear();
 		xbees.clear();
 
-		System.out.println("");
-
 		try {
-			Thread.sleep(1000);
+			System.out.print(".");
+			Thread.sleep(1000); //TODO is this needed?
 		} catch(Exception e) {
 
 		}
+
+		System.out.println("");
 	}
 
 	/**
@@ -187,92 +159,47 @@ public class XBeeBaseStation implements Runnable, UIElement {
 				xbee.open(availablePorts[portNum], XBEE_BAUDRATE);
 			} catch(XBeeException e) {
 				System.out.println(e.getMessage());
-				System.out.println("Fail");
+				System.out.println("Failed to connect to XBee");
 				continue;
 			}
 
 			System.out.println("\t\tConnected to XBee");
 
-			XBeeResponse response = null;
-
 			try {
-				Thread.sleep(250);
+				Thread.sleep(150);
 			} catch(Exception e) {
 
 			}
 
+			XBeeResponse response = null;
+
 			try {
 				response = xbee.sendSynchronous(new AtCommand("NI"), XBEE_RESPONSE_TIMEOUT);
 			} catch (XBeeTimeoutException e) {
-			    // no response was received in the allotted time
-			    System.out.println("Timeout");
+			    System.out.println("\t\tTimeout getting NI");
 			    continue;
 			} catch (XBeeException e) {
+				System.out.println("\t\tException getting NI");
+				continue;
+			}
+	
+			if (response != null && response.getApiId() == ApiId.AT_RESPONSE) {
+			    AtCommandResponse atResponse = (AtCommandResponse)response;
+			    if (atResponse.isOk()) {
+		        	System.out.println("\t\tGot NI: "+new String(atResponse.getValue(), 0, atResponse.getValue().length));
+			    } else {
+			        System.out.println("\t\tNI Command was not successful");
+			        continue;
+			    }
+			} else {
+				System.out.println("\t\tNI Response was null or wrong type");
 				continue;
 			}
 
-			System.out.println("Got NI");
-
-			if (response != null && response.getApiId() == ApiId.AT_RESPONSE) {
-			   // since this API ID is AT_RESPONSE, we know to cast to AtCommandResponse
-			    AtCommandResponse atResponse = (AtCommandResponse) response;
-
-			    if (atResponse.isOk()) {
-			        // command was successful
-			        System.out.println("Command returned ");
-			        for(int i = 0;i < atResponse.getValue().length;i++) {
-			        	System.out.print((char)atResponse.getValue()[i]);
-			        }
-			        System.out.println();
-			    } else {
-			        // command failed!
-			    }
-			}
-
-			// System.out.println(" \t\tGetting NI");
-			// xbeeReader.getNI();
-
-			// synchronized(this) {
-			// 	nodeID = null;
-
-			// 	try {
-			// 		this.wait(XBEE_RESPONSE_TIMEOUT);
-			// 	} catch(InterruptedException ie) {
-
-			// 	}
-			// }
-
-			// if(nodeID != null) {
-				// System.out.println("\t\tFound XBee: "+nodeID);
-				// xbeePorts.put(nodeID, xbeePort);
-				// xbeeReaders.put(nodeID, xbeeReader);
-				xbees.put(availablePorts[portNum], xbee);
-			// } else {
-				// System.out.println("\t\tDevice is not an XBee");
-			// }
+			xbees.put(availablePorts[portNum], xbee);
 		}
 
 		System.out.println("Scan Complete");
-	}
-
-	/**
-	 * Recieve and xBeeEvent callback
-	 *
-	 * @param reader the XBeeReader which has an available event to be processed
-	*/
-	public void xBeeEvent(XBeeReader reader) {
-		XBeeDataFrame data = reader.getXBeeReading();
-		data.parseXBeeRX16Frame();
-
-		int[] buffer = data.getBytes();
-		nodeID = "";
-		for(int i = 0; i < buffer.length; i++) {
-			nodeID += (char) buffer[i];
-		}
-
-		synchronized(this) {
-			this.notify(); //TODO Test
-		}
 	}
 
 	/* --- GUI Controls --- */
@@ -304,7 +231,7 @@ public class XBeeBaseStation implements Runnable, UIElement {
 	*/
 	void processUIEvent() {
 		if(isScanning()) return;
-		else if(propinquity != null) propinquity.changeGameState(GameState.PlayerList); //TODO Fix this is horrid.
+		else if(parent != null) parent.changeGameState(GameState.PlayerList); //TODO Fix this is horrid.
 	}
 
 	/* --- Graphics --- */
@@ -346,7 +273,7 @@ public class XBeeBaseStation implements Runnable, UIElement {
 			String msg = "";
 			if(isScanning()) msg = "Scanning...";
 			else {
-				for(String s : xbeeReaders.keySet()) msg += s;
+				for(String s : xbees.keySet()) msg += s;
 				if(msg.isEmpty()) msg = "No XBees found";
 			}
 
