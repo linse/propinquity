@@ -8,7 +8,10 @@ public class Glove {
 
 	int vibe_level, vibe_period, vibe_duty;
 
-	public Glove(int address) {
+	HardwareInterface hardware;
+
+	public Glove(int address, HardwareInterface hardware) {
+		this.hardware = hardware;
 		this.address = address;
 
 		vibe_level = 0;
@@ -18,21 +21,24 @@ public class Glove {
 
 
 	public void setVibe(int level, int period, int duty) {
-		vibe_level = PApplet.constrain(level, 0, 255);
-		vibe_period = PApplet.constrain(period, 0, 255);
-		vibe_duty = PApplet.constrain(duty, 0, 255);
+		setVibeLevel(level);
+		setVibePeriod(period);
+		setVibeDuty(duty);
 	}
 
 	public void setVibeLevel(int level) {
 		vibe_level = PApplet.constrain(level, 0, 255);
+		hardware.sendPacket(new Packet(address, PacketType.VIBE_LEVEL, new int[] {vibe_level}));
 	}
 
 	public void setVibePeriod(int period) {
 		vibe_period = PApplet.constrain(period, 0, 255);
+		hardware.sendPacket(new Packet(address, PacketType.VIBE_PERIOD, new int[] {vibe_period}));
 	}
 
 	public void setVibeDuty(int duty) {
 		vibe_duty = PApplet.constrain(duty, 0, 255);
+		hardware.sendPacket(new Packet(address, PacketType.VIBE_DUTY, new int[] {vibe_duty}));
 	}
 
 	public int getVibeLevel() {
@@ -45,6 +51,10 @@ public class Glove {
 
 	public int getVibeDuty() {
 		return vibe_duty;
+	}
+
+	public int getAddress() {
+		return address;
 	}
 
 }

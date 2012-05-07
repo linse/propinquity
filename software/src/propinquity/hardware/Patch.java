@@ -6,12 +6,19 @@ public class Patch {
 
 	final int address;
 
+	boolean active;
+
 	int vibe_level, vibe_period, vibe_duty, color_period, color_duty, prox;
 
 	int[] color;
 
-	public Patch(int address) {
+	HardwareInterface hardware;
+
+	public Patch(int address, HardwareInterface hardware) {
+		this.hardware = hardware;
 		this.address = address;
+
+		active = false;
 
 		vibe_level = 0;
 		vibe_period = 0;
@@ -28,41 +35,55 @@ public class Patch {
 		prox = 0;
 	}
 
+	public void setActive(boolean active) {
+		this.active = active;
+		hardware.sendPacket(new Packet(address, PacketType.CONF, new int[] {active?1:0}));
+	}
+
+	public boolean getActive() {
+		return active;
+	}
 
 	public void setVibe(int level, int period, int duty) {
-		vibe_level = PApplet.constrain(level, 0, 255);
-		vibe_period = PApplet.constrain(period, 0, 255);
-		vibe_duty = PApplet.constrain(duty, 0, 255);
+		setVibeLevel(level);
+		setVibePeriod(period);
+		setVibeDuty(duty);
 	}
 
 	public void setVibeLevel(int level) {
 		vibe_level = PApplet.constrain(level, 0, 255);
+		hardware.sendPacket(new Packet(address, PacketType.VIBE_LEVEL, new int[] {vibe_level}));
 	}
 
 	public void setVibePeriod(int period) {
 		vibe_period = PApplet.constrain(period, 0, 255);
+		hardware.sendPacket(new Packet(address, PacketType.VIBE_PERIOD, new int[] {vibe_period}));
 	}
 
 	public void setVibeDuty(int duty) {
 		vibe_duty = PApplet.constrain(duty, 0, 255);
+		hardware.sendPacket(new Packet(address, PacketType.VIBE_DUTY, new int[] {vibe_duty}));
 	}
 
 	public void setColor(int red, int green, int blue) {
 		color[0] = PApplet.constrain(red, 0, 255);
 		color[1] = PApplet.constrain(green, 0, 255);
 		color[2] = PApplet.constrain(blue, 0, 255);
+		hardware.sendPacket(new Packet(address, PacketType.COLOR, new int[] {color[0], color[1], color[2]}));
 	}
 
 	public void setColorPeriod(int period) {
 		color_period = PApplet.constrain(period, 0, 255);
+		hardware.sendPacket(new Packet(address, PacketType.COLOR_PERIOD, new int[] {color_period}));
 	}
 
 	public void setColorDuty(int duty) {
 		color_duty = PApplet.constrain(duty, 0, 255);
+		hardware.sendPacket(new Packet(address, PacketType.COLOR_DUTY, new int[] {color_duty}));
 	}
 
 	public void setProx(int prox) {
-		this.prox = PApplet.constrain(prox, 0, 255);
+		this.prox = PApplet.constrain(prox, 0, 1024);
 	}
 
 	public int getVibeLevel() {
@@ -91,6 +112,10 @@ public class Patch {
 
 	public int getProx() {
 		return prox;
+	}
+
+	public int getAddress() {
+		return address;
 	}
 
 }
