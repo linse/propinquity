@@ -44,18 +44,16 @@ public class Propinquity extends PApplet {
 	boolean endedLevel = false;
 	long doneTime = -1;
 
-	XBeeBaseStation xbeeBaseStation;
-	XBeeManager xbeeManager;
-
 	XMLInOut xmlInOut;
 	Hud hud;
-
 	Logger logger;
 	Sounds sounds;
 	Graphics graphics;
-	
-	LevelSelect levelSelect;
+
+	XBeeBaseStation xbeeBaseStation;
+	XBeeManager xbeeManager;
 	PlayerList playerList;
+	LevelSelect levelSelect;
 
 	UIElement[] ui_elements;
 
@@ -77,12 +75,10 @@ public class Propinquity extends PApplet {
 		xbeeBaseStation = new XBeeBaseStation();
 		xbeeBaseStation.scan();
 		xbeeManager = new XBeeManager(this, xbeeBaseStation);
-
 		playerList = new PlayerList(this);
-
 		levelSelect = new LevelSelect(this, sounds);
+		
 		hud = new Hud(this, sounds, graphics);
-
 		logger = new Logger(this);
 
 		ui_elements = new UIElement[] { xbeeManager, playerList, levelSelect };
@@ -90,6 +86,26 @@ public class Propinquity extends PApplet {
 		changeGameState(GameState.XBeeInit);
 	}
 
+	void resetLevel() {
+		liquid.resetLiquid();
+		level.reset();
+		endedLevel = false;
+		doneTime = -1;
+		liquid.groupedParticles = false;
+		liquid.lastPeriodParticle = new Particle[level.getNumPlayers()];
+
+		hud.reset();
+
+		levelSelect.reset();
+		gameState = GameState.LevelSelect;
+		println("gamestate = " + gameState);
+	}
+	
+	public void stop() {
+		if (gameState == GameState.Play)
+			level.clear();
+	}
+	
 	public void draw() {
 		// clear
 		background(0);
@@ -99,10 +115,6 @@ public class Propinquity extends PApplet {
 
 		switch (gameState) {
 
-		case LevelSelect:
-			levelSelect.draw();
-			break;
-
 		case Play:
 			drawPlay();
 			break;
@@ -110,12 +122,7 @@ public class Propinquity extends PApplet {
 
 		logger.recordFrame();
 	}
-
-	public void stop() {
-		if (gameState == GameState.Play)
-			level.clear();
-	}
-
+	
 	void drawPlay() {
 		graphics.drawInnerBoundary();
 		if (DRAW_PARTICLES)
@@ -194,21 +201,6 @@ public class Propinquity extends PApplet {
 		}
 	}
 
-	void resetLevel() {
-		liquid.resetLiquid();
-		level.reset();
-		endedLevel = false;
-		doneTime = -1;
-		liquid.groupedParticles = false;
-		liquid.lastPeriodParticle = new Particle[level.getNumPlayers()];
-
-		hud.reset();
-
-		levelSelect.reset();
-		gameState = GameState.LevelSelect;
-		println("gamestate = " + gameState);
-	}
-
 	void drawMask() {
 		// TODO: Figure out what this does...
 		gl = ((PGraphicsOpenGL) g).gl;
@@ -252,7 +244,7 @@ public class Propinquity extends PApplet {
 
 		case Play:
 			break;
-			
+
 		}
 
 		gameState = new_state;
