@@ -121,7 +121,7 @@ public class Level {
 	public Player getWinner() {
 		int maxScore = -1;
 		int winner = -1;
-		
+
 		// TODO: This "loop" looks a little fishy...
 		for (int i = 0; i < players.length; i++)
 			// check if we have a winner
@@ -374,7 +374,6 @@ public class Level {
 			// if (PROX_STUB[i]) players[i].loadProxStub(i, PROX_STUB_FILE);
 			// else players[i].initProxComm(XPAN_PROX_1_PORT[i]);
 
-
 			// if (SEND_VIBE[i]) players[i].initVibeComm(XPAN_VIBE_PORT[i]);
 
 			// init player steps
@@ -411,39 +410,45 @@ public class Level {
 		// XBeeDataFrame data = xbee.getXBeeReading();
 
 		// if (data.getApiID() == XBeeReader.SERIES1_RX16PACKET) {
-		// 	int[] packet = data.getBytes();
-		// 	if (packet.length == XPan.PROX_IN_PACKET_LENGTH && packet[0] == XPan.PROX_IN_PACKET_TYPE) {
-		// 		// println("prox message received");
-		// 		int patch = (packet[1] >> 1);
-		// 		int player = getPlayerIndexForPatch(patch);
+		// int[] packet = data.getBytes();
+		// if (packet.length == XPan.PROX_IN_PACKET_LENGTH && packet[0] ==
+		// XPan.PROX_IN_PACKET_TYPE) {
+		// // println("prox message received");
+		// int patch = (packet[1] >> 1);
+		// int player = getPlayerIndexForPatch(patch);
 
-		// 		if (player != -1) {
-		// 			boolean touched = (packet[1] & 1) == 1;
-		// 			// println(packet[1]);
-		// 			// println(touched);
-		// 			int step = ((packet[2] & 0xFF) << 8) | (packet[3] & 0xFF);
-		// 			// println(step);
-		// 			int proximity = ((packet[4] & 0xFF) << 8) | (packet[5] & 0xFF);
-		// 			;
-		// 			// println(proximity);
-		// 			// player.processProxReading(patch, step, touched,
-		// 			// proximity);
-		// 			processProxReading(new ProxData(player, patch, step, touched, proximity));
-		// 		} else
-		// 			System.err.println("Trouble in paradise, we received a packet from patch '" + patch
-		// 					+ "', which is not assigned to a player");
-		// 	} else if (packet.length == XPan.CONFIG_ACK_LENGTH && packet[0] == XPan.CONFIG_ACK_PACKET_TYPE) {
-		// 		int myTurnLength = ((packet[2] & 0xFF) << 8) | (packet[3] & 0xFF);
-		// 		int patch = packet[1];
-		// 		int player = getPlayerIndexForPatch(patch);
-		// 		players[player].processConfigAck(patch, myTurnLength);
-		// 		System.out.println("Config Ack Received in Level, Turn Length is " + myTurnLength);
-		// 	} else if (packet.length == XPan.VIBE_IN_PACKET_LENGTH && packet[0] == XPan.VIBE_IN_PACKET_TYPE) {
-		// 		if (packet[2] == 4)
-		// 			doPause();
-		// 	} else {
-		// 		System.err.println("Level received a bad packet.");
-		// 	}
+		// if (player != -1) {
+		// boolean touched = (packet[1] & 1) == 1;
+		// // println(packet[1]);
+		// // println(touched);
+		// int step = ((packet[2] & 0xFF) << 8) | (packet[3] & 0xFF);
+		// // println(step);
+		// int proximity = ((packet[4] & 0xFF) << 8) | (packet[5] & 0xFF);
+		// ;
+		// // println(proximity);
+		// // player.processProxReading(patch, step, touched,
+		// // proximity);
+		// processProxReading(new ProxData(player, patch, step, touched,
+		// proximity));
+		// } else
+		// System.err.println("Trouble in paradise, we received a packet from patch '"
+		// + patch
+		// + "', which is not assigned to a player");
+		// } else if (packet.length == XPan.CONFIG_ACK_LENGTH && packet[0] ==
+		// XPan.CONFIG_ACK_PACKET_TYPE) {
+		// int myTurnLength = ((packet[2] & 0xFF) << 8) | (packet[3] & 0xFF);
+		// int patch = packet[1];
+		// int player = getPlayerIndexForPatch(patch);
+		// players[player].processConfigAck(patch, myTurnLength);
+		// System.out.println("Config Ack Received in Level, Turn Length is " +
+		// myTurnLength);
+		// } else if (packet.length == XPan.VIBE_IN_PACKET_LENGTH && packet[0]
+		// == XPan.VIBE_IN_PACKET_TYPE) {
+		// if (packet[2] == 4)
+		// doPause();
+		// } else {
+		// System.err.println("Level received a bad packet.");
+		// }
 		// }
 	}
 

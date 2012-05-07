@@ -11,19 +11,20 @@ import processing.video.MovieMaker;
  * @author Stephane Beniak
  */
 public class Logger {
-	
+
 	/**
 	 * Output log file location.
 	 */
 	public static final String outputFile = "bin/messages.txt";
-	
+
 	boolean isRecording = false;
-	
+
 	PrintWriter output;
 	MovieMaker movieMaker;
-		
+
 	/**
 	 * Make a new logger object.
+	 * 
 	 * @param p The Propinquity instance.
 	 */
 	public Logger(PApplet parent) {
@@ -31,7 +32,7 @@ public class Logger {
 		output = parent.createWriter(outputFile);
 		output.println("Starting Logging of Propinquity Test.");
 	}
-	
+
 	/**
 	 * Print a line of output to the text log file.
 	 * 
@@ -40,7 +41,7 @@ public class Logger {
 	public void printOutput(String line) {
 		output.println(line);
 	}
-	
+
 	/**
 	 * Record a frame of video.
 	 */
@@ -48,7 +49,7 @@ public class Logger {
 		if (isRecording)
 			movieMaker.addFrame();
 	}
-	
+
 	/**
 	 * Close the text logger.
 	 */
@@ -56,5 +57,5 @@ public class Logger {
 		output.flush();
 		output.close();
 	}
-	
+
 }

@@ -77,7 +77,7 @@ public class Propinquity extends PApplet {
 		xbeeManager = new XBeeManager(this, xbeeBaseStation);
 		playerList = new PlayerList(this);
 		levelSelect = new LevelSelect(this, sounds);
-		
+
 		hud = new Hud(this, sounds, graphics);
 		logger = new Logger(this);
 
@@ -100,12 +100,12 @@ public class Propinquity extends PApplet {
 		gameState = GameState.LevelSelect;
 		println("gamestate = " + gameState);
 	}
-	
+
 	public void stop() {
 		if (gameState == GameState.Play)
 			level.clear();
 	}
-	
+
 	public void draw() {
 		// clear
 		background(0);
@@ -122,7 +122,7 @@ public class Propinquity extends PApplet {
 
 		logger.recordFrame();
 	}
-	
+
 	void drawPlay() {
 		graphics.drawInnerBoundary();
 		if (DRAW_PARTICLES)

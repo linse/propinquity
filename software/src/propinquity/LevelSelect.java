@@ -67,11 +67,11 @@ public class LevelSelect implements PConstants, UIElement {
 	Sounds sounds;
 
 	private boolean isVisible;
-	
+
 	public LevelSelect(Propinquity p, Sounds sounds) {
-		
+
 		isVisible = true;
-		
+
 		this.parent = p;
 		this.sounds = sounds;
 		this.radius = parent.height / 2 - Hud.WIDTH * 2;
@@ -86,7 +86,7 @@ public class LevelSelect implements PConstants, UIElement {
 		loadLevels();
 		initTextures();
 	}
-	
+
 	public void registerPlayers(PlayerList playerList) {
 		this.playerNames = playerList.getNames();
 	}
@@ -258,12 +258,12 @@ public class LevelSelect implements PConstants, UIElement {
 	public boolean isVisible() {
 		return isVisible;
 	}
-	
+
 	public void draw() {
-		
+
 		if (!isVisible)
 			return;
-		
+
 		// TODO: Fix this too
 		parent.graphics.drawInnerBoundary();
 		parent.graphics.drawOuterBoundary();
@@ -561,51 +561,55 @@ public class LevelSelect implements PConstants, UIElement {
 			}
 		}
 
-		// else if (buffer.length == XPan.CONFIG_ACK_LENGTH && buffer[0] == XPan.CONFIG_ACK_PACKET_TYPE) {
+		// else if (buffer.length == XPan.CONFIG_ACK_LENGTH && buffer[0] ==
+		// XPan.CONFIG_ACK_PACKET_TYPE) {
 
-		// 	int myTurnLength = ((buffer[2] & 0xFF) << 8) | (buffer[3] & 0xFF);
-		// 	numConfigAcks++;
-		// 	System.out.println("Config Ack Received in Level Select, Turn Length is " + myTurnLength);
+		// int myTurnLength = ((buffer[2] & 0xFF) << 8) | (buffer[3] & 0xFF);
+		// numConfigAcks++;
+		// System.out.println("Config Ack Received in Level Select, Turn Length is "
+		// + myTurnLength);
 		// }
 
-		// else if (buffer.length == XPan.VIBE_IN_PACKET_LENGTH && buffer[0] == XPan.VIBE_IN_PACKET_TYPE) {
+		// else if (buffer.length == XPan.VIBE_IN_PACKET_LENGTH && buffer[0] ==
+		// XPan.VIBE_IN_PACKET_TYPE) {
 
-		// 	int p = buffer[1];
-		// 	int direction = buffer[2];
-		// 	if (p <= 8 && (state == LevelSelectState.P1 || state == LevelSelectState.Song)) {
+		// int p = buffer[1];
+		// int direction = buffer[2];
+		// if (p <= 8 && (state == LevelSelectState.P1 || state ==
+		// LevelSelectState.Song)) {
 
-		// 		switch (direction) {
+		// switch (direction) {
 
-		// 		case 1:
-		// 			moveLeft();
-		// 			break;
+		// case 1:
+		// moveLeft();
+		// break;
 
-		// 		case 2:
-		// 			moveRight();
-		// 			break;
+		// case 2:
+		// moveRight();
+		// break;
 
-		// 		default:
-		// 			doSelect();
-		// 			break;
-		// 		}
+		// default:
+		// doSelect();
+		// break;
+		// }
 
-		// 	} else if (p > 8 && state == LevelSelectState.P2) {
+		// } else if (p > 8 && state == LevelSelectState.P2) {
 
-		// 		switch (direction) {
+		// switch (direction) {
 
-		// 		case 1:
-		// 			moveLeft();
-		// 			break;
+		// case 1:
+		// moveLeft();
+		// break;
 
-		// 		case 2:
-		// 			moveRight();
-		// 			break;
+		// case 2:
+		// moveRight();
+		// break;
 
-		// 		default:
-		// 			doSelect();
-		// 			break;
-		// 		}
-		// 	}
+		// default:
+		// doSelect();
+		// break;
+		// }
+		// }
 		// }
 
 	}
