@@ -206,7 +206,7 @@ public class LevelSelect implements PConstants {
 		foundProxPatches.clear();
 		foundVibePatches.clear();
 		foundUndefPatches.clear();
-		players[player] = new Player(parent, parent.PLAYER_COLORS[player]);
+		players[player] = new Player(parent, parent.playerColours[player]);
 
 		// init xbee comm or stubs
 		// for proximity
@@ -244,7 +244,7 @@ public class LevelSelect implements PConstants {
 
 	public void draw() {
 		// TODO: Fix this too
-		
+
 		parent.graphics.drawInnerBoundary();
 		parent.graphics.drawOuterBoundary();
 		parent.pushMatrix();
@@ -268,7 +268,7 @@ public class LevelSelect implements PConstants {
 			drawSelectSong();
 			break;
 		}
-		
+
 		parent.popMatrix();
 	}
 

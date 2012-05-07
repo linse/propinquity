@@ -60,11 +60,6 @@ public class Level {
 	long lastUpdate;
 	long lastStep;
 
-	// stub parameters
-	// String[] stubReadings;
-	// int stubReading = 0;
-
-	// the XML
 	XMLElement levelXML;
 	int successfullyRead = -1; // -1 means not read yet. 0 --> false. 1-->true
 
@@ -79,9 +74,9 @@ public class Level {
 
 		if (players == null) {
 			players = new Player[2];
-			players[0] = new Player(parent, parent.PLAYER_COLORS[0]);
+			players[0] = new Player(parent, parent.playerColours[0]);
 			players[0].name = "Player 1";
-			players[1] = new Player(parent, parent.PLAYER_COLORS[1]);
+			players[1] = new Player(parent, parent.playerColours[1]);
 			players[1].name = "Player 2";
 		} else {
 			this.players = players;
@@ -128,6 +123,8 @@ public class Level {
 	public Player getWinner() {
 		int maxScore = -1;
 		int winner = -1;
+		
+		// TODO: This "loop" looks a little fishy...
 		for (int i = 0; i < players.length; i++)
 			// check if we have a winner
 			if (players[i].getTotalPts() > maxScore) {

@@ -11,19 +11,20 @@ import controlP5.Textfield;
 import processing.core.*;
 
 public class PlayerList implements UIElement {
-	final String PLIST_FILE = "player.lst";
-	final int PLIST_MAX_PLAYERS = 12;
-	final int PLIST_WIDTH = 200;
-	final int PLIST_NEXT_WIDTH = 50;
-	final int PLIST_NEXT_HEIGHT = 20;
-	final int PLIST_NEW_WIDTH = 100;
-	final int PLIST_NEW_HEIGHT = 20;
-	final int PLIST_PLAYER_HEIGHT = 20;
-	final int PLIST_REMOVE_WIDTH = 12;
-	final int PLIST_REMOVE_HEIGHT = 20;
-	final int PLIST_VERT_SPACER = 20;
-	final int PLIST_NEXT_ID = 3;
-	final int PLIST_NEW_ID = 4;
+	
+	private static final String PLIST_FILE = "player.lst";
+	private static final int MAX_PLAYERS = 12;
+	private static final int WIDTH = 200;
+	private static final int NEXT_WIDTH = 50;
+	private static final int NEXT_HEIGHT = 20;
+	private static final int NEW_WIDTH = 100;
+	private static final int NEW_HEIGHT = 20;
+	private static final int PLAYER_HEIGHT = 20;
+	private static final int REMOVE_WIDTH = 12;
+	private static final int REMOVE_HEIGHT = 20;
+	private static final int VERT_SPACER = 20;
+	private static final int NEXT_ID = 3;
+	private static final int NEW_ID = 4;
 
 	Propinquity parent;
 	ControlP5 controlP5;
@@ -66,14 +67,14 @@ public class PlayerList implements UIElement {
 			addPlayer("Player 2");
 
 		// create button to add new players
-		newButton = controlP5.addButton("NEW PLAYER", 0, parent.width / 2 - PLIST_WIDTH / 2, parent.height / 2,
-				PLIST_NEW_WIDTH, PLIST_NEW_HEIGHT);
-		newButton.setId(PLIST_NEW_ID);
+		newButton = controlP5.addButton("NEW PLAYER", 0, parent.width / 2 - WIDTH / 2, parent.height / 2,
+				NEW_WIDTH, NEW_HEIGHT);
+		newButton.setId(NEW_ID);
 
 		// create next button
-		nextButton = controlP5.addButton("NEXT", 0, parent.width / 2 + PLIST_WIDTH / 2 - PLIST_NEXT_WIDTH,
-				parent.height / 2, PLIST_NEXT_WIDTH, PLIST_NEXT_HEIGHT);
-		nextButton.setId(PLIST_NEXT_ID);
+		nextButton = controlP5.addButton("NEXT", 0, parent.width / 2 + WIDTH / 2 - NEXT_WIDTH,
+				parent.height / 2, NEXT_WIDTH, NEXT_HEIGHT);
+		nextButton.setId(NEXT_ID);
 
 		layout();
 	}
@@ -91,8 +92,8 @@ public class PlayerList implements UIElement {
 
 	void addPlayer(String name) {
 		// add a new text field to the list
-		Textfield playerField = controlP5.addTextfield("Player " + playerFields.size(), parent.width / 2 - PLIST_WIDTH
-				/ 2, parent.height / 2, PLIST_WIDTH - PLIST_REMOVE_WIDTH * 2, PLIST_PLAYER_HEIGHT);
+		Textfield playerField = controlP5.addTextfield("Player " + playerFields.size(), parent.width / 2 - WIDTH
+				/ 2, parent.height / 2, WIDTH - REMOVE_WIDTH * 2, PLAYER_HEIGHT);
 		playerField.setAutoClear(false);
 		playerField.setText(name);
 		playerField.setCaptionLabel("Player " + (playerFields.size() + 1));
@@ -100,7 +101,7 @@ public class PlayerList implements UIElement {
 
 		// add a matching remove button
 		Button removeBtn = controlP5.addButton("Remove " + playerFields.size(), playerFields.size(), parent.width / 2
-				+ PLIST_WIDTH / 2 - PLIST_REMOVE_WIDTH, parent.height / 2, PLIST_REMOVE_WIDTH, PLIST_REMOVE_HEIGHT);
+				+ WIDTH / 2 - REMOVE_WIDTH, parent.height / 2, REMOVE_WIDTH, REMOVE_HEIGHT);
 		removeBtn.setCaptionLabel("x");
 
 		playerFields.add(playerField);
@@ -108,7 +109,7 @@ public class PlayerList implements UIElement {
 	}
 
 	public void layout() {
-		float y = parent.height / 2 - (PLIST_PLAYER_HEIGHT + PLIST_VERT_SPACER) * (playerFields.size() + 1) / 2;
+		float y = parent.height / 2 - (PLAYER_HEIGHT + VERT_SPACER) * (playerFields.size() + 1) / 2;
 
 		// move existing player fields up
 		CVector3f pos = new CVector3f(0, 0, 0);
@@ -123,10 +124,10 @@ public class PlayerList implements UIElement {
 			pos = btn.position();
 			btn.setPosition(pos.x, y);
 
-			y += PLIST_PLAYER_HEIGHT + PLIST_VERT_SPACER;
+			y += PLAYER_HEIGHT + VERT_SPACER;
 		}
 
-		y += PLIST_VERT_SPACER;
+		y += VERT_SPACER;
 
 		// move buttons down
 		pos = newButton.position();
@@ -134,7 +135,7 @@ public class PlayerList implements UIElement {
 		pos = nextButton.position();
 		nextButton.setPosition(pos.x, y);
 
-		if (playerFields.size() >= PLIST_MAX_PLAYERS)
+		if (playerFields.size() >= MAX_PLAYERS)
 			newButton.hide();
 	}
 
@@ -183,10 +184,10 @@ public class PlayerList implements UIElement {
 	public void controlEvent(ControlEvent theEvent) {
 		if(isVisible) {
 			switch (theEvent.controller().id()) {
-			case (PLIST_NEXT_ID):
+			case (NEXT_ID):
 				process();
 				break;
-			case (PLIST_NEW_ID):
+			case (NEW_ID):
 				addPlayer("");
 				layout();
 

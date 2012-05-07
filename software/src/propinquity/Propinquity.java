@@ -31,20 +31,12 @@ public class Propinquity extends PApplet {
 	public static final float WORLD_SIZE = 2f;
 	final int END_LEVEL_TIME = 6;
 	final int BOUNDARY_WIDTH = 5;
-	final int[] PLAYER_COLORS = { color(55, 137, 254), color(255, 25, 0) };
-	final int NEUTRAL_COLOR = color(142, 20, 252);
+	Colour[] playerColours = { Colour.blue(), Colour.red() };
+	Colour neutralColour = Colour.violet();
 
 	GameState gameState;
 
-	// level select controller
-	LevelSelect levelSelect = null;
-
-	// player list controller
-	PlayerList playerList = null;
-
-	// OpenGL
 	GL gl;
-
 	Liquid liquid;
 	PBox2D box2d;
 	TestSettings settings;
@@ -55,12 +47,16 @@ public class Propinquity extends PApplet {
 	long doneTime = -1;
 
 	XBeeBaseStation xbeeManager;
+
 	XMLInOut xmlInOut;
 	Hud hud;
 
 	Logger logger;
 	Sounds sounds;
 	Graphics graphics;
+	
+	LevelSelect levelSelect;
+	PlayerList playerList;
 
 	UIElement[] ui_elements;
 
@@ -79,7 +75,7 @@ public class Propinquity extends PApplet {
 		sounds.loadCommonContent();
 
 		// Create resources
-		xbeeManager = new XBeeBaseStation(this, this, DEBUG_XBEE);
+		xbeeManager = new XBeeBaseStation(this, DEBUG_XBEE);
 
 		playerList = new PlayerList(this);
 
@@ -101,14 +97,8 @@ public class Propinquity extends PApplet {
 			ui_elements[i].draw();
 
 		switch (gameState) {
-		case LevelSelect:
-			// TODO: To fix next.
 
-			// init level select UI
-			if (levelSelect == null) {
-				playerList.dispose();
-				levelSelect = new LevelSelect(this, sounds, playerList);
-			}
+		case LevelSelect:
 			levelSelect.draw();
 			break;
 
@@ -149,7 +139,7 @@ public class Propinquity extends PApplet {
 				image(graphics.hudLevelComplete, 0, -25);
 				textFont(Graphics.font, Hud.FONT_SIZE);
 				textAlign(CENTER, CENTER);
-				fill(winner != null ? winner.getColor() : NEUTRAL_COLOR);
+				fill(winner != null ? winner.getColor().toInt(this) : neutralColour.toInt(this));
 				noStroke();
 				text(winner != null ? winner.getName() + " won!" : "You tied!", 0, 0);
 				image(graphics.hudPlayAgain, 0, 30);
@@ -161,13 +151,9 @@ public class Propinquity extends PApplet {
 					doneTime = frameCount;
 				}
 
-				// give the last push
 				liquid.pushPeriod(true);
-
-				// step through time
 				box2d.step();
 
-				// liquify
 				liquid.liquify();
 
 				// snap score in final position
@@ -182,26 +168,15 @@ public class Propinquity extends PApplet {
 			}
 
 		} else if (level.isRunning()) {
-			// update hud
+
 			hud.update(hud.getAngle() + HALF_PI, TWO_PI / 10000f, TWO_PI / 2000f);
 
-			// push particles of current period out
 			liquid.pushPeriod();
-
-			// release balls
 			liquid.updateParticles();
 
-			// step through time
 			box2d.step();
-
-			// liquify
 			liquid.liquify();
-
-			// process level
 			level.update();
-
-			// read level data stub
-			// if (USE_STUB) level.processStub();
 
 		} else {
 			gl = ((PGraphicsOpenGL) g).gl;
@@ -234,6 +209,7 @@ public class Propinquity extends PApplet {
 	}
 
 	void drawMask() {
+		// TODO: Figure out what this does...
 		gl = ((PGraphicsOpenGL) g).gl;
 		gl.glEnable(GL.GL_BLEND);
 		gl.glBlendFunc(GL.GL_DST_COLOR, GL.GL_ZERO);
@@ -252,22 +228,28 @@ public class Propinquity extends PApplet {
 	}
 
 	public void changeGameState(GameState new_state) {
+
 		for (int i = 0; i < ui_elements.length; i++)
 			ui_elements[i].hide();
 
 		switch (new_state) {
+
 		case XBeeInit:
 			xbeeManager.show();
 			break;
+
 		case PlayerList:
 			playerList.show();
 			break;
+
 		case LevelSelect:
-
+			playerList.dispose();
+			levelSelect = new LevelSelect(this, sounds, playerList);
 			break;
+
 		case Play:
-
 			break;
+			
 		}
 
 		gameState = new_state;
@@ -280,7 +262,7 @@ public class Propinquity extends PApplet {
 		switch (gameState) {
 
 		case XBeeInit:
-			xbeeManager.xBeeEvent(xbee);
+			// xbeeManager.xBeeEvent(xbee);
 			break;
 
 		case LevelSelect:
@@ -295,81 +277,86 @@ public class Propinquity extends PApplet {
 
 	}
 
-	public void controlEvent(ControlEvent theEvent) {
+	public void controlEvent(ControlEvent event) {
+
 		switch (gameState) {
+
 		case XBeeInit:
-			xbeeManager.controlEvent(theEvent);
+			xbeeManager.controlEvent(event);
 			break;
+
 		case PlayerList:
-			playerList.controlEvent(theEvent);
+			playerList.controlEvent(event);
 			break;
 		}
 	}
 
 	public void keyPressed() {
+
 		switch (gameState) {
+
 		case XBeeInit:
 			xbeeManager.keyPressed(keyCode);
 			break;
+
 		case PlayerList:
 			playerList.keyPressed(keyCode);
 			break;
 
 		case LevelSelect:
+
 			switch (key) {
+
 			case BACKSPACE:
 				levelSelect.clear();
-				levelSelect = null;
-				playerList = null;
-				// initPlayerListCtrl();
 				changeGameState(GameState.PlayerList);
 				break;
 
 			default:
-				if (levelSelect != null) {
-					// pass the key to the level select controller
-					levelSelect.keyPressed(key, keyCode);
+				// pass the key to the level select controller
+				levelSelect.keyPressed(key, keyCode);
 
-					// check if the level select controller is done
-					// and ready to play
-					if (levelSelect.isDone()) {
-						// init level
-						level = new Level(this, sounds, levelSelect.players, levelSelect.levelFile);
-						graphics.loadLevelContent();
+				// check if the level select controller is done
+				// and ready to play
+				if (levelSelect.isDone()) {
+					// init level
+					level = new Level(this, sounds, levelSelect.players, levelSelect.levelFile);
+					graphics.loadLevelContent();
 
-						while (true)
-							if (level.successfullyRead() > -1)
-								break;
+					while (true)
+						if (level.successfullyRead() > -1)
+							break;
 
-						if (level.successfullyRead() == 0) {
-							level.loadDefaults();
-							System.err.println("I had some trouble reading the level file.");
-							System.err.println("Defaulting to 2 minutes of free play instead.");
-						}
-
-						// send configuration message here
-						// TODO: send step length to proximity patches
-
-						delay(50);
-						while (!levelSelect.allAcksIn()) {
-							println("sending again");
-							levelSelect.sendConfigMessages(level.getStepInterval());
-							delay(50);
-						}
-
-						// init liquid particles
-						liquid = new Liquid(this);
-
-						// play
-						gameState = GameState.Play;
-						println("gamestate = " + gameState);
+					if (level.successfullyRead() == 0) {
+						level.loadDefaults();
+						System.err.println("I had some trouble reading the level file.");
+						System.err.println("Defaulting to 2 minutes of free play instead.");
 					}
+
+					// send configuration message here
+					// TODO: send step length to proximity patches
+
+					delay(50);
+					while (!levelSelect.allAcksIn()) {
+						println("sending again");
+						levelSelect.sendConfigMessages(level.getStepInterval());
+						delay(50);
+					}
+
+					// init liquid particles
+					liquid = new Liquid(this);
+
+					// play
+					gameState = GameState.Play;
+					println("gamestate = " + gameState);
 				}
 				break;
+
 			}
 			break;
 
 		case Play:
+
 			switch (key) {
 
 			case ESC:

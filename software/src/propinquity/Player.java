@@ -28,7 +28,7 @@ public class Player implements PConstants {
 	Propinquity parent;
 
 	String name;
-	int color;
+	Colour colour;
 
 	float hudAngle;
 	float hudVel;
@@ -67,11 +67,10 @@ public class Player implements PConstants {
 
 	boolean coopMode;
 
-	// public Player(PApplet p, String n, color c)
-	public Player(Propinquity p, int c) {
+	public Player(Propinquity p, Colour colour) {
 		this.parent = p;
 		this.name = "noname";
-		this.color = c;
+		this.colour = colour;
 		this.xpansProx = new XPan[XPAN_PROX_BASES];
 		this.xpansVibe = new XPan[XPAN_VIBE_BASES];
 		this.numPatches = 0;
@@ -118,8 +117,8 @@ public class Player implements PConstants {
 		return name;
 	}
 
-	public int getColor() {
-		return color;
+	public Colour getColor() {
+		return colour;
 	}
 
 	public void setNumPatches(int num) {
@@ -355,7 +354,8 @@ public class Player implements PConstants {
 	void initProxComm(String ni1, String ni2) {
 		// TODO load bases using their serial number...?
 		if (ni1 != null) {
-			XBeeReader xbee = parent.xbeeManager.reader(ni1);
+			XBeeReader xbee = null;
+			// XBeeReader xbee = parent.xbeeManager.reader(ni1);
 			if (xbee != null) {
 				xpansProx[0] = new XPan(xbee);
 				System.out.println("Initialized XBee for proximity #1: " + ni1);
@@ -366,7 +366,8 @@ public class Player implements PConstants {
 			}
 		}
 		if (ni2 != null) {
-			XBeeReader xbee = parent.xbeeManager.reader(ni2);
+			XBeeReader xbee = null;
+			// XBeeReader xbee = parent.xbeeManager.reader(ni2);
 			if (xbee != null) {
 				xpansProx[1] = new XPan(xbee);
 				System.out.println("Initialized XBee for proximity #2: " + ni2);
@@ -393,7 +394,8 @@ public class Player implements PConstants {
 		if (ni == null)
 			return;
 
-		XBeeReader xbee = parent.xbeeManager.reader(ni);
+		XBeeReader xbee = null;
+		// XBeeReader xbee = parent.xbeeManager.reader(ni);
 		if (xbee != null) {
 			xpansVibe[0] = new XPan(xbee);
 			System.out.println("Initialized XBee for vibration: " + ni);
