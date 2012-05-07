@@ -107,14 +107,23 @@ public class Colour {
 	/* ------------------------------------------------------------ */
 
 	/**
-	 * Gets a predefined colour with the value R:142 G:20 B:252 A:255.
+	 * Gets a predefined colour with the value R:0 G:0 B:0 A:255.
 	 * 
-	 * @return The colour "violet" as a Colour object.
+	 * @return The colour "black" as a Colour object.
 	 */
-	public static Colour violet() {
-		return new Colour(142, 20, 252);
+	public static Colour black() {
+		return new Colour(0, 0, 0);
 	}
-
+	
+	/**
+	 * Gets a predefined colour with the value R:55 G:137 B:254 A:255.
+	 * 
+	 * @return The colour "blue" as a Colour object.
+	 */
+	public static Colour blue() {
+		return new Colour(55, 137, 254);
+	}
+	
 	/**
 	 * Gets a predefined colour with the value R:255 G:25 B:0 A:255.
 	 * 
@@ -123,14 +132,14 @@ public class Colour {
 	public static Colour red() {
 		return new Colour(255, 25, 0);
 	}
-
+	
 	/**
-	 * Gets a predefined colour with the value R:55 G:137 B:254 A:255.
+	 * Gets a predefined colour with the value R:142 G:20 B:252 A:255.
 	 * 
-	 * @return The colour "blue" as a Colour object.
+	 * @return The colour "violet" as a Colour object.
 	 */
-	public static Colour blue() {
-		return new Colour(55, 137, 254);
+	public static Colour violet() {
+		return new Colour(142, 20, 252);
 	}
 
 }

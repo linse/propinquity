@@ -107,18 +107,14 @@ public class Propinquity extends PApplet {
 	}
 
 	public void draw() {
-		// clear
-		background(0);
+		// clear black
+		background(Colour.black().toInt(this));
 
 		for (int i = 0; i < ui_elements.length; i++)
 			ui_elements[i].draw();
 
-		switch (gameState) {
-
-		case Play:
+		if (gameState == GameState.Play)
 			drawPlay();
-			break;
-		}
 
 		logger.recordFrame();
 	}
