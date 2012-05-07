@@ -8,7 +8,7 @@ import com.rapplogic.xbee.api.*;
  * This class scans for XBees connected to the computer. It then instantiates and holds Xbee objects for each such device.
  *
 */
-public class XBeeBaseStation implements Runnable {
+public class XBeeBaseStation implements Runnable, HardwareInterface {
 
 	final int XBEE_BAUDRATE = 115200;
 	final int XBEE_RESPONSE_TIMEOUT = 1000;
@@ -159,6 +159,38 @@ public class XBeeBaseStation implements Runnable {
 		}
 
 		System.out.println("Scan Complete");
+	}
+
+
+	public void addPatch(Patch patch) {
+
+	}
+
+	public void removePatch(Patch patch) {
+
+	}
+
+	public void addGlove(Glove glove) {
+
+	}
+
+	public void removeGlove(Glove glove) {
+
+	}
+
+	public void addProxEventListener(ProxEventListener listener) {
+
+	}
+
+	public void removeProxEventListener(ProxEventListener listener) {
+
+	}
+
+	public void sendPacket(Packet packet) {
+		// XBeeAddress16 addr = new XBeeAddress16(((packet.getDestAddr() & 0xFF00) >> 8), packet.getDestAddr() & 0x00FF);
+		
+		// TxRequest16 request = new TxRequest16(addr, new int[] {'H','i'});
+		// xbee.sendAsynchronous(new AtCommand("NT"));
 	}
 
 }
