@@ -56,7 +56,6 @@ public class LevelSelect implements PConstants, UIElement {
 	int numProxPatches;
 	int numConfigAcks;
 
-	XMLElement levelXML;
 	String[] levelFiles;
 	ArrayList<Level> levels;
 	Level loadingLevel;
@@ -133,30 +132,8 @@ public class LevelSelect implements PConstants, UIElement {
 		}
 	}
 
-	public void xmlEvent(XMLElement p_xmlElement) {
-		levelXML = p_xmlElement;
-
-		int l_numPlayers;
-
-		// load number of players
-		l_numPlayers = levelXML.countChildren() - 1;
-
-		// check if we have an correct level file
-		if (l_numPlayers < 0) {
-			System.out.println("Error: Empty level file");
-			loadingLevel.successfullyRead = 0;
-			return;
-		}
-
-		// read song
-		loadingLevel.songName = levelXML.getChild(0).getAttribute("name");
-		loadingLevel.songFile = levelXML.getChild(0).getAttribute("file");
-		loadingLevel.songDuration = levelXML.getChild(0).getAttribute("duration");
-		loadingLevel.tempo = levelXML.getChild(0).getIntAttribute("bpm");
-		loadingLevel.multiplier = levelXML.getChild(0).getIntAttribute("multiplier");
-
-		loadingLevel.successfullyRead = 1;
-		return;
+	public void xmlEvent(XMLElement levelXML) {
+		loadingLevel.loadSong(levelXML);
 	}
 
 	void initTextures() {

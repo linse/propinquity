@@ -55,7 +55,7 @@ public class Propinquity extends PApplet {
 	PlayerList playerList;
 	LevelSelect levelSelect;
 
-	UIElement[] ui_elements;
+	UIElement[] uiElements;
 
 	public void setup() {
 
@@ -81,7 +81,7 @@ public class Propinquity extends PApplet {
 		hud = new Hud(this, sounds, graphics);
 		logger = new Logger(this);
 
-		ui_elements = new UIElement[] { xbeeManager, playerList, levelSelect };
+		uiElements = new UIElement[] { xbeeManager, playerList, levelSelect };
 
 		changeGameState(GameState.XBeeInit);
 	}
@@ -110,8 +110,8 @@ public class Propinquity extends PApplet {
 		// clear black
 		background(Colour.black().toInt(this));
 
-		for (int i = 0; i < ui_elements.length; i++)
-			ui_elements[i].draw();
+		for (int i = 0; i < uiElements.length; i++)
+			uiElements[i].draw();
 
 		if (gameState == GameState.Play)
 			drawPlay();
@@ -216,12 +216,12 @@ public class Propinquity extends PApplet {
 		popMatrix();
 	}
 
-	public void changeGameState(GameState new_state) {
+	public void changeGameState(GameState newState) {
 
-		for (int i = 0; i < ui_elements.length; i++)
-			ui_elements[i].hide();
+		for (int i = 0; i < uiElements.length; i++)
+			uiElements[i].hide();
 
-		switch (new_state) {
+		switch (newState) {
 
 		case XBeeInit:
 			xbeeManager.show();
@@ -242,7 +242,7 @@ public class Propinquity extends PApplet {
 
 		}
 
-		gameState = new_state;
+		gameState = newState;
 
 		println("gamestate = " + gameState);
 	}
@@ -366,7 +366,7 @@ public class Propinquity extends PApplet {
 				break;
 
 			case 'e': // play stub
-				level.currentStep = level.numSteps;
+				level.currentStep = level.stepCount;
 				break;
 
 			case 'f': // flush output and close

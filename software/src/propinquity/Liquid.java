@@ -507,13 +507,13 @@ public class Liquid {
 			while (it.hasNext()) {
 				particle = it.next();
 
-				Body b = particle.body;
+				Body body = particle.body;
 
 				// if (p == 0 && pos.x < width/2)
 				if (p == 0)
-					b.m_linearVelocity.x += 0.20f;
+					body.m_linearVelocity.x += 0.20f;
 				else if (p == 1)
-					b.m_linearVelocity.x -= 0.20f;
+					body.m_linearVelocity.x -= 0.20f;
 			}
 		}
 	}
