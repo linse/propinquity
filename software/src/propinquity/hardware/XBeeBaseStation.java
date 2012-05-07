@@ -1,14 +1,16 @@
 package propinquity.hardware;
 
 import java.util.*;
+import java.lang.System;
 import processing.serial.*;
 import com.rapplogic.xbee.api.*;
+import com.rapplogic.xbee.api.wpan.*;
 
 /**
  * This class scans for XBees connected to the computer. It then instantiates and holds Xbee objects for each such device.
  *
 */
-public class XBeeBaseStation implements Runnable, HardwareInterface {
+public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListener {
 
 	final int XBEE_BAUDRATE = 115200;
 	final int XBEE_RESPONSE_TIMEOUT = 1000;
@@ -17,12 +19,20 @@ public class XBeeBaseStation implements Runnable, HardwareInterface {
 
 	HashMap<String, XBee> xbees;
 
+	HashMap<Integer, Glove> gloves;
+	HashMap<Integer, Patch> patches;
+	Vector<ProxEventListener> proxListeners;
+
 	/**
 	 * Create a new XBeeBaseStation.
 	 *
 	 */
 	public XBeeBaseStation() {
 		xbees = new HashMap<String, XBee>();
+
+		gloves = new HashMap<Integer, Glove>();
+		patches = new HashMap<Integer, Patch>();
+		proxListeners = new Vector<ProxEventListener>();
 	}
 
 	/**
@@ -155,6 +165,7 @@ public class XBeeBaseStation implements Runnable, HardwareInterface {
 				continue;
 			}
 
+			xbee.addPacketListener(this);
 			xbees.put(ni, xbee); //TODO Check for collision
 		}
 
@@ -163,34 +174,89 @@ public class XBeeBaseStation implements Runnable, HardwareInterface {
 
 
 	public void addPatch(Patch patch) {
+		if(patches.put(patch.getAddress(), patch) != null) {
+			System.out.println("Warning a patch with duplicate address added to XBeeBaseStation.");
+		}
 
+		if(gloves.containsKey(patch.getAddress())) {
+			System.out.println("Warning there XBeeBaseStation has a patch and a glove with the same address, no action was taken.");
+		}
 	}
 
-	public void removePatch(Patch patch) {
-
+	public boolean removePatch(Patch patch) {
+		if(patches.remove(patch.getAddress()) != null) return true;
+		else return false;
 	}
 
 	public void addGlove(Glove glove) {
+		if(gloves.put(glove.getAddress(), glove) != null) {
+			System.out.println("Warning a glove with a duplicate address added to XBeeBaseStation.");
+		}
 
+		if(patches.containsKey(glove.getAddress())) {
+			System.out.println("Warning there XBeeBaseStation has a patch and a glove with the same address, no action was taken.");
+		}
 	}
 
-	public void removeGlove(Glove glove) {
-
+	public boolean removeGlove(Glove glove) {
+		if(gloves.remove(glove.getAddress()) != null) return true;
+		else return false;
 	}
 
 	public void addProxEventListener(ProxEventListener listener) {
-
+		if(proxListeners.indexOf(listener) == -1) proxListeners.add(listener);
 	}
 
-	public void removeProxEventListener(ProxEventListener listener) {
-
+	public boolean removeProxEventListener(ProxEventListener listener) {
+		return proxListeners.remove(listener);
 	}
 
 	public void sendPacket(Packet packet) {
-		// XBeeAddress16 addr = new XBeeAddress16(((packet.getDestAddr() & 0xFF00) >> 8), packet.getDestAddr() & 0x00FF);
+		XBeeAddress16 addr = new XBeeAddress16(((packet.getDestAddr() & 0xFF00) >> 8), packet.getDestAddr() & 0x00FF);
 		
-		// TxRequest16 request = new TxRequest16(addr, new int[] {'H','i'});
-		// xbee.sendAsynchronous(new AtCommand("NT"));
+		int[] fullPayload = new int[packet.getPayload().length+1];
+		fullPayload[0] = packet.getPacketType().getCode();
+		System.arraycopy(packet.getPayload(), 0, fullPayload, 1, packet.getPayload().length);
+
+		TxRequest16 request = new TxRequest16(addr, fullPayload);
+
+		for(XBee xbee : xbees.values()) {
+			try {
+				xbee.sendAsynchronous(request);
+			} catch(XBeeException e) {
+				System.out.println("\t\tException sending request");
+			}
+		}
+	}
+
+	public void processResponse(XBeeResponse response) {
+		switch(response.getApiId()) {
+			case TX_STATUS_RESPONSE: {//ACK
+
+				break;
+			}
+			case RX_16_RESPONSE: {//From remote radio
+				RxResponse16 rx_response = (RxResponse16)response;
+				int addr = rx_response.getRemoteAddress().get16BitValue();
+				Patch patch = patches.get(addr);
+				int[] data = rx_response.getData();
+				if(patch != null) {
+					if(data.length > 1 && data[0] == PacketType.PROX.getCode()) {
+						patch.setProx(((data[1] & 0xFF) << 8) | (data[2] & 0xFF));
+						for(ProxEventListener listener : proxListeners) listener.proxEvent(patch);
+					} else {
+						System.out.println("Packet form address "+addr+" seems malformed. Contains: ");
+						for(int i = 0;i < data.length;i++) {
+							System.out.println("["+i+"]"+data[i]);
+						}
+					}
+				} else {
+					System.out.println("Got reponse from an unregistered patch or glove with address" + addr);
+				}
+
+				break;
+			}
+		}		
 	}
 
 }
