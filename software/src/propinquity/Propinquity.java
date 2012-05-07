@@ -150,13 +150,9 @@ public class Propinquity extends PApplet {
 					doneTime = frameCount;
 				}
 
-				// give the last push
 				liquid.pushPeriod(true);
-
-				// step through time
 				box2d.step();
 
-				// liquify
 				liquid.liquify();
 
 				// snap score in final position
@@ -171,26 +167,15 @@ public class Propinquity extends PApplet {
 			}
 
 		} else if (level.isRunning()) {
-			// update hud
+
 			hud.update(hud.getAngle() + HALF_PI, TWO_PI / 10000f, TWO_PI / 2000f);
 
-			// push particles of current period out
 			liquid.pushPeriod();
-
-			// release balls
 			liquid.updateParticles();
 
-			// step through time
 			box2d.step();
-
-			// liquify
 			liquid.liquify();
-
-			// process level
 			level.update();
-
-			// read level data stub
-			// if (USE_STUB) level.processStub();
 
 		} else {
 			gl = ((PGraphicsOpenGL) g).gl;
@@ -223,6 +208,7 @@ public class Propinquity extends PApplet {
 	}
 
 	void drawMask() {
+		// TODO: Figure out what this does...
 		gl = ((PGraphicsOpenGL) g).gl;
 		gl.glEnable(GL.GL_BLEND);
 		gl.glBlendFunc(GL.GL_DST_COLOR, GL.GL_ZERO);
@@ -261,8 +247,8 @@ public class Propinquity extends PApplet {
 			break;
 
 		case Play:
-
 			break;
+			
 		}
 
 		gameState = new_state;
