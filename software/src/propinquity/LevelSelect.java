@@ -10,7 +10,7 @@ import processing.opengl.PGraphicsOpenGL;
 import proxml.*;
 import xbee.*;
 
-public class LevelSelect implements PConstants {
+public class LevelSelect implements PConstants, UIElement {
 
 	final String LEVEL_FOLDER = "levels/";
 
@@ -66,11 +66,15 @@ public class LevelSelect implements PConstants {
 
 	Sounds sounds;
 
-	public LevelSelect(Propinquity p, Sounds sounds, PlayerList playerList) {
+	private boolean isVisible;
+	
+	public LevelSelect(Propinquity p, Sounds sounds) {
+		
+		isVisible = true;
+		
 		this.parent = p;
 		this.sounds = sounds;
 		this.radius = parent.height / 2 - Hud.WIDTH * 2;
-		this.playerNames = playerList.getNames();
 
 		this.font = p.loadFont(LEVEL_FONT);
 
@@ -81,8 +85,10 @@ public class LevelSelect implements PConstants {
 
 		loadLevels();
 		initTextures();
-
-		reset();
+	}
+	
+	public void registerPlayers(PlayerList playerList) {
+		this.playerNames = playerList.getNames();
 	}
 
 	public void reset() {
@@ -241,9 +247,24 @@ public class LevelSelect implements PConstants {
 		selected = 0;
 	}
 
-	public void draw() {
-		// TODO: Fix this too
+	public void show() {
+		isVisible = true;
+	}
 
+	public void hide() {
+		isVisible = false;
+	}
+
+	public boolean isVisible() {
+		return isVisible;
+	}
+	
+	public void draw() {
+		
+		if (!isVisible)
+			return;
+		
+		// TODO: Fix this too
 		parent.graphics.drawInnerBoundary();
 		parent.graphics.drawOuterBoundary();
 		parent.pushMatrix();

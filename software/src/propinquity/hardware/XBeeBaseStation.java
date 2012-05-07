@@ -2,7 +2,6 @@ package propinquity.hardware;
 
 import java.util.*;
 import processing.serial.*;
-import propinquity.*;
 import com.rapplogic.xbee.api.*;
 
 /**

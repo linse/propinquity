@@ -11,7 +11,6 @@ import pbox2d.*;
 import processing.core.*;
 import processing.opengl.PGraphicsOpenGL;
 import proxml.*;
-import xbee.XBeeReader;
 
 import propinquity.hardware.*;
 
@@ -76,17 +75,17 @@ public class Propinquity extends PApplet {
 
 		// Create resources
 		xbeeBaseStation = new XBeeBaseStation();
-		xbeeBaseStations.scan();
+		xbeeBaseStation.scan();
 		xbeeManager = new XBeeManager(this, xbeeBaseStation);
 
 		playerList = new PlayerList(this);
 
+		levelSelect = new LevelSelect(this, sounds);
 		hud = new Hud(this, sounds, graphics);
 
-		// init logging
 		logger = new Logger(this);
 
-		ui_elements = new UIElement[] { xbeeManager, playerList };
+		ui_elements = new UIElement[] { xbeeManager, playerList, levelSelect };
 
 		changeGameState(GameState.XBeeInit);
 	}
@@ -245,8 +244,10 @@ public class Propinquity extends PApplet {
 			break;
 
 		case LevelSelect:
+			levelSelect.registerPlayers(playerList);
 			playerList.dispose();
-			levelSelect = new LevelSelect(this, sounds, playerList);
+			levelSelect.reset();
+			levelSelect.show();
 			break;
 
 		case Play:
