@@ -41,7 +41,10 @@
 	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/user/pbox2d/JBox2D-2.0.1-b250-Library.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/user/pbox2d/pbox2d.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/user/proxml/proxml.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/user/xbee/xbee.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Stephane/Code/Propinquity/software/lib/user/xbee-1.5/xbee.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/user/xbee-api-0.9/lib/log4j.jar"/>
+	<classpathentry kind="lib" path="lib/user/xbee-api-0.9/lib/RXTXcomm.jar"/>
+	<classpathentry kind="lib" path="lib/user/xbee-api-0.9/xbee-api-0.9.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

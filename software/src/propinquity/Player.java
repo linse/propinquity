@@ -2,10 +2,7 @@ package propinquity;
 
 import java.util.ArrayList;
 
-import processing.core.PApplet;
 import processing.core.PConstants;
-import xbee.*;
-import propinquity.hardware.*;
 
 import ddf.minim.AudioPlayer;
 
@@ -341,26 +338,26 @@ public class Player implements PConstants {
 	void initProxComm(String ni1, String ni2) {
 		// TODO load bases using their serial number...?
 		if (ni1 != null) {
-			XBeeReader xbee = null;
+			// XBeeReader xbee = null;
 			// XBeeReader xbee = parent.xbeeManager.reader(ni1);
-			if (xbee != null) {
-				System.out.println("Initialized XBee for proximity #1: " + ni1);
-			} else {
-				System.err
-						.println("Could not initialize XBee for proximity #1: "
-								+ ni1);
-			}
+			// if (xbee != null) {
+			// 	System.out.println("Initialized XBee for proximity #1: " + ni1);
+			// } else {
+			// 	System.err
+			// 			.println("Could not initialize XBee for proximity #1: "
+			// 					+ ni1);
+			// }
 		}
 		if (ni2 != null) {
-			XBeeReader xbee = null;
+			// XBeeReader xbee = null;
 			// XBeeReader xbee = parent.xbeeManager.reader(ni2);
-			if (xbee != null) {
-				System.out.println("Initialized XBee for proximity #2: " + ni2);
-			} else {
-				System.err
-						.println("Could not initialize XBee for proximity #2: "
-								+ ni2);
-			}
+			// if (xbee != null) {
+			// 	System.out.println("Initialized XBee for proximity #2: " + ni2);
+			// } else {
+			// 	System.err
+			// 			.println("Could not initialize XBee for proximity #2: "
+			// 					+ ni2);
+			// }
 		}
 
 		// create the data packet that requests proximity values
@@ -373,24 +370,24 @@ public class Player implements PConstants {
 		if (ni == null)
 			return;
 
-		XBeeReader xbee = null;
+		// XBeeReader xbee = null;
 		// XBeeReader xbee = parent.xbeeManager.reader(ni);
-		if (xbee != null) {
-			System.out.println("Initialized XBee for vibration: " + ni);
-		} else {
-			System.err
-					.println("Could not initialize XBee for vibration: " + ni);
-		}
+		// if (xbee != null) {
+		// 	System.out.println("Initialized XBee for vibration: " + ni);
+		// } else {
+		// 	System.err
+		// 			.println("Could not initialize XBee for vibration: " + ni);
+		// }
 	}
 
 	public void sendStep(int stepNum) {
 		// System.out.println(name + " sending step: " + stepNum);
 		// broadcast step to patches
 		// 0/*???*/);
-		Step step1 = stepNum < steps.length ? steps[stepNum] : null;
-		Step step2 = stepNum + 1 < steps.length ? steps[stepNum + 1] : null;
-		Step step3 = stepNum + 2 < steps.length ? steps[stepNum + 2] : null;
-		Step step4 = stepNum + 3 < steps.length ? steps[stepNum + 3] : null;
+		// Step step1 = stepNum < steps.length ? steps[stepNum] : null;
+		// Step step2 = stepNum + 1 < steps.length ? steps[stepNum + 1] : null;
+		// Step step3 = stepNum + 2 < steps.length ? steps[stepNum + 2] : null;
+		// Step step4 = stepNum + 3 < steps.length ? steps[stepNum + 3] : null;
 		// //Does this only broadcast to two of the prox sensors then?
 	}
 

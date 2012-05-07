@@ -1,7 +1,6 @@
 package propinquity.hardware;
 
 import processing.core.*;
-import propinquity.*;
 import xbee.*;
 import controlP5.*;
 
