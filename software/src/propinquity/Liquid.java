@@ -189,17 +189,12 @@ public class Liquid {
 			b.setMass(md);
 			b.allowSleeping(false);
 
-			// particles[p][i] = new Particle(b, sh,
-			// PARTICLE_SCALE*random(1.0-PARTICLE_SCALE_RANGE, 1.0),
-			// pgParticle[p]);
 			particles[p].add(new Particle(parent, b, sh, PARTICLE_SCALE
 					* parent.random(1.0f - PARTICLE_SCALE_RANGE, 1.0f), pgParticle[p]));
 		}
 
 		// keep track of the released particles
 		player.subPeriodPts(nParticles * ptsPerParticle);
-		// pCount[p] += nParticles;
-		// totalParticles += nParticles;
 	}
 
 	void killParticles(int p, int nParticles) {
