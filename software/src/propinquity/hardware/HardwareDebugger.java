@@ -8,7 +8,7 @@ public class HardwareDebugger extends PApplet implements ProxEventListener {
 	// Unique serialization ID
 	private static final long serialVersionUID = 6340508174717159418L;
 
-	static final int[] PATCH_ADDR = new int[] { 1, 2 };
+	static final int[] PATCH_ADDR = new int[] { 1, 2, 3, 4, 5, 6 };
 	static final int NUM_PATCHES = PATCH_ADDR.length;
 
 	XBeeBaseStation xbeeBaseStation;
@@ -21,7 +21,7 @@ public class HardwareDebugger extends PApplet implements ProxEventListener {
 	Slider prox_sliders[];
 
 	public void setup() {
-		size(1024, 768);
+		size(screen.width, 800);
 
 		controlP5 = new ControlP5(this);
 
@@ -32,37 +32,49 @@ public class HardwareDebugger extends PApplet implements ProxEventListener {
 		for(int i = 0;i < NUM_PATCHES;i++) {
 			int x_offset = (width-100)/NUM_PATCHES*i+50;
 			int y_offset = 60;
-			int local_width = (width-200)/NUM_PATCHES;
+			int local_width = round((width-100)/NUM_PATCHES*0.95f);
 
-			int num = 6;
+			int obj_width = 15;
+			int slider_height = 200;
+
+			int level_0 = -45;
+			int level_1 = 10;
+			int level_2 = 240;
+			int level_3 = 480;
+
+			int num = 3;
+
+			int incr_offset = 0;
+			int incr_width = (local_width-incr_offset*2)/num;
+			int obj_offset = incr_offset+(incr_width-obj_width)/2;
 
 			ControlGroup group = controlP5.addGroup("Patch "+i, x_offset, y_offset, local_width);
 
-			Toggle toggle = controlP5.addToggle("Active "+i, 10, 10, 30, 30);
+			Toggle toggle = controlP5.addToggle("Active "+i, incr_width*0+obj_offset, level_0, obj_width, obj_width);
 			toggle.setGroup(group);
 
-			Slider r_slider = controlP5.addSlider("Red "+i, 0, 255, 0, (local_width-20)/num*1+10, 10, 15, 200);
+			Slider r_slider = controlP5.addSlider("Red "+i, 0, 255, 0, incr_width*0+obj_offset, level_1, obj_width, slider_height);
 			r_slider.setGroup(group);
-			Slider g_slider = controlP5.addSlider("Green "+i, 0, 255, 0, (local_width-20)/num*2+10, 10, 15, 200);
+			Slider g_slider = controlP5.addSlider("Green "+i, 0, 255, 0, incr_width*1+obj_offset, level_1, obj_width, slider_height);
 			g_slider.setGroup(group);
-			Slider b_slider = controlP5.addSlider("Blue "+i, 0, 255, 0, (local_width-20)/num*3+10, 10, 15, 200);
+			Slider b_slider = controlP5.addSlider("Blue "+i, 0, 255, 0, incr_width*2+obj_offset, level_1, obj_width, slider_height);
 			b_slider.setGroup(group);
-			Slider duty_slider = controlP5.addSlider("Color Duty "+i, 0, 255, 0, (local_width-20)/num*1+10, 240, 15, 200);
+
+			Slider duty_slider = controlP5.addSlider("Color Duty "+i, 0, 255, 0, incr_width*0+obj_offset, level_2, obj_width, slider_height);
 			duty_slider.setGroup(group);
-			Slider period_slider = controlP5.addSlider("Color Period "+i, 0, 255, 0, (local_width-20)/num*2+10, 240, 15, 200);
+			Slider period_slider = controlP5.addSlider("Color Period "+i, 0, 255, 0, incr_width*1+obj_offset, level_2, obj_width, slider_height);
 			period_slider.setGroup(group);
 
-			
-			Slider vibe_slider = controlP5.addSlider("Vibe Level "+i, 0, 255, 0, (local_width-20)/num*4+10, 10, 15, 200);
-			vibe_slider.setGroup(group);
-			Slider vibe_duties_slider = controlP5.addSlider("Vibe Duty "+i, 0, 255, 0, (local_width-20)/num*4+10, 240, 15, 200);
-			vibe_duties_slider.setGroup(group);
-			Slider vibe_periods_slider = controlP5.addSlider("Vibe Period "+i, 0, 255, 0, (local_width-20)/num*5+10, 240, 15, 200);
-			vibe_periods_slider.setGroup(group);
-
-			prox_sliders[i] = controlP5.addSlider("Prox "+i, 0, 1024, 0, (local_width-20)/num*5+10, 10, 15, 200);
+			prox_sliders[i] = controlP5.addSlider("Prox "+i, 0, 1024, 0, incr_width*2+obj_offset, level_2, obj_width, slider_height);
 			prox_sliders[i].lock();
 			prox_sliders[i].setGroup(group);
+			
+			Slider vibe_slider = controlP5.addSlider("Vibe Level "+i, 0, 255, 0, incr_width*0+obj_offset, level_3, obj_width, slider_height);
+			vibe_slider.setGroup(group);
+			Slider vibe_duties_slider = controlP5.addSlider("Vibe Duty "+i, 0, 255, 0, incr_width*1+obj_offset, level_3, obj_width, slider_height);
+			vibe_duties_slider.setGroup(group);
+			Slider vibe_periods_slider = controlP5.addSlider("Vibe Period "+i, 0, 255, 0, incr_width*2+obj_offset, level_3, obj_width, slider_height);
+			vibe_periods_slider.setGroup(group);
 		}
 
 		if(!show_controls) controlP5.hide();
