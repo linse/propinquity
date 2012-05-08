@@ -41,7 +41,7 @@ public class LevelSelect implements PConstants, UIElement {
 	int radius;
 	String[] playerNames;
 
-	LevelSelectParticle[] particles;
+	Particle[] particles;
 	int selected;
 
 	PGraphics[] pgParticle;
@@ -139,7 +139,7 @@ public class LevelSelect implements PConstants, UIElement {
 	void initTextures() {
 		PImage[] imgParticle = new PImage[2];
 		for (int i = 0; i < imgParticle.length; i++)
-			imgParticle[i] = parent.loadImage(parent.dataPath("particles/player" + (i + 1) + ".png"));
+			imgParticle[i] = parent.graphics.loadParticles(i);
 
 		pgParticle = new PGraphics[2];
 		for (int i = 0; i < pgParticle.length; i++) {
@@ -203,22 +203,24 @@ public class LevelSelect implements PConstants, UIElement {
 		// ping for patches
 		players[player].discoverPatches();
 
-		particles = new LevelSelectParticle[playerNames.length];
+		particles = new Particle[playerNames.length];
 		for (int i = 0; i < particles.length; i++) {
-			particles[i] = new LevelSelectParticle(parent, new PVector(PApplet.cos(PApplet.TWO_PI / particles.length
-					* i)
-					* radius, PApplet.sin(PApplet.TWO_PI / particles.length * i) * radius, 0), 1, pgParticle[player]);
+			particles[i] = new Particle(parent, new PVector(
+					PApplet.cos(PApplet.TWO_PI / particles.length * i) * radius, PApplet.sin(PApplet.TWO_PI
+							/ particles.length * i)
+							* radius, 0), 1, pgParticle[player]);
 		}
 	}
 
 	void initLevels() {
 		state = LevelSelectState.Song;
 
-		particles = new LevelSelectParticle[levels.size()];
+		particles = new Particle[levels.size()];
 		for (int i = 0; i < particles.length; i++) {
-			particles[i] = new LevelSelectParticle(parent, new PVector(PApplet.cos(PApplet.TWO_PI / particles.length
-					* i)
-					* radius, PApplet.sin(PApplet.TWO_PI / particles.length * i) * radius, 0), 1, pgLevel);
+			particles[i] = new Particle(parent, new PVector(
+					PApplet.cos(PApplet.TWO_PI / particles.length * i) * radius, PApplet.sin(PApplet.TWO_PI
+							/ particles.length * i)
+							* radius, 0), 1, pgLevel);
 		}
 
 		selected = 0;

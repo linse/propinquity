@@ -1,15 +1,12 @@
 package propinquity;
 
-import org.jbox2d.collision.shapes.Shape;
 import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Body;
 
 import processing.core.*;
 
 public class Particle {
 	
-	Body body;
-	Shape shape;
+	PVector position;
 	Vec2 push;
 	
 	private float scale;
@@ -17,11 +14,10 @@ public class Particle {
 	
 	private Propinquity parent;
 
-	public Particle(Propinquity parent, Body body, Shape shape, float scale, PGraphics texture) {
+	public Particle(Propinquity parent, PVector position, float scale, PGraphics texture) {
 		
 		this.parent = parent;
-		this.body = body;
-		this.shape = shape;
+		this.position = position;
 		this.scale = scale;
 		this.texture = texture;
 		
@@ -34,18 +30,16 @@ public class Particle {
 	
 	public void draw() {
 		
-		Vec2 pos = parent.box2d.getBodyPixelCoord(body);
-		
 		parent.pushMatrix();
-		parent.translate(pos.x, pos.y);
+		parent.translate(position.x, position.y);
 		parent.scale(scale * texture.width / 2f);
-		parent.beginShape(PApplet.SQUARE);
+		parent.beginShape();
 		parent.texture(texture);
-		parent.vertex(-1, -1);
-		parent.vertex(1, -1);
-		parent.vertex(1, 1);
-		parent.vertex(-1, 1);
-		parent.endShape(PApplet.CLOSE);
+		parent.vertex(-1, -1, 0, 0, 0);
+		parent.vertex(1, -1, 0, 1, 0);
+		parent.vertex(1, 1, 0, 1, 1);
+		parent.vertex(-1, 1, 0, 0, 1);
+		parent.endShape();
 		parent.popMatrix();
 	}
 }
