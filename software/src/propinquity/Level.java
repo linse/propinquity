@@ -1,6 +1,7 @@
 package propinquity;
 
 import processing.core.PApplet;
+import processing.core.PConstants;
 import proxml.XMLElement;
 import proxml.XMLInOut;
 import xbee.XBeeReader;
@@ -149,7 +150,7 @@ public class Level {
 			players[i].update();
 		}
 
-		parent.box2d.setGravity(PApplet.cos(parent.hud.angle), PApplet.sin(parent.hud.angle));
+		parent.box2d.setGravity(0, 0);
 		
 		// process step
 		if (time - lastStep > stepInterval)
