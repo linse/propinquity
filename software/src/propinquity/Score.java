@@ -4,13 +4,11 @@ public class Score {
 
 	public Liquid liquid;
 	
-	private Propinquity parent;
 	private int score;
 	
-	public Score(Propinquity parent) {
-		this.parent = parent;
+	public Score(Propinquity parent, Colour colour) {
 		score = 0;
-		liquid = new Liquid(parent);
+		liquid = new Liquid(parent, colour);
 	}
 	
 	public void reset() {

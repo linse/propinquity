@@ -2,28 +2,30 @@ package propinquity;
 
 import java.util.ArrayList;
 
-import javax.media.opengl.GL;
-
 import org.jbox2d.testbed.TestSettings;
 
 import pbox2d.PBox2D;
+import processing.core.PApplet;
+import processing.core.PGraphics;
 import processing.core.PImage;
-import processing.opengl.PGraphicsOpenGL;
+import processing.core.PVector;
 
 public class Liquid {
 
+	public ArrayList<Particle> particlesCreated;
+	public ArrayList<Particle> particlesHeld;
+	
 	private Propinquity parent;
+	private Colour colour;
+	private Fences fences;
 
-	Fences fences;
+	private PImage particleImage;
+	private PGraphics pgParticle;
 
-	PImage particleImage;
-
-	ArrayList<Particle> particlesCreated;
-	ArrayList<Particle> particlesHeld;
-
-	public Liquid(Propinquity parent) {
+	public Liquid(Propinquity parent, Colour colour) {
 
 		this.parent = parent;
+		this.colour = colour;
 
 		initBox2D();
 
@@ -33,6 +35,11 @@ public class Liquid {
 		particlesHeld = new ArrayList<Particle>();
 
 		particleImage = parent.graphics.loadParticle();
+		
+		pgParticle = new PGraphics();
+		pgParticle = parent.createGraphics(particleImage.width, particleImage.height, PApplet.P2D);
+		pgParticle.background(particleImage);
+		pgParticle.mask(particleImage);
 	}
 
 	private void initBox2D() {
@@ -53,7 +60,7 @@ public class Liquid {
 	
 	public void createParticle() {
 		// TODO
-		//particlesCreated.add(new Particle(parent));
+		particlesCreated.add(new Particle(parent, new PVector(0, 0), 1f, pgParticle, colour));
 	}
 	
 	public void transferParticles() {
@@ -72,13 +79,6 @@ public class Liquid {
 	}
 
 	public void draw() {
-		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
-		parent.gl.glEnable(GL.GL_BLEND);
-		parent.gl.glBlendFunc(GL.GL_ZERO, GL.GL_ZERO);
-
-		parent.noStroke();
-		parent.noFill();
-
 		for (Particle particle : particlesCreated)
 			particle.draw();
 		

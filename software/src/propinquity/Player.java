@@ -65,7 +65,7 @@ public class Player implements PConstants {
 		this.name = "noname";
 		this.colour = colour;
 		this.numPatches = 0;
-		score = new Score(parent);
+		score = new Score(parent, colour);
 		reset();
 	}
 
