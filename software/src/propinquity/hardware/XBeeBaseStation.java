@@ -2,9 +2,9 @@ package propinquity.hardware;
 
 import java.util.*;
 import java.lang.System;
-import processing.serial.*;
 import com.rapplogic.xbee.api.*;
 import com.rapplogic.xbee.api.wpan.*;
+import gnu.io.*;
 
 /**
  * This class scans for XBees connected to the computer. It then instantiates and holds Xbee objects for each such device.
@@ -97,7 +97,7 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 
 		try {
 			System.out.print(".");
-			Thread.sleep(1000); //TODO is this needed?
+			Thread.sleep(100); //TODO is this needed?
 		} catch(Exception e) {
 
 		}
@@ -114,7 +114,8 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 
 		System.out.println("XBeeBaseStation Scan");
 
-		String[] availablePorts = Serial.list();
+		String[] availablePorts = getAvailableSerialPorts();
+
 		String osName = System.getProperty("os.name");
 
 		for(int portNum = 0;portNum < availablePorts.length;portNum++) {
@@ -138,7 +139,7 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 			System.out.println("\t\tConnected to XBee");
 
 			try {
-				Thread.sleep(150);
+				Thread.sleep(100);
 			} catch(Exception e) {
 
 			}
@@ -176,6 +177,31 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 		}
 
 		System.out.println("Scan Complete");
+	}
+
+	/**
+	 * @return an array containing the port names for all serial ports that are not currently being used.
+	 */
+	public static String[] getAvailableSerialPorts() {
+		Vector<String> portNames = new Vector<String>();
+		Enumeration ports = CommPortIdentifier.getPortIdentifiers();
+		while(ports.hasMoreElements()) {
+			CommPortIdentifier com = (CommPortIdentifier)ports.nextElement();
+			switch(com.getPortType()) {
+				case CommPortIdentifier.PORT_SERIAL:
+				try {
+					CommPort port = com.open("CommUtil", 50);
+					port.close();
+					portNames.add(com.getName());
+				} catch (PortInUseException e) {
+					System.out.println("Port, "  + com.getName() + ", is in use.");
+				} catch (Exception e) {
+					System.err.println("Failed to open port " +  com.getName());
+					e.printStackTrace();
+				}
+			}
+		}
+		return portNames.toArray(new String[0]);
 	}
 
 
