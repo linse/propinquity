@@ -66,9 +66,9 @@ public class Level {
 
 		if (players == null) {
 			players = new Player[2];
-			players[0] = new Player(parent, parent.playerColours[0], 0);
+			players[0] = new Player(parent, parent.playerColours[0]);
 			players[0].name = "Player 1";
-			players[1] = new Player(parent, parent.playerColours[1], 1);
+			players[1] = new Player(parent, parent.playerColours[1]);
 			players[1].name = "Player 2";
 		} else {
 			this.players = players;
@@ -145,12 +145,20 @@ public class Level {
 				processProxReading(psd);
 				// proxStubIndex++;
 			}
-
+			
+			players[i].update();
 		}
 
+		parent.box2d.setGravity(PApplet.cos(parent.hud.angle), PApplet.sin(parent.hud.angle));
+		
 		// process step
 		if (time - lastStep > stepInterval)
 			step();
+	}
+	
+	public void draw() {
+		for (int i = 0; i < players.length; i++)
+			players[i].draw();
 	}
 
 	private void step() {
@@ -233,7 +241,7 @@ public class Level {
 	public int getTotalPoints() {
 		int total = 0;
 		for (int i = 0; i < players.length; i++)
-			total += players[i].getTotalPts();
+			total += players[i].score.getScore();
 		return total;
 	}
 

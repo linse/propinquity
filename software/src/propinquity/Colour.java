@@ -13,48 +13,48 @@ public class Colour {
 	 * Create a new colour with the specified channel parameters.
 	 * 
 	 * @param red The "red" channel value, between 0.0f and 1.0f.
-	 * @param blue The "blue" channel value, between 0.0f and 1.0f.
-	 * @param green The "green" channel value, between 0.0f and 1.0f.
+	 * @param blue The "green" channel value, between 0.0f and 1.0f.
+	 * @param green The "blue" channel value, between 0.0f and 1.0f.
 	 */
-	public Colour(float red, float blue, float green) {
-		this(red, blue, green, 1.0f);
+	public Colour(float red, float green, float blue) {
+		this(red, green, blue, 1.0f);
 	}
 
 	/**
 	 * Create a new colour with the specified channel parameters.
 	 * 
 	 * @param red The "red" channel value, between 0.0f and 1.0f.
-	 * @param blue The "blue" channel value, between 0.0f and 1.0f.
-	 * @param green The "green" channel value, between 0.0f and 1.0f.
+	 * @param blue The "green" channel value, between 0.0f and 1.0f.
+	 * @param green The "blue" channel value, between 0.0f and 1.0f.
 	 * @param alpha The "alpha" channel value, between 0.0f and 1.0f.
 	 */
-	public Colour(float red, float blue, float green, float alpha) {
-		this((int) (red * 255), (int) (blue * 255), (int) (green * 255), (int) (alpha * 255));
+	public Colour(float red, float green, float blue, float alpha) {
+		this((int) (red * 255), (int) (green * 255), (int) (blue * 255), (int) (alpha * 255));
 	}
 
 	/**
 	 * Create a new colour with the specified channel parameters.
 	 * 
 	 * @param red The "red" channel value, between 0 and 255.
-	 * @param blue The "blue" channel value, between 0 and 255.
-	 * @param green The "green" channel value, between 0 and 255.
+	 * @param blue The "green" channel value, between 0 and 255.
+	 * @param green The "blue" channel value, between 0 and 255.
 	 */
-	public Colour(int red, int blue, int green) {
-		this(red, blue, green, 255);
+	public Colour(int red, int green, int blue) {
+		this(red, green, blue, 255);
 	}
 
 	/**
 	 * Create a new colour with the specified channel parameters.
 	 * 
 	 * @param red The "red" channel value, between 0 and 255.
-	 * @param blue The "blue" channel value, between 0 and 255.
-	 * @param green The "green" channel value, between 0 and 255.
+	 * @param blue The "green" channel value, between 0 and 255.
+	 * @param green The "blue" channel value, between 0 and 255.
 	 * @param alpha The "alpha" channel value, between 0 and 255.
 	 */
-	public Colour(int red, int blue, int green, int alpha) {
+	public Colour(int red, int green, int blue, int alpha) {
 		r = red;
-		b = blue;
 		g = green;
+		b = blue;
 		a = alpha;
 	}
 

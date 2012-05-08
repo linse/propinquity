@@ -72,12 +72,12 @@ public class Graphics {
 	}
 
 	/**
-	 * Loads the particle image used for a certain player.
+	 * Loads the common particle image.
 	 * 
-	 * @return The particle image for the given player.
+	 * @return The particle image used for all players.
 	 */
-	public PImage loadParticles(int i) {
-		return parent.loadImage("data/particles/player" + (i + 1) + ".png");
+	public PImage loadParticle() {
+		return parent.loadImage("data/particles/particle.png");
 	}
 
 	// TODO: fix

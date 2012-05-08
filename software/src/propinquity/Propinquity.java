@@ -36,6 +36,7 @@ public class Propinquity extends PApplet {
 
 	GL gl;
 	PBox2D box2d;
+	Fences fences;
 	TestSettings settings;
 
 	// Level parameters
@@ -80,9 +81,23 @@ public class Propinquity extends PApplet {
 		hud = new Hud(this, sounds, graphics);
 		logger = new Logger(this);
 
+		initBox2D();
+		fences = new Fences(this);
+		
 		uiElements = new UIElement[] { xbeeManager, playerList, levelSelect };
 
 		changeGameState(GameState.XBeeInit);
+	}
+	
+	private void initBox2D() {
+		// initialize box2d physics and create the world
+		float worldSize = Propinquity.WORLD_SIZE;
+		box2d = new PBox2D(this, (float) height / worldSize);
+		box2d.createWorld(-worldSize / 2f, -worldSize / 2f, worldSize, worldSize);
+		box2d.setGravity(0.0f, 0.0f);
+
+		// load default jbox2d settings
+		settings = new TestSettings();
 	}
 
 	void resetLevel() {
@@ -168,6 +183,7 @@ public class Propinquity extends PApplet {
 			box2d.step();
 
 			level.update();
+			level.draw();
 
 		} else {
 			gl = ((PGraphicsOpenGL) g).gl;
