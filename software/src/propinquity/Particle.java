@@ -14,7 +14,6 @@ public class Particle {
 	
 	private float scale;
 	private PGraphics texture;
-	private float[][] textureVertices;
 	
 	private Propinquity parent;
 
@@ -27,13 +26,12 @@ public class Particle {
 		this.texture = texture;
 		
 		push = new Vec2(0, 0);
-		
-		textureVertices = new float[2][4];
-		for (int i = 0; i < 2; i++)
-			for (int j = 0; j < 4; j++)
-				textureVertices[i][j] = 1.0f + parent.random(-0.4f, 0.4f);
 	}
 
+	public void update() {
+		
+	}
+	
 	public void draw() {
 		
 		Vec2 pos = parent.box2d.getBodyPixelCoord(body);
@@ -41,12 +39,12 @@ public class Particle {
 		parent.pushMatrix();
 		parent.translate(pos.x, pos.y);
 		parent.scale(scale * texture.width / 2f);
-		parent.beginShape(PApplet.QUADS);
+		parent.beginShape(PApplet.SQUARE);
 		parent.texture(texture);
-		parent.vertex(-textureVertices[0][0], -textureVertices[1][0], 0, 0, 0);
-		parent.vertex(textureVertices[0][1], -textureVertices[1][1], 1, 0);
-		parent.vertex(textureVertices[0][2], textureVertices[1][2], 0, 1, 1);
-		parent.vertex(-textureVertices[0][3], textureVertices[1][3], 0, 0, 1);
+		parent.vertex(-1, -1);
+		parent.vertex(1, -1);
+		parent.vertex(1, 1);
+		parent.vertex(-1, 1);
 		parent.endShape(PApplet.CLOSE);
 		parent.popMatrix();
 	}

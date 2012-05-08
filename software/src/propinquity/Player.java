@@ -57,12 +57,18 @@ public class Player implements PConstants {
 	AudioPlayer coopNegSoundPlayer = null;
 
 	boolean coopMode;
+	
+	int id;
+	
+	Liquid liquid;
 
-	public Player(Propinquity p, Colour colour) {
-		this.parent = p;
+	public Player(Propinquity parent, Colour colour, int id) {
+		this.parent = parent;
 		this.name = "noname";
 		this.colour = colour;
 		this.numPatches = 0;
+		this.id = id;
+		liquid = new Liquid(parent, id);
 		reset();
 	}
 
@@ -86,6 +92,8 @@ public class Player implements PConstants {
 		// reset stub
 		if (proxStub != null)
 			proxStubIndex = 0;
+		
+		liquid.reset();
 	}
 
 	public void clear() {
