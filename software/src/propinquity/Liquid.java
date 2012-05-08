@@ -22,6 +22,7 @@ public class Liquid {
 	public Liquid(Propinquity parent, Colour colour) {
 
 		this.parent = parent;
+		this.colour = colour;
 		
 		particlesCreated = new ArrayList<Particle>();
 		particlesHeld = new ArrayList<Particle>();

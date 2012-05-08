@@ -4,9 +4,11 @@ import java.util.ArrayList;
 
 import processing.core.PConstants;
 
+import propinquity.hardware.*;
+
 import ddf.minim.AudioPlayer;
 
-public class Player implements PConstants {
+public class Player implements PConstants, ProxEventListener {
 
 	final int PROXIMITY_LOW_THRESHOLD = 80;
 
@@ -44,9 +46,8 @@ public class Player implements PConstants {
 	int lastVibe;
 	// int totalVibe;
 
-	// xbee
-	// int[] outdata;
-	int numPatches;
+	ArrayList<Patch> patches;
+	Glove glove;
 
 	// stubs
 	ArrayList<String> proxStub = null;
@@ -60,11 +61,12 @@ public class Player implements PConstants {
 	
 	Score score;
 
-	public Player(Propinquity parent, Colour colour) {
+	public Player(Propinquity parent, ArrayList<Patch> patches, Glove glove, Colour colour) {
 		this.parent = parent;
 		this.name = "noname";
 		this.colour = colour;
-		this.numPatches = 0;
+		this.patches = patches;
+		this.glove = glove;
 		score = new Score(parent, colour);
 		reset();
 	}
@@ -106,10 +108,6 @@ public class Player implements PConstants {
 
 	public Colour getColor() {
 		return colour;
-	}
-
-	public void setNumPatches(int num) {
-		numPatches = num;
 	}
 
 	public void registerNegativePlayerSound(AudioPlayer ap) {
@@ -288,6 +286,17 @@ public class Player implements PConstants {
 	public boolean isInCoopMode() {
 		return coopMode;
 	}
+	
+	public void proxEvent(Patch patch) {
+		if (patches.indexOf(patch) != -1) {
+			
+			if (patch.getProx() > Score.MIN_RANGE && patch.getProx() < Score.MAX_RANGE) {
+				score.increment();
+			}
+		}
+	}
+	
+	
 
 	ProxData nextProxStub(long time) {
 		if (proxStub == null)
