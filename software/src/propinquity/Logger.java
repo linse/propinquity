@@ -25,7 +25,7 @@ public class Logger {
 	/**
 	 * Make a new logger object.
 	 * 
-	 * @param p The Propinquity instance.
+	 * @param parent The Propinquity instance.
 	 */
 	public Logger(PApplet parent) {
 
