@@ -180,7 +180,7 @@ public class LevelSelect implements PConstants, UIElement {
 		foundProxPatches.clear();
 		foundVibePatches.clear();
 		foundUndefPatches.clear();
-		players[player] = new Player(parent, parent.playerColours[player]);
+		players[player] = new Player(parent, parent.patches, parent.glove, parent.playerColours[player]);
 
 		// init xbee comm or stubs
 		// for proximity

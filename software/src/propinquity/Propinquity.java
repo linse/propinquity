@@ -1,5 +1,7 @@
 package propinquity;
 
+import java.util.ArrayList;
+
 import javax.media.opengl.GL;
 
 import org.jbox2d.testbed.TestSettings;
@@ -56,6 +58,11 @@ public class Propinquity extends PApplet {
 	LevelSelect levelSelect;
 
 	UIElement[] uiElements;
+	
+	// Simulation testing
+	HardwareSimulator simulator;
+	ArrayList<Patch> patches = new ArrayList<Patch>(1);
+	Glove glove;
 
 	public void setup() {
 
@@ -86,6 +93,12 @@ public class Propinquity extends PApplet {
 		
 		uiElements = new UIElement[] { xbeeManager, playerList, levelSelect };
 
+		simulator = new HardwareSimulator(this);
+		patches.add(new Patch(0, simulator));
+		patches.get(0).setActive(true);
+		glove = new Glove(1, simulator);
+		simulator.addPatch(patches.get(0));
+		
 		changeGameState(GameState.XBeeInit);
 	}
 	
@@ -127,6 +140,11 @@ public class Propinquity extends PApplet {
 		if (gameState == GameState.Play)
 			drawPlay();
 
+		pushMatrix();
+		translate(100, 100);
+		simulator.draw();
+		popMatrix();
+		
 		logger.recordFrame();
 	}
 
@@ -353,6 +371,14 @@ public class Propinquity extends PApplet {
 			case 'f': // flush output and close
 				logger.close();
 				exit();
+				break;
+				
+			case 'n':
+				simulator.show();
+				break;
+				
+			case 'm':
+				simulator.hide();
 				break;
 			}
 			break;

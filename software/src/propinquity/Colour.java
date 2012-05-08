@@ -1,5 +1,7 @@
 package propinquity;
 
+import processing.core.PApplet;
+
 /**
  * Handles the creation, manipulation and conversion of colours.
  * 
@@ -52,10 +54,10 @@ public class Colour {
 	 * @param alpha The "alpha" channel value, between 0 and 255.
 	 */
 	public Colour(int red, int green, int blue, int alpha) {
-		r = red;
-		g = green;
-		b = blue;
-		a = alpha;
+		r = PApplet.constrain(red, 0, 255);
+		g = PApplet.constrain(green, 0, 255);
+		b = PApplet.constrain(blue, 0, 255);
+		a = PApplet.constrain(alpha, 0, 255);
 	}
 
 	/**

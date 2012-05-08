@@ -66,9 +66,9 @@ public class Level {
 
 		if (players == null) {
 			players = new Player[2];
-			players[0] = new Player(parent, parent.playerColours[0]);
+			players[0] = new Player(parent, parent.patches, parent.glove, parent.playerColours[0]);
 			players[0].name = "Player 1";
-			players[1] = new Player(parent, parent.playerColours[1]);
+			players[1] = new Player(parent, parent.patches, parent.glove, parent.playerColours[1]);
 			players[1].name = "Player 2";
 		} else {
 			this.players = players;
@@ -78,7 +78,7 @@ public class Level {
 			parent.xmlInOut = new XMLInOut(parent, this);
 			parent.xmlInOut.loadElement(levelFile);
 		}
-
+		
 		players[0].registerNegativePlayerSound(sounds.negativeP1);
 		players[0].registerNegativeCoopSound(sounds.negativeCoop);
 		players[1].registerNegativePlayerSound(sounds.negativeP2);
@@ -268,6 +268,9 @@ public class Level {
 			System.err.println("I had some trouble reading the level file.");
 			System.err.println("Defaulting to 2 minutes of free play instead.");
 		}
+		
+		for (int i = 0; i < players.length; i++) 
+			parent.simulator.addProxEventListener(players[i]);
 	}
 
 	public void loadSong(XMLElement songXML) {

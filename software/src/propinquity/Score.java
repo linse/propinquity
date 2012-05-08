@@ -2,6 +2,9 @@ package propinquity;
 
 public class Score {
 
+	public static final int MIN_RANGE = 256;
+	public static final int MAX_RANGE = 512;
+	
 	public Liquid liquid;
 	
 	private int score;
@@ -20,12 +23,9 @@ public class Score {
 		return score;
 	}
 	
-	public void increase(int scoreAdded) {
-		score += scoreAdded;
-		
-		for (int i = 0; i < scoreAdded; i++) {
-			liquid.createParticle();
-		}
+	public void increment() {
+		score++;
+		liquid.createParticle();
 	}
 	
 	public void update() {
