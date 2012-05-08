@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 import javax.media.opengl.GL;
 
-import org.jbox2d.testbed.TestSettings;
-
 import controlP5.ControlEvent;
 
 import pbox2d.*;
@@ -23,9 +21,6 @@ public class Propinquity extends PApplet {
 
 	// debug constants
 	public static final boolean DEBUG = false;
-	public static final boolean DRAW_SHADOWS = false;
-	public static final boolean DRAW_PARTICLES = true;
-	public static final int FULL_SCREEN_ID = 0;
 
 	// game constants
 	public static final float WORLD_SIZE = 2f;
@@ -39,7 +34,6 @@ public class Propinquity extends PApplet {
 	GL gl;
 	PBox2D box2d;
 	Fences fences;
-	TestSettings settings;
 
 	// Level parameters
 	Level level;
@@ -68,7 +62,7 @@ public class Propinquity extends PApplet {
 
 		// Setup graphics and sound
 		sounds = new Sounds(this);
-		graphics = new Graphics(this);
+		graphics = new Graphics(this); //Size is here
 
 		// initial opengl setup
 		gl = ((PGraphicsOpenGL) g).gl;
@@ -108,9 +102,6 @@ public class Propinquity extends PApplet {
 		box2d = new PBox2D(this, (float) height / worldSize);
 		box2d.createWorld(-worldSize / 2f, -worldSize / 2f, worldSize, worldSize);
 		box2d.setGravity(0.0f, 0.0f);
-
-		// load default jbox2d settings
-		settings = new TestSettings();
 	}
 
 	void resetLevel() {
