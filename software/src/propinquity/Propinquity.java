@@ -18,10 +18,10 @@ import propinquity.hardware.*;
 
 public class Propinquity extends PApplet {
 
-	// Unique serialization ID
+	/** Unique serialization ID. */
 	private static final long serialVersionUID = 6340518174717159418L;
 
-	// debug constants
+	/** Debug constants. */
 	public static final boolean DEBUG = false;
 	public static final boolean DRAW_SHADOWS = false;
 	public static final boolean DRAW_PARTICLES = true;

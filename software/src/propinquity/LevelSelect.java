@@ -198,7 +198,7 @@ public class LevelSelect implements PConstants, UIElement {
 		particles = new Particle[playerNames.length];
 		for (int i = 0; i < particles.length; i++) {
 			particles[i] = new Particle(parent, new Vec2(PApplet.cos(PApplet.TWO_PI / particles.length * i) * radius,
-					PApplet.sin(PApplet.TWO_PI / particles.length * i) * radius), 1, pgParticle,
+					PApplet.sin(PApplet.TWO_PI / particles.length * i) * radius), pgParticle,
 					parent.playerColours[player]);
 		}
 	}
@@ -209,7 +209,7 @@ public class LevelSelect implements PConstants, UIElement {
 		particles = new Particle[levels.size()];
 		for (int i = 0; i < particles.length; i++) {
 			particles[i] = new Particle(parent, new Vec2(PApplet.cos(PApplet.TWO_PI / particles.length * i) * radius,
-					PApplet.sin(PApplet.TWO_PI / particles.length * i) * radius), 1, pgParticle, Colour.violet());
+					PApplet.sin(PApplet.TWO_PI / particles.length * i) * radius), pgParticle, Colour.violet());
 		}
 
 		selected = 0;
