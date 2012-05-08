@@ -18,7 +18,8 @@ public class Liquid {
 
 	PImage particleImage;
 
-	ArrayList<Particle> particles;
+	ArrayList<Particle> particlesCreated;
+	ArrayList<Particle> particlesHeld;
 
 	public Liquid(Propinquity parent, int player) {
 
@@ -28,11 +29,10 @@ public class Liquid {
 
 		fences = new Fences(parent);
 
-		particles = new ArrayList<Particle>();
+		particlesCreated = new ArrayList<Particle>();
+		particlesHeld = new ArrayList<Particle>();
 
 		particleImage = parent.graphics.loadParticles(player);
-		
-		// TODO: create particles.
 	}
 
 	private void initBox2D() {
@@ -47,11 +47,27 @@ public class Liquid {
 	}
 
 	public void reset() {
+		particlesCreated = new ArrayList<Particle>();
+		particlesHeld = new ArrayList<Particle>();
+	}
+	
+	public void createParticle() {
+		// TODO
+		//particlesCreated.add(new Particle(parent));
+	}
+	
+	public void transferParticles() {
+		for (Particle particle : particlesCreated)
+			particlesHeld.add(particle);
 		
+		particlesCreated = new ArrayList<Particle>();
 	}
 	
 	public void update() {
-		for (Particle particle : particles)
+		for (Particle particle : particlesCreated)
+			particle.update();
+		
+		for (Particle particle : particlesHeld)
 			particle.update();
 	}
 
@@ -63,7 +79,10 @@ public class Liquid {
 		parent.noStroke();
 		parent.noFill();
 
-		for (Particle particle : particles)
+		for (Particle particle : particlesCreated)
+			particle.draw();
+		
+		for (Particle particle : particlesHeld)
 			particle.draw();
 	}
 
