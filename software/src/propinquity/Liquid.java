@@ -2,10 +2,11 @@ package propinquity;
 
 import java.util.ArrayList;
 
+import org.jbox2d.common.Vec2;
+
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PImage;
-import processing.core.PVector;
 
 public class Liquid {
 
@@ -40,7 +41,7 @@ public class Liquid {
 	
 	public void createParticle() {
 		// TODO
-		particlesCreated.add(new Particle(parent, new PVector(0, 0), 1f, pgParticle, colour));
+		particlesCreated.add(new Particle(parent, new Vec2(0, 0), 1f, pgParticle, colour));
 	}
 	
 	public void transferParticles() {

@@ -165,7 +165,6 @@ public class Propinquity extends PApplet {
 				}
 
 				// TODO: physics and things
-				
 				box2d.step();
 
 				// snap score in final position

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 import javax.media.opengl.GL;
 
+import org.jbox2d.common.Vec2;
+
 import processing.core.*;
 import processing.opengl.PGraphicsOpenGL;
 import proxml.*;
@@ -136,7 +138,7 @@ public class LevelSelect implements PConstants, UIElement {
 	}
 
 	void initTextures() {
-		
+
 		PImage imgParticle = parent.graphics.loadParticle();
 		pgParticle = new PGraphics();
 		pgParticle = parent.createGraphics(imgParticle.width, imgParticle.height, PApplet.P2D);
@@ -195,10 +197,9 @@ public class LevelSelect implements PConstants, UIElement {
 
 		particles = new Particle[playerNames.length];
 		for (int i = 0; i < particles.length; i++) {
-			particles[i] = new Particle(parent, new PVector(
-					PApplet.cos(PApplet.TWO_PI / particles.length * i) * radius, PApplet.sin(PApplet.TWO_PI
-							/ particles.length * i)
-							* radius, 0), 1, pgParticle, parent.playerColours[player]);
+			particles[i] = new Particle(parent, new Vec2(PApplet.cos(PApplet.TWO_PI / particles.length * i) * radius,
+					PApplet.sin(PApplet.TWO_PI / particles.length * i) * radius), 1, pgParticle,
+					parent.playerColours[player]);
 		}
 	}
 
@@ -207,10 +208,8 @@ public class LevelSelect implements PConstants, UIElement {
 
 		particles = new Particle[levels.size()];
 		for (int i = 0; i < particles.length; i++) {
-			particles[i] = new Particle(parent, new PVector(
-					PApplet.cos(PApplet.TWO_PI / particles.length * i) * radius, PApplet.sin(PApplet.TWO_PI
-							/ particles.length * i)
-							* radius, 0), 1, pgParticle, Colour.violet());
+			particles[i] = new Particle(parent, new Vec2(PApplet.cos(PApplet.TWO_PI / particles.length * i) * radius,
+					PApplet.sin(PApplet.TWO_PI / particles.length * i) * radius), 1, pgParticle, Colour.violet());
 		}
 
 		selected = 0;

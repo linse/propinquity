@@ -1,13 +1,18 @@
 package propinquity;
 
+import org.jbox2d.collision.shapes.CircleDef;
 import org.jbox2d.common.Vec2;
+import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.BodyDef;
 
 import processing.core.*;
 
 public class Particle {
 	
-	PVector position;
-	Vec2 push;
+	public Vec2 position;
+	
+	private Body body;
+	private CircleDef shape;
 	
 	private float scale;
 	private PGraphics texture;
@@ -15,7 +20,7 @@ public class Particle {
 	
 	private Propinquity parent;
 
-	public Particle(Propinquity parent, PVector position, float scale, PGraphics texture, Colour colour) {
+	public Particle(Propinquity parent, Vec2 position, float scale, PGraphics texture, Colour colour) {
 		
 		this.parent = parent;
 		this.position = position;
@@ -23,14 +28,31 @@ public class Particle {
 		this.texture = texture;
 		this.colour = colour;
 		
-		push = new Vec2(0, 0);
+		shape = new CircleDef();
+		shape.radius = parent.box2d.scalarPixelsToWorld(texture.width / 2f); 
+		shape.density = 1.0f;
+		shape.friction = 0.01f;
+		shape.restitution = 0.3f; 
+		
+		BodyDef bd = new BodyDef();
+		bd.position.set(parent.box2d.coordPixelsToWorld(position));
+		
+		body = parent.box2d.createBody(bd);
+		body.createShape(shape);
+		body.setMassFromShapes();
 	}
 
+	public void kill() {
+		parent.box2d.destroyBody(body);
+	}
+	
 	public void update() {
 		
 	}
 	
 	public void draw() {
+		
+		position = parent.box2d.getBodyPixelCoord(body);
 		
 		parent.pushMatrix();
 		parent.translate(position.x, position.y);
