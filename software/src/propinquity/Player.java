@@ -58,17 +58,14 @@ public class Player implements PConstants {
 
 	boolean coopMode;
 	
-	int id;
-	
 	Score score;
 
-	public Player(Propinquity parent, Colour colour, int id) {
+	public Player(Propinquity parent, Colour colour) {
 		this.parent = parent;
 		this.name = "noname";
 		this.colour = colour;
 		this.numPatches = 0;
-		this.id = id;
-		score = new Score(parent, id);
+		score = new Score(parent);
 		reset();
 	}
 

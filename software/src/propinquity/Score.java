@@ -7,10 +7,10 @@ public class Score {
 	private Propinquity parent;
 	private int score;
 	
-	public Score(Propinquity parent, int id) {
+	public Score(Propinquity parent) {
 		this.parent = parent;
 		score = 0;
-		liquid = new Liquid(parent, id);
+		liquid = new Liquid(parent);
 	}
 	
 	public void reset() {

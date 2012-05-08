@@ -44,7 +44,7 @@ public class LevelSelect implements PConstants, UIElement {
 	Particle[] particles;
 	int selected;
 
-	PGraphics[] pgParticle;
+	PGraphics pgParticle;
 	PImage[] imgPlayers;
 	PImage[] imgSelectPlayer;
 	PImage imgSelectSong;
@@ -60,7 +60,6 @@ public class LevelSelect implements PConstants, UIElement {
 	ArrayList<Level> levels;
 	Level loadingLevel;
 	PImage imgLevel;
-	PGraphics pgLevel;
 	String levelFile;
 
 	Sounds sounds;
@@ -137,25 +136,16 @@ public class LevelSelect implements PConstants, UIElement {
 	}
 
 	void initTextures() {
-		PImage[] imgParticle = new PImage[2];
-		for (int i = 0; i < imgParticle.length; i++)
-			imgParticle[i] = parent.graphics.loadParticles(i);
-
-		pgParticle = new PGraphics[2];
-		for (int i = 0; i < pgParticle.length; i++) {
-			pgParticle[i] = parent.createGraphics(imgParticle[i].width, imgParticle[i].height, PApplet.P2D);
-			pgParticle[i].background(imgParticle[i]);
-			pgParticle[i].mask(imgParticle[i]);
-		}
+		
+		PImage imgParticle = parent.graphics.loadParticle();
+		pgParticle = new PGraphics();
+		pgParticle = parent.createGraphics(imgParticle.width, imgParticle.height, PApplet.P2D);
+		pgParticle.background(imgParticle);
+		pgParticle.mask(imgParticle);
 
 		imgPlayers = new PImage[2];
 		for (int i = 0; i < imgPlayers.length; i++)
 			imgPlayers[i] = parent.loadImage(parent.dataPath("hud/player" + (i + 1) + "name.png"));
-
-		PImage imgLevelParticle = parent.loadImage(parent.dataPath("hud/levelParticle.png"));
-		pgLevel = parent.createGraphics(imgLevelParticle.width, imgLevelParticle.height, PApplet.P2D);
-		pgLevel.background(imgLevelParticle);
-		pgLevel.mask(imgLevelParticle);
 
 		imgLevel = parent.loadImage(parent.dataPath("hud/level.png"));
 
@@ -188,7 +178,7 @@ public class LevelSelect implements PConstants, UIElement {
 		foundProxPatches.clear();
 		foundVibePatches.clear();
 		foundUndefPatches.clear();
-		players[player] = new Player(parent, parent.playerColours[player], player);
+		players[player] = new Player(parent, parent.playerColours[player]);
 
 		// init xbee comm or stubs
 		// for proximity
@@ -208,7 +198,7 @@ public class LevelSelect implements PConstants, UIElement {
 			particles[i] = new Particle(parent, new PVector(
 					PApplet.cos(PApplet.TWO_PI / particles.length * i) * radius, PApplet.sin(PApplet.TWO_PI
 							/ particles.length * i)
-							* radius, 0), 1, pgParticle[player]);
+							* radius, 0), 1, pgParticle, parent.playerColours[player]);
 		}
 	}
 
@@ -220,7 +210,7 @@ public class LevelSelect implements PConstants, UIElement {
 			particles[i] = new Particle(parent, new PVector(
 					PApplet.cos(PApplet.TWO_PI / particles.length * i) * radius, PApplet.sin(PApplet.TWO_PI
 							/ particles.length * i)
-							* radius, 0), 1, pgLevel);
+							* radius, 0), 1, pgParticle, Colour.violet());
 		}
 
 		selected = 0;

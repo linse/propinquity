@@ -21,7 +21,7 @@ public class Liquid {
 	ArrayList<Particle> particlesCreated;
 	ArrayList<Particle> particlesHeld;
 
-	public Liquid(Propinquity parent, int player) {
+	public Liquid(Propinquity parent) {
 
 		this.parent = parent;
 
@@ -32,7 +32,7 @@ public class Liquid {
 		particlesCreated = new ArrayList<Particle>();
 		particlesHeld = new ArrayList<Particle>();
 
-		particleImage = parent.graphics.loadParticles(player);
+		particleImage = parent.graphics.loadParticle();
 	}
 
 	private void initBox2D() {
@@ -74,7 +74,7 @@ public class Liquid {
 	public void draw() {
 		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
 		parent.gl.glEnable(GL.GL_BLEND);
-		parent.gl.glBlendFunc(GL.GL_ONE, GL.GL_ONE_MINUS_SRC_ALPHA);
+		parent.gl.glBlendFunc(GL.GL_ZERO, GL.GL_ZERO);
 
 		parent.noStroke();
 		parent.noFill();

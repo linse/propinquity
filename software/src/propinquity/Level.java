@@ -66,9 +66,9 @@ public class Level {
 
 		if (players == null) {
 			players = new Player[2];
-			players[0] = new Player(parent, parent.playerColours[0], 0);
+			players[0] = new Player(parent, parent.playerColours[0]);
 			players[0].name = "Player 1";
-			players[1] = new Player(parent, parent.playerColours[1], 1);
+			players[1] = new Player(parent, parent.playerColours[1]);
 			players[1].name = "Player 2";
 		} else {
 			this.players = players;
