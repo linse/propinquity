@@ -7,6 +7,7 @@
 	<property name="src.dir" value="src"/>
 	<property name="build.dir" value="bin"/>
 	<property name="lib.dir" value="lib"/>
+	<property name="ref.dir" value="doc"/>
 
 	<path id="classpath">
 		<fileset dir="${lib.dir}">
@@ -24,6 +25,13 @@
 
 	<target name="clean">
 		<delete dir="${build.dir}"/>
+		<delete dir="${ref.dir}"/>
+	</target>
+
+	<target name="doc">
+		<mkdir dir="${ref.dir}"/>
+		<javadoc packagenames="propinquity.*" sourcepath="${src.dir}" classpathref="classpath" destdir="${ref.dir}" author="true" version="true">
+		</javadoc>
 	</target>
 
 	<target name="compile">

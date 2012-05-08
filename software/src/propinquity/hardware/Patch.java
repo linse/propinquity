@@ -5,7 +5,7 @@ import processing.core.PApplet;
 /**
  * The Patch class reflects the patch the player will wear. 
  * Making changes (e.g. vibration and color settings) in this class should transparently propagate down to the hardware via the HardwareInterface.
- * If the Patch is registered with a HardwareInterface it will have it's prox update as data is receive from the remote device. This registration is not automatic and must be done externally via {@link HardwareInterface.addPatch(Patch patch)}.
+ * If the Patch is registered with a HardwareInterface it will have it's prox update as data is receive from the remote device. This registration is not automatic and must be done externally via {@link HardwareInterface#addPatch(Patch patch)}.
  *
  */
 public class Patch {
@@ -112,9 +112,9 @@ public class Patch {
 	/**
 	 * Configure the color and propagate changes to the HardwareInterface.
 	 *
-	 * @param r the red color level, constrained to the range 0-255.
-	 * @param g the green color level, constrained to the range 0-255.
-	 * @param b the blue color level, constrained to the range 0-255.
+	 * @param red the red color level, constrained to the range 0-255.
+	 * @param green the green color level, constrained to the range 0-255.
+	 * @param blue the blue color level, constrained to the range 0-255.
 	 */
 	public void setColor(int red, int green, int blue) {
 		color[0] = PApplet.constrain(red, 0, 255);
