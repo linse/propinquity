@@ -35,7 +35,6 @@ public class Propinquity extends PApplet {
 	GameState gameState;
 
 	GL gl;
-	Liquid liquid;
 	PBox2D box2d;
 	TestSettings settings;
 
@@ -87,12 +86,9 @@ public class Propinquity extends PApplet {
 	}
 
 	void resetLevel() {
-		liquid.resetLiquid();
 		level.reset();
 		endedLevel = false;
 		doneTime = -1;
-		liquid.groupedParticles = false;
-		liquid.lastPeriodParticle = new Particle[level.getNumberOfPlayers()];
 
 		hud.reset();
 
@@ -121,8 +117,6 @@ public class Propinquity extends PApplet {
 
 	void drawPlay() {
 		graphics.drawInnerBoundary();
-		if (DRAW_PARTICLES)
-			liquid.draw();
 		drawMask();
 		graphics.drawOuterBoundary();
 
@@ -155,16 +149,11 @@ public class Propinquity extends PApplet {
 					doneTime = frameCount;
 				}
 
-				liquid.pushPeriod(true);
+				// TODO: physics and things
 				box2d.step();
-
-				liquid.liquify();
 
 				// snap score in final position
 				hud.snap();
-
-				// pull particles into groups
-				liquid.groupParticles();
 
 				// flag as ended
 				if (doneTime != -1 && frameCount > doneTime + Graphics.FPS * END_LEVEL_TIME)
@@ -175,11 +164,9 @@ public class Propinquity extends PApplet {
 
 			hud.update(hud.getAngle() + HALF_PI, TWO_PI / 10000f, TWO_PI / 2000f);
 
-			liquid.pushPeriod();
-			liquid.updateParticles();
-
+			// TODO: physics and things
 			box2d.step();
-			liquid.liquify();
+
 			level.update();
 
 		} else {
@@ -292,7 +279,7 @@ public class Propinquity extends PApplet {
 					// init level
 					level = new Level(this, sounds, levelSelect.players, levelSelect.levelFile);
 					graphics.loadLevelContent();
-					
+
 					level.load();
 
 					// send configuration message here
@@ -301,13 +288,11 @@ public class Propinquity extends PApplet {
 					delay(50);
 					while (!levelSelect.allAcksIn()) {
 						println("sending again");
-						levelSelect.sendConfigMessages((int)(level.getStepInterval()));
+						levelSelect.sendConfigMessages((int) (level.getStepInterval()));
 						delay(50);
 					}
-
-					liquid = new Liquid(this);
 					changeGameState(GameState.Play);
-					
+
 				}
 				break;
 
@@ -339,30 +324,10 @@ public class Propinquity extends PApplet {
 				break;
 
 			case 'i': // info
-				println("Particles: " + (liquid.particles[0].size() + liquid.particles[1].size()));
+				println("Particles: "
+						+ (level.getPlayer(0).liquid.particles.size() + " " + level.getPlayer(1).liquid.particles
+								.size()));
 				println("Framerate: " + frameRate);
-				println("Radius: " + liquid.particleRadius);
-				println("Viscosity: " + liquid.particleViscosity);
-				break;
-
-			case '8':
-				liquid.particleRadius += 0.01;
-				break;
-
-			case '2':
-				liquid.particleRadius -= 0.01;
-				if (liquid.particleRadius < 0)
-					liquid.particleViscosity = 0;
-				break;
-
-			case '4':
-				liquid.particleViscosity -= 0.001;
-				if (liquid.particleViscosity < 0)
-					liquid.particleViscosity = 0;
-				break;
-
-			case '6':
-				liquid.particleViscosity += 0.001;
 				break;
 
 			case 'e': // play stub

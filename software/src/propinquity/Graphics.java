@@ -72,35 +72,15 @@ public class Graphics {
 	}
 
 	/**
-	 * Loads the particle images used for each player.
+	 * Loads the particle image used for a certain player.
 	 * 
-	 * @return The array of particle images.
+	 * @return The particle image for the given player.
 	 */
-	public PImage[] loadParticles() {
-
-		PImage[] particles = new PImage[parent.level.getNumberOfPlayers()];
-
-		for (int i = 0; i < parent.level.getNumberOfPlayers(); i++)
-			particles[i] = parent.loadImage("data/particles/player" + (i + 1) + ".png");
-
-		return particles;
+	public PImage loadParticles(int i) {
+		return parent.loadImage("data/particles/player" + (i + 1) + ".png");
 	}
 
-	/**
-	 * Loads the image of a particle shadow.
-	 * 
-	 * @return The image used as the particle's shadow.
-	 */
-	public PImage loadParticleShadow() {
-
-		PImage img = null;
-
-		if (Propinquity.DRAW_SHADOWS)
-			img = parent.loadImage("data/particles/shadow.png");
-
-		return img;
-	}
-
+	// TODO: fix
 	public void drawDebugFence() {
 		parent.noFill();
 		parent.stroke(0, 255, 0);
