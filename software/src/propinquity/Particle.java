@@ -53,6 +53,10 @@ public class Particle {
 		parent.box2d.destroyBody(body);
 	}
 
+	public Body getBody() {
+		return body;
+	}
+	
 	public void update() {
 
 	}

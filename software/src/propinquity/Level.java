@@ -150,9 +150,7 @@ public class Level {
 			players[i].update();
 		}
 
-		float gravX = Liquid.GRAVITY_STRENGTH * PApplet.cos(-parent.hud.angle + PConstants.HALF_PI);
-		float gravY = Liquid.GRAVITY_STRENGTH * PApplet.sin(-parent.hud.angle + PConstants.HALF_PI);
-		parent.box2d.setGravity(gravX, gravY);
+		parent.box2d.setGravity(0, 0);
 		
 		// process step
 		if (time - lastStep > stepInterval)
