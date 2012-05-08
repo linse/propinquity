@@ -2,9 +2,6 @@ package propinquity;
 
 import java.util.ArrayList;
 
-import org.jbox2d.testbed.TestSettings;
-
-import pbox2d.PBox2D;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PImage;
@@ -17,7 +14,6 @@ public class Liquid {
 	
 	private Propinquity parent;
 	private Colour colour;
-	private Fences fences;
 
 	private PImage particleImage;
 	private PGraphics pgParticle;
@@ -25,12 +21,7 @@ public class Liquid {
 	public Liquid(Propinquity parent, Colour colour) {
 
 		this.parent = parent;
-		this.colour = colour;
-
-		initBox2D();
-
-		fences = new Fences(parent);
-
+		
 		particlesCreated = new ArrayList<Particle>();
 		particlesHeld = new ArrayList<Particle>();
 
@@ -40,17 +31,6 @@ public class Liquid {
 		pgParticle = parent.createGraphics(particleImage.width, particleImage.height, PApplet.P2D);
 		pgParticle.background(particleImage);
 		pgParticle.mask(particleImage);
-	}
-
-	private void initBox2D() {
-		// initialize box2d physics and create the world
-		float worldSize = Propinquity.WORLD_SIZE;
-		parent.box2d = new PBox2D(parent, (float) parent.height / worldSize);
-		parent.box2d.createWorld(-worldSize / 2f, -worldSize / 2f, worldSize, worldSize);
-		parent.box2d.setGravity(0.0f, 0.0f);
-
-		// load default jbox2d settings
-		parent.settings = new TestSettings();
 	}
 
 	public void reset() {
@@ -70,7 +50,7 @@ public class Liquid {
 		particlesCreated = new ArrayList<Particle>();
 	}
 	
-	public void update() {
+	public void update() {		
 		for (Particle particle : particlesCreated)
 			particle.update();
 		

@@ -201,6 +201,14 @@ public class Player implements PConstants {
 			totalPts = 0;
 		killPts += pts;
 	}
+	
+	public void update() {
+		score.update();
+	}
+	
+	public void draw() {
+		score.draw();
+	}
 
 	public int processStep() {
 		int result = 0;
