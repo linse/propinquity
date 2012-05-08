@@ -79,7 +79,7 @@ void setup() {
 
 	t.every(10, timerCallback);
 
-	xbee.begin(9600);
+	xbee.begin(38400);
 }
 
 /**

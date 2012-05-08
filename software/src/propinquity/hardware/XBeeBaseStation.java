@@ -218,7 +218,7 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 	}
 
 	public void sendPacket(Packet packet) {
-		sendAsynchronous(packet);	
+		sendPacketAsynchronous(packet);	
 	}
 
 	public void sendPacketAsynchronous(Packet packet) {
