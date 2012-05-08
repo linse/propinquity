@@ -77,6 +77,10 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 		}
 	}
 
+	public void scanBlocking() {
+		run();
+	}
+
 	/**
 	 * Closes/forgets all the XBee connections that may previously have been established.
 	 *
@@ -167,6 +171,8 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 
 			xbee.addPacketListener(this);
 			xbees.put(ni, xbee); //TODO Check for collision
+
+			break; //TODO this is temporary
 		}
 
 		System.out.println("Scan Complete");
@@ -212,17 +218,45 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 	}
 
 	public void sendPacket(Packet packet) {
+		sendPacketAsynchronous(packet);	
+	}
+
+	public void sendPacketAsynchronous(Packet packet) {
 		XBeeAddress16 addr = new XBeeAddress16(((packet.getDestAddr() & 0xFF00) >> 8), packet.getDestAddr() & 0x00FF);
 		
 		int[] fullPayload = new int[packet.getPayload().length+1];
 		fullPayload[0] = packet.getPacketType().getCode();
 		System.arraycopy(packet.getPayload(), 0, fullPayload, 1, packet.getPayload().length);
-
-		TxRequest16 request = new TxRequest16(addr, fullPayload);
-
+		
 		for(XBee xbee : xbees.values()) {
 			try {
+				TxRequest16 request = new TxRequest16(addr, xbee.getNextFrameId(), fullPayload);
 				xbee.sendAsynchronous(request);
+			} catch(XBeeException e) {
+				System.out.println("\t\tException sending request");
+			}
+		}
+	}
+
+	public void sendPacketSynchrous(Packet packet) {
+		XBeeAddress16 addr = new XBeeAddress16(((packet.getDestAddr() & 0xFF00) >> 8), packet.getDestAddr() & 0x00FF);
+		
+		int[] fullPayload = new int[packet.getPayload().length+1];
+		fullPayload[0] = packet.getPacketType().getCode();
+		System.arraycopy(packet.getPayload(), 0, fullPayload, 1, packet.getPayload().length);
+		
+		for(XBee xbee : xbees.values()) {
+			try {
+				// send a request and wait up to 10 seconds for the response
+				TxRequest16 request = new TxRequest16(addr, xbee.getNextFrameId(), fullPayload);
+				XBeeResponse response = xbee.sendSynchronous(request, 10*1000);
+
+				if(response.getApiId() == ApiId.TX_STATUS_RESPONSE) {
+					TxStatusResponse tx_response = (TxStatusResponse)response;
+					System.out.println(tx_response.toString());
+				}
+			} catch(XBeeTimeoutException e) {
+				System.out.println("\t\tTimeout sending request");
 			} catch(XBeeException e) {
 				System.out.println("\t\tException sending request");
 			}
@@ -232,7 +266,8 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 	public void processResponse(XBeeResponse response) {
 		switch(response.getApiId()) {
 			case TX_STATUS_RESPONSE: {//ACK
-				
+				TxStatusResponse tx_response = (TxStatusResponse)response;
+				System.out.println(tx_response.toString());
 				break;
 			}
 			case RX_16_RESPONSE: {//From remote radio
@@ -254,6 +289,10 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 					System.out.println("Got reponse from an unregistered patch or glove with address" + addr);
 				}
 
+				break;
+			}
+			default: {
+				System.out.println("Got something: "+response.getApiId().toString());
 				break;
 			}
 		}		

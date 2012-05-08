@@ -6,9 +6,6 @@
 #include <XBee.h>
 #include <Timer.h>
 
-// Timer
-Timer t;
-
 /* ---- Pin List ---- */
 
 #define RED_LED_PIN    8
@@ -33,31 +30,41 @@ Timer t;
 #define VIBE_DUTY_PACKET      7
 #define VIBE_PERIOD_PACKET    8
 
+/* ---- Timer ---- */
+
+ // Timer
+ Timer t;
+
+ uint16_t time_counter = 0;
+
+/* ---- XBee/Wireless ---- */
+
 XBee xbee = XBee();
 Tx16Request tx;
 Rx16Response rx = Rx16Response();
 
-uint8_t out_flag = 0;
+uint8_t send_flag = 0;
+uint8_t send_period = 10;
 
-/* ---- State ----- */
+/* ---- Vibe/LEDs ----- */
+
 uint8_t active = 0;
 
 uint8_t rgb[3] = {0, 0, 0};
 
+boolean led_on = true;
+uint8_t led_duty = 0;
+uint8_t led_period = 0;
+
 int vibe_level = 0;
 
+boolean vibe_on = true;
+uint8_t vibe_duty = 0;
+uint8_t vibe_period = 0;
+
 int prox_val = 0;
-int prox_adju = 250;
+int prox_adju = 0; //250
 
-uint16_t time_counter = 0;
-
-boolean led_on = false;
-uint8_t led_duty = 255;
-uint8_t led_period = 255;
-
-boolean vibe_on = false;
-uint8_t vibe_duty = 255;
-uint8_t vibe_period = 255;
 
 void setup() {
 	pinMode(RED_LED_PIN, OUTPUT);
@@ -66,25 +73,26 @@ void setup() {
 	pinMode(STATUS_LED_PIN, OUTPUT);
 	pinMode(VIBE_PIN, OUTPUT);
 
+	setActive(0);
 	color(0, 0, 0);
 	vibe(0);
 
 	t.every(10, timerCallback);
 
-	xbee.begin(9600);
+	xbee.begin(38400);
 }
 
 /**
  * Set the data out flag every ~10ms.
  */
 void timerCallback() {
-	out_flag = 1; // Every 10ms
+	if((time_counter % send_period) == 0) send_flag = 1; // Every 10ms
 	
-	if(led_period == 0) led_on = true;
+	if(led_period == 0 || led_duty == 255) led_on = true;
 	else if((time_counter % led_period) < (uint8_t)(led_duty*led_period/255)) led_on = true;
 	else led_on = false;
 
-	if(vibe_period == 0) vibe_on = true;
+	if(vibe_period == 0 || vibe_duty == 255) vibe_on = true;
 	else if((time_counter % vibe_period) < (uint8_t)(vibe_duty*vibe_period/255)) vibe_on = true;
 	else vibe_on = false;
 	
@@ -98,12 +106,14 @@ void loop() {
 	xbee.readPacket(); // Read packet, return after 500ms timeout
 
 	XBeeResponse response = xbee.getResponse();
-	if(response.isAvailable() && response.getApiId() == RX_16_RESPONSE) {
-		response.getRx16Response(rx); // Get RX response
-		parse_data(rx.getData(), rx.getDataLength());
+	if(response.isAvailable()) {
+		if(response.getApiId() == RX_16_RESPONSE) {
+			response.getRx16Response(rx); // Get RX response
+			parse_data(rx.getData(), rx.getDataLength());
+		}
 	}
 
-	if(active && out_flag) { //This is done with a flag since the send_data won't work from inside an interrupt
+	if(active && send_flag) { //This is done with a flag since the send_data won't work from inside an interrupt
 		prox_val = analogRead(PROX_PIN);
 
 		if(prox_val < prox_adju) prox_val = 0;
@@ -111,7 +121,7 @@ void loop() {
 
 		send_data();
 
-		out_flag = 0;
+		send_flag = 0;
 	} else { // Turn off when inactive? sure
 		// reset();
 	}
@@ -127,14 +137,19 @@ void loop() {
 
 void reset() {
 	vibe_level = 0;
+
 	vibe_on = false;
 	vibe_duty = 0;
 	vibe_period = 0;
 
 	rgb[0] = rgb[1] = rgb[2] = 0;
+
 	led_on = false;
 	led_duty = 0;
 	led_period = 0;
+
+	color(0, 0, 0);
+	vibe(0);
 }
 
 /* ---- Xbee ---- */
@@ -153,13 +168,7 @@ void send_data() {
 
 void parse_data(uint8_t* data, uint8_t len) {
 	if(data[0] == CONF_PACKET && len > 1) {
-		if(data[1]) {
-			active = 1;
-			statusLED(1);
-		} else {
-			active = 0;
-			statusLED(0);
-		}
+		setActive(data[1]);
 	} else if(data[0] == COLOR_PACKET && len > 3) {
 		rgb[0] = data[1];
 		rgb[1] = data[2];
@@ -177,6 +186,15 @@ void parse_data(uint8_t* data, uint8_t len) {
 	} 
 }
 
+void setActive(int val) {
+	if(val) {
+		active = 1;
+		statusLED(1);
+	} else {
+		active = 0;
+		statusLED(0);
+	}
+}
 /* ---- Blinking ---- */
 
 void updateVibe() {

@@ -8,7 +8,7 @@ public class HardwareDebugger extends PApplet implements ProxEventListener {
 	// Unique serialization ID
 	private static final long serialVersionUID = 6340508174717159418L;
 
-	static final int[] PATCH_ADDR = new int[] { 1, 2, 3, 4, 6, 7 };
+	static final int[] PATCH_ADDR = new int[] { 1, 6 };
 	static final int NUM_PATCHES = PATCH_ADDR.length;
 
 	XBeeBaseStation xbeeBaseStation;
@@ -21,7 +21,7 @@ public class HardwareDebugger extends PApplet implements ProxEventListener {
 	Slider prox_sliders[];
 
 	public void setup() {
-		size(screen.width, 800);
+		size(1024, 800);
 
 		controlP5 = new ControlP5(this);
 
@@ -80,6 +80,7 @@ public class HardwareDebugger extends PApplet implements ProxEventListener {
 		if(!show_controls) controlP5.hide();
 
 		xbeeBaseStation = new XBeeBaseStation();
+		xbeeBaseStation.scan();
 		xbeeBaseStation.addProxEventListener(this);
 
 		patches = new Patch[NUM_PATCHES];
@@ -92,6 +93,7 @@ public class HardwareDebugger extends PApplet implements ProxEventListener {
 	public void controlEvent(ControlEvent theEvent) {
 		String name = theEvent.controller().name();
 		int value = (int)theEvent.controller().value();
+		if(name.indexOf("Active") == -1 && value < 10) value = 0; //Snap to zero
 		if(name.equals("Re-Scan")) {
 			xbeeBaseStation.scan();
 			return;
@@ -134,7 +136,18 @@ public class HardwareDebugger extends PApplet implements ProxEventListener {
 	}
 
 	public void draw() {
-		background(0);
+		if(xbeeBaseStation.isScanning()) background(30, 0, 0);
+		else background(0);
+
+		if(xbeeBaseStation.listXBees() != null && xbeeBaseStation.listXBees().length > 0) {
+			stroke(150);
+			fill(0, 75, 0);
+		} else {
+			stroke(150);
+			fill(75, 0, 0);
+		}
+
+		rect(5, height-30, 25, 25);
 	}
 	
 	public void keyPressed() {
