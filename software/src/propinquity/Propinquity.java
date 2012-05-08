@@ -140,7 +140,10 @@ public class Propinquity extends PApplet {
 		if (gameState == GameState.Play)
 			drawPlay();
 
+		pushMatrix();
+		translate(100, 100);
 		simulator.draw();
+		popMatrix();
 		
 		logger.recordFrame();
 	}
