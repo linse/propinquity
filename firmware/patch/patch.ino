@@ -69,7 +69,7 @@ void setup() {
 	color(0, 0, 0);
 	vibe(0);
 
-	int timerEvent = t.every(10, timerCallback);
+	t.every(10, timerCallback);
 
 	xbee.begin(9600);
 }
@@ -81,11 +81,11 @@ void timerCallback() {
 	out_flag = 1; // Every 10ms
 	
 	if(led_period == 0) led_on = true;
-	else if((time_counter % led_period) < led_duty*led_period/255) led_on = true;
+	else if((time_counter % led_period) < (uint8_t)(led_duty*led_period/255)) led_on = true;
 	else led_on = false;
 
 	if(vibe_period == 0) vibe_on = true;
-	else if((time_counter % vibe_period) < vibe_duty*vibe_period/255) vibe_on = true;
+	else if((time_counter % vibe_period) < (uint8_t)(vibe_duty*vibe_period/255)) vibe_on = true;
 	else vibe_on = false;
 	
 	time_counter++;

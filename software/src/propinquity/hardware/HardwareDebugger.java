@@ -8,7 +8,7 @@ public class HardwareDebugger extends PApplet implements ProxEventListener {
 	// Unique serialization ID
 	private static final long serialVersionUID = 6340508174717159418L;
 
-	static final int[] PATCH_ADDR = new int[] { 1, 2, 3, 4, 5, 6 };
+	static final int[] PATCH_ADDR = new int[] { 1, 2, 3, 4, 6, 7 };
 	static final int NUM_PATCHES = PATCH_ADDR.length;
 
 	XBeeBaseStation xbeeBaseStation;

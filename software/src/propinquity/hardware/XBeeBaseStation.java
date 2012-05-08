@@ -232,7 +232,7 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 	public void processResponse(XBeeResponse response) {
 		switch(response.getApiId()) {
 			case TX_STATUS_RESPONSE: {//ACK
-
+				
 				break;
 			}
 			case RX_16_RESPONSE: {//From remote radio
