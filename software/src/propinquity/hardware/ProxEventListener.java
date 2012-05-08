@@ -2,6 +2,6 @@ package propinquity.hardware;
 
 public interface ProxEventListener {
 
-	public void proxEvent(Patch glove);
+	public void proxEvent(Patch patch);
 
 }
