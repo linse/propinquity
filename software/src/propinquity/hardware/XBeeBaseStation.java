@@ -77,6 +77,10 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 		}
 	}
 
+	public void scanBlocking() {
+		run();
+	}
+
 	/**
 	 * Closes/forgets all the XBee connections that may previously have been established.
 	 *
@@ -167,6 +171,8 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 
 			xbee.addPacketListener(this);
 			xbees.put(ni, xbee); //TODO Check for collision
+
+			break; //TODO this is temporary
 		}
 
 		System.out.println("Scan Complete");
@@ -217,7 +223,7 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 		int[] fullPayload = new int[packet.getPayload().length+1];
 		fullPayload[0] = packet.getPacketType().getCode();
 		System.arraycopy(packet.getPayload(), 0, fullPayload, 1, packet.getPayload().length);
-
+		
 		TxRequest16 request = new TxRequest16(addr, fullPayload);
 
 		for(XBee xbee : xbees.values()) {
@@ -232,7 +238,8 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 	public void processResponse(XBeeResponse response) {
 		switch(response.getApiId()) {
 			case TX_STATUS_RESPONSE: {//ACK
-				
+				TxStatusResponse tx_response = (TxStatusResponse)response;
+				System.out.println(tx_response.toString());
 				break;
 			}
 			case RX_16_RESPONSE: {//From remote radio
@@ -254,6 +261,10 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 					System.out.println("Got reponse from an unregistered patch or glove with address" + addr);
 				}
 
+				break;
+			}
+			default: {
+				System.out.println("Got something: "+response.getApiId().toString());
 				break;
 			}
 		}		
