@@ -97,8 +97,6 @@ public class Level {
 		if (players != null) {
 			for (int i = 0; i < players.length; i++)
 				players[i].reset();
-			// players[0].setStubbed(false);
-			// println("set stubbed to false");
 		}
 
 		// TODO: hmm...

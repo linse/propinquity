@@ -324,9 +324,9 @@ public class Propinquity extends PApplet {
 				break;
 
 			case 'i': // info
-				println("Particles: "
-						+ (level.getPlayer(0).liquid.particles.size() + " " + level.getPlayer(1).liquid.particles
-								.size()));
+				int score0 = level.getPlayer(0).score.liquid.particlesHeld.size();
+				int score1 = level.getPlayer(1).score.liquid.particlesHeld.size();
+				println("Particles: " + (score0 + " " + score1));
 				println("Framerate: " + frameRate);
 				break;
 

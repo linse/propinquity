@@ -60,7 +60,7 @@ public class Player implements PConstants {
 	
 	int id;
 	
-	Liquid liquid;
+	Score score;
 
 	public Player(Propinquity parent, Colour colour, int id) {
 		this.parent = parent;
@@ -68,7 +68,7 @@ public class Player implements PConstants {
 		this.colour = colour;
 		this.numPatches = 0;
 		this.id = id;
-		liquid = new Liquid(parent, id);
+		score = new Score(parent, id);
 		reset();
 	}
 
@@ -93,7 +93,7 @@ public class Player implements PConstants {
 		if (proxStub != null)
 			proxStubIndex = 0;
 		
-		liquid.reset();
+		score.reset();
 	}
 
 	public void clear() {
