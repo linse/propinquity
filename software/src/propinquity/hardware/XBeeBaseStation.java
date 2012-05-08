@@ -2,7 +2,6 @@ package propinquity.hardware;
 
 import java.util.*;
 import java.lang.System;
-import processing.serial.*;
 import com.rapplogic.xbee.api.*;
 import com.rapplogic.xbee.api.wpan.*;
 
@@ -114,7 +113,8 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 
 		System.out.println("XBeeBaseStation Scan");
 
-		String[] availablePorts = Serial.list();
+		String[] availablePorts = new String[] { "/dev/tty.usbserial-A8004Z0D" };
+		
 		String osName = System.getProperty("os.name");
 
 		for(int portNum = 0;portNum < availablePorts.length;portNum++) {
