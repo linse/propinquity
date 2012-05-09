@@ -16,11 +16,11 @@ public class Particle {
 	public static final float SPAWN_DELAY = 0.5f;
 
 	public Vec2 position;
-
+	public float scale;
+	
 	private Body body;
 	private CircleDef shape;
 
-	private float scale;
 	private PGraphics texture;
 	private Color color;
 
