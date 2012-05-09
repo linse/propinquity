@@ -380,19 +380,32 @@ public class LevelSelect implements PConstants, UIElement {
 		parent.popMatrix();
 	}
 
-	/* This is what to refer to for cap sense events from patch buttons */
-	public void keyPressed(char key, int keyCode) {
-		switch (keyCode) {
-		case LEFT:
-			moveLeft();
-			break;
-		case RIGHT:
-			moveRight();
-			break;
-		case ENTER:
-		case ' ':
-			doSelect();
-			break;
+	/**
+	 * Receive a keyPressed event.
+	 * 
+	 * @param key the char of the keyPressed event.
+	 * @param keycode the keycode of the keyPressed event.
+	 */
+	public void keyPressed(char key, int keycode) {
+		switch(key) {
+			case BACKSPACE: {
+				clear();
+				parent.changeGameState(GameState.PlayerList);
+				break;
+			}
+			case PApplet.LEFT: {
+				moveLeft();
+				break;
+			}
+			case PApplet.RIGHT: {
+				moveRight();
+				break;
+			}
+			case PApplet.ENTER:
+			case ' ': {
+				doSelect();
+				break;
+			}
 		}
 	}
 
@@ -458,6 +471,7 @@ public class LevelSelect implements PConstants, UIElement {
 		case Song:
 			levelFile = LEVEL_FOLDER + levelFiles[selected];
 			state = LevelSelectState.Done;
+			parent.changeGameState(GameState.Play);
 			break;
 		}
 	}

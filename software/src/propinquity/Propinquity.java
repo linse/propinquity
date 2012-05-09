@@ -225,6 +225,10 @@ public class Propinquity extends PApplet {
 			}
 
 			case Play: {
+				level = new Level(this, sounds, levelSelect.players, levelSelect.levelFile);
+				graphics.loadLevelContent();
+
+				level.load();
 				break;
 			}
 		}
@@ -251,52 +255,17 @@ public class Propinquity extends PApplet {
 	public void keyPressed() {
 		switch(gameState) {
 			case XBeeInit: {
-				xbeeManager.keyPressed(keyCode);
+				xbeeManager.keyPressed(key, keyCode);
 				break;
 			}
 
 			case PlayerList: {
-				playerList.keyPressed(keyCode);
+				playerList.keyPressed(key, keyCode);
 				break;
 			}
 
 			case LevelSelect: {
-				switch(key) {
-					case BACKSPACE: {
-						levelSelect.clear();
-						changeGameState(GameState.PlayerList);
-						break;
-					}
-
-					default: {
-				// pass the key to the level select controller
-						levelSelect.keyPressed(key, keyCode);
-
-				// check if the level select controller is done
-				// and ready to play
-						if(levelSelect.isDone()) {
-					// init level
-							level = new Level(this, sounds, levelSelect.players, levelSelect.levelFile);
-							graphics.loadLevelContent();
-
-							level.load();
-
-					// send configuration message here
-					// TODO: send step length to proximity patches
-
-							delay(50);
-							while(!levelSelect.allAcksIn()) {
-								println("sending again");
-								levelSelect.sendConfigMessages((int) (level.getStepInterval()));
-								delay(50);
-							}
-							changeGameState(GameState.Play);
-
-						}
-						break;
-					}
-
-				}
+				levelSelect.keyPressed(key, keyCode);
 				break;
 			}
 
