@@ -186,11 +186,6 @@ public class LevelSelect implements PConstants, UIElement {
 		// for proximity
 		if (PROX_STUB[player])
 			players[player].loadProxStub(player, PROX_STUB_FILE);
-		else
-			players[player].initProxComm(XBEE_PROX_1_NI[player], XBEE_PROX_2_NI[player]);
-		// for vibration
-		if (SEND_VIBE[player])
-			players[player].initVibeComm(XBEE_VIBE_NI[player]);
 
 		// ping for patches
 		players[player].discoverPatches();

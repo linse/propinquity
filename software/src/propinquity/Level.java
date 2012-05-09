@@ -36,8 +36,6 @@ public class Level {
 	private boolean isRunning;
 	private int coopPoints;
 	private long time;
-	private long lastUpdate;
-	private long lastStep;
 	private long stepInterval;
 
 	// if there is nothing in the file, we want to default to 2 min of lights-on
@@ -106,13 +104,9 @@ public class Level {
 		tempo = DEFAULT_TEMPO;
 		multiplier = DEFAULT_MULTIPLIER;
 		stepInterval = (long) (60f / tempo * multiplier * 1000);
-		// stubReading = 0;
 		time = 0;
-		lastStep = -PApplet.MAX_INT;
 		isRunning = false;
-		lastUpdate = 0;
 
-		// rewind song
 		if(sounds.song != null)
 			sounds.song.rewind();
 	}
@@ -124,56 +118,30 @@ public class Level {
 
 	public void start() {
 		isRunning = true;
-		lastUpdate = parent.millis();
 
 		if(!Sounds.MUTE)
 			sounds.song.play();
 	}
 
 	public void update() {
-		long now = parent.millis();
-		long dt = now - lastUpdate;
-		if(dt > 0)
-			time += dt;
-		lastUpdate = now;
-
+		time = parent.millis();
+		
 		// process stubs
 		for(int i = 0; i < players.length; i++) {
-			// players[i].stub(time);
 			ProxData psd;
 			while((psd = players[i].nextProxStub(time)) != null) {
 				processProxReading(psd);
-				// proxStubIndex++;
 			}
 			
 			players[i].update();
 		}
 
 		parent.box2d.setGravity(0, 0);
-		
-		// process step
-		if(time - lastStep > stepInterval)
-			step();
 	}
 	
 	public void draw() {
 		for(int i = 0; i < players.length; i++)
 			players[i].draw();
-	}
-
-	private void step() {
-		// println("Step " + currentStep + " ("+time+")");
-
-		// keep track of time
-		lastStep = time;
-
-		// process each player step
-		if(currentStep < stepCount)
-			for(int i = 0; i < players.length; i++)
-				players[i].sendStep(currentStep);
-
-		// increment
-		currentStep++;
 	}
 
 	public boolean isCoop() {

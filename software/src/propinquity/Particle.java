@@ -10,10 +10,10 @@ import processing.core.*;
 public class Particle {
 
 	/**
-	 * The minimum amount of time a player must have their glove in the sweet
-	 * spot to get a single point.
+	 * The minimum amount of time (in ms) a player must have their glove in the
+	 * sweet spot to get a single point.
 	 */
-	public static final float SPAWN_DELAY = 0.5f;
+	public static final int SPAWN_DELAY = 500;
 
 	public Vec2 position;
 	public float scale;

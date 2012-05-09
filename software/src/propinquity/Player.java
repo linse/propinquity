@@ -53,13 +53,15 @@ public class Player implements PConstants, ProxEventListener {
 	Vector<String> proxStub = null;
 	int proxStubIndex = 0;
 
-	// audio feedback
-	AudioPlayer negSoundPlayer = null;
-	AudioPlayer coopNegSoundPlayer = null;
+	AudioPlayer negSoundPlayer;
+	AudioPlayer negSoundCoop;
 
 	boolean coopMode;
-	
+
 	Score score;
+	int distance;
+	private long currentTime;
+	private long lastTime;
 
 	public Player(Propinquity parent, Vector<Patch> patches, Glove glove, Color color) {
 		this.parent = parent;
@@ -78,20 +80,21 @@ public class Player implements PConstants, ProxEventListener {
 		stepProximity = 0;
 		stepReadings = 0;
 		stepTouched = false;
+		lastTime = 0;
 
 		hudAngle = 0; // same as coop default angle
 		hudVel = 0;
 
 		ri = 0;
-		for(int i = 0; i < NUM_PROX_READINGS; i++)
+		for (int i = 0; i < NUM_PROX_READINGS; i++)
 			recentReadings[i] = 0;
 
 		lastVibe = 0;
 
 		// reset stub
-		if(proxStub != null)
+		if (proxStub != null)
 			proxStubIndex = 0;
-		
+
 		score.reset();
 	}
 
@@ -115,18 +118,18 @@ public class Player implements PConstants, ProxEventListener {
 	}
 
 	public void registerNegativeCoopSound(AudioPlayer ap) {
-		coopNegSoundPlayer = ap;
+		negSoundCoop = ap;
 	}
 
 	public void playNegativeSound() {
-		if(!Sounds.MUTE) {
-			if(isInCoopMode()) {
-				if(coopNegSoundPlayer != null) {
-					coopNegSoundPlayer.play();
-					coopNegSoundPlayer.rewind();
+		if (!Sounds.MUTE) {
+			if (isInCoopMode()) {
+				if (negSoundCoop != null) {
+					negSoundCoop.play();
+					negSoundCoop.rewind();
 				}
 			} else {
-				if(negSoundPlayer != null) {
+				if (negSoundPlayer != null) {
 					negSoundPlayer.play();
 					negSoundPlayer.rewind();
 				}
@@ -135,13 +138,13 @@ public class Player implements PConstants, ProxEventListener {
 	}
 
 	public void approachHudTo(float targetAngle) {
-		if(hudAngle == targetAngle)
+		if (hudAngle == targetAngle)
 			return;
 
 		float diff = targetAngle - hudAngle;
 		int dir = diff > 0 ? 1 : -1;
 
-		if(diff * dir > HUD_ROTATION) {
+		if (diff * dir > HUD_ROTATION) {
 			hudVel += HUD_ROTATION * dir;
 		} else {
 			hudAngle = targetAngle;
@@ -192,18 +195,28 @@ public class Player implements PConstants, ProxEventListener {
 
 	public void removePts(int pts) {
 		periodPts -= pts;
-		if(periodPts < 0)
+		if (periodPts < 0)
 			periodPts = 0;
 		totalPts -= pts;
-		if(totalPts < 0)
+		if (totalPts < 0)
 			totalPts = 0;
 		killPts += pts;
 	}
-	
+
 	public void update() {
+
+		currentTime = parent.millis();
+
 		score.update();
+
+		if (currentTime - lastTime > Particle.SPAWN_DELAY) {
+			if (distance > Score.MIN_RANGE && distance < Score.MAX_RANGE) {
+				score.increment();
+				lastTime = currentTime;
+			}
+		}
 	}
-	
+
 	public void draw() {
 		score.draw();
 	}
@@ -212,7 +225,7 @@ public class Player implements PConstants, ProxEventListener {
 		int result = 0;
 
 		// if the player touched, then remove penality pts
-		if(hasTouched()) {
+		if (hasTouched()) {
 			System.out.println(name + " TOUCHED ");
 			removePts(TOUCH_PENALITY_PTS);
 			result = -1;
@@ -220,7 +233,7 @@ public class Player implements PConstants, ProxEventListener {
 		// else add pts
 		else {
 			// System.out.println(name + " scores " +
-			if(getProximity() > 180)
+			if (getProximity() > 180)
 				result = 1;
 		}
 
@@ -241,13 +254,13 @@ public class Player implements PConstants, ProxEventListener {
 
 		// keep track of the step touched
 		// and give negative audio feedback immediately
-		if(!stepTouched && touched) {
+		if (!stepTouched && touched) {
 			playNegativeSound();
 		}
 		stepTouched |= touched;
 
 		// filter out the low values
-		if(proximity < PROXIMITY_LOW_THRESHOLD)
+		if (proximity < PROXIMITY_LOW_THRESHOLD)
 			return;
 
 		// add up readings and counter
@@ -256,15 +269,15 @@ public class Player implements PConstants, ProxEventListener {
 
 		// avg last 4 readings and send them out to vibes
 		recentReadings[ri++] = proximity;
-		if(ri >= NUM_PROX_READINGS)
+		if (ri >= NUM_PROX_READINGS)
 			ri = 0;
 		averageReading = recentReadings[0];
-		for(int i = 0; i < NUM_PROX_READINGS; i++)
-			if(recentReadings[i] > averageReading)
+		for (int i = 0; i < NUM_PROX_READINGS; i++)
+			if (recentReadings[i] > averageReading)
 				averageReading = recentReadings[i];
 
 		int total = 0;
-		for(int i = 0; i < NUM_PROX_READINGS; i++)
+		for (int i = 0; i < NUM_PROX_READINGS; i++)
 			total += recentReadings[i];
 
 		averageReading = total / NUM_PROX_READINGS;
@@ -286,28 +299,23 @@ public class Player implements PConstants, ProxEventListener {
 	public boolean isInCoopMode() {
 		return coopMode;
 	}
-	
+
 	public void proxEvent(Patch patch) {
-		if(patches.indexOf(patch) != -1) {
-			
-			if(patch.getProx() > Score.MIN_RANGE && patch.getProx() < Score.MAX_RANGE) {
-				score.increment();
-			}
+		if (patches.indexOf(patch) != -1) {
+			distance = patch.getProx();
 		}
 	}
-	
-	
 
 	ProxData nextProxStub(long time) {
-		if(proxStub == null)
+		if (proxStub == null)
 			return null;
-		if(proxStubIndex >= proxStub.size())
+		if (proxStubIndex >= proxStub.size())
 			return null;
 
 		String[] data = (proxStub.get(proxStubIndex)).split(",");
 
 		// check if we reached the time for this step
-		if(Integer.valueOf(data[0]) >= time)
+		if (Integer.valueOf(data[0]) >= time)
 			return null;
 
 		// System.out.println(time + ": " + Integer.valueOf(data[2]) + " " +
@@ -325,7 +333,7 @@ public class Player implements PConstants, ProxEventListener {
 	void loadProxStub(int index, String stubFile) {
 		// proximity data stub
 		String[] data = parent.loadStrings(stubFile);
-		if(data == null || data.length == 0) {
+		if (data == null || data.length == 0) {
 			System.out.println("Error: Proximity stub was empty. I don't think that's right.");
 		}
 
@@ -333,16 +341,16 @@ public class Player implements PConstants, ProxEventListener {
 
 		// parse to keep only data for this player
 		String[] dataline;
-		for(int i = 0; i < data.length; i++) {
+		for (int i = 0; i < data.length; i++) {
 			dataline = data[i].split(",");
 
-			if(dataline.length != 5) {
+			if (dataline.length != 5) {
 				System.out.println("Warning: Proximity stub line " + i + " (" + data[i]
 						+ ") is not formatted correctly");
 				continue;
 			}
 
-			if(Integer.valueOf(dataline[1]) == index) {
+			if (Integer.valueOf(dataline[1]) == index) {
 				proxStub.add(data[i]);
 			}
 		}
@@ -353,61 +361,6 @@ public class Player implements PConstants, ProxEventListener {
 		System.out.println(" Proximity stub... " + proxStub.size());
 	}
 
-	void initProxComm(String ni1, String ni2) {
-		// TODO load bases using their serial number...?
-		if(ni1 != null) {
-			// XBeeReader xbee = null;
-			// XBeeReader xbee = parent.xbeeManager.reader(ni1);
-			// if(xbee != null) {
-			// System.out.println("Initialized XBee for proximity #1: " + ni1);
-			// } else {
-			// System.err
-			// .println("Could not initialize XBee for proximity #1: "
-			// + ni1);
-			// }
-		}
-		if(ni2 != null) {
-			// XBeeReader xbee = null;
-			// XBeeReader xbee = parent.xbeeManager.reader(ni2);
-			// if(xbee != null) {
-			// System.out.println("Initialized XBee for proximity #2: " + ni2);
-			// } else {
-			// System.err
-			// .println("Could not initialize XBee for proximity #2: "
-			// + ni2);
-			// }
-		}
-
-		// create the data packet that requests proximity values
-		// for(int i=1; i < outdata.length; i++)
-		// outdata[i] = 0;
-	}
-
-	void initVibeComm(String ni) {
-		if(ni == null)
-			return;
-
-		// XBeeReader xbee = null;
-		// XBeeReader xbee = parent.xbeeManager.reader(ni);
-		// if(xbee != null) {
-		// System.out.println("Initialized XBee for vibration: " + ni);
-		// } else {
-		// System.err
-		// .println("Could not initialize XBee for vibration: " + ni);
-		// }
-	}
-
-	public void sendStep(int stepNum) {
-		// System.out.println(name + " sending step: " + stepNum);
-		// broadcast step to patches
-		// 0/*???*/);
-		// Step step1 = stepNum < steps.length ? steps[stepNum] : null;
-		// Step step2 = stepNum + 1 < steps.length ? steps[stepNum + 1] : null;
-		// Step step3 = stepNum + 2 < steps.length ? steps[stepNum + 2] : null;
-		// Step step4 = stepNum + 3 < steps.length ? steps[stepNum + 3] : null;
-		// //Does this only broadcast to two of the prox sensors then?
-	}
-
 	public void sendVibes(int avgReading) {
 		sendVibes(avgReading, false);
 	}
@@ -416,13 +369,13 @@ public class Player implements PConstants, ProxEventListener {
 		// make sure the vibe xbee is present
 
 		// if we are not overriding the threshold filter
-		if(!override) {
+		if (!override) {
 			// then donothing is the value is less than the
 			// threshold away from the last sent value
 			int diff = lastVibe - avgReading;
-			if(diff < 0)
+			if (diff < 0)
 				diff *= -1;
-			if(diff < VIBE_DIFF_THRESHOLD)
+			if (diff < VIBE_DIFF_THRESHOLD)
 				return;
 		}
 
