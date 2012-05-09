@@ -329,8 +329,8 @@ public class Propinquity extends PApplet {
 						break;
 					}
 
-					case ENTER: {
-						case ' ':
+					case ENTER:
+					case ' ': {
 						if(level.isDone() && endedLevel) resetLevel();
 						else if(!level.isDone() && !level.isRunning()) level.start();
 						else if(!level.isDone()) level.pause();
@@ -349,6 +349,7 @@ public class Propinquity extends PApplet {
 						println("Framerate: " + frameRate);
 						break;
 					}
+
 					case 'e': {// play stub
 						level.currentStep = level.stepCount;
 						break;
