@@ -28,7 +28,6 @@ public class Hud {
 	Propinquity parent;
 	Sounds sounds;
 	Graphics graphics;
-	PGraphics hudMask;
 
 	float angle = 0;
 	float velocity = -PConstants.TWO_PI / 500f;
@@ -44,14 +43,6 @@ public class Hud {
 		this.parent = parent;
 		this.sounds = sounds;
 		this.graphics = graphics;
-
-		hudMask = parent.createGraphics(parent.width, parent.height, PConstants.P2D);
-		hudMask.background(0);
-		hudMask.beginDraw();
-		hudMask.noStroke();
-		hudMask.fill(255);
-		hudMask.ellipse(parent.width / 2, parent.height / 2, parent.height - Hud.WIDTH * 2 + BOUNDARY_WIDTH, parent.height - Hud.WIDTH * 2 + BOUNDARY_WIDTH);
-		hudMask.endDraw();
 	}
 
 	/**
