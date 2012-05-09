@@ -34,7 +34,7 @@ public class Fences {
 			sd.filter.maskBits = PLAYERS_MASK;
 
 			float fenceDepth = 0.2f;
-			float worldScale = parent.height / Propinquity.WORLD_SIZE;
+			float worldScale = parent.height / parent.worldSize;
 			float radius = INNER_RADIUS / worldScale + fenceDepth;
 			float perimeter = 2 * PConstants.PI * radius;
 
@@ -58,8 +58,8 @@ public class Fences {
 			sd.filter.maskBits = PLAYERS_MASK;
 
 			float fenceDepth = 0.2f;
-			float worldScale = parent.height / Propinquity.WORLD_SIZE;
-			float radius = (Propinquity.WORLD_SIZE - (Hud.WIDTH / worldScale)) / 2f + fenceDepth / 2;
+			float worldScale = parent.height / parent.worldSize;
+			float radius = (parent.worldSize - (Hud.WIDTH / worldScale)) / 2f + fenceDepth / 2;
 			float perimeter = 2 * PConstants.PI * radius;
 
 			for(int i = 0; i < SECTIONS; i++) {

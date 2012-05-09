@@ -37,13 +37,11 @@ public class XBeeManager implements UIElement {
 		controlP5 = new ControlP5(parent);
 
 		// Button to scan for XBees
-		plScanButton = controlP5.addButton("XBeeBaseStation Scan", 0, parent.width / 2 + 60, parent.height / 2 + 50,
-				50, 20);
+		plScanButton = controlP5.addButton("XBeeBaseStation Scan", 0, parent.width / 2 + 60, parent.height / 2 + 50, 50, 20);
 		plScanButton.setCaptionLabel("SCAN");
 
 		// Next button
-		plNextButton = controlP5.addButton("XBeeBaseStation Next", 0, parent.width / 2 + 60 + 50 + 10,
-				parent.height / 2 + 50, 50, 20);
+		plNextButton = controlP5.addButton("XBeeBaseStation Next", 0, parent.width / 2 + 60 + 50 + 10, parent.height / 2 + 50, 50, 20);
 		plNextButton.setCaptionLabel("NEXT");
 
 		hide();
@@ -58,10 +56,8 @@ public class XBeeManager implements UIElement {
 	 */
 	public void controlEvent(ControlEvent event) {
 		if(isVisible) {
-			if(event.controller().name().equals("XBeeBaseStation Scan"))
-				xbeeBaseStation.scan();
-			else if(event.controller().name().equals("XBeeBaseStation Next"))
-				processUIEvent();
+			if(event.controller().name().equals("XBeeBaseStation Scan")) xbeeBaseStation.scan();
+			else if(event.controller().name().equals("XBeeBaseStation Next")) processUIEvent();
 		}
 	}
 
@@ -71,8 +67,7 @@ public class XBeeManager implements UIElement {
 	 * @param keycode the keycode of the keyPressed event.
 	 */
 	public void keyPressed(int keycode) {
-		if(isVisible && keycode == PConstants.ENTER)
-			processUIEvent();
+		if(isVisible && keycode == PConstants.ENTER) processUIEvent();
 	}
 
 	/**
@@ -80,11 +75,8 @@ public class XBeeManager implements UIElement {
 	 * 
 	 */
 	void processUIEvent() {
-		if(xbeeBaseStation.isScanning())
-			return;
-		else if(parent != null)
-			parent.changeGameState(GameState.PlayerList); // TODO Fix this is
-															// horrid.
+		if(xbeeBaseStation.isScanning()) return;
+		else if(parent != null) parent.changeGameState(GameState.PlayerList); // TODO Fix this is sloppy
 	}
 
 	/* --- Graphics --- */
@@ -124,13 +116,10 @@ public class XBeeManager implements UIElement {
 		if(isVisible) {
 
 			String msg = "";
-			if(xbeeBaseStation.isScanning())
-				msg = "Scanning...";
+			if(xbeeBaseStation.isScanning()) msg = "Scanning...";
 			else {
-				for(String s : xbeeBaseStation.listXBees())
-					msg += s;
-				if(msg.isEmpty())
-					msg = "No XBees found";
+				for(String s : xbeeBaseStation.listXBees()) msg += s;
+				if(msg.isEmpty()) msg = "No XBees found";
 			}
 
 			parent.pushMatrix();

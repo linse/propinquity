@@ -19,45 +19,50 @@ public class Propinquity extends PApplet {
 	/** Unique serialization ID. */
 	private static final long serialVersionUID = 6340518174717159418L;
 
-	/** Debug constants. */
-	boolean DEBUG = false;
-
-	// game constants
-	public static final float WORLD_SIZE = 2f;
-	final int END_LEVEL_TIME = 6;
-
-	Color[] playerColors = { Color.blue(), Color.red() };
-	Color neutralColor = Color.violet();
+	//General + Util
+	GL gl;
+	
+	Logger logger;
+	XMLInOut xmlInOut;
 
 	GameState gameState;
 
-	GL gl;
-	PBox2D box2d;
-	Fences fences;
+	UIElement[] uiElements;
 
-	// Level parameters
-	Level level;
-	boolean endedLevel = false;
-	long doneTime = -1;
-
-	XMLInOut xmlInOut;
-	Hud hud;
-	Logger logger;
-	Sounds sounds;
+	boolean debugGraphics = false;
 	Graphics graphics;
+	Sounds sounds;
 
+	//Xbee + Hardware
 	XBeeBaseStation xbeeBaseStation;
 	XBeeManager xbeeManager;
 
-	PlayerList playerList;
-	LevelSelect levelSelect;
-
-	UIElement[] uiElements;
-	
-	// Simulation testing
-	HardwareSimulator simulator;
+	HardwareSimulator simulator; //Testing 
 	ArrayList<Patch> patches = new ArrayList<Patch>(1);
 	Glove glove;
+
+	//Player/Player List
+	PlayerList playerList;
+
+	//HUD
+	Hud hud;
+	Color[] playerColors = { Color.blue(), Color.red() };
+	Color neutralColor = Color.violet();
+
+	//Level Select
+	LevelSelect levelSelect;
+
+	//Level
+	boolean endedLevel = false;
+	int endLevelTime = 6;
+	long doneTime = -1;
+
+	Level level;
+
+	//Box 2D
+	public float worldSize = 2f;
+	Fences fences;
+	PBox2D box2d;
 
 	public void setup() {
 		// Setup graphics and sound
@@ -94,7 +99,6 @@ public class Propinquity extends PApplet {
 	
 	private void initBox2D() {
 		// initialize box2d physics and create the world
-		float worldSize = Propinquity.WORLD_SIZE;
 		box2d = new PBox2D(this, (float) height / worldSize);
 		box2d.createWorld(-worldSize / 2f, -worldSize / 2f, worldSize, worldSize);
 		box2d.setGravity(0.0f, 0.0f);
@@ -113,8 +117,7 @@ public class Propinquity extends PApplet {
 	}
 
 	public void stop() {
-		if(gameState == GameState.Play)
-			level.clear();
+		if(gameState == GameState.Play) level.clear();
 	}
 
 	public void draw() {
@@ -139,7 +142,7 @@ public class Propinquity extends PApplet {
 		drawMask();
 		graphics.drawOuterBoundary();
 
-		if(DEBUG) graphics.drawDebugFence();
+		if(debugGraphics) graphics.drawDebugFence();
 
 		hud.draw();
 
@@ -174,8 +177,7 @@ public class Propinquity extends PApplet {
 				hud.snap();
 
 				// flag as ended
-				if(doneTime != -1 && frameCount > doneTime + Graphics.FPS * END_LEVEL_TIME)
-					endedLevel = true;
+				if(doneTime != -1 && frameCount > doneTime + Graphics.FPS * endLevelTime) endedLevel = true;
 			}
 
 		} else if(level.isRunning()) {
@@ -329,17 +331,13 @@ public class Propinquity extends PApplet {
 
 			case ENTER:
 			case ' ':
-				if(level.isDone() && endedLevel)
-					resetLevel();
-				else if(!level.isDone() && !level.isRunning())
-					level.start();
-				else if(!level.isDone())
-					level.pause();
+				if(level.isDone() && endedLevel) resetLevel();
+				else if(!level.isDone() && !level.isRunning()) level.start();
+				else if(!level.isDone()) level.pause();
 				break;
 
 			case BACKSPACE:
-				if(!level.isRunning())
-					resetLevel();
+				if(!level.isRunning()) resetLevel();
 				break;
 
 			case 'i': // info
