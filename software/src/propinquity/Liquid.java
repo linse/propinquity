@@ -22,7 +22,6 @@ public class Liquid {
 
 	private PImage particleImage;
 	private PGraphics particleGraphic;
-	private PGraphics metaballGraphics;
 
 	public Liquid(Propinquity parent, Color color) {
 
@@ -38,8 +37,6 @@ public class Liquid {
 		particleGraphic = parent.createGraphics(particleImage.width, particleImage.height, PApplet.P2D);
 		particleGraphic.background(particleImage);
 		particleGraphic.mask(particleImage);
-
-		metaballGraphics = parent.createGraphics(particleImage.width, particleImage.width, PConstants.P2D);
 	}
 
 	public void reset() {
@@ -93,19 +90,10 @@ public class Liquid {
 	}
 
 	public void draw() {
-
-		metaballGraphics.beginDraw();
-		metaballGraphics.loadPixels();
-		
 		for (Particle particle : particlesCreated)
 			particle.draw();
-
+		
 		for (Particle particle : particlesHeld)
 			particle.draw();
-
-		metaballGraphics.updatePixels();
-		metaballGraphics.endDraw();
-
-		parent.image(metaballGraphics, 0, 0, parent.width, parent.height);
 	}
 }
