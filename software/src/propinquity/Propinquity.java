@@ -75,7 +75,7 @@ public class Propinquity extends PApplet {
 
 		// Create resources
 		xbeeBaseStation = new XBeeBaseStation();
-		xbeeBaseStation.scan();
+		// xbeeBaseStation.scan();
 		xbeeManager = new XBeeManager(this, xbeeBaseStation);
 		playerList = new PlayerList(this, "player.lst");
 		levelSelect = new LevelSelect(this, sounds);
@@ -106,14 +106,14 @@ public class Propinquity extends PApplet {
 
 	void resetLevel() {
 		level.reset();
+
 		endedLevel = false;
 		doneTime = -1;
 
 		hud.reset();
-
 		levelSelect.reset();
-		gameState = GameState.LevelSelect;
-		println("gamestate = " + gameState);
+
+		changeGameState(GameState.LevelSelect);
 	}
 
 	public void stop() {
@@ -124,8 +124,7 @@ public class Propinquity extends PApplet {
 		// clear black
 		background(Color.black().toInt(this));
 
-		for(int i = 0; i < uiElements.length; i++)
-			uiElements[i].draw();
+		for(int i = 0; i < uiElements.length; i++) uiElements[i].draw();
 
 		if(gameState == GameState.Play) drawPlay();
 
@@ -139,7 +138,6 @@ public class Propinquity extends PApplet {
 
 	void drawPlay() {
 		graphics.drawInnerBoundary();
-		drawMask();
 		graphics.drawOuterBoundary();
 
 		if(debugGraphics) graphics.drawDebugFence();
@@ -205,25 +203,6 @@ public class Propinquity extends PApplet {
 		}
 	}
 
-	void drawMask() {
-		// TODO: Figure out what this does...
-		gl = ((PGraphicsOpenGL) g).gl;
-		gl.glEnable(GL.GL_BLEND);
-		gl.glBlendFunc(GL.GL_DST_COLOR, GL.GL_ZERO);
-
-		pushMatrix();
-		translate(width / 2, height / 2);
-		scale(width / 2, height / 2);
-		beginShape(QUADS);
-		texture(hud.hudMask);
-		vertex(-1, -1, 0, 0, 0);
-		vertex(1, -1, 0, 1, 0);
-		vertex(1, 1, 0, 1, 1);
-		vertex(-1, 1, 0, 0, 1);
-		endShape(CLOSE);
-		popMatrix();
-	}
-
 	public void changeGameState(GameState newState) {
 		for(int i = 0; i < uiElements.length; i++) uiElements[i].hide();
 
@@ -252,7 +231,7 @@ public class Propinquity extends PApplet {
 
 		gameState = newState;
 
-		println("gamestate = " + gameState);
+		logger.println("gamestate = " + gameState);
 	}
 
 	public void controlEvent(ControlEvent event) {
