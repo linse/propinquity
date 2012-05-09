@@ -23,6 +23,7 @@ public class Hud {
 	public static final float SCORE_ANGLE_OFFSET = 0.35f;
 	public static final float SCORE_ROT_SPEED = 0.0001f;
 	public static final float PROMPT_ROT_SPEED = 0.002f;
+	public static final int BOUNDARY_WIDTH = 5;
 
 	Propinquity parent;
 	Sounds sounds;
@@ -49,8 +50,7 @@ public class Hud {
 		hudMask.beginDraw();
 		hudMask.noStroke();
 		hudMask.fill(255);
-		hudMask.ellipse(parent.width / 2, parent.height / 2, parent.height - Hud.WIDTH * 2 + parent.BOUNDARY_WIDTH,
-				parent.height - Hud.WIDTH * 2 + parent.BOUNDARY_WIDTH);
+		hudMask.ellipse(parent.width / 2, parent.height / 2, parent.height - Hud.WIDTH * 2 + BOUNDARY_WIDTH, parent.height - Hud.WIDTH * 2 + BOUNDARY_WIDTH);
 		hudMask.endDraw();
 	}
 

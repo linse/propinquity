@@ -180,7 +180,10 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 	}
 
 	/**
-	 * @return an array containing the port names for all serial ports that are not currently being used.
+	 * Scan the COMM port an find the available ones.
+	 *
+	 * @return a String array containing the port names for all serial ports that are not currently being used.
+	 *
 	 */
 	public static String[] getAvailableSerialPorts() {
 		Vector<String> portNames = new Vector<String>();

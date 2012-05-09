@@ -25,7 +25,7 @@ public class Propinquity extends PApplet {
 	// game constants
 	public static final float WORLD_SIZE = 2f;
 	final int END_LEVEL_TIME = 6;
-	final int BOUNDARY_WIDTH = 5;
+
 	Color[] playerColors = { Color.blue(), Color.red() };
 	Color neutralColor = Color.violet();
 
@@ -59,14 +59,9 @@ public class Propinquity extends PApplet {
 	Glove glove;
 
 	public void setup() {
-
 		// Setup graphics and sound
 		sounds = new Sounds(this);
 		graphics = new Graphics(this); //Size is here
-
-		// initial opengl setup
-		gl = ((PGraphicsOpenGL) g).gl;
-		gl.glDisable(GL.GL_DEPTH_TEST);
 
 		// Load common artwork and sound
 		graphics.loadCommonContent();
@@ -358,11 +353,6 @@ public class Propinquity extends PApplet {
 			case 'e': // play stub
 				level.currentStep = level.stepCount;
 				break;
-
-			case 'f': // flush output and close
-				logger.close();
-				exit();
-				break;
 				
 			case 'n':
 				simulator.show();
@@ -378,6 +368,6 @@ public class Propinquity extends PApplet {
 	}
 
 	static public void main(String args[]) {
-		PApplet.main(new String[] { "--bgcolor=#FFFFFF", "propinquity.Propinquity" });
+		PApplet.main(new String[] { "propinquity.Propinquity" });
 	}
 }
