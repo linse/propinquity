@@ -1,7 +1,6 @@
 package propinquity;
 
 import processing.core.PApplet;
-import processing.core.PConstants;
 import proxml.XMLElement;
 import proxml.XMLInOut;
 import xbee.XBeeReader;

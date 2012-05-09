@@ -16,11 +16,11 @@ public class Particle {
 	public static final float SPAWN_DELAY = 0.5f;
 
 	public Vec2 position;
-
+	public float scale;
+	
 	private Body body;
 	private CircleDef shape;
 
-	private float scale;
 	private PGraphics texture;
 	private Color color;
 
@@ -36,7 +36,7 @@ public class Particle {
 		scale = 0.5f;
 
 		shape = new CircleDef();
-		shape.radius = parent.box2d.scalarPixelsToWorld((texture.width - 10) * scale / 2f);
+		shape.radius = parent.box2d.scalarPixelsToWorld((texture.width) * scale / 2f);
 		shape.density = 1.0f;
 		shape.friction = 0.01f;
 		shape.restitution = 0.3f;

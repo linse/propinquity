@@ -187,9 +187,9 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 	 */
 	public static String[] getAvailableSerialPorts() {
 		Vector<String> portNames = new Vector<String>();
-		Enumeration ports = CommPortIdentifier.getPortIdentifiers();
+		Enumeration<CommPortIdentifier> ports = CommPortIdentifier.getPortIdentifiers();
 		while(ports.hasMoreElements()) {
-			CommPortIdentifier com = (CommPortIdentifier)ports.nextElement();
+			CommPortIdentifier com = ports.nextElement();
 			switch(com.getPortType()) {
 				case CommPortIdentifier.PORT_SERIAL:
 				try {
