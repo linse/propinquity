@@ -180,7 +180,7 @@ public class LevelSelect implements PConstants, UIElement {
 		foundProxPatches.clear();
 		foundVibePatches.clear();
 		foundUndefPatches.clear();
-		players[player] = new Player(parent, parent.patches, parent.glove, parent.playerColours[player]);
+		players[player] = new Player(parent, parent.patches, parent.glove, parent.playerColors[player]);
 
 		// init xbee comm or stubs
 		// for proximity
@@ -199,7 +199,7 @@ public class LevelSelect implements PConstants, UIElement {
 		for (int i = 0; i < particles.length; i++) {
 			particles[i] = new Particle(parent, new Vec2(PApplet.cos(PApplet.TWO_PI / particles.length * i) * radius,
 					PApplet.sin(PApplet.TWO_PI / particles.length * i) * radius), pgParticle,
-					parent.playerColours[player]);
+					parent.playerColors[player]);
 		}
 	}
 
@@ -209,7 +209,7 @@ public class LevelSelect implements PConstants, UIElement {
 		particles = new Particle[levels.size()];
 		for (int i = 0; i < particles.length; i++) {
 			particles[i] = new Particle(parent, new Vec2(PApplet.cos(PApplet.TWO_PI / particles.length * i) * radius,
-					PApplet.sin(PApplet.TWO_PI / particles.length * i) * radius), pgParticle, Colour.violet());
+					PApplet.sin(PApplet.TWO_PI / particles.length * i) * radius), pgParticle, Color.violet());
 		}
 
 		selected = 0;

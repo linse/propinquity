@@ -8,14 +8,14 @@ public class Score {
 	public Liquid liquid;
 	
 	private Propinquity parent;
-	private Colour colour;
+	private Color color;
 	private int score;
 	
-	public Score(Propinquity parent, Colour colour) {
+	public Score(Propinquity parent, Color color) {
 		this.parent = parent;
-		this.colour = colour;
+		this.color = color;
 		score = 0;
-		liquid = new Liquid(parent, colour);
+		liquid = new Liquid(parent, color);
 	}
 	
 	public void reset() {
@@ -34,7 +34,7 @@ public class Score {
 	
 	public void update() {
 		liquid.update();
-		if (colour.equals(parent.playerColours[1]))
+		if (color.equals(parent.playerColors[1]))
 			liquid.applyReverseGravity();
 		else 
 			liquid.applyGravity();	

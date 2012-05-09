@@ -26,8 +26,8 @@ public class Propinquity extends PApplet {
 	public static final float WORLD_SIZE = 2f;
 	final int END_LEVEL_TIME = 6;
 	final int BOUNDARY_WIDTH = 5;
-	Colour[] playerColours = { Colour.blue(), Colour.red() };
-	Colour neutralColour = Colour.violet();
+	Color[] playerColors = { Color.blue(), Color.red() };
+	Color neutralColor = Color.violet();
 
 	GameState gameState;
 
@@ -123,7 +123,7 @@ public class Propinquity extends PApplet {
 
 	public void draw() {
 		// clear black
-		background(Colour.black().toInt(this));
+		background(Color.black().toInt(this));
 
 		for (int i = 0; i < uiElements.length; i++)
 			uiElements[i].draw();
@@ -161,7 +161,7 @@ public class Propinquity extends PApplet {
 				image(graphics.hudLevelComplete, 0, -25);
 				textFont(Graphics.font, Hud.FONT_SIZE);
 				textAlign(CENTER, CENTER);
-				fill(winner != null ? winner.getColor().toInt(this) : neutralColour.toInt(this));
+				fill(winner != null ? winner.getColor().toInt(this) : neutralColor.toInt(this));
 				noStroke();
 				text(winner != null ? winner.getName() + " won!" : "You tied!", 0, 0);
 				image(graphics.hudPlayAgain, 0, 30);

@@ -18,15 +18,15 @@ public class Liquid {
 	public ArrayList<Particle> particlesHeld;
 
 	private Propinquity parent;
-	private Colour colour;
+	private Color color;
 
 	private PImage particleImage;
 	private PGraphics pgParticle;
 
-	public Liquid(Propinquity parent, Colour colour) {
+	public Liquid(Propinquity parent, Color color) {
 
 		this.parent = parent;
-		this.colour = colour;
+		this.color = color;
 
 		particlesCreated = new ArrayList<Particle>();
 		particlesHeld = new ArrayList<Particle>();
@@ -46,7 +46,7 @@ public class Liquid {
 
 	public void createParticle() {
 		// TODO
-		particlesCreated.add(new Particle(parent, new Vec2(parent.width / 2f, parent.height / 2f), pgParticle, colour));
+		particlesCreated.add(new Particle(parent, new Vec2(parent.width / 2f, parent.height / 2f), pgParticle, color));
 	}
 
 	public void transferParticles() {

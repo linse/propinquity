@@ -24,7 +24,7 @@ public class Player implements PConstants, ProxEventListener {
 	Propinquity parent;
 
 	String name;
-	Colour colour;
+	Color color;
 
 	float hudAngle;
 	float hudVel;
@@ -61,13 +61,13 @@ public class Player implements PConstants, ProxEventListener {
 	
 	Score score;
 
-	public Player(Propinquity parent, ArrayList<Patch> patches, Glove glove, Colour colour) {
+	public Player(Propinquity parent, ArrayList<Patch> patches, Glove glove, Color color) {
 		this.parent = parent;
 		this.name = "noname";
-		this.colour = colour;
+		this.color = color;
 		this.patches = patches;
 		this.glove = glove;
-		score = new Score(parent, colour);
+		score = new Score(parent, color);
 		reset();
 	}
 
@@ -106,8 +106,8 @@ public class Player implements PConstants, ProxEventListener {
 		return name;
 	}
 
-	public Colour getColor() {
-		return colour;
+	public Color getColor() {
+		return color;
 	}
 
 	public void registerNegativePlayerSound(AudioPlayer ap) {

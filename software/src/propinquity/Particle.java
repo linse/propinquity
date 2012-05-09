@@ -22,16 +22,16 @@ public class Particle {
 
 	private float scale;
 	private PGraphics texture;
-	private Colour colour;
+	private Color color;
 
 	private Propinquity parent;
 
-	public Particle(Propinquity parent, Vec2 position, PGraphics texture, Colour colour) {
+	public Particle(Propinquity parent, Vec2 position, PGraphics texture, Color color) {
 
 		this.parent = parent;
 		this.position = position;
 		this.texture = texture;
-		this.colour = colour;
+		this.color = color;
 
 		scale = 0.5f;
 
@@ -70,7 +70,7 @@ public class Particle {
 		parent.scale(scale * texture.width / 2f);
 		parent.beginShape();
 		parent.texture(texture);
-		parent.tint(colour.toInt(parent));
+		parent.tint(color.toInt(parent));
 		parent.vertex(-1, -1, 0, 0, 0);
 		parent.vertex(1, -1, 0, 1, 0);
 		parent.vertex(1, 1, 0, 1, 1);
