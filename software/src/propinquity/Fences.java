@@ -29,7 +29,6 @@ public class Fences {
 			innerFence = parent.box2d.createBody(bd);
 
 			PolygonDef sd = new PolygonDef();
-			// sd.filter.groupIndex = 1;
 			sd.filter.categoryBits = INNER_MASK;
 			sd.filter.maskBits = PLAYERS_MASK;
 
@@ -53,7 +52,6 @@ public class Fences {
 			outerFence = parent.box2d.createBody(bd);
 
 			PolygonDef sd = new PolygonDef();
-			// sd.filter.groupIndex = 1;
 			sd.filter.categoryBits = OUTER_MASK;
 			sd.filter.maskBits = PLAYERS_MASK;
 

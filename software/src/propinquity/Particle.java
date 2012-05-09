@@ -56,6 +56,10 @@ public class Particle {
 	public Body getBody() {
 		return body;
 	}
+	
+	public CircleDef getCircleDef() {
+		return shape;
+	}
 
 	public void update() {
 

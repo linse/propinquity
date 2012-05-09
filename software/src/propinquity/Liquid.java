@@ -45,14 +45,16 @@ public class Liquid {
 	}
 
 	public void createParticle() {
-		// TODO
 		particlesCreated.add(new Particle(parent, new Vec2(parent.width / 2f, parent.height / 2f), particleGraphic,
 				color));
 	}
 
 	public void transferParticles() {
-		for (Particle particle : particlesCreated)
+		for (Particle particle : particlesCreated) {
+			particle.getCircleDef().filter.categoryBits = 0;
+			particle.getCircleDef().filter.maskBits = 0;
 			particlesHeld.add(particle);
+		}
 
 		particlesCreated = new Vector<Particle>();
 	}
@@ -92,7 +94,7 @@ public class Liquid {
 	public void draw() {
 		for (Particle particle : particlesCreated)
 			particle.draw();
-		
+
 		for (Particle particle : particlesHeld)
 			particle.draw();
 	}

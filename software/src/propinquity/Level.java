@@ -191,12 +191,12 @@ public class Level {
 		// TODO: This "loop" looks a little fishy...
 		for(int i = 0; i < players.length; i++)
 			// check if we have a winner
-			if(players[i].getTotalPts() > maxScore) {
-				maxScore = players[i].getTotalPts();
+			if(players[i].score.getScore() > maxScore) {
+				maxScore = players[i].score.getScore();
 				winner = i;
 			}
 			// if not check if we have a tie
-			else if(players[i].getTotalPts() == maxScore) {
+			else if(players[i].score.getScore() == maxScore) {
 				winner = -1;
 			}
 

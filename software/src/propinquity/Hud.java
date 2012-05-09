@@ -4,7 +4,6 @@ import javax.media.opengl.GL;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
-import processing.core.PGraphics;
 
 import processing.opengl.PGraphicsOpenGL;
 
@@ -175,7 +174,7 @@ public class Hud {
 				parent.noStroke();
 				parent.textAlign(PConstants.CENTER, PConstants.BASELINE);
 				parent.textFont(Graphics.font, Hud.FONT_SIZE);
-				String score = String.valueOf(player.getTotalPts());
+				String score = String.valueOf(player.score.getScore());
 				String name = player.getName().length() > 12 ? player.getName().substring(0, 12) : player.getName();
 				while(parent.textWidth(score + name) < 240)
 					name += ' ';

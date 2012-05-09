@@ -30,9 +30,6 @@ public class Player implements PConstants, ProxEventListener {
 	float hudVel;
 
 	Step[] steps;
-	int periodPts; // total number of pts for the period
-	int totalPts; // total number of pts
-	int killPts; // number of pts to remove
 
 	int stepProximity;
 	boolean stepTouched;
@@ -75,8 +72,6 @@ public class Player implements PConstants, ProxEventListener {
 
 	public void reset() {
 		steps = null;
-		periodPts = 0;
-		totalPts = 0;
 		stepProximity = 0;
 		stepReadings = 0;
 		stepTouched = false;
@@ -167,42 +162,6 @@ public class Player implements PConstants, ProxEventListener {
 		return steps[i];
 	}
 
-	// public void setStubbed(boolean s) { stubbed = s; }
-	public void subPeriodPts(int pts) {
-		periodPts -= pts;
-	}
-
-	public void subKillPts(int pts) {
-		killPts -= pts;
-	}
-
-	public int getPeriodPts() {
-		return periodPts;
-	}
-
-	public int getTotalPts() {
-		return totalPts;
-	}
-
-	public int getKillPts() {
-		return killPts;
-	}
-
-	public void addPts(int pts) {
-		periodPts += pts;
-		totalPts += pts;
-	}
-
-	public void removePts(int pts) {
-		periodPts -= pts;
-		if (periodPts < 0)
-			periodPts = 0;
-		totalPts -= pts;
-		if (totalPts < 0)
-			totalPts = 0;
-		killPts += pts;
-	}
-
 	public void update() {
 
 		currentTime = parent.millis();
@@ -224,18 +183,8 @@ public class Player implements PConstants, ProxEventListener {
 	public int processStep() {
 		int result = 0;
 
-		// if the player touched, then remove penality pts
-		if (hasTouched()) {
-			System.out.println(name + " TOUCHED ");
-			removePts(TOUCH_PENALITY_PTS);
-			result = -1;
-		}
-		// else add pts
-		else {
-			// System.out.println(name + " scores " +
-			if (getProximity() > 180)
-				result = 1;
-		}
+		if (getProximity() > 180)
+			result = 1;
 
 		stepTouched = false;
 		stepProximity = 0;
