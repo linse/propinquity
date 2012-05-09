@@ -1,42 +1,30 @@
 package propinquity;
 
-import java.util.Vector;
-
-import controlP5.Button;
-import controlP5.CVector3f;
-import controlP5.ControlEvent;
-import controlP5.ControlP5;
-import controlP5.Textfield;
-
 import processing.core.*;
+import java.util.*;
+import controlP5.*;
 
 public class PlayerList implements UIElement {
 
-	final int MAX_PLAYERS = 12;
+	final int MAX_PLAYERS = 2;
+	final int MIN_PLAYERS = 2;
 
 	final int WIDTH = 200;
-	final int NEXT_WIDTH = 50;
-	final int NEXT_HEIGHT = 20;
-	final int NEW_WIDTH = 100;
-	final int NEW_HEIGHT = 20;
 	final int PLAYER_HEIGHT = 20;
-	final int REMOVE_WIDTH = 12;
-	final int REMOVE_HEIGHT = 20;
 	final int VERT_SPACER = 20;
-	final int NEXT_ID = 3;
-	final int NEW_ID = 4;
 
 	Propinquity parent;
 
-	String plistFile;
-
 	ControlP5 controlP5;
+
+	String plistFile;
 
 	String[] playerNames;
 	Vector<Textfield> playerFields;
-	Vector<Button> removeButtons;
+
 	Button nextButton;
-	Button newButton;
+	Button addButton;
+	Button removeButton;
 
 	boolean isVisible;
 
@@ -52,38 +40,29 @@ public class PlayerList implements UIElement {
 		controlP5 = new ControlP5(parent);
 
 		// create text fields for each
+		playerNames = null;
 		playerFields = new Vector<Textfield>();
-		removeButtons = new Vector<Button>();
+
+		// create button to add new players
+		addButton = controlP5.addButton("ADD", 0, parent.width / 2 - WIDTH / 2, parent.height / 2, 50, 20);
+		removeButton = controlP5.addButton("REMOVE", 0, parent.width / 2 - WIDTH / 2 + WIDTH / 3, parent.height / 2, 50, 20);
+
+		// create next button
+		nextButton = controlP5.addButton("NEXT", 0, parent.width / 2 - WIDTH / 2 + 2 * WIDTH / 3, parent.height / 2, 50, 20);
 
 		// load the player list
 		// playerList = new Vector();
-		String[] players = parent.loadStrings(plistFile);
-		System.out.println(players);
-		if(players != null) {
-			for(int i = 0; i < players.length; i++) {
-				if(players[i].length() > 0) {
-					// add UI
-					addPlayer(players[i]);
+		String[] xml_lines = parent.loadStrings(plistFile);
+		if(xml_lines != null) {
+			for(int i = 0; i < xml_lines.length; i++) {
+				if(PApplet.trim(xml_lines[i]).length() > 0) {
+					addPlayer(xml_lines[i]);
 				}
 			}
 		}
 
-		if(playerFields.size() < 1)
-			addPlayer("Player 1");
-		if(playerFields.size() < 2)
-			addPlayer("Player 2");
-
-		// create button to add new players
-		newButton = controlP5.addButton("NEW PLAYER", 0, parent.width / 2 - WIDTH / 2, parent.height / 2, NEW_WIDTH,
-				NEW_HEIGHT);
-		newButton.setId(NEW_ID);
-
-		// create next button
-		nextButton = controlP5.addButton("NEXT", 0, parent.width / 2 + WIDTH / 2 - NEXT_WIDTH, parent.height / 2,
-				NEXT_WIDTH, NEXT_HEIGHT);
-		nextButton.setId(NEXT_ID);
-
-		layout();
+		if(playerFields.size() < 1) addPlayer("Player 1");
+		if(playerFields.size() < 2) addPlayer("Player 2");
 	}
 
 	public String[] getNames() {
@@ -96,37 +75,30 @@ public class PlayerList implements UIElement {
 
 	void addPlayer(String name) {
 		// add a new text field to the list
-		Textfield playerField = controlP5.addTextfield("Player " + playerFields.size(), parent.width / 2 - WIDTH / 2,
-				parent.height / 2, WIDTH - REMOVE_WIDTH * 2, PLAYER_HEIGHT);
-		playerField.setAutoClear(false);
-		playerField.setText(name);
-		playerField.setCaptionLabel("Player " + (playerFields.size() + 1));
-		playerField.setFocus(true);
+		Textfield tf = controlP5.addTextfield("Player " + playerFields.size(), parent.width / 2 - WIDTH / 2, parent.height / 2, WIDTH, PLAYER_HEIGHT);
+		tf.setAutoClear(false);
+		tf.setText(name);
+		tf.setCaptionLabel("Player " + (playerFields.size() + 1));
+		tf.setFocus(true);
 
-		// add a matching remove button
-		Button removeBtn = controlP5.addButton("Remove " + playerFields.size(), playerFields.size(), parent.width / 2
-				+ WIDTH / 2 - REMOVE_WIDTH, parent.height / 2, REMOVE_WIDTH, REMOVE_HEIGHT);
-		removeBtn.setCaptionLabel("x");
+		playerFields.add(tf);
 
-		playerFields.add(playerField);
-		removeButtons.add(removeBtn);
+		layout();
+	}
+
+	void removePlayer() {
+		Textfield tf = playerFields.remove(playerFields.size()-1);
+		controlP5.remove(tf.name());
+		layout();
 	}
 
 	public void layout() {
 		float y = parent.height / 2 - (PLAYER_HEIGHT + VERT_SPACER) * (playerFields.size() + 1) / 2;
 
 		// move existing player fields up
-		CVector3f pos = new CVector3f(0, 0, 0);
-		Textfield tf;
-		Button btn;
-		for(int i = 0; i < playerFields.size(); i++) {
-			tf = playerFields.get(i);
-			pos = tf.position();
-			tf.setPosition(pos.x, y);
-
-			btn = removeButtons.get(i);
-			pos = btn.position();
-			btn.setPosition(pos.x, y);
+		for(int i = 0; i < playerFields.size();i++) {
+			Textfield tf = playerFields.get(i);
+			tf.setPosition(tf.position().x, y);
 
 			y += PLAYER_HEIGHT + VERT_SPACER;
 		}
@@ -134,32 +106,27 @@ public class PlayerList implements UIElement {
 		y += VERT_SPACER;
 
 		// move buttons down
-		pos = newButton.position();
-		newButton.setPosition(pos.x, y);
-		pos = nextButton.position();
-		nextButton.setPosition(pos.x, y);
+		addButton.setPosition(addButton.position().x, y);
+		removeButton.setPosition(removeButton.position().x, y);
+		nextButton.setPosition(nextButton.position().x, y);
 
-		if(playerFields.size() >= MAX_PLAYERS) newButton.hide();
-		else newButton.show();
+		if(playerFields.size() >= MAX_PLAYERS) addButton.hide();
+		else addButton.show();
+
+		if(playerFields.size() <= MIN_PLAYERS) removeButton.hide();
+		else removeButton.show();
 	}
 
 	public void process() {
+		Vector<String> tmp_names = new Vector<String>();
 		// clear empty textfields
-		for(int i = 0; i < playerFields.size(); i++) {
-			Textfield tf = playerFields.get(i);
-			if(tf.getText().length() == 0) {
-				playerFields.remove(i);
-				i--;
+		for(Textfield tf : playerFields) {
+			if(PApplet.trim(tf.getText()).length() != 0) {
+				tmp_names.add(tf.getText());
 			}
 		}
 
-		// save player list
-		playerNames = new String[PApplet.max(playerFields.size(), 2)];
-		playerNames[0] = "Player 1";
-		playerNames[1] = "Player 2";
-
-		for(int i = 0; i < playerFields.size(); i++)
-			playerNames[i] = playerFields.get(i).getText();
+		playerNames = tmp_names.toArray(new String[0]);
 
 		parent.saveStrings(parent.dataPath(plistFile), playerNames);
 
@@ -182,49 +149,19 @@ public class PlayerList implements UIElement {
 
 	public void controlEvent(ControlEvent theEvent) {
 		if(isVisible) {
-			switch(theEvent.controller().id()) {
-			case (NEXT_ID):
+			String name = theEvent.controller().name();
+
+			if(name.equals("NEXT")) {
 				process();
-				break;
-			case (NEW_ID):
-				addPlayer("");
-				layout();
-
-				break;
-			default:
-				if(theEvent.controller() instanceof Button && theEvent.controller().name().indexOf("Remove") >= 0) {
-					// remove textfield that matches button value
-					int value = (int) theEvent.controller().value();
-					int i;
-
-					controlP5.Controller ctrl;
-					ctrl = controlP5.controller("Player " + value);
-					i = playerFields.indexOf(ctrl);
-					playerFields.remove(i);
-					ctrl.hide();
-					controlP5.remove(ctrl.name());
-
-					// remove button itself
-					ctrl = controlP5.controller("Remove " + value);
-					removeButtons.remove(i);
-					ctrl.hide();
-					controlP5.remove(ctrl.name());
-
-					// adjust values
-					for(; i < playerFields.size(); i++) {
-						Textfield rtf = playerFields.get(i);
-						rtf.setCaptionLabel("Player " + (i + 1));
-					}
-
-					layout();
-				}
-				break;
+			} else if(name.equals("ADD")) {
+				addPlayer("Player "+(playerFields.size()+1));
+			} else if(name.equals("REMOVE")) {
+				removePlayer();
 			}
 		}
 	}
 
 	public void keyPressed(int keycode) {
-		if(isVisible && keycode == PConstants.ENTER)
-			process();
+		if(isVisible && keycode == PConstants.ENTER) process();
 	}
 }
