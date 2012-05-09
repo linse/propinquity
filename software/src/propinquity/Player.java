@@ -1,6 +1,6 @@
 package propinquity;
 
-import java.util.ArrayList;
+import java.util.Vector;
 
 import processing.core.PConstants;
 
@@ -46,11 +46,11 @@ public class Player implements PConstants, ProxEventListener {
 	int lastVibe;
 	// int totalVibe;
 
-	ArrayList<Patch> patches;
+	Vector<Patch> patches;
 	Glove glove;
 
 	// stubs
-	ArrayList<String> proxStub = null;
+	Vector<String> proxStub = null;
 	int proxStubIndex = 0;
 
 	// audio feedback
@@ -61,7 +61,7 @@ public class Player implements PConstants, ProxEventListener {
 	
 	Score score;
 
-	public Player(Propinquity parent, ArrayList<Patch> patches, Glove glove, Color color) {
+	public Player(Propinquity parent, Vector<Patch> patches, Glove glove, Color color) {
 		this.parent = parent;
 		this.name = "noname";
 		this.color = color;
@@ -329,7 +329,7 @@ public class Player implements PConstants, ProxEventListener {
 			System.out.println("Error: Proximity stub was empty. I don't think that's right.");
 		}
 
-		proxStub = new ArrayList<String>();
+		proxStub = new Vector<String>();
 
 		// parse to keep only data for this player
 		String[] dataline;

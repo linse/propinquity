@@ -1,6 +1,6 @@
 package propinquity;
 
-import java.util.ArrayList;
+import java.util.Vector;
 
 import org.jbox2d.common.Vec2;
 
@@ -14,8 +14,8 @@ public class Liquid {
 	/** The strength of the acceleration acting on the particles. */
 	public static final float GRAVITY_STRENGTH = 0.05f;
 
-	public ArrayList<Particle> particlesCreated;
-	public ArrayList<Particle> particlesHeld;
+	public Vector<Particle> particlesCreated;
+	public Vector<Particle> particlesHeld;
 
 	private Propinquity parent;
 	private Color color;
@@ -28,8 +28,8 @@ public class Liquid {
 		this.parent = parent;
 		this.color = color;
 
-		particlesCreated = new ArrayList<Particle>();
-		particlesHeld = new ArrayList<Particle>();
+		particlesCreated = new Vector<Particle>();
+		particlesHeld = new Vector<Particle>();
 
 		particleImage = parent.graphics.loadParticle();
 
@@ -40,8 +40,8 @@ public class Liquid {
 	}
 
 	public void reset() {
-		particlesCreated = new ArrayList<Particle>();
-		particlesHeld = new ArrayList<Particle>();
+		particlesCreated = new Vector<Particle>();
+		particlesHeld = new Vector<Particle>();
 	}
 
 	public void createParticle() {
@@ -53,7 +53,7 @@ public class Liquid {
 		for(Particle particle : particlesCreated)
 			particlesHeld.add(particle);
 
-		particlesCreated = new ArrayList<Particle>();
+		particlesCreated = new Vector<Particle>();
 	}
 
 	public void applyGravity() {

@@ -9,7 +9,7 @@ public class HardwareSimulator implements HardwareInterface, UIElement {
 
 	PApplet p;
 
-	boolean visible;
+	boolean isVisible;
 
 	int width, height, current_patch;
 
@@ -67,7 +67,7 @@ public class HardwareSimulator implements HardwareInterface, UIElement {
 	}
 
 	public void draw() {
-		if(visible) {
+		if(isVisible) {
 			p.strokeWeight(3);
 			p.stroke(100);
 			p.fill(0);
@@ -122,19 +122,19 @@ public class HardwareSimulator implements HardwareInterface, UIElement {
 	}
 
 	public void show() {
-		visible = true;
+		isVisible = true;
 	}
 
 	public void hide() {
-		visible = false;
+		isVisible = false;
 	}
 
 	public boolean isVisible() {
-		return visible;
+		return isVisible;
 	}
 
 	public void keyEvent(KeyEvent e) {
-		if(visible) {
+		if(isVisible) {
 			char keychar = e.getKeyChar();
 			int keycode = e.getKeyCode();
 			

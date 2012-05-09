@@ -1,7 +1,7 @@
 package propinquity;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.Vector;
 
 import javax.media.opengl.GL;
 
@@ -52,14 +52,14 @@ public class LevelSelect implements PConstants, UIElement {
 	PImage imgSelectSong;
 
 	Player[] players = null;
-	ArrayList<String> foundProxPatches;
-	ArrayList<String> foundVibePatches;
-	ArrayList<String> foundUndefPatches;
+	Vector<String> foundProxPatches;
+	Vector<String> foundVibePatches;
+	Vector<String> foundUndefPatches;
 	int numProxPatches;
 	int numConfigAcks;
 
 	String[] levelFiles;
-	ArrayList<Level> levels;
+	Vector<Level> levels;
 	Level loadingLevel;
 	PImage imgLevel;
 	String levelFile;
@@ -78,9 +78,9 @@ public class LevelSelect implements PConstants, UIElement {
 
 		this.font = p.loadFont(LEVEL_FONT);
 
-		this.foundProxPatches = new ArrayList<String>();
-		this.foundVibePatches = new ArrayList<String>();
-		this.foundUndefPatches = new ArrayList<String>();
+		this.foundProxPatches = new Vector<String>();
+		this.foundVibePatches = new Vector<String>();
+		this.foundUndefPatches = new Vector<String>();
 		this.numConfigAcks = 0;
 
 		loadLevels();
@@ -115,7 +115,7 @@ public class LevelSelect implements PConstants, UIElement {
 		levelFiles = listFileNames(parent.dataPath(LEVEL_FOLDER), "xml");
 
 		// load each level to know the song name and duration
-		levels = new ArrayList<Level>();
+		levels = new Vector<Level>();
 		for(int i = 0; i < levelFiles.length; i++) {
 			loadingLevel = new Level(parent, sounds);
 			parent.xmlInOut = new XMLInOut(parent, this);
@@ -476,7 +476,7 @@ public class LevelSelect implements PConstants, UIElement {
 				return names;
 
 			// if extension is specify, parse out the rest
-			ArrayList<String> parsedNames = new ArrayList<String>();
+			Vector<String> parsedNames = new Vector<String>();
 			for(int i = 0; i < names.length; i++) {
 				if(names[i].lastIndexOf("." + ext) == names[i].length() - 4)
 					parsedNames.add(names[i]);

@@ -1,6 +1,6 @@
 package propinquity;
 
-import java.util.ArrayList;
+import java.util.Vector;
 
 import javax.media.opengl.GL;
 
@@ -38,7 +38,7 @@ public class Propinquity extends PApplet {
 	XBeeManager xbeeManager;
 
 	HardwareSimulator simulator; //Testing 
-	ArrayList<Patch> patches = new ArrayList<Patch>(1);
+	Vector<Patch> patches = new Vector<Patch>(1);
 	Glove glove;
 
 	//Player/Player List
@@ -77,7 +77,7 @@ public class Propinquity extends PApplet {
 		xbeeBaseStation = new XBeeBaseStation();
 		xbeeBaseStation.scan();
 		xbeeManager = new XBeeManager(this, xbeeBaseStation);
-		playerList = new PlayerList(this);
+		playerList = new PlayerList(this, "player.lst");
 		levelSelect = new LevelSelect(this, sounds);
 
 		hud = new Hud(this, sounds, graphics);

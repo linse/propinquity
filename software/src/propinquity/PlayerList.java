@@ -1,6 +1,6 @@
 package propinquity;
 
-import java.util.ArrayList;
+import java.util.Vector;
 
 import controlP5.Button;
 import controlP5.CVector3f;
@@ -12,45 +12,55 @@ import processing.core.*;
 
 public class PlayerList implements UIElement {
 
-	private static final String PLIST_FILE = "player.lst";
-	private static final int MAX_PLAYERS = 12;
-	private static final int WIDTH = 200;
-	private static final int NEXT_WIDTH = 50;
-	private static final int NEXT_HEIGHT = 20;
-	private static final int NEW_WIDTH = 100;
-	private static final int NEW_HEIGHT = 20;
-	private static final int PLAYER_HEIGHT = 20;
-	private static final int REMOVE_WIDTH = 12;
-	private static final int REMOVE_HEIGHT = 20;
-	private static final int VERT_SPACER = 20;
-	private static final int NEXT_ID = 3;
-	private static final int NEW_ID = 4;
+	final int MAX_PLAYERS = 2;
+
+	final int WIDTH = 200;
+	final int NEXT_WIDTH = 50;
+	final int NEXT_HEIGHT = 20;
+	final int NEW_WIDTH = 100;
+	final int NEW_HEIGHT = 20;
+	final int PLAYER_HEIGHT = 20;
+	final int REMOVE_WIDTH = 12;
+	final int REMOVE_HEIGHT = 20;
+	final int VERT_SPACER = 20;
+	final int NEXT_ID = 3;
+	final int NEW_ID = 4;
 
 	Propinquity parent;
+
+	String plistFile;
+
 	ControlP5 controlP5;
-	ArrayList<controlP5.Controller> removeQueue;
+	Vector<controlP5.Controller> removeQueue;
 
 	String[] playerNames;
-	ArrayList<Textfield> playerFields;
-	ArrayList<Button> removeButtons;
+	Vector<Textfield> playerFields;
+	Vector<Button> removeButtons;
 	Button nextButton;
 	Button newButton;
 
-	private boolean isVisible;
+	boolean isVisible;
 
-	public PlayerList(Propinquity p) {
-		parent = p;
+	public PlayerList(Propinquity parent) {
+		this(parent, null);
+	}
+
+	public PlayerList(Propinquity parent, String plistFile) {
+		this.parent = parent;
+		this.plistFile = plistFile;
+
 		isVisible = true;
-		removeQueue = new ArrayList<controlP5.Controller>();
-		controlP5 = new ControlP5(p);
+		controlP5 = new ControlP5(parent);
+
+		removeQueue = new Vector<controlP5.Controller>();
 
 		// create text fields for each
-		playerFields = new ArrayList<Textfield>();
-		removeButtons = new ArrayList<Button>();
+		playerFields = new Vector<Textfield>();
+		removeButtons = new Vector<Button>();
 
 		// load the player list
-		// playerList = new ArrayList();
-		String[] players = p.loadStrings(PLIST_FILE);
+		// playerList = new Vector();
+		String[] players = parent.loadStrings(plistFile);
 		System.out.println(players);
 		if(players != null) {
 			for(int i = 0; i < players.length; i++) {
@@ -157,7 +167,7 @@ public class PlayerList implements UIElement {
 		for(int i = 0; i < playerFields.size(); i++)
 			playerNames[i] = playerFields.get(i).getText();
 
-		parent.saveStrings(parent.dataPath(PLIST_FILE), playerNames);
+		parent.saveStrings(parent.dataPath(plistFile), playerNames);
 
 		parent.changeGameState(GameState.LevelSelect);
 	}
