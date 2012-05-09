@@ -64,10 +64,11 @@ public class XBeeManager implements UIElement {
 	/**
 	 * Receive a keyPressed event.
 	 * 
+	 * @param key the char of the keyPressed event.
 	 * @param keycode the keycode of the keyPressed event.
 	 */
-	public void keyPressed(int keycode) {
-		if(isVisible && keycode == PConstants.ENTER) processUIEvent();
+	public void keyPressed(char key, int keycode) {
+		if(isVisible && (key == PConstants.ENTER || keycode == ' ')) processUIEvent();
 	}
 
 	/**
