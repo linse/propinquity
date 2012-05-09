@@ -392,56 +392,26 @@ public class LevelSelect implements PConstants, UIElement {
 	 * @param keycode the keycode of the keyPressed event.
 	 */
 	public void keyPressed(char key, int keycode) {
-		// switch(keyCode) {
-		// 	case PApplet.LEFT:
-		// 		moveLeft();
-		// 		break;
-		// 	case PApplet.RIGHT:
-		// 		moveRight();
-		// 		break;
-		// 	case PApplet.ENTER:
-		// 	case ' ':
-		// 		doSelect();
-		// 		break;
-		// 	}
-		// }
-		// switch(key) {
-		// 	case BACKSPACE: {
-		// 		levelSelect.clear();
-		// 		changeGameState(GameState.PlayerList);
-		// 		break;
-		// 	}
-
-		// 	default: {
-		// 				// pass the key to the level select controller
-		// 		keyPressed(key, keyCode);
-
-		// 				// check if the level select controller is done
-		// 				// and ready to play
-		// 		if(isDone()) {
-		// 					// init level
-		// 			level = new Level(this, sounds, players, levelFile);
-		// 			graphics.loadLevelContent();
-
-		// 			level.load();
-
-		// 					// send configuration message here
-		// 					// TODO: send step length to proximity patches
-
-		// 			delay(50);
-		// 			while(!allAcksIn()) {
-		// 				println("sending again");
-		// 				sendConfigMessages((int) (level.getStepInterval()));
-		// 				delay(50);
-		// 			}
-		// 			changeGameState(GameState.Play);
-
-		// 		}
-		// 		break;
-		// 	}
-
-		// }
-		// break;
+		switch(key) {
+			case BACKSPACE: {
+				clear();
+				parent.changeGameState(GameState.PlayerList);
+				break;
+			}
+			case PApplet.LEFT: {
+				moveLeft();
+				break;
+			}
+			case PApplet.RIGHT: {
+				moveRight();
+				break;
+			}
+			case PApplet.ENTER:
+			case ' ': {
+				doSelect();
+				break;
+			}
+		}
 	}
 
 	public void moveLeft() {
@@ -506,6 +476,7 @@ public class LevelSelect implements PConstants, UIElement {
 		case Song:
 			levelFile = LEVEL_FOLDER + levelFiles[selected];
 			state = LevelSelectState.Done;
+			parent.changeGameState(GameState.Play);
 			break;
 		}
 	}

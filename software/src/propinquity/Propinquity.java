@@ -225,6 +225,10 @@ public class Propinquity extends PApplet {
 			}
 
 			case Play: {
+				level = new Level(this, sounds, levelSelect.players, levelSelect.levelFile);
+				graphics.loadLevelContent();
+
+				level.load();
 				break;
 			}
 		}
