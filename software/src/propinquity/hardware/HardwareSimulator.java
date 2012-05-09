@@ -97,7 +97,7 @@ public class HardwareSimulator implements HardwareInterface, UIElement {
 
 					int prox = patches.get(i).getProx();
 					p.fill(100);
-					p.rect(local_width*0.9f, height, local_width*0.1f, p.map(prox, 0, 1024, 0, -height));
+					p.rect(local_width*0.9f, height, local_width*0.1f, PApplet.map(prox, 0, 1024, 0, -height));
 				} else {
 					int vibe = gloves.get(i-num_patch).getVibeLevel();
 					p.fill(vibe);
@@ -135,7 +135,6 @@ public class HardwareSimulator implements HardwareInterface, UIElement {
 
 	public void keyEvent(KeyEvent e) {
 		if(isVisible) {
-			char keychar = e.getKeyChar();
 			int keycode = e.getKeyCode();
 			
 			if(keycode >= 48 && keycode <= 57) {
