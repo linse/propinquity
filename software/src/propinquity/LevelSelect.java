@@ -87,8 +87,8 @@ public class LevelSelect implements PConstants, UIElement {
 		initTextures();
 	}
 
-	public void registerPlayers(PlayerList playerList) {
-		this.playerNames = playerList.getNames();
+	public void registerPlayers(String[] playerNames) {
+		this.playerNames = playerNames;
 	}
 
 	public void reset() {

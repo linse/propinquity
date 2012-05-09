@@ -225,29 +225,29 @@ public class Propinquity extends PApplet {
 	}
 
 	public void changeGameState(GameState newState) {
-
-		for(int i = 0; i < uiElements.length; i++)
-			uiElements[i].hide();
+		for(int i = 0; i < uiElements.length; i++) uiElements[i].hide();
 
 		switch(newState) {
+			case XBeeInit: {
+				xbeeManager.show();
+				break;
+			}
 
-		case XBeeInit:
-			xbeeManager.show();
-			break;
+			case PlayerList: {
+				playerList.show();
+				break;
+			}
 
-		case PlayerList:
-			playerList.show();
-			break;
+			case LevelSelect: {
+				levelSelect.registerPlayers(playerList.getNames());
+				levelSelect.reset();
+				levelSelect.show();
+				break;
+			}
 
-		case LevelSelect:
-			levelSelect.registerPlayers(playerList);
-			levelSelect.reset();
-			levelSelect.show();
-			break;
-
-		case Play:
-			break;
-
+			case Play: {
+				break;
+			}
 		}
 
 		gameState = newState;
@@ -256,112 +256,117 @@ public class Propinquity extends PApplet {
 	}
 
 	public void controlEvent(ControlEvent event) {
-
 		switch(gameState) {
+			case XBeeInit: {
+				xbeeManager.controlEvent(event);
+				break;
+			}
 
-		case XBeeInit:
-			xbeeManager.controlEvent(event);
-			break;
-
-		case PlayerList:
-			playerList.controlEvent(event);
-			break;
+			case PlayerList: {
+				playerList.controlEvent(event);
+				break;
+			}
 		}
 	}
 
 	public void keyPressed() {
-
 		switch(gameState) {
-
-		case XBeeInit:
-			xbeeManager.keyPressed(keyCode);
-			break;
-
-		case PlayerList:
-			playerList.keyPressed(keyCode);
-			break;
-
-		case LevelSelect:
-
-			switch(key) {
-
-			case BACKSPACE:
-				levelSelect.clear();
-				changeGameState(GameState.PlayerList);
+			case XBeeInit: {
+				xbeeManager.keyPressed(keyCode);
 				break;
+			}
 
-			default:
+			case PlayerList: {
+				playerList.keyPressed(keyCode);
+				break;
+			}
+
+			case LevelSelect: {
+				switch(key) {
+					case BACKSPACE: {
+						levelSelect.clear();
+						changeGameState(GameState.PlayerList);
+						break;
+					}
+
+					default: {
 				// pass the key to the level select controller
-				levelSelect.keyPressed(key, keyCode);
+						levelSelect.keyPressed(key, keyCode);
 
 				// check if the level select controller is done
 				// and ready to play
-				if(levelSelect.isDone()) {
+						if(levelSelect.isDone()) {
 					// init level
-					level = new Level(this, sounds, levelSelect.players, levelSelect.levelFile);
-					graphics.loadLevelContent();
+							level = new Level(this, sounds, levelSelect.players, levelSelect.levelFile);
+							graphics.loadLevelContent();
 
-					level.load();
+							level.load();
 
 					// send configuration message here
 					// TODO: send step length to proximity patches
 
-					delay(50);
-					while(!levelSelect.allAcksIn()) {
-						println("sending again");
-						levelSelect.sendConfigMessages((int) (level.getStepInterval()));
-						delay(50);
+							delay(50);
+							while(!levelSelect.allAcksIn()) {
+								println("sending again");
+								levelSelect.sendConfigMessages((int) (level.getStepInterval()));
+								delay(50);
+							}
+							changeGameState(GameState.Play);
+
+						}
+						break;
 					}
-					changeGameState(GameState.Play);
 
 				}
 				break;
-
 			}
-			break;
 
-		case Play:
+			case Play: {
+				switch(key) {
+					case ESC: {
+						level.clear();
+						exit();
+						break;
+					}
 
-			switch(key) {
+					case ENTER: {
+						case ' ':
+						if(level.isDone() && endedLevel) resetLevel();
+						else if(!level.isDone() && !level.isRunning()) level.start();
+						else if(!level.isDone()) level.pause();
+						break;
+					}
 
-			case ESC:
-				level.clear();
-				exit();
-				break;
+					case BACKSPACE: {
+						if(!level.isRunning()) resetLevel();
+						break;
+					}
 
-			case ENTER:
-			case ' ':
-				if(level.isDone() && endedLevel) resetLevel();
-				else if(!level.isDone() && !level.isRunning()) level.start();
-				else if(!level.isDone()) level.pause();
-				break;
+					case 'i': { // info
+						int score0 = level.getPlayer(0).score.liquid.particlesHeld.size();
+						int score1 = level.getPlayer(1).score.liquid.particlesHeld.size();
+						println("Particles: " + (score0 + " " + score1));
+						println("Framerate: " + frameRate);
+						break;
+					}
+					case 'e': {// play stub
+						level.currentStep = level.stepCount;
+						break;
+					}
 
-			case BACKSPACE:
-				if(!level.isRunning()) resetLevel();
-				break;
+					case 'n': {
+						simulator.show();
+						break;
+					}
 
-			case 'i': // info
-				int score0 = level.getPlayer(0).score.liquid.particlesHeld.size();
-				int score1 = level.getPlayer(1).score.liquid.particlesHeld.size();
-				println("Particles: " + (score0 + " " + score1));
-				println("Framerate: " + frameRate);
-				break;
-
-			case 'e': // play stub
-				level.currentStep = level.stepCount;
-				break;
-				
-			case 'n':
-				simulator.show();
-				break;
-				
-			case 'm':
-				simulator.hide();
+					case 'm': {
+						simulator.hide();
+						break;
+					}
+				}
 				break;
 			}
-			break;
 		}
-
 	}
 
 	static public void main(String args[]) {
