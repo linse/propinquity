@@ -46,7 +46,7 @@ public class Logger {
 	 * Record a frame of video.
 	 */
 	public void recordFrame() {
-		if (isRecording)
+		if(isRecording)
 			movieMaker.addFrame();
 	}
 

@@ -38,7 +38,7 @@ public class Fences {
 			float radius = INNER_RADIUS / worldScale + fenceDepth;
 			float perimeter = 2 * PConstants.PI * radius;
 
-			for (int i = 0; i < SECTIONS; i++) {
+			for(int i = 0; i < SECTIONS; i++) {
 				float angle = 2 * PConstants.PI / SECTIONS * i;
 				sd.setAsBox(perimeter / SECTIONS, fenceDepth, new Vec2(PApplet.cos(angle) * radius, PApplet.sin(angle)
 						* radius), angle + PConstants.PI / 2);
@@ -62,7 +62,7 @@ public class Fences {
 			float radius = (Propinquity.WORLD_SIZE - (Hud.WIDTH / worldScale)) / 2f + fenceDepth / 2;
 			float perimeter = 2 * PConstants.PI * radius;
 
-			for (int i = 0; i < SECTIONS; i++) {
+			for(int i = 0; i < SECTIONS; i++) {
 				float angle = 2 * PConstants.PI / SECTIONS * i;
 				sd.setAsBox(perimeter / SECTIONS, fenceDepth, new Vec2(PApplet.cos(angle) * radius, PApplet.sin(angle)
 						* radius), angle + PConstants.PI / 2);

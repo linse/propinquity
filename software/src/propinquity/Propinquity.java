@@ -117,7 +117,7 @@ public class Propinquity extends PApplet {
 	}
 
 	public void stop() {
-		if (gameState == GameState.Play)
+		if(gameState == GameState.Play)
 			level.clear();
 	}
 
@@ -125,10 +125,10 @@ public class Propinquity extends PApplet {
 		// clear black
 		background(Color.black().toInt(this));
 
-		for (int i = 0; i < uiElements.length; i++)
+		for(int i = 0; i < uiElements.length; i++)
 			uiElements[i].draw();
 
-		if (gameState == GameState.Play)
+		if(gameState == GameState.Play)
 			drawPlay();
 
 		pushMatrix();
@@ -144,14 +144,14 @@ public class Propinquity extends PApplet {
 		drawMask();
 		graphics.drawOuterBoundary();
 
-		if (DEBUG)
+		if(DEBUG)
 			graphics.drawDebugFence();
 
 		hud.draw();
 
-		if (level.isDone()) {
+		if(level.isDone()) {
 
-			if (endedLevel) {
+			if(endedLevel) {
 				Player winner = level.getWinner();
 
 				textAlign(CENTER);
@@ -168,7 +168,7 @@ public class Propinquity extends PApplet {
 				popMatrix();
 			} else {
 				// keep track of done time
-				if (doneTime == -1) {
+				if(doneTime == -1) {
 					level.clear();
 					doneTime = frameCount;
 				}
@@ -180,11 +180,11 @@ public class Propinquity extends PApplet {
 				hud.snap();
 
 				// flag as ended
-				if (doneTime != -1 && frameCount > doneTime + Graphics.FPS * END_LEVEL_TIME)
+				if(doneTime != -1 && frameCount > doneTime + Graphics.FPS * END_LEVEL_TIME)
 					endedLevel = true;
 			}
 
-		} else if (level.isRunning()) {
+		} else if(level.isRunning()) {
 
 			hud.update(hud.getAngle() + HALF_PI, TWO_PI / 10000f, TWO_PI / 2000f);
 
@@ -230,10 +230,10 @@ public class Propinquity extends PApplet {
 
 	public void changeGameState(GameState newState) {
 
-		for (int i = 0; i < uiElements.length; i++)
+		for(int i = 0; i < uiElements.length; i++)
 			uiElements[i].hide();
 
-		switch (newState) {
+		switch(newState) {
 
 		case XBeeInit:
 			xbeeManager.show();
@@ -261,7 +261,7 @@ public class Propinquity extends PApplet {
 
 	public void controlEvent(ControlEvent event) {
 
-		switch (gameState) {
+		switch(gameState) {
 
 		case XBeeInit:
 			xbeeManager.controlEvent(event);
@@ -275,7 +275,7 @@ public class Propinquity extends PApplet {
 
 	public void keyPressed() {
 
-		switch (gameState) {
+		switch(gameState) {
 
 		case XBeeInit:
 			xbeeManager.keyPressed(keyCode);
@@ -287,7 +287,7 @@ public class Propinquity extends PApplet {
 
 		case LevelSelect:
 
-			switch (key) {
+			switch(key) {
 
 			case BACKSPACE:
 				levelSelect.clear();
@@ -300,7 +300,7 @@ public class Propinquity extends PApplet {
 
 				// check if the level select controller is done
 				// and ready to play
-				if (levelSelect.isDone()) {
+				if(levelSelect.isDone()) {
 					// init level
 					level = new Level(this, sounds, levelSelect.players, levelSelect.levelFile);
 					graphics.loadLevelContent();
@@ -311,7 +311,7 @@ public class Propinquity extends PApplet {
 					// TODO: send step length to proximity patches
 
 					delay(50);
-					while (!levelSelect.allAcksIn()) {
+					while(!levelSelect.allAcksIn()) {
 						println("sending again");
 						levelSelect.sendConfigMessages((int) (level.getStepInterval()));
 						delay(50);
@@ -326,7 +326,7 @@ public class Propinquity extends PApplet {
 
 		case Play:
 
-			switch (key) {
+			switch(key) {
 
 			case ESC:
 				level.clear();
@@ -335,16 +335,16 @@ public class Propinquity extends PApplet {
 
 			case ENTER:
 			case ' ':
-				if (level.isDone() && endedLevel)
+				if(level.isDone() && endedLevel)
 					resetLevel();
-				else if (!level.isDone() && !level.isRunning())
+				else if(!level.isDone() && !level.isRunning())
 					level.start();
-				else if (!level.isDone())
+				else if(!level.isDone())
 					level.pause();
 				break;
 
 			case BACKSPACE:
-				if (!level.isRunning())
+				if(!level.isRunning())
 					resetLevel();
 				break;
 

@@ -31,7 +31,7 @@ public class Text {
 		float arclength = 0;
 
 		// For every box
-		for (int i = 0; i < message.length(); i++) {
+		for(int i = 0; i < message.length(); i++) {
 			// Instead of a constant width, we check the width of each
 			// character.
 			char currentChar = message.charAt(i);

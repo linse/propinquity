@@ -76,7 +76,7 @@ public class Hud {
 	 */
 	public void snap() {
 
-		if (!isSnapped) {
+		if(!isSnapped) {
 			angle -= ((int) (angle / PConstants.TWO_PI)) * PConstants.TWO_PI;
 			isSnapped = true;
 		}
@@ -96,13 +96,13 @@ public class Hud {
 		float diff = targetAngle - angle;
 		int dir = diff < 0 ? -1 : 1;
 
-		if (diff * dir < PConstants.TWO_PI / 5000f) {
+		if(diff * dir < PConstants.TWO_PI / 5000f) {
 			angle = targetAngle;
 			return;
 		}
 
 		velocity += dir * targetAcceleration;
-		if (velocity / dir > maxVelocity)
+		if(velocity / dir > maxVelocity)
 			velocity = dir * maxVelocity;
 
 		velocity *= 0.85;
@@ -122,7 +122,7 @@ public class Hud {
 		parent.noStroke();
 		parent.noFill();
 
-		if (parent.level.isCoop() && !parent.level.isCoopDone()) {
+		if(parent.level.isCoop() && !parent.level.isCoopDone()) {
 
 			float ang = angle - PConstants.HALF_PI;
 			parent.pushMatrix();
@@ -146,7 +146,7 @@ public class Hud {
 			parent.textFont(Graphics.font, Hud.FONT_SIZE);
 			String score = String.valueOf(parent.level.getTotalPoints() / 2);
 			String name = "Coop";
-			while (parent.textWidth(score + name) < 240)
+			while(parent.textWidth(score + name) < 240)
 				name += ' ';
 
 			Text.drawArc(name + score, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, ang - Hud.SCORE_ANGLE_OFFSET,
@@ -156,12 +156,12 @@ public class Hud {
 
 		} else {
 
-			if (!parent.level.getLastCoopDone()) {
+			if(!parent.level.getLastCoopDone()) {
 				sounds.complete.play();
 				sounds.complete.rewind();
 				parent.level.setLastCoopDone(true);
 			}
-			for (int i = 0; i < parent.level.getNumberOfPlayers(); i++) {
+			for(int i = 0; i < parent.level.getNumberOfPlayers(); i++) {
 				Player player = parent.level.getPlayer(i);
 				player.approachHudTo(-PConstants.HALF_PI + PConstants.TWO_PI / parent.level.getNumberOfPlayers() * i);
 				float ang = angle - PConstants.HALF_PI + player.hudAngle;
@@ -186,7 +186,7 @@ public class Hud {
 				parent.textFont(Graphics.font, Hud.FONT_SIZE);
 				String score = String.valueOf(player.getTotalPts());
 				String name = player.getName().length() > 12 ? player.getName().substring(0, 12) : player.getName();
-				while (parent.textWidth(score + name) < 240)
+				while(parent.textWidth(score + name) < 240)
 					name += ' ';
 
 				Text.drawArc(name + score, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, ang - Hud.SCORE_ANGLE_OFFSET,

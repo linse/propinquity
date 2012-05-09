@@ -64,7 +64,7 @@ public class Graphics {
 
 		// Load player HUDs
 		hudPlayers = new PImage[parent.level.getNumberOfPlayers()];
-		for (int i = 0; i < parent.level.getNumberOfPlayers(); i++)
+		for(int i = 0; i < parent.level.getNumberOfPlayers(); i++)
 			hudPlayers[i] = parent.loadImage("data/hud/player" + (i + 1) + "score.png");
 
 		// Load co-op HUD
@@ -92,7 +92,7 @@ public class Graphics {
 		float w = perimeter / Fences.SECTIONS;
 		float h = 5f;
 		float angle = 0;
-		for (int i = 0; i < Fences.SECTIONS; i++) {
+		for(int i = 0; i < Fences.SECTIONS; i++) {
 			angle = 2f * PConstants.PI / Fences.SECTIONS * i;
 			parent.pushMatrix();
 			parent.translate(parent.width / 2 + PApplet.cos(angle) * radius, parent.height / 2 + PApplet.sin(angle)
@@ -107,7 +107,7 @@ public class Graphics {
 		w = perimeter / Fences.SECTIONS;
 		h = 5f;
 		angle = 0;
-		for (int i = 0; i < Fences.SECTIONS; i++) {
+		for(int i = 0; i < Fences.SECTIONS; i++) {
 			angle = 2f * PConstants.PI / Fences.SECTIONS * i;
 			parent.pushMatrix();
 			parent.translate(parent.width / 2 + PApplet.cos(angle) * radius, parent.height / 2 + PApplet.sin(angle)

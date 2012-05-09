@@ -21,8 +21,7 @@ public class XBeeManager implements UIElement {
 	 * Create a new XBeeBaseStation.
 	 * 
 	 * @param parent the parent Propinquity object
-	 * @param xbeeBaseStation the XBeeBaseStation object which actually hold the
-	 *            XBee
+	 * @param xbeeBaseStation the XBeeBaseStation object which actually hold the XBee
 	 */
 	public XBeeManager(Propinquity parent, XBeeBaseStation xbeeBaseStation) {
 		this.parent = parent;
@@ -54,10 +53,10 @@ public class XBeeManager implements UIElement {
 	 * @param event the controlP5 event.
 	 */
 	public void controlEvent(ControlEvent event) {
-		if (isVisible) {
-			if (event.controller().name().equals("XBeeBaseStation Scan"))
+		if(isVisible) {
+			if(event.controller().name().equals("XBeeBaseStation Scan"))
 				xbeeBaseStation.scan();
-			else if (event.controller().name().equals("XBeeBaseStation Next"))
+			else if(event.controller().name().equals("XBeeBaseStation Next"))
 				processUIEvent();
 		}
 	}
@@ -68,7 +67,7 @@ public class XBeeManager implements UIElement {
 	 * @param keycode the keycode of the keyPressed event.
 	 */
 	public void keyPressed(int keycode) {
-		if (isVisible && keycode == PConstants.ENTER)
+		if(isVisible && keycode == PConstants.ENTER)
 			processUIEvent();
 	}
 
@@ -77,9 +76,9 @@ public class XBeeManager implements UIElement {
 	 * 
 	 */
 	void processUIEvent() {
-		if (xbeeBaseStation.isScanning())
+		if(xbeeBaseStation.isScanning())
 			return;
-		else if (parent != null)
+		else if(parent != null)
 			parent.changeGameState(GameState.PlayerList); // TODO Fix this is
 															// horrid.
 	}
@@ -118,15 +117,15 @@ public class XBeeManager implements UIElement {
 	 * 
 	 */
 	public void draw() {
-		if (isVisible) {
+		if(isVisible) {
 
 			String msg = "";
-			if (xbeeBaseStation.isScanning())
+			if(xbeeBaseStation.isScanning())
 				msg = "Scanning...";
 			else {
-				for (String s : xbeeBaseStation.listXBees())
+				for(String s : xbeeBaseStation.listXBees())
 					msg += s;
-				if (msg.isEmpty())
+				if(msg.isEmpty())
 					msg = "No XBees found";
 			}
 
@@ -150,7 +149,7 @@ public class XBeeManager implements UIElement {
 	 */
 	public void dispose() {
 		xbeeBaseStation.reset();
-		if (controlP5 != null) {
+		if(controlP5 != null) {
 			controlP5.dispose();
 			controlP5 = null;
 		}

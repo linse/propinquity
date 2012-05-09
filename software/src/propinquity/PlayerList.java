@@ -52,18 +52,18 @@ public class PlayerList implements UIElement {
 		// playerList = new ArrayList();
 		String[] players = p.loadStrings(PLIST_FILE);
 		System.out.println(players);
-		if (players != null) {
-			for (int i = 0; i < players.length; i++) {
-				if (players[i].length() > 0) {
+		if(players != null) {
+			for(int i = 0; i < players.length; i++) {
+				if(players[i].length() > 0) {
 					// add UI
 					addPlayer(players[i]);
 				}
 			}
 		}
 
-		if (playerFields.size() < 1)
+		if(playerFields.size() < 1)
 			addPlayer("Player 1");
-		if (playerFields.size() < 2)
+		if(playerFields.size() < 2)
 			addPlayer("Player 2");
 
 		// create button to add new players
@@ -85,7 +85,7 @@ public class PlayerList implements UIElement {
 
 	public void draw() {
 		// process controlP5 remove queue
-		for (int i = 0; i < removeQueue.size(); i++)
+		for(int i = 0; i < removeQueue.size(); i++)
 			controlP5.remove((removeQueue.get(i)).name());
 		removeQueue.clear();
 	}
@@ -115,7 +115,7 @@ public class PlayerList implements UIElement {
 		CVector3f pos = new CVector3f(0, 0, 0);
 		Textfield tf;
 		Button btn;
-		for (int i = 0; i < playerFields.size(); i++) {
+		for(int i = 0; i < playerFields.size(); i++) {
 			tf = playerFields.get(i);
 			pos = tf.position();
 			tf.setPosition(pos.x, y);
@@ -135,15 +135,15 @@ public class PlayerList implements UIElement {
 		pos = nextButton.position();
 		nextButton.setPosition(pos.x, y);
 
-		if (playerFields.size() >= MAX_PLAYERS)
+		if(playerFields.size() >= MAX_PLAYERS)
 			newButton.hide();
 	}
 
 	public void process() {
 		// clear empty textfields
-		for (int i = 0; i < playerFields.size(); i++) {
+		for(int i = 0; i < playerFields.size(); i++) {
 			Textfield tf = playerFields.get(i);
-			if (tf.getText().length() == 0) {
+			if(tf.getText().length() == 0) {
 				playerFields.remove(i);
 				i--;
 			}
@@ -154,7 +154,7 @@ public class PlayerList implements UIElement {
 		playerNames[0] = "Player 1";
 		playerNames[1] = "Player 2";
 
-		for (int i = 0; i < playerFields.size(); i++)
+		for(int i = 0; i < playerFields.size(); i++)
 			playerNames[i] = playerFields.get(i).getText();
 
 		parent.saveStrings(parent.dataPath(PLIST_FILE), playerNames);
@@ -177,8 +177,8 @@ public class PlayerList implements UIElement {
 	}
 
 	public void controlEvent(ControlEvent theEvent) {
-		if (isVisible) {
-			switch (theEvent.controller().id()) {
+		if(isVisible) {
+			switch(theEvent.controller().id()) {
 			case (NEXT_ID):
 				process();
 				break;
@@ -188,7 +188,7 @@ public class PlayerList implements UIElement {
 
 				break;
 			default:
-				if (theEvent.controller() instanceof Button && theEvent.controller().name().indexOf("Remove") >= 0) {
+				if(theEvent.controller() instanceof Button && theEvent.controller().name().indexOf("Remove") >= 0) {
 					// remove textfield that matches button value
 					int value = (int) theEvent.controller().value();
 					int i;
@@ -207,7 +207,7 @@ public class PlayerList implements UIElement {
 					removeQueue.add(ctrl);
 
 					// adjust values
-					for (; i < playerFields.size(); i++) {
+					for(; i < playerFields.size(); i++) {
 						Textfield rtf = playerFields.get(i);
 						rtf.setCaptionLabel("Player " + (i + 1));
 					}
@@ -220,7 +220,7 @@ public class PlayerList implements UIElement {
 	}
 
 	public void keyPressed(int keycode) {
-		if (isVisible && keycode == PConstants.ENTER)
+		if(isVisible && keycode == PConstants.ENTER)
 			process();
 	}
 }

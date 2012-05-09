@@ -65,7 +65,7 @@ public class Level {
 		this.parent = parent;
 		this.sounds = sounds;
 
-		if (players == null) {
+		if(players == null) {
 			players = new Player[2];
 			players[0] = new Player(parent, parent.patches, parent.glove, parent.playerColors[0]);
 			players[0].name = "Player 1";
@@ -75,7 +75,7 @@ public class Level {
 			this.players = players;
 		}
 
-		if (levelFile != null) {
+		if(levelFile != null) {
 			parent.xmlInOut = new XMLInOut(parent, this);
 			parent.xmlInOut.loadElement(levelFile);
 		}
@@ -90,13 +90,13 @@ public class Level {
 	}
 
 	public void clear() {
-		for (int i = 0; i < players.length; i++)
+		for(int i = 0; i < players.length; i++)
 			players[i].clear();
 	}
 
 	public void reset() {
-		if (players != null) {
-			for (int i = 0; i < players.length; i++)
+		if(players != null) {
+			for(int i = 0; i < players.length; i++)
 				players[i].reset();
 		}
 
@@ -114,7 +114,7 @@ public class Level {
 		lastUpdate = 0;
 
 		// rewind song
-		if (sounds.song != null)
+		if(sounds.song != null)
 			sounds.song.rewind();
 	}
 
@@ -127,22 +127,22 @@ public class Level {
 		isRunning = true;
 		lastUpdate = parent.millis();
 
-		if (!Sounds.MUTE)
+		if(!Sounds.MUTE)
 			sounds.song.play();
 	}
 
 	public void update() {
 		long now = parent.millis();
 		long dt = now - lastUpdate;
-		if (dt > 0)
+		if(dt > 0)
 			time += dt;
 		lastUpdate = now;
 
 		// process stubs
-		for (int i = 0; i < players.length; i++) {
+		for(int i = 0; i < players.length; i++) {
 			// players[i].stub(time);
 			ProxData psd;
-			while ((psd = players[i].nextProxStub(time)) != null) {
+			while((psd = players[i].nextProxStub(time)) != null) {
 				processProxReading(psd);
 				// proxStubIndex++;
 			}
@@ -153,12 +153,12 @@ public class Level {
 		parent.box2d.setGravity(0, 0);
 		
 		// process step
-		if (time - lastStep > stepInterval)
+		if(time - lastStep > stepInterval)
 			step();
 	}
 	
 	public void draw() {
-		for (int i = 0; i < players.length; i++)
+		for(int i = 0; i < players.length; i++)
 			players[i].draw();
 	}
 
@@ -169,8 +169,8 @@ public class Level {
 		lastStep = time;
 
 		// process each player step
-		if (currentStep < stepCount)
-			for (int i = 0; i < players.length; i++)
+		if(currentStep < stepCount)
+			for(int i = 0; i < players.length; i++)
 				players[i].sendStep(currentStep);
 
 		// increment
@@ -195,7 +195,7 @@ public class Level {
 
 	public void setLastCoopDone(boolean b) {
 		lastCoopDone = b;
-		if (b) {
+		if(b) {
 			players[0].setCoopMode(!b);
 			players[1].setCoopMode(!b);
 		}
@@ -222,18 +222,18 @@ public class Level {
 		int winner = -1;
 
 		// TODO: This "loop" looks a little fishy...
-		for (int i = 0; i < players.length; i++)
+		for(int i = 0; i < players.length; i++)
 			// check if we have a winner
-			if (players[i].getTotalPts() > maxScore) {
+			if(players[i].getTotalPts() > maxScore) {
 				maxScore = players[i].getTotalPts();
 				winner = i;
 			}
 			// if not check if we have a tie
-			else if (players[i].getTotalPts() == maxScore) {
+			else if(players[i].getTotalPts() == maxScore) {
 				winner = -1;
 			}
 
-		if (winner == -1)
+		if(winner == -1)
 			return null;
 		else
 			return players[winner];
@@ -241,7 +241,7 @@ public class Level {
 
 	public int getTotalPoints() {
 		int total = 0;
-		for (int i = 0; i < players.length; i++)
+		for(int i = 0; i < players.length; i++)
 			total += players[i].score.getScore();
 		return total;
 	}
@@ -260,17 +260,17 @@ public class Level {
 
 	public void load() {
 
-		while (true)
-			if (successfullyRead > -1)
+		while(true)
+			if(successfullyRead > -1)
 				break;
 
-		if (successfullyRead == 0) {
+		if(successfullyRead == 0) {
 			loadDefaults();
 			System.err.println("I had some trouble reading the level file.");
 			System.err.println("Defaulting to 2 minutes of free play instead.");
 		}
 		
-		for (int i = 0; i < players.length; i++) 
+		for(int i = 0; i < players.length; i++) 
 			parent.simulator.addProxEventListener(players[i]);
 	}
 
@@ -279,7 +279,7 @@ public class Level {
 		int numPlayers = songXML.countChildren() - 1;
 
 		// check if we have an correct level file
-		if (numPlayers < 0) {
+		if(numPlayers < 0) {
 			System.out.println("Error: Empty level file");
 			successfullyRead = 0;
 			return;
@@ -302,9 +302,9 @@ public class Level {
 		stepCount = DEFAULT_STEPS;
 		stepInterval = (long) (60f / tempo * multiplier * 1000);
 
-		for (int i = 0; i < DEFAULT_PLAYERS; i++) {
+		for(int i = 0; i < DEFAULT_PLAYERS; i++) {
 			players[i].initializeSteps(stepCount);
-			for (int j = 0; j < stepCount; j++) {
+			for(int j = 0; j < stepCount; j++) {
 				Step step = new Step(true, true, true, true, true);
 				players[i].addStep(step, j);
 			}
@@ -322,19 +322,19 @@ public class Level {
 		numPlayers = levelXML.countChildren() - 1;
 
 		// check if we have an correct level file
-		if (numPlayers < 2) {
+		if(numPlayers < 2) {
 			System.out.println("Error: Bad level file. We need data for 2 players.");
 			successfullyRead = 0;
 			return;
 		}
 		// limit number of players to default (?)
-		else if (numPlayers > MAX_PLAYERS)
+		else if(numPlayers > MAX_PLAYERS)
 			numPlayers = MAX_PLAYERS;
 
 		// read coop parameter
 		isCoop = levelXML.hasAttribute("coop");
 		coopPoints = isCoop ? levelXML.getIntAttribute("coop") : 0;
-		if (isCoop) {
+		if(isCoop) {
 			players[0].setCoopMode(true);
 			players[1].setCoopMode(true);
 		}
@@ -353,11 +353,11 @@ public class Level {
 		// init the number of steps
 		// this makes it possible to do 1 player, but not 3
 		int[] numStepsEach = new int[numPlayers];
-		for (int i = 0; i < numPlayers; i++) {
+		for(int i = 0; i < numPlayers; i++) {
 			player = levelXML.getChild(i + 1);
 			sequence = player.getChild(0);
 			numStepsEach[i] = sequence.countChildren();
-			if (numStepsEach[i] > MAX_STEPS)
+			if(numStepsEach[i] > MAX_STEPS)
 				numStepsEach[i] = MAX_STEPS;
 		}
 
@@ -365,12 +365,12 @@ public class Level {
 		// if not, we'll let the other player have free play.
 		numSteps = numStepsEach[0]; // stays this way if there is only one
 									// player.
-		if (numPlayers > 1) {
-			for (int i = 0; i < numPlayers; i++) {
+		if(numPlayers > 1) {
+			for(int i = 0; i < numPlayers; i++) {
 				// for now this will only go up to 2
 				// but let's keep the possibility of increasing the max number
 				// of players
-				if (numStepsEach[i] > numSteps)
+				if(numStepsEach[i] > numSteps)
 					numSteps = numStepsEach[i];
 			}
 		}
@@ -380,11 +380,11 @@ public class Level {
 
 		// read the steps
 		int readStepsUntil = 0;
-		if (numSteps > 0)
+		if(numSteps > 0)
 			readStepsUntil = numSteps;
 		else
 			readStepsUntil = DEFAULT_STEPS;
-		for (int i = 0; i < numPlayers; i++) {
+		for(int i = 0; i < numPlayers; i++) {
 
 			// init player steps
 			System.out.println("Sending Config for Step Interval " + stepInterval);
@@ -392,8 +392,8 @@ public class Level {
 			players[i].initializeSteps(numSteps);
 			player = levelXML.getChild(i + 1);
 			sequence = player.getChild(0);
-			for (int j = 0; j < readStepsUntil; j++) {
-				if (j < numStepsEach[i]) {
+			for(int j = 0; j < readStepsUntil; j++) {
+				if(j < numStepsEach[i]) {
 					step = sequence.getChild(j);
 					boolean pad1 = PApplet.parseBoolean(step.getIntAttribute("pad1"));
 					boolean pad2 = PApplet.parseBoolean(step.getIntAttribute("pad2"));
@@ -421,15 +421,15 @@ public class Level {
 
 		// XBeeDataFrame data = xbee.getXBeeReading();
 
-		// if (data.getApiID() == XBeeReader.SERIES1_RX16PACKET) {
+		// if(data.getApiID() == XBeeReader.SERIES1_RX16PACKET) {
 		// int[] packet = data.getBytes();
-		// if (packet.length == XPan.PROX_IN_PACKET_LENGTH && packet[0] ==
+		// if(packet.length == XPan.PROX_IN_PACKET_LENGTH && packet[0] ==
 		// XPan.PROX_IN_PACKET_TYPE) {
 		// // println("prox message received");
 		// int patch = (packet[1] >> 1);
 		// int player = getPlayerIndexForPatch(patch);
 
-		// if (player != -1) {
+		// if(player != -1) {
 		// boolean touched = (packet[1] & 1) == 1;
 		// // println(packet[1]);
 		// // println(touched);
@@ -446,7 +446,7 @@ public class Level {
 		// System.err.println("Trouble in paradise, we received a packet from patch '"
 		// + patch
 		// + "', which is not assigned to a player");
-		// } else if (packet.length == XPan.CONFIG_ACK_LENGTH && packet[0] ==
+		// } else if(packet.length == XPan.CONFIG_ACK_LENGTH && packet[0] ==
 		// XPan.CONFIG_ACK_PACKET_TYPE) {
 		// int myTurnLength = ((packet[2] & 0xFF) << 8) | (packet[3] & 0xFF);
 		// int patch = packet[1];
@@ -454,9 +454,9 @@ public class Level {
 		// players[player].processConfigAck(patch, myTurnLength);
 		// System.out.println("Config Ack Received in Level, Turn Length is " +
 		// myTurnLength);
-		// } else if (packet.length == XPan.VIBE_IN_PACKET_LENGTH && packet[0]
+		// } else if(packet.length == XPan.VIBE_IN_PACKET_LENGTH && packet[0]
 		// == XPan.VIBE_IN_PACKET_TYPE) {
-		// if (packet[2] == 4)
+		// if(packet[2] == 4)
 		// doPause();
 		// } else {
 		// System.err.println("Level received a bad packet.");
@@ -466,18 +466,18 @@ public class Level {
 
 	// TODO make this work with patch detection in LevelSelect
 	public Player getPlayerForPatch(int patch) {
-		if (patch >= 1 && patch <= 4)
+		if(patch >= 1 && patch <= 4)
 			return players[0];
-		else if (patch >= 9 && patch <= 16)
+		else if(patch >= 9 && patch <= 16)
 			return players[1];
 		else
 			return null;
 	}
 
 	public int getPlayerIndexForPatch(int patch) {
-		if (patch >= 1 && patch <= 4)
+		if(patch >= 1 && patch <= 4)
 			return 0;
-		else if (patch >= 9 && patch <= 16)
+		else if(patch >= 9 && patch <= 16)
 			return 1;
 		else
 			return -1;
@@ -485,8 +485,8 @@ public class Level {
 
 	public void processProxReading(ProxData data) {
 		// check if we are in coop mode
-		if (isCoop && (coopPoints == 0 || getTotalPoints() < coopPoints * 2)) {
-			for (int i = 0; i < players.length; i++)
+		if(isCoop && (coopPoints == 0 || getTotalPoints() < coopPoints * 2)) {
+			for(int i = 0; i < players.length; i++)
 				players[i].processProxReading(data.patch, data.step, data.touched, data.proximity);
 			// println("Proximity reading: " + data + " (coop)");
 		}

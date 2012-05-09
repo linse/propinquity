@@ -98,9 +98,9 @@ public class LevelSelect implements PConstants, UIElement {
 	}
 
 	public void clear() {
-		if (this.players != null) {
-			for (int i = 0; i < this.players.length; i++) {
-				if (this.players[i] != null) {
+		if(this.players != null) {
+			for(int i = 0; i < this.players.length; i++) {
+				if(this.players[i] != null) {
 					this.players[i].clear();
 					this.players[i] = null;
 				}
@@ -116,15 +116,15 @@ public class LevelSelect implements PConstants, UIElement {
 
 		// load each level to know the song name and duration
 		levels = new ArrayList<Level>();
-		for (int i = 0; i < levelFiles.length; i++) {
+		for(int i = 0; i < levelFiles.length; i++) {
 			loadingLevel = new Level(parent, sounds);
 			parent.xmlInOut = new XMLInOut(parent, this);
 			parent.xmlInOut.loadElement(LEVEL_FOLDER + levelFiles[i]);
-			while (true)
-				if (loadingLevel.successfullyRead > -1)
+			while(true)
+				if(loadingLevel.successfullyRead > -1)
 					break;
 
-			if (loadingLevel.successfullyRead == 0) {
+			if(loadingLevel.successfullyRead == 0) {
 				System.err.println("I had some trouble reading the level file:" + levelFiles[i]);
 			}
 
@@ -146,7 +146,7 @@ public class LevelSelect implements PConstants, UIElement {
 		pgParticle.mask(imgParticle);
 
 		imgPlayers = new PImage[2];
-		for (int i = 0; i < imgPlayers.length; i++)
+		for(int i = 0; i < imgPlayers.length; i++)
 			imgPlayers[i] = parent.loadImage(parent.dataPath("hud/player" + (i + 1) + "name.png"));
 
 		imgLevel = parent.loadImage(parent.dataPath("hud/level.png"));
@@ -169,7 +169,7 @@ public class LevelSelect implements PConstants, UIElement {
 		initPlayer(1);
 
 		selected++;
-		if (selected >= particles.length)
+		if(selected >= particles.length)
 			selected = 0;
 	}
 
@@ -184,19 +184,19 @@ public class LevelSelect implements PConstants, UIElement {
 
 		// init xbee comm or stubs
 		// for proximity
-		if (PROX_STUB[player])
+		if(PROX_STUB[player])
 			players[player].loadProxStub(player, PROX_STUB_FILE);
 		else
 			players[player].initProxComm(XBEE_PROX_1_NI[player], XBEE_PROX_2_NI[player]);
 		// for vibration
-		if (SEND_VIBE[player])
+		if(SEND_VIBE[player])
 			players[player].initVibeComm(XBEE_VIBE_NI[player]);
 
 		// ping for patches
 		players[player].discoverPatches();
 
 		particles = new Particle[playerNames.length];
-		for (int i = 0; i < particles.length; i++) {
+		for(int i = 0; i < particles.length; i++) {
 			particles[i] = new Particle(parent, new Vec2(PApplet.cos(PApplet.TWO_PI / particles.length * i) * radius,
 					PApplet.sin(PApplet.TWO_PI / particles.length * i) * radius), pgParticle,
 					parent.playerColors[player]);
@@ -207,7 +207,7 @@ public class LevelSelect implements PConstants, UIElement {
 		state = LevelSelectState.Song;
 
 		particles = new Particle[levels.size()];
-		for (int i = 0; i < particles.length; i++) {
+		for(int i = 0; i < particles.length; i++) {
 			particles[i] = new Particle(parent, new Vec2(PApplet.cos(PApplet.TWO_PI / particles.length * i) * radius,
 					PApplet.sin(PApplet.TWO_PI / particles.length * i) * radius), pgParticle, Color.violet());
 		}
@@ -229,7 +229,7 @@ public class LevelSelect implements PConstants, UIElement {
 
 	public void draw() {
 
-		if (!isVisible)
+		if(!isVisible)
 			return;
 
 		// TODO: Fix this too
@@ -240,7 +240,7 @@ public class LevelSelect implements PConstants, UIElement {
 
 		drawParticles();
 
-		switch (state) {
+		switch(state) {
 		case P1:
 			drawPlayerName(0);
 			drawSelectPlayerHUD(0);
@@ -261,14 +261,14 @@ public class LevelSelect implements PConstants, UIElement {
 	}
 
 	private void drawParticles() {
-		if (particles == null)
+		if(particles == null)
 			return;
 
 		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
 		parent.gl.glEnable(GL.GL_BLEND);
 		parent.gl.glBlendFunc(GL.GL_ONE, GL.GL_ONE_MINUS_SRC_ALPHA);
 
-		for (int i = 0; i < particles.length; i++) {
+		for(int i = 0; i < particles.length; i++) {
 			particles[i].draw();
 		}
 	}
@@ -285,7 +285,7 @@ public class LevelSelect implements PConstants, UIElement {
 		parent.textFont(font, LEVEL_FONT_SIZE);
 		parent.text(foundProxPatches.size() + " proximity patch" + (foundProxPatches.size() > 1 ? "es" : ""), 0, -20);
 		parent.text(foundVibePatches.size() + " vibration patch" + (foundVibePatches.size() > 1 ? "es" : ""), 0, 15);
-		if (foundUndefPatches.size() > 0)
+		if(foundUndefPatches.size() > 0)
 			parent.text("found " + foundUndefPatches.size() + " undefined patch"
 					+ (foundUndefPatches.size() > 1 ? "es" : ""), 0, 85);
 		parent.popMatrix();
@@ -383,7 +383,7 @@ public class LevelSelect implements PConstants, UIElement {
 
 	/* This is what to refer to for cap sense events from patch buttons */
 	public void keyPressed(char key, int keyCode) {
-		switch (keyCode) {
+		switch(keyCode) {
 		case LEFT:
 			moveLeft();
 			break;
@@ -401,18 +401,18 @@ public class LevelSelect implements PConstants, UIElement {
 
 		selected--;
 
-		switch (state) {
+		switch(state) {
 
 		case P1:
 		case P2:
-			if (selected < 0)
+			if(selected < 0)
 				selected = particles.length - 1;
-			if (playerNames[selected] == players[0].name)
+			if(playerNames[selected] == players[0].name)
 				keyPressed(parent.key, parent.keyCode);
 			break;
 
 		case Song:
-			if (selected < 0)
+			if(selected < 0)
 				selected = levels.size() - 1;
 			break;
 		}
@@ -423,18 +423,18 @@ public class LevelSelect implements PConstants, UIElement {
 
 		selected++;
 
-		switch (state) {
+		switch(state) {
 
 		case P1:
 		case P2:
-			if (selected >= particles.length)
+			if(selected >= particles.length)
 				selected = 0;
-			if (playerNames[selected] == players[0].name)
+			if(playerNames[selected] == players[0].name)
 				keyPressed(parent.key, parent.keyCode);
 			break;
 
 		case Song:
-			if (selected >= levels.size())
+			if(selected >= levels.size())
 				selected = 0;
 			break;
 		}
@@ -442,7 +442,7 @@ public class LevelSelect implements PConstants, UIElement {
 
 	public void doSelect() {
 
-		switch (state) {
+		switch(state) {
 
 		case P1:
 			players[0].name = playerNames[selected];
@@ -450,7 +450,7 @@ public class LevelSelect implements PConstants, UIElement {
 			break;
 
 		case P2:
-			if (playerNames[selected] != players[0].name) {
+			if(playerNames[selected] != players[0].name) {
 				players[1].name = playerNames[selected];
 				initLevels();
 			}
@@ -470,20 +470,20 @@ public class LevelSelect implements PConstants, UIElement {
 	// This function returns all the files in a directory as an array of Strings
 	private String[] listFileNames(String dir, String ext) {
 		File file = new File(dir);
-		if (file.isDirectory()) {
+		if(file.isDirectory()) {
 			String names[] = file.list();
-			if (ext == null)
+			if(ext == null)
 				return names;
 
 			// if extension is specify, parse out the rest
 			ArrayList<String> parsedNames = new ArrayList<String>();
-			for (int i = 0; i < names.length; i++) {
-				if (names[i].lastIndexOf("." + ext) == names[i].length() - 4)
+			for(int i = 0; i < names.length; i++) {
+				if(names[i].lastIndexOf("." + ext) == names[i].length() - 4)
 					parsedNames.add(names[i]);
 			}
 
 			String[] namesWithExt = new String[parsedNames.size()];
-			for (int i = 0; i < namesWithExt.length; i++)
+			for(int i = 0; i < namesWithExt.length; i++)
 				namesWithExt[i] = parsedNames.get(i);
 
 			return namesWithExt;
@@ -499,16 +499,16 @@ public class LevelSelect implements PConstants, UIElement {
 
 		int[] buffer = data.getBytes();
 
-		if (buffer.length > 11) {
+		if(buffer.length > 11) {
 			// check first letter of NI parameter
 			String serial = "";
-			for (int i = 3; i < 11; i++)
+			for(int i = 3; i < 11; i++)
 				serial += PApplet.hex(buffer[i], 2);
 			String name = "";
-			for (int i = 11; i < buffer.length; i++)
+			for(int i = 11; i < buffer.length; i++)
 				name += PApplet.parseChar(buffer[i]);
 
-			switch (buffer[11]) {
+			switch(buffer[11]) {
 
 			case 'P':
 				foundProxPatches.add(serial);
@@ -529,7 +529,7 @@ public class LevelSelect implements PConstants, UIElement {
 			}
 		}
 
-		// else if (buffer.length == XPan.CONFIG_ACK_LENGTH && buffer[0] ==
+		// else if(buffer.length == XPan.CONFIG_ACK_LENGTH && buffer[0] ==
 		// XPan.CONFIG_ACK_PACKET_TYPE) {
 
 		// int myTurnLength = ((buffer[2] & 0xFF) << 8) | (buffer[3] & 0xFF);
@@ -538,15 +538,15 @@ public class LevelSelect implements PConstants, UIElement {
 		// + myTurnLength);
 		// }
 
-		// else if (buffer.length == XPan.VIBE_IN_PACKET_LENGTH && buffer[0] ==
+		// else if(buffer.length == XPan.VIBE_IN_PACKET_LENGTH && buffer[0] ==
 		// XPan.VIBE_IN_PACKET_TYPE) {
 
 		// int p = buffer[1];
 		// int direction = buffer[2];
-		// if (p <= 8 && (state == LevelSelectState.P1 || state ==
+		// if(p <= 8 && (state == LevelSelectState.P1 || state ==
 		// LevelSelectState.Song)) {
 
-		// switch (direction) {
+		// switch(direction) {
 
 		// case 1:
 		// moveLeft();
@@ -561,9 +561,9 @@ public class LevelSelect implements PConstants, UIElement {
 		// break;
 		// }
 
-		// } else if (p > 8 && state == LevelSelectState.P2) {
+		// } else if(p > 8 && state == LevelSelectState.P2) {
 
-		// switch (direction) {
+		// switch(direction) {
 
 		// case 1:
 		// moveLeft();
