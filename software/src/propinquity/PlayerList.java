@@ -12,7 +12,7 @@ import processing.core.*;
 
 public class PlayerList implements UIElement {
 
-	final int MAX_PLAYERS = 2;
+	final int MAX_PLAYERS = 12;
 
 	final int WIDTH = 200;
 	final int NEXT_WIDTH = 50;
@@ -31,7 +31,6 @@ public class PlayerList implements UIElement {
 	String plistFile;
 
 	ControlP5 controlP5;
-	Vector<controlP5.Controller> removeQueue;
 
 	String[] playerNames;
 	Vector<Textfield> playerFields;
@@ -51,8 +50,6 @@ public class PlayerList implements UIElement {
 
 		isVisible = true;
 		controlP5 = new ControlP5(parent);
-
-		removeQueue = new Vector<controlP5.Controller>();
 
 		// create text fields for each
 		playerFields = new Vector<Textfield>();
@@ -94,10 +91,7 @@ public class PlayerList implements UIElement {
 	}
 
 	public void draw() {
-		// process controlP5 remove queue
-		for(int i = 0; i < removeQueue.size(); i++)
-			controlP5.remove((removeQueue.get(i)).name());
-		removeQueue.clear();
+
 	}
 
 	void addPlayer(String name) {
@@ -145,8 +139,8 @@ public class PlayerList implements UIElement {
 		pos = nextButton.position();
 		nextButton.setPosition(pos.x, y);
 
-		if(playerFields.size() >= MAX_PLAYERS)
-			newButton.hide();
+		if(playerFields.size() >= MAX_PLAYERS) newButton.hide();
+		else newButton.show();
 	}
 
 	public void process() {
@@ -208,13 +202,13 @@ public class PlayerList implements UIElement {
 					i = playerFields.indexOf(ctrl);
 					playerFields.remove(i);
 					ctrl.hide();
-					removeQueue.add(ctrl);
+					controlP5.remove(ctrl.name());
 
 					// remove button itself
 					ctrl = controlP5.controller("Remove " + value);
 					removeButtons.remove(i);
 					ctrl.hide();
-					removeQueue.add(ctrl);
+					controlP5.remove(ctrl.name());
 
 					// adjust values
 					for(; i < playerFields.size(); i++) {

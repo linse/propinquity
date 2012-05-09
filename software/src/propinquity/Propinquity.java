@@ -38,7 +38,7 @@ public class Propinquity extends PApplet {
 	XBeeManager xbeeManager;
 
 	HardwareSimulator simulator; //Testing 
-	Vector<Patch> patches = new Vector<Patch>(1);
+	public Vector<Patch> patches = new Vector<Patch>(1);
 	Glove glove;
 
 	//Player/Player List
