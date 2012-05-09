@@ -20,7 +20,7 @@ public class Propinquity extends PApplet {
 	private static final long serialVersionUID = 6340518174717159418L;
 
 	/** Debug constants. */
-	public static final boolean DEBUG = false;
+	boolean DEBUG = false;
 
 	// game constants
 	public static final float WORLD_SIZE = 2f;
@@ -48,6 +48,7 @@ public class Propinquity extends PApplet {
 
 	XBeeBaseStation xbeeBaseStation;
 	XBeeManager xbeeManager;
+
 	PlayerList playerList;
 	LevelSelect levelSelect;
 
@@ -123,8 +124,7 @@ public class Propinquity extends PApplet {
 		for(int i = 0; i < uiElements.length; i++)
 			uiElements[i].draw();
 
-		if(gameState == GameState.Play)
-			drawPlay();
+		if(gameState == GameState.Play) drawPlay();
 
 		pushMatrix();
 		translate(100, 100);
@@ -139,8 +139,7 @@ public class Propinquity extends PApplet {
 		drawMask();
 		graphics.drawOuterBoundary();
 
-		if(DEBUG)
-			graphics.drawDebugFence();
+		if(DEBUG) graphics.drawDebugFence();
 
 		hud.draw();
 
