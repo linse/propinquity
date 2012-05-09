@@ -12,7 +12,7 @@ import processing.core.PImage;
 public class Liquid {
 
 	/** The strength of the acceleration acting on the particles. */
-	public static final float GRAVITY_STRENGTH = 0.05f;
+	public static final float GRAVITY_STRENGTH = 0.01f;
 
 	public Vector<Particle> particlesCreated;
 	public Vector<Particle> particlesHeld;
