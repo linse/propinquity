@@ -83,7 +83,9 @@ public class Propinquity extends PApplet {
 		hud = new Hud(this, sounds, graphics);
 		logger = new Logger(this);
 
-		initBox2D();
+		box2d = new PBox2D(this, (float) height / worldSize);
+		box2d.createWorld(-worldSize / 2f, -worldSize / 2f, worldSize, worldSize);
+		box2d.setGravity(0.0f, 0.0f);
 		fences = new Fences(this);
 		
 		uiElements = new UIElement[] { xbeeManager, playerList, levelSelect };
@@ -97,13 +99,6 @@ public class Propinquity extends PApplet {
 		changeGameState(GameState.XBeeInit);
 	}
 	
-	private void initBox2D() {
-		// initialize box2d physics and create the world
-		box2d = new PBox2D(this, (float) height / worldSize);
-		box2d.createWorld(-worldSize / 2f, -worldSize / 2f, worldSize, worldSize);
-		box2d.setGravity(0.0f, 0.0f);
-	}
-
 	void resetLevel() {
 		level.reset();
 

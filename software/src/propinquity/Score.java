@@ -50,7 +50,7 @@ public class Score {
 
 		currentTime = parent.millis();
 
-		if (currentTime - lastTime > Score.SCORE_TIME) {
+		if(currentTime - lastTime > Score.SCORE_TIME) {
 			liquid.transferParticles();
 			heldScore += tempScore;
 			tempScore = 0;
@@ -58,7 +58,7 @@ public class Score {
 		}
 		
 		liquid.update();
-		if (color.equals(parent.playerColors[1]))
+		if(color.equals(parent.playerColors[1]))
 			liquid.applyReverseGravity();
 		else
 			liquid.applyGravity();

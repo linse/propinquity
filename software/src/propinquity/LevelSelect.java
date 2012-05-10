@@ -98,9 +98,9 @@ public class LevelSelect implements PConstants, UIElement {
 	}
 
 	public void clear() {
-		if (this.players != null) {
+		if(this.players != null) {
 			for (int i = 0; i < this.players.length; i++) {
-				if (this.players[i] != null) {
+				if(this.players[i] != null) {
 					this.players[i].clear();
 					this.players[i] = null;
 				}
@@ -121,10 +121,10 @@ public class LevelSelect implements PConstants, UIElement {
 			parent.xmlInOut = new XMLInOut(parent, this);
 			parent.xmlInOut.loadElement(LEVEL_FOLDER + levelFiles[i]);
 			while (true)
-				if (loadingLevel.successfullyRead > -1)
+				if(loadingLevel.successfullyRead > -1)
 					break;
 
-			if (loadingLevel.successfullyRead == 0) {
+			if(loadingLevel.successfullyRead == 0) {
 				System.err.println("I had some trouble reading the level file:" + levelFiles[i]);
 			}
 
@@ -169,7 +169,7 @@ public class LevelSelect implements PConstants, UIElement {
 		initPlayer(1);
 
 		selected++;
-		if (selected >= particles.length)
+		if(selected >= particles.length)
 			selected = 0;
 	}
 
@@ -184,7 +184,7 @@ public class LevelSelect implements PConstants, UIElement {
 
 		// init xbee comm or stubs
 		// for proximity
-		if (PROX_STUB[player])
+		if(PROX_STUB[player])
 			players[player].loadProxStub(player, PROX_STUB_FILE);
 
 		// ping for patches
@@ -228,7 +228,7 @@ public class LevelSelect implements PConstants, UIElement {
 
 	public void draw() {
 
-		if (!isVisible)
+		if(!isVisible)
 			return;
 
 		// TODO: Fix this too
@@ -239,7 +239,7 @@ public class LevelSelect implements PConstants, UIElement {
 
 		drawParticles();
 
-		switch (state) {
+		switch(state) {
 		case P1:
 			drawPlayerName(0);
 			drawSelectPlayerHUD(0);
@@ -260,7 +260,7 @@ public class LevelSelect implements PConstants, UIElement {
 	}
 
 	private void drawParticles() {
-		if (particles == null)
+		if(particles == null)
 			return;
 
 		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
@@ -284,7 +284,7 @@ public class LevelSelect implements PConstants, UIElement {
 		parent.textFont(font, LEVEL_FONT_SIZE);
 		parent.text(foundProxPatches.size() + " proximity patch" + (foundProxPatches.size() > 1 ? "es" : ""), 0, -20);
 		parent.text(foundVibePatches.size() + " vibration patch" + (foundVibePatches.size() > 1 ? "es" : ""), 0, 15);
-		if (foundUndefPatches.size() > 0)
+		if(foundUndefPatches.size() > 0)
 			parent.text("found " + foundUndefPatches.size() + " undefined patch"
 					+ (foundUndefPatches.size() > 1 ? "es" : ""), 0, 85);
 		parent.popMatrix();
@@ -413,18 +413,18 @@ public class LevelSelect implements PConstants, UIElement {
 
 		selected--;
 
-		switch (state) {
+		switch(state) {
 
 		case P1:
 		case P2:
-			if (selected < 0)
+			if(selected < 0)
 				selected = particles.length - 1;
-			if (playerNames[selected] == players[0].name)
+			if(playerNames[selected] == players[0].name)
 				keyPressed(parent.key, parent.keyCode);
 			break;
 
 		case Song:
-			if (selected < 0)
+			if(selected < 0)
 				selected = levels.size() - 1;
 			break;
 		}
@@ -435,26 +435,25 @@ public class LevelSelect implements PConstants, UIElement {
 
 		selected++;
 
-		switch (state) {
+		switch(state) {
 
 		case P1:
 		case P2:
-			if (selected >= particles.length)
+			if(selected >= particles.length)
 				selected = 0;
-			if (playerNames[selected] == players[0].name)
+			if(playerNames[selected] == players[0].name)
 				keyPressed(parent.key, parent.keyCode);
 			break;
 
 		case Song:
-			if (selected >= levels.size())
+			if(selected >= levels.size())
 				selected = 0;
 			break;
 		}
 	}
 
 	public void doSelect() {
-
-		switch (state) {
+		switch(state) {
 
 		case P1:
 			players[0].name = playerNames[selected];
@@ -462,7 +461,7 @@ public class LevelSelect implements PConstants, UIElement {
 			break;
 
 		case P2:
-			if (playerNames[selected] != players[0].name) {
+			if(playerNames[selected] != players[0].name) {
 				players[1].name = playerNames[selected];
 				initLevels();
 			}
@@ -483,15 +482,15 @@ public class LevelSelect implements PConstants, UIElement {
 	// This function returns all the files in a directory as an array of Strings
 	private String[] listFileNames(String dir, String ext) {
 		File file = new File(dir);
-		if (file.isDirectory()) {
+		if(file.isDirectory()) {
 			String names[] = file.list();
-			if (ext == null)
+			if(ext == null)
 				return names;
 
 			// if extension is specify, parse out the rest
 			Vector<String> parsedNames = new Vector<String>();
 			for (int i = 0; i < names.length; i++) {
-				if (names[i].lastIndexOf("." + ext) == names[i].length() - 4)
+				if(names[i].lastIndexOf("." + ext) == names[i].length() - 4)
 					parsedNames.add(names[i]);
 			}
 
@@ -505,104 +504,4 @@ public class LevelSelect implements PConstants, UIElement {
 			return null;
 		}
 	}
-
-	public void xBeeEvent(XBeeReader xbee) {
-		XBeeDataFrame data = xbee.getXBeeReading();
-		data.parseXBeeRX16Frame();
-
-		int[] buffer = data.getBytes();
-
-		if (buffer.length > 11) {
-			// check first letter of NI parameter
-			String serial = "";
-			for (int i = 3; i < 11; i++)
-				serial += PApplet.hex(buffer[i], 2);
-			String name = "";
-			for (int i = 11; i < buffer.length; i++)
-				name += PApplet.parseChar(buffer[i]);
-
-			switch (buffer[11]) {
-
-			case 'P':
-				foundProxPatches.add(serial);
-				System.out.println(" Found proximity patch: " + name + " (" + serial + ")");
-				break;
-
-			case 'V':
-				foundVibePatches.add(serial);
-				System.out.println(" Found vibration patch: " + name + " (" + serial + ")");
-				break;
-
-			default:
-				foundUndefPatches.add(serial);
-				numProxPatches++; // change this later. should really be prox
-									// patches, not undefined.
-				System.out.println(" Found undefined patch: " + name + " (" + serial + ")");
-				break;
-			}
-		}
-
-		// else if(buffer.length == XPan.CONFIG_ACK_LENGTH && buffer[0] ==
-		// XPan.CONFIG_ACK_PACKET_TYPE) {
-
-		// int myTurnLength = ((buffer[2] & 0xFF) << 8) | (buffer[3] & 0xFF);
-		// numConfigAcks++;
-		// System.out.println("Config Ack Received in Level Select, Turn Length is "
-		// + myTurnLength);
-		// }
-
-		// else if(buffer.length == XPan.VIBE_IN_PACKET_LENGTH && buffer[0] ==
-		// XPan.VIBE_IN_PACKET_TYPE) {
-
-		// int p = buffer[1];
-		// int direction = buffer[2];
-		// if(p <= 8 && (state == LevelSelectState.P1 || state ==
-		// LevelSelectState.Song)) {
-
-		// switch(direction) {
-
-		// case 1:
-		// moveLeft();
-		// break;
-
-		// case 2:
-		// moveRight();
-		// break;
-
-		// default:
-		// doSelect();
-		// break;
-		// }
-
-		// } else if(p > 8 && state == LevelSelectState.P2) {
-
-		// switch(direction) {
-
-		// case 1:
-		// moveLeft();
-		// break;
-
-		// case 2:
-		// moveRight();
-		// break;
-
-		// default:
-		// doSelect();
-		// break;
-		// }
-		// }
-		// }
-
-	}
-
-	public boolean allAcksIn() {
-		return (numConfigAcks >= numProxPatches);
-	}
-
-	public void sendConfigMessages(int turnLength) {
-		numConfigAcks = 0;
-		players[0].sendConfig(turnLength);
-		players[1].sendConfig(turnLength);
-	}
-
 }
