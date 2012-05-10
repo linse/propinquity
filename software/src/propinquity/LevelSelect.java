@@ -138,7 +138,6 @@ public class LevelSelect implements PConstants, UIElement {
 	}
 
 	void initTextures() {
-
 		PImage imgParticle = parent.graphics.loadParticle();
 		pgParticle = new PGraphics();
 		pgParticle = parent.createGraphics(imgParticle.width, imgParticle.height, PApplet.P2D);
