@@ -13,7 +13,7 @@ import processing.opengl.PGraphicsOpenGL;
 public class Hud {
 
 	// HUD constants
-	public static final int FONT_SIZE = 32;
+	public static final int FONT_SIZE = 30;
 	public static final int WIDTH = 50;
 	public static final int OFFSET = 4;
 	public static final int SCORE_RADIUS_OFFSET = 40;

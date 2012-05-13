@@ -18,13 +18,13 @@ public class Particle {
 	public Vec2 position;
 	public float scale;
 
-	private Body body;
-	private CircleDef shape;
+	Body body;
+	CircleDef shape;
 
-	private PGraphics texture;
-	private Color color;
+	PGraphics texture;
+	Color color;
 
-	private Propinquity parent;
+	Propinquity parent;
 
 	public Particle(Propinquity parent, Vec2 position, Color color) {
 		this.parent = parent;
@@ -70,7 +70,6 @@ public class Particle {
 	}
 
 	public void draw() {
-
 		position = parent.box2d.getBodyPixelCoord(body);
 
 		parent.pushMatrix();

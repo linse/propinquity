@@ -108,6 +108,10 @@ public class Player implements PConstants, ProxEventListener {
 		return name;
 	}
 
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public Color getColor() {
 		return color;
 	}
