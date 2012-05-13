@@ -16,6 +16,8 @@ public class PlayerList implements PlayerConstants, UIElement {
 	HardwareInterface hardware;
 
 	Player[] players;
+	String[] playerNames;
+
 	Vector<Textfield> playerFields;
 
 	String plistFile;
@@ -37,13 +39,14 @@ public class PlayerList implements PlayerConstants, UIElement {
 		this.hardware = hardware;
 		this.plistFile = plistFile;
 
-		players = new Player[0];
-
 		isVisible = true;
-		controlP5 = new ControlP5(parent);
 
-		// create text fields for each
+		players = new Player[0];
+		playerNames = new String[0];
+
 		playerFields = new Vector<Textfield>();
+
+		controlP5 = new ControlP5(parent);
 
 		// create button to add new players
 		addButton = controlP5.addButton("ADD", 0, parent.width / 2 - WIDTH / 2, parent.height / 2, 50, 20);
@@ -69,6 +72,10 @@ public class PlayerList implements PlayerConstants, UIElement {
 
 	public Player[] getPlayers() {
 		return players;
+	}
+
+	public String[] getPlayerNames() {
+		return playerNames;
 	}
 
 	public void draw() {
@@ -127,7 +134,6 @@ public class PlayerList implements PlayerConstants, UIElement {
 	}
 
 	public void process() {
-		System.out.println("a");
 		for(Player player : players) {
 			hardware.removeGlove(player.getGlove());
 			for(Patch patch : player.getPatches()) {
@@ -137,18 +143,14 @@ public class PlayerList implements PlayerConstants, UIElement {
 			player.reset();
 		}
 
-		System.out.println("b");
 		players = new Player[playerFields.size()];
-		String[] names = new String[playerFields.size()];
-
-		System.out.println("c");
+		playerNames = new String[playerFields.size()];
 
 		for(int i = 0;i < playerFields.size();i++) {
-			names[i] = PApplet.trim(playerFields.get(i).getText());
-			System.out.println("1");
+			playerNames[i] = PApplet.trim(playerFields.get(i).getText());
+
 			Patch[] patches;
 
-			System.out.println("2");
 			if(i < PATCH_ADDR.length) {
 				patches = new Patch[PATCH_ADDR[i].length];
 				for(int j = 0;j < PATCH_ADDR[i].length;j++) patches[j] = new Patch(PATCH_ADDR[i][j], hardware);
@@ -156,7 +158,6 @@ public class PlayerList implements PlayerConstants, UIElement {
 				patches = new Patch[] { new Patch(-1, hardware) };
 			}
 
-			System.out.println("3");
 			Glove glove;
 
 			if(i < GLOVE_ADDR.length) {
@@ -165,7 +166,6 @@ public class PlayerList implements PlayerConstants, UIElement {
 				glove = new Glove(-1, hardware);
 			}
 
-			System.out.println("4");
 			Color color;
 
 			if(i < PLAYER_COLORS.length) {
@@ -173,14 +173,11 @@ public class PlayerList implements PlayerConstants, UIElement {
 			} else {
 				color = NEUTRAL_COLOR;
 			}
-			System.out.println("5");
 
-			players[i] = new Player(parent, names[i], color, patches, glove);
+			players[i] = new Player(parent, "", color, patches, glove);
 		}
-		System.out.println("6");
 
-		parent.saveStrings(parent.dataPath(plistFile), names);
-		System.out.println("7");
+		parent.saveStrings(parent.dataPath(plistFile), playerNames);
 
 		parent.changeGameState(GameState.LevelSelect);
 	}
@@ -200,16 +197,15 @@ public class PlayerList implements PlayerConstants, UIElement {
 	}
 
 	public void controlEvent(ControlEvent theEvent) {
-		if(isVisible) {
-			String name = theEvent.controller().name();
+		if(!isVisible) return;
+		String name = theEvent.controller().name();
 
-			if(name.equals("NEXT")) {
-				process();
-			} else if(name.equals("ADD")) {
-				addPlayer("Player "+(playerFields.size()+1));
-			} else if(name.equals("REMOVE")) {
-				removePlayer();
-			}
+		if(name.equals("NEXT")) {
+			process();
+		} else if(name.equals("ADD")) {
+			addPlayer("Player "+(playerFields.size()+1));
+		} else if(name.equals("REMOVE")) {
+			removePlayer();
 		}
 	}
 

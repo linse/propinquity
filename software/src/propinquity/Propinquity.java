@@ -139,8 +139,6 @@ public class Propinquity extends PApplet implements PlayerConstants {
 		graphics.drawInnerBoundary();
 		graphics.drawOuterBoundary();
 
-		if(debugGraphics) graphics.drawDebugFence();
-
 		hud.draw();
 
 		if(level.isDone()) {
@@ -217,7 +215,7 @@ public class Propinquity extends PApplet implements PlayerConstants {
 			}
 
 			case LevelSelect: {
-				// levelSelect.setPlayerNames(playerList.getNames());
+				levelSelect.setPlayers(playerList.getPlayerNames(), playerList.getPlayers());
 
 				levelSelect.reset();
 				levelSelect.show();
@@ -293,8 +291,8 @@ public class Propinquity extends PApplet implements PlayerConstants {
 					case 'i': { // info
 						int score0 = level.getPlayer(0).score.liquid.particlesHeld.size();
 						int score1 = level.getPlayer(1).score.liquid.particlesHeld.size();
-						println("Particles: " + (score0 + " " + score1));
-						println("Framerate: " + frameRate);
+						logger.println("Particles: " + (score0 + " " + score1));
+						logger.println("Framerate: " + frameRate);
 						break;
 					}
 

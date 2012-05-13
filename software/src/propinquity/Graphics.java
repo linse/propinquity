@@ -80,44 +80,6 @@ public class Graphics {
 		return parent.loadImage("data/particles/particle.png");
 	}
 
-	// TODO: fix
-	public void drawDebugFence() {
-		parent.noFill();
-		parent.stroke(0, 255, 0);
-		parent.strokeWeight(1);
-
-		parent.rectMode(PApplet.CENTER);
-		float radius = parent.height / 2 - Hud.WIDTH;
-		float perimeter = 2 * PConstants.PI * radius;
-		float w = perimeter / Fences.SECTIONS;
-		float h = 5f;
-		float angle = 0;
-		for(int i = 0; i < Fences.SECTIONS; i++) {
-			angle = 2f * PConstants.PI / Fences.SECTIONS * i;
-			parent.pushMatrix();
-			parent.translate(parent.width / 2 + PApplet.cos(angle) * radius, parent.height / 2 + PApplet.sin(angle)
-					* radius);
-			parent.rotate(angle + PConstants.PI / 2);
-			parent.rect(0, 0, w, h);
-			parent.popMatrix();
-		}
-
-		radius = Fences.INNER_RADIUS;
-		perimeter = 2 * PConstants.PI * radius;
-		w = perimeter / Fences.SECTIONS;
-		h = 5f;
-		angle = 0;
-		for(int i = 0; i < Fences.SECTIONS; i++) {
-			angle = 2f * PConstants.PI / Fences.SECTIONS * i;
-			parent.pushMatrix();
-			parent.translate(parent.width / 2 + PApplet.cos(angle) * radius, parent.height / 2 + PApplet.sin(angle)
-					* radius);
-			parent.rotate(angle + PConstants.PI / 2);
-			parent.rect(0, 0, w, h);
-			parent.popMatrix();
-		}
-	}
-
 	public void drawInnerBoundary() {
 		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
 		parent.gl.glEnable(GL.GL_BLEND);

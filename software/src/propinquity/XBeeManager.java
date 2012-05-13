@@ -55,10 +55,9 @@ public class XBeeManager implements UIElement {
 	 * @param event the controlP5 event.
 	 */
 	public void controlEvent(ControlEvent event) {
-		if(isVisible) {
-			if(event.controller().name().equals("XBeeBaseStation Scan")) xbeeBaseStation.scan();
-			else if(event.controller().name().equals("XBeeBaseStation Next")) processUIEvent();
-		}
+		if(!isVisible) return;
+		if(event.controller().name().equals("XBeeBaseStation Scan")) xbeeBaseStation.scan();
+		else if(event.controller().name().equals("XBeeBaseStation Next")) processUIEvent();
 	}
 
 	/**
@@ -114,27 +113,26 @@ public class XBeeManager implements UIElement {
 	 * 
 	 */
 	public void draw() {
-		if(isVisible) {
+		if(!isVisible) return;
 
-			String msg = "";
-			if(xbeeBaseStation.isScanning()) msg = "Scanning...";
-			else {
-				for(String s : xbeeBaseStation.listXBees()) msg += s;
-				if(msg.isEmpty()) msg = "No XBees found";
-			}
-
-			parent.pushMatrix();
-			parent.translate(parent.width / 2, parent.height / 2);
-			parent.textFont(Graphics.font, 32);
-			parent.textAlign(PConstants.CENTER, PConstants.CENTER);
-			parent.fill(255);
-			parent.noStroke();
-			parent.text("Detecting XBee modules... ", 0, 0);
-			parent.translate(0, 30);
-			parent.textFont(Graphics.font, 21);
-			parent.text(msg, 0, 0);
-			parent.popMatrix();
+		String msg = "";
+		if(xbeeBaseStation.isScanning()) msg = "Scanning...";
+		else {
+			for(String s : xbeeBaseStation.listXBees()) msg += s;
+			if(msg.isEmpty()) msg = "No XBees found";
 		}
+
+		parent.pushMatrix();
+		parent.translate(parent.width / 2, parent.height / 2);
+		parent.textFont(Graphics.font, 32);
+		parent.textAlign(PConstants.CENTER, PConstants.CENTER);
+		parent.fill(255);
+		parent.noStroke();
+		parent.text("Detecting XBee modules... ", 0, 0);
+		parent.translate(0, 30);
+		parent.textFont(Graphics.font, 21);
+		parent.text(msg, 0, 0);
+		parent.popMatrix();
 	}
 
 	/**

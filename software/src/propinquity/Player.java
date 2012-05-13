@@ -348,10 +348,4 @@ public class Player implements PConstants, ProxEventListener {
 
 	public void sendConfig(int stepLength) {
 	}
-
-	// TODO replace this with configPatches to pass the step length
-	// at the same time as detecting which ones respond.
-	public void discoverPatches() {
-		System.out.println("Discover patches...");
-	}
 }

@@ -9,7 +9,6 @@ import org.jbox2d.common.Vec2;
 
 import processing.core.*;
 import processing.opengl.PGraphicsOpenGL;
-import proxml.*;
 import xbee.*;
 
 public class LevelSelect implements PConstants, UIElement {
@@ -17,25 +16,18 @@ public class LevelSelect implements PConstants, UIElement {
 	final String LEVEL_FOLDER = "levels/";
 	final String LEVEL_FONT = "hud/Calibri-Bold-24.vlw";
 
-	final int PLAYERNAME_FONT_SIZE = 30;
-	final int LEVEL_FONT_SIZE = 24;
-
-	// Level selection states
-	enum LevelSelectState {
-		P1, P2, Song, Done
-	}
+	final int HUD_FONT_SIZE = 24;
 
 	Propinquity parent;
 
-	LevelSelectState state;
+	String[] names;
+	Player[] players;
 
-	Player[] players = null;
-	String[] playerNames;
+	int state, selected;
 
 	int radius;
 
 	Particle[] particles;
-	int selected;
 
 	PFont font;
 	PGraphics pgParticle;
@@ -57,13 +49,22 @@ public class LevelSelect implements PConstants, UIElement {
 		this.parent = parent;
 		this.sounds = sounds;
 
+		players = new Player[0];
+
 		isVisible = true;
 
 		this.radius = parent.height / 2 - Hud.WIDTH * 2;
 
 		this.font = parent.loadFont(LEVEL_FONT);
 
-		loadLevels();
+		levelFiles = listFileNames(parent.dataPath(LEVEL_FOLDER), "xml");
+
+		// load each level to know the song name and duration
+		levels = new Vector<Level>();
+		
+		for (int i = 0; i < levelFiles.length; i++) {
+			levels.add(new Level(parent, sounds));
+		}
 
 		PImage imgParticle = parent.graphics.loadParticle();
 		pgParticle = new PGraphics();
@@ -76,109 +77,40 @@ public class LevelSelect implements PConstants, UIElement {
 			imgPlayers[i] = parent.loadImage(parent.dataPath("hud/player" + (i + 1) + "name.png"));
 
 		imgLevel = parent.loadImage(parent.dataPath("hud/level.png"));
-
-		imgSelectPlayer = new PImage[2];
-		imgSelectPlayer[0] = parent.loadImage("hud/selplay1.png");
-		imgSelectPlayer[1] = parent.loadImage("hud/selplay2.png");
-		imgSelectSong = parent.loadImage("hud/selsong.png");
 	}
 
-	void loadLevels() {
-		// get the list of level xml files
-		levelFiles = listFileNames(parent.dataPath(LEVEL_FOLDER), "xml");
-
-		// load each level to know the song name and duration
-		levels = new Vector<Level>();
-		for (int i = 0; i < levelFiles.length; i++) {
-			loadingLevel = new Level(parent, sounds);
-			parent.xmlInOut = new XMLInOut(parent, this);
-			parent.xmlInOut.loadElement(LEVEL_FOLDER + levelFiles[i]);
-			while (true)
-				if(loadingLevel.successfullyRead > -1)
-					break;
-
-			if(loadingLevel.successfullyRead == 0) {
-				System.err.println("I had some trouble reading the level file:" + levelFiles[i]);
-			}
-
-			levels.add(loadingLevel);
-			loadingLevel = null;
-		}
-	}
-
-	public void setPlayerNames(String[] playerNames) {
-		this.playerNames = playerNames;
+	public void setPlayers(String[] names, Player[] players) {
+		this.names = names;
+		this.players = players;
 	}
 
 	public void reset() {
-		if(players != null) {
-			for (int i = 0; i < players.length; i++) {
-				if(players[i] != null) {
-					players[i].clear();
-					players[i] = null;
-				}
+		stateChange(0);
+	}
+
+	void stateChange(int state) {
+		this.state = state;
+		selected = 0;
+
+		if(state < players.length) {
+			particles = new Particle[players.length];
+
+			for (int i = 0; i < particles.length; i++) {
+				Particle p = new Particle(parent, new Vec2(PApplet.cos(PApplet.TWO_PI / particles.length * i) * radius, PApplet.sin(PApplet.TWO_PI / particles.length * i) * radius), pgParticle, PlayerConstants.PLAYER_COLORS[state]);
+				p.scale = 1f;
+				particles[i] = p;
 			}
+		} else if(state == players.length) {
+			particles = new Particle[levels.size()];
+
+			for (int i = 0; i < particles.length; i++) {
+				Particle p = new Particle(parent, new Vec2(PApplet.cos(PApplet.TWO_PI / particles.length * i) * radius, PApplet.sin(PApplet.TWO_PI / particles.length * i) * radius), pgParticle, Color.violet());
+				p.scale = 1f;
+				particles[i] = p;
+			}
+		} else {
+			System.out.println("Unknown Level Select State");
 		}
-
-		players = null;
-		players = new Player[2];
-		initP1();
-	}
-
-	public void xmlEvent(XMLElement levelXML) {
-		loadingLevel.loadSong(levelXML);
-	}
-
-	void initP1() {
-		state = LevelSelectState.P1;
-		initPlayer(0);
-
-		selected = 0;
-	}
-
-	void initP2() {
-		state = LevelSelectState.P2;
-		initPlayer(1);
-
-		selected++;
-		if(selected >= particles.length)
-			selected = 0;
-	}
-
-	void initPlayer(int player) {
-		System.out.println("Initializing player " + player);
-
-		// foundPatches = 0;
-		players[player] = new Player(parent, "", PlayerConstants.PLAYER_COLORS[player], parent.patches, parent.glove);
-		System.out.println("a");
-		// ping for patches
-		players[player].discoverPatches();
-		System.out.println("b");
-
-		particles = new Particle[playerNames.length];
-		for (int i = 0; i < particles.length; i++) {
-			System.out.println("c");
-			Particle p = new Particle(parent, new Vec2(PApplet.cos(PApplet.TWO_PI / particles.length * i) * radius,
-					PApplet.sin(PApplet.TWO_PI / particles.length * i) * radius), pgParticle,
-					PlayerConstants.PLAYER_COLORS[player]);
-			System.out.println("d");
-			p.scale = 1f;
-			particles[i] = p;
-		}
-	}
-
-	void initLevels() {
-		state = LevelSelectState.Song;
-
-		particles = new Particle[levels.size()];
-		for (int i = 0; i < particles.length; i++) {
-			Particle p = new Particle(parent, new Vec2(PApplet.cos(PApplet.TWO_PI / particles.length * i) * radius,
-					PApplet.sin(PApplet.TWO_PI / particles.length * i) * radius), pgParticle, Color.violet());
-			p.scale = 1f;
-			particles[i] = p;
-		}
-
-		selected = 0;
 	}
 
 	public void show() {
@@ -194,32 +126,23 @@ public class LevelSelect implements PConstants, UIElement {
 	}
 
 	public void draw() {
-		if(!isVisible)
-			return;
+		if(!isVisible) return;
 
 		// TODO: Fix this too
 		parent.graphics.drawInnerBoundary();
 		parent.graphics.drawOuterBoundary();
+		
 		parent.pushMatrix();
 		parent.translate(parent.width / 2, parent.height / 2);
 
 		drawParticles();
 
-		switch(state) {
-		case P1:
+		if(state < players.length) {
+			drawHUDText("Select Color", players[0].getName());
 			drawPlayerName(0);
-			drawSelectPlayerHUD(0);
-			break;
-
-		case P2:
-			drawPlayerName(1);
-			drawSelectPlayerHUD(1);
-			break;
-
-		case Song:
+		} else if(state == players.length) {
+			drawHUDText("Select Song");
 			drawLevelName();
-			drawSelectSong();
-			break;
 		}
 
 		parent.popMatrix();
@@ -238,7 +161,11 @@ public class LevelSelect implements PConstants, UIElement {
 		}
 	}
 
-	private void drawSelectPlayerHUD(int player) {
+	void drawHUDText(String line1) {
+		drawHUDText(line1, null);
+	}
+
+	void drawHUDText(String line1, String line2) {
 		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
 		parent.gl.glEnable(GL.GL_BLEND);
 		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
@@ -246,10 +173,12 @@ public class LevelSelect implements PConstants, UIElement {
 		parent.fill(255);
 		parent.pushMatrix();
 		parent.rotate(parent.frameCount * Hud.PROMPT_ROT_SPEED);
-		parent.image(imgSelectPlayer[player], 0, -65);
-		parent.textFont(font, LEVEL_FONT_SIZE);
+		parent.textFont(font, HUD_FONT_SIZE);
+		parent.text(line1, 0, 0);
+		if(line2 != null) parent.text(line2, 0, -20);
 		parent.popMatrix();
 	}
+
 
 	private void drawPlayerName(int player) {
 		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
@@ -259,7 +188,7 @@ public class LevelSelect implements PConstants, UIElement {
 		parent.noStroke();
 		parent.noFill();
 
-		float angle = PApplet.TWO_PI / playerNames.length * selected;
+		float angle = PApplet.TWO_PI / players.length * selected;
 
 		parent.pushMatrix();
 		parent.translate(PApplet.cos(angle) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET), PApplet.sin(angle)
@@ -279,27 +208,12 @@ public class LevelSelect implements PConstants, UIElement {
 		parent.fill(255);
 		parent.noStroke();
 		parent.textAlign(PApplet.CENTER, PApplet.BASELINE);
-		parent.textFont(font, LEVEL_FONT_SIZE);
-		String name = playerNames[selected].length() > 24 ? playerNames[selected].substring(0, 24)
-				: playerNames[selected];
+		parent.textFont(font, HUD_FONT_SIZE);
+		String name = players[selected].getName().length() > 24 ? players[selected].getName().substring(0, 24)
+				: players[selected].getName();
 		float offset = (parent.textWidth(name) / 2) / (2 * PApplet.PI * (parent.height / 2 - Hud.SCORE_RADIUS_OFFSET))
 				* PApplet.TWO_PI;
 		Text.drawArc(name, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, angle - offset, parent);
-		parent.popMatrix();
-	}
-
-	private void drawSelectSong() {
-		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
-		parent.gl.glEnable(GL.GL_BLEND);
-		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-
-		parent.fill(255);
-		parent.pushMatrix();
-		parent.rotate(parent.frameCount * Hud.PROMPT_ROT_SPEED);
-		parent.image(imgSelectSong, 0, 20);
-		String message = players[0].name + ",";
-		parent.textFont(font, PLAYERNAME_FONT_SIZE);
-		parent.text(message, 0, -20);
 		parent.popMatrix();
 	}
 
@@ -331,7 +245,7 @@ public class LevelSelect implements PConstants, UIElement {
 		parent.fill(255);
 		parent.noStroke();
 		parent.textAlign(PApplet.CENTER, PApplet.BASELINE);
-		parent.textFont(font, LEVEL_FONT_SIZE);
+		parent.textFont(font, HUD_FONT_SIZE);
 		Level level = levels.get(selected);
 		String name = level.songName + " (" + level.songDuration + ")";
 		name = name.length() > 24 ? name.substring(0, 24) : name;
@@ -371,19 +285,19 @@ public class LevelSelect implements PConstants, UIElement {
 	}
 
 	public void left() {
-		selected--;
+		selected = PApplet.constrain(selected-1, 0, 1);
 
 		switch(state) {
 
-		case P1:
-		case P2:
-			if(selected < 0)
-				selected = particles.length - 1;
-			if(playerNames[selected] == players[0].name)
-				keyPressed(parent.key, parent.keyCode);
+		case 0:
+		case 1:
+			// if(selected < 0)
+			// 	selected = particles.length - 1;
+			// if(players[selected].getName() == players[0].name)
+			// 	keyPressed(parent.key, parent.keyCode);
 			break;
 
-		case Song:
+		case 2:
 			if(selected < 0)
 				selected = levels.size() - 1;
 			break;
@@ -391,19 +305,19 @@ public class LevelSelect implements PConstants, UIElement {
 	}
 
 	public void right() {
-		selected++;
+		selected = PApplet.constrain(selected+1, 0, 1);
 
 		switch(state) {
 
-		case P1:
-		case P2:
-			if(selected >= particles.length)
-				selected = 0;
-			if(playerNames[selected] == players[0].name)
-				keyPressed(parent.key, parent.keyCode);
+		case 0:
+		case 1:
+			// if(selected >= particles.length)
+			// 	selected = 0;
+			// if(players[selected].getName() == players[0].getName())
+			// 	keyPressed(parent.key, parent.keyCode);
 			break;
 
-		case Song:
+		case 2:
 			if(selected >= levels.size())
 				selected = 0;
 			break;
@@ -413,21 +327,21 @@ public class LevelSelect implements PConstants, UIElement {
 	public void select() {
 		switch(state) {
 
-		case P1:
-			players[0].name = playerNames[selected];
-			initP2();
+		case 0:
+			players[0].name = players[selected].getName();
+			stateChange(1);
 			break;
 
-		case P2:
-			if(playerNames[selected] != players[0].name) {
-				players[1].name = playerNames[selected];
-				initLevels();
+		case 1:
+			if(players[selected].getName() != players[0].name) {
+				players[1].name = players[selected].getName();
+				stateChange(players.length);
 			}
 			break;
 
-		case Song:
+		case 2:
 			levelFile = LEVEL_FOLDER + levelFiles[selected];
-			state = LevelSelectState.Done;
+			state = 3;
 			parent.changeGameState(GameState.Play);
 			break;
 		}
