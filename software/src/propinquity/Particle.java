@@ -26,12 +26,16 @@ public class Particle {
 
 	private Propinquity parent;
 
-	public Particle(Propinquity parent, Vec2 position, PGraphics texture, Color color) {
-
+	public Particle(Propinquity parent, Vec2 position, Color color) {
 		this.parent = parent;
 		this.position = position;
-		this.texture = texture;
 		this.color = color;
+
+		PImage imgParticle = parent.loadImage("data/particles/particle.png");
+		texture = new PGraphics();
+		texture = parent.createGraphics(imgParticle.width, imgParticle.height, PApplet.P2D);
+		texture.background(imgParticle);
+		texture.mask(imgParticle);
 
 		scale = 0.5f;
 

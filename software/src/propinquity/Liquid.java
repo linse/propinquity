@@ -20,9 +20,6 @@ public class Liquid {
 	private Propinquity parent;
 	private Color color;
 
-	private PImage particleImage;
-	private PGraphics particleGraphic;
-
 	public Liquid(Propinquity parent, Color color) {
 
 		this.parent = parent;
@@ -30,13 +27,6 @@ public class Liquid {
 
 		particlesCreated = new Vector<Particle>();
 		particlesHeld = new Vector<Particle>();
-
-		particleImage = parent.graphics.loadParticle();
-
-		particleGraphic = new PGraphics();
-		particleGraphic = parent.createGraphics(particleImage.width, particleImage.height, PApplet.P2D);
-		particleGraphic.background(particleImage);
-		particleGraphic.mask(particleImage);
 	}
 
 	public void reset() {
@@ -45,7 +35,7 @@ public class Liquid {
 	}
 
 	public void createParticle() {
-		particlesCreated.add(new Particle(parent, new Vec2(parent.width / 2f, parent.height / 2f), particleGraphic,
+		particlesCreated.add(new Particle(parent, new Vec2(parent.width / 2f, parent.height / 2f),
 				color));
 	}
 

@@ -18,6 +18,7 @@ public class Propinquity extends PApplet implements PlayerConstants {
 
 	/** Unique serialization ID. */
 	private static final long serialVersionUID = 6340518174717159418L;
+	public static final int FPS = 30;
 
 	//General + Util
 	GL gl;
@@ -29,8 +30,6 @@ public class Propinquity extends PApplet implements PlayerConstants {
 
 	UIElement[] uiElements;
 
-	boolean debugGraphics = false;
-	Graphics graphics;
 	Sounds sounds;
 
 	//Xbee + Hardware
@@ -65,12 +64,17 @@ public class Propinquity extends PApplet implements PlayerConstants {
 	PBox2D box2d;
 
 	public void setup() {
-		// Setup graphics and sound
+		size(1024, 768, PConstants.OPENGL);
+		frameRate(FPS);
+		imageMode(PConstants.CENTER);
+		textureMode(PConstants.NORMAL);
+		hint(PConstants.ENABLE_OPENGL_4X_SMOOTH);
+
+		// Setup sound
 		sounds = new Sounds(this);
-		graphics = new Graphics(this); //Size is here
+		hud = new Hud(this, sounds);
 
 		// Load common artwork and sound
-		graphics.loadCommonContent();
 		sounds.loadCommonContent();
 
 		// Create resources
@@ -88,9 +92,8 @@ public class Propinquity extends PApplet implements PlayerConstants {
 		hardware = simulator;
 
 		playerList = new PlayerList(this, hardware, "player.lst");
-		levelSelect = new LevelSelect(this, sounds);
+		levelSelect = new LevelSelect(this, hud, sounds);
 
-		hud = new Hud(this, sounds, graphics);
 		logger = new Logger(this);
 
 		box2d = new PBox2D(this, (float) height / worldSize);
@@ -136,8 +139,8 @@ public class Propinquity extends PApplet implements PlayerConstants {
 	}
 
 	void drawPlay() {
-		graphics.drawInnerBoundary();
-		graphics.drawOuterBoundary();
+		hud.drawInnerBoundary();
+		hud.drawOuterBoundary();
 
 		hud.draw();
 
@@ -150,13 +153,13 @@ public class Propinquity extends PApplet implements PlayerConstants {
 				pushMatrix();
 				translate(width / 2, height / 2);
 				rotate(frameCount * Hud.PROMPT_ROT_SPEED);
-				image(graphics.hudLevelComplete, 0, -25);
-				textFont(Graphics.font, Hud.FONT_SIZE);
+				image(hud.hudLevelComplete, 0, -25);
+				textFont(hud.font, Hud.FONT_SIZE);
 				textAlign(CENTER, CENTER);
 				fill(winner != null ? winner.getColor().toInt(this) : NEUTRAL_COLOR.toInt(this));
 				noStroke();
 				text(winner != null ? winner.getName() + " won!" : "You tied!", 0, 0);
-				image(graphics.hudPlayAgain, 0, 30);
+				image(hud.hudPlayAgain, 0, 30);
 				popMatrix();
 			} else {
 				// keep track of done time
@@ -172,7 +175,7 @@ public class Propinquity extends PApplet implements PlayerConstants {
 				hud.snap();
 
 				// flag as ended
-				if(doneTime != -1 && frameCount > doneTime + Graphics.FPS * endLevelTime) endedLevel = true;
+				if(doneTime != -1 && frameCount > doneTime + FPS * endLevelTime) endedLevel = true;
 			}
 
 		} else if(level.isRunning()) {
@@ -195,7 +198,7 @@ public class Propinquity extends PApplet implements PlayerConstants {
 			pushMatrix();
 			translate(width / 2, height / 2);
 			rotate(frameCount * Hud.PROMPT_ROT_SPEED);
-			image(graphics.hudPlay, 0, 0);
+			image(hud.hudPlay, 0, 0);
 			popMatrix();
 		}
 	}
@@ -224,7 +227,6 @@ public class Propinquity extends PApplet implements PlayerConstants {
 
 			case Play: {
 				level = new Level(this, sounds, levelSelect.players, levelSelect.levelFile);
-				graphics.loadLevelContent();
 
 				level.load();
 				break;

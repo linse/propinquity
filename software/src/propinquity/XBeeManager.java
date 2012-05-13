@@ -19,6 +19,8 @@ public class XBeeManager implements UIElement {
 	Button plNextButton;
 	Button plScanButton;
 
+	public PFont font;
+
 	XBeeBaseStation xbeeBaseStation;
 
 	/**
@@ -35,6 +37,8 @@ public class XBeeManager implements UIElement {
 
 		isVisible = true; // controlP5 defaults to true
 		controlP5 = new ControlP5(parent);
+
+		font = parent.loadFont("hud/Calibri-Bold-32.vlw");
 
 		// Button to scan for XBees
 		plScanButton = controlP5.addButton("XBeeBaseStation Scan", 0, parent.width / 2 + 60, parent.height / 2 + 50, 50, 20);
@@ -124,13 +128,13 @@ public class XBeeManager implements UIElement {
 
 		parent.pushMatrix();
 		parent.translate(parent.width / 2, parent.height / 2);
-		parent.textFont(Graphics.font, 32);
+		parent.textFont(font, 32);
 		parent.textAlign(PConstants.CENTER, PConstants.CENTER);
 		parent.fill(255);
 		parent.noStroke();
 		parent.text("Detecting XBee modules... ", 0, 0);
 		parent.translate(0, 30);
-		parent.textFont(Graphics.font, 21);
+		parent.textFont(font, 21);
 		parent.text(msg, 0, 0);
 		parent.popMatrix();
 	}

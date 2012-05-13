@@ -20,6 +20,8 @@ public class LevelSelect implements PConstants, UIElement {
 
 	Propinquity parent;
 
+	Hud hud;
+
 	String[] names;
 	Player[] players;
 
@@ -30,7 +32,6 @@ public class LevelSelect implements PConstants, UIElement {
 	Particle[] particles;
 
 	PFont font;
-	PGraphics pgParticle;
 	PImage[] imgPlayers;
 	PImage[] imgSelectPlayer;
 	PImage imgSelectSong;
@@ -45,8 +46,9 @@ public class LevelSelect implements PConstants, UIElement {
 
 	boolean isVisible;
 
-	public LevelSelect(Propinquity parent, Sounds sounds) {
+	public LevelSelect(Propinquity parent, Hud hud, Sounds sounds) {
 		this.parent = parent;
+		this.hud = hud;
 		this.sounds = sounds;
 
 		players = new Player[0];
@@ -65,12 +67,6 @@ public class LevelSelect implements PConstants, UIElement {
 		for (int i = 0; i < levelFiles.length; i++) {
 			levels.add(new Level(parent, sounds));
 		}
-
-		PImage imgParticle = parent.graphics.loadParticle();
-		pgParticle = new PGraphics();
-		pgParticle = parent.createGraphics(imgParticle.width, imgParticle.height, PApplet.P2D);
-		pgParticle.background(imgParticle);
-		pgParticle.mask(imgParticle);
 
 		imgPlayers = new PImage[2];
 		for (int i = 0; i < imgPlayers.length; i++)
@@ -96,7 +92,7 @@ public class LevelSelect implements PConstants, UIElement {
 			particles = new Particle[players.length];
 
 			for (int i = 0; i < particles.length; i++) {
-				Particle p = new Particle(parent, new Vec2(PApplet.cos(PApplet.TWO_PI / particles.length * i) * radius, PApplet.sin(PApplet.TWO_PI / particles.length * i) * radius), pgParticle, PlayerConstants.PLAYER_COLORS[state]);
+				Particle p = new Particle(parent, new Vec2(PApplet.cos(PApplet.TWO_PI / particles.length * i) * radius, PApplet.sin(PApplet.TWO_PI / particles.length * i) * radius), PlayerConstants.PLAYER_COLORS[state]);
 				p.scale = 1f;
 				particles[i] = p;
 			}
@@ -104,7 +100,7 @@ public class LevelSelect implements PConstants, UIElement {
 			particles = new Particle[levels.size()];
 
 			for (int i = 0; i < particles.length; i++) {
-				Particle p = new Particle(parent, new Vec2(PApplet.cos(PApplet.TWO_PI / particles.length * i) * radius, PApplet.sin(PApplet.TWO_PI / particles.length * i) * radius), pgParticle, Color.violet());
+				Particle p = new Particle(parent, new Vec2(PApplet.cos(PApplet.TWO_PI / particles.length * i) * radius, PApplet.sin(PApplet.TWO_PI / particles.length * i) * radius), Color.violet());
 				p.scale = 1f;
 				particles[i] = p;
 			}
@@ -129,8 +125,8 @@ public class LevelSelect implements PConstants, UIElement {
 		if(!isVisible) return;
 
 		// TODO: Fix this too
-		parent.graphics.drawInnerBoundary();
-		parent.graphics.drawOuterBoundary();
+		hud.drawInnerBoundary();
+		hud.drawOuterBoundary();
 		
 		parent.pushMatrix();
 		parent.translate(parent.width / 2, parent.height / 2);
@@ -138,19 +134,18 @@ public class LevelSelect implements PConstants, UIElement {
 		drawParticles();
 
 		if(state < players.length) {
-			drawHUDText("Select Color", players[0].getName());
-			drawPlayerName(0);
+			hud.drawCenterText("Select Color", players[state].getName());
+			hud.drawBannerCenter(players[state].getName(), players[state].getColor(), PApplet.TWO_PI/players.length*selected);
 		} else if(state == players.length) {
-			drawHUDText("Select Song");
-			drawLevelName();
+			hud.drawCenterText("Select Song");
+			hud.drawBannerCenter(levels.get(selected).songName, PlayerConstants.NEUTRAL_COLOR, PApplet.TWO_PI/levels.size()*selected);
 		}
 
 		parent.popMatrix();
 	}
 
 	private void drawParticles() {
-		if(particles == null)
-			return;
+		if(particles == null) return;
 
 		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
 		parent.gl.glEnable(GL.GL_BLEND);
@@ -159,100 +154,6 @@ public class LevelSelect implements PConstants, UIElement {
 		for (int i = 0; i < particles.length; i++) {
 			particles[i].draw();
 		}
-	}
-
-	void drawHUDText(String line1) {
-		drawHUDText(line1, null);
-	}
-
-	void drawHUDText(String line1, String line2) {
-		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
-		parent.gl.glEnable(GL.GL_BLEND);
-		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-
-		parent.fill(255);
-		parent.pushMatrix();
-		parent.rotate(parent.frameCount * Hud.PROMPT_ROT_SPEED);
-		parent.textFont(font, HUD_FONT_SIZE);
-		parent.text(line1, 0, 0);
-		if(line2 != null) parent.text(line2, 0, -20);
-		parent.popMatrix();
-	}
-
-
-	private void drawPlayerName(int player) {
-		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
-		parent.gl.glEnable(GL.GL_BLEND);
-		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-
-		parent.noStroke();
-		parent.noFill();
-
-		float angle = PApplet.TWO_PI / players.length * selected;
-
-		parent.pushMatrix();
-		parent.translate(PApplet.cos(angle) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET), PApplet.sin(angle)
-				* (parent.height / 2 - Hud.WIDTH + Hud.OFFSET));
-		parent.rotate(angle + PApplet.PI / 2);
-		parent.scale(imgPlayers[player].width / 2, imgPlayers[player].height / 2);
-		parent.beginShape(PApplet.QUADS);
-		parent.texture(imgPlayers[player]);
-		parent.vertex(-1, -1, 0, 0, 0);
-		parent.vertex(1, -1, 0, 1, 0);
-		parent.vertex(1, 1, 0, 1, 1);
-		parent.vertex(-1, 1, 0, 0, 1);
-		parent.endShape(PApplet.CLOSE);
-		parent.popMatrix();
-
-		parent.pushMatrix();
-		parent.fill(255);
-		parent.noStroke();
-		parent.textAlign(PApplet.CENTER, PApplet.BASELINE);
-		parent.textFont(font, HUD_FONT_SIZE);
-		String name = players[selected].getName().length() > 24 ? players[selected].getName().substring(0, 24)
-				: players[selected].getName();
-		float offset = (parent.textWidth(name) / 2) / (2 * PApplet.PI * (parent.height / 2 - Hud.SCORE_RADIUS_OFFSET))
-				* PApplet.TWO_PI;
-		Text.drawArc(name, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, angle - offset, parent);
-		parent.popMatrix();
-	}
-
-	private void drawLevelName() {
-		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
-		parent.gl.glEnable(GL.GL_BLEND);
-		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-
-		parent.noStroke();
-		parent.noFill();
-
-		float angle = PApplet.TWO_PI / levels.size() * selected;
-
-		parent.pushMatrix();
-		parent.translate(PApplet.cos(angle) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET), PApplet.sin(angle)
-				* (parent.height / 2 - Hud.WIDTH + Hud.OFFSET));
-		parent.rotate(angle + PApplet.PI / 2);
-		parent.scale(imgLevel.width / 2, imgLevel.height / 2);
-		parent.beginShape(PApplet.QUADS);
-		parent.texture(imgLevel);
-		parent.vertex(-1, -1, 0, 0, 0);
-		parent.vertex(1, -1, 0, 1, 0);
-		parent.vertex(1, 1, 0, 1, 1);
-		parent.vertex(-1, 1, 0, 0, 1);
-		parent.endShape(PApplet.CLOSE);
-		parent.popMatrix();
-
-		parent.pushMatrix();
-		parent.fill(255);
-		parent.noStroke();
-		parent.textAlign(PApplet.CENTER, PApplet.BASELINE);
-		parent.textFont(font, HUD_FONT_SIZE);
-		Level level = levels.get(selected);
-		String name = level.songName + " (" + level.songDuration + ")";
-		name = name.length() > 24 ? name.substring(0, 24) : name;
-		float offset = (parent.textWidth(name) / 2) / (2 * PApplet.PI * (parent.height / 2 - Hud.SCORE_RADIUS_OFFSET))
-				* PApplet.TWO_PI;
-		Text.drawArc(name, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, angle - offset, parent);
-		parent.popMatrix();
 	}
 
 	/**
@@ -337,6 +238,7 @@ public class LevelSelect implements PConstants, UIElement {
 				players[1].name = players[selected].getName();
 				stateChange(players.length);
 			}
+			stateChange(2);
 			break;
 
 		case 2:

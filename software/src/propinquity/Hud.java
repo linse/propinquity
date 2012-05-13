@@ -2,9 +2,7 @@ package propinquity;
 
 import javax.media.opengl.GL;
 
-import processing.core.PApplet;
-import processing.core.PConstants;
-
+import processing.core.*;
 import processing.opengl.PGraphicsOpenGL;
 
 /**
@@ -26,22 +24,47 @@ public class Hud {
 
 	Propinquity parent;
 	Sounds sounds;
-	Graphics graphics;
 
 	float angle = 0;
 	float velocity = -PConstants.TWO_PI / 500f;
 
 	boolean isSnapped = false;
 
+	public PFont font;
+
+	public PImage hudInnerBoundary, hudOuterBoundary;
+	public PImage hudPlay, hudLevelComplete, hudPlayAgain;
+	public PImage hudBannerSide, hudBannerCenter;
+	public PImage hudPlayers[], hudCoop;
+
 	/**
 	 * 
 	 * 
 	 * @param parent
 	 */
-	public Hud(Propinquity parent, Sounds sounds, Graphics graphics) {
+	public Hud(Propinquity parent, Sounds sounds) {
 		this.parent = parent;
 		this.sounds = sounds;
-		this.graphics = graphics;
+
+		font = parent.loadFont("hud/Calibri-Bold-32.vlw");
+
+		hudInnerBoundary = parent.loadImage("hud/innerBoundary.png");
+		hudOuterBoundary = parent.loadImage("hud/outerBoundary.png");
+
+		hudBannerCenter = parent.loadImage("hud/bannercenter.png");
+		hudBannerSide = parent.loadImage("hud/bannerside.png");
+
+		hudPlay = parent.loadImage("hud/sbtoplay.png");
+		hudLevelComplete = parent.loadImage("hud/levelcomplete.png");
+		hudPlayAgain = parent.loadImage("hud/sbtoplayagain.png");
+
+		hudPlayers = new PImage[2];
+		for(int i = 0; i < 2; i++) //TODO this is going out, should be gone
+			hudPlayers[i] = parent.loadImage("data/hud/player" + (i + 1) + "score.png");
+
+		// Load co-op HUD
+		hudCoop = parent.loadImage("data/hud/level.png");
+
 	}
 
 	/**
@@ -65,7 +88,6 @@ public class Hud {
 	 * 
 	 */
 	public void snap() {
-
 		if(!isSnapped) {
 			angle -= ((int) (angle / PConstants.TWO_PI)) * PConstants.TWO_PI;
 			isSnapped = true;
@@ -82,7 +104,6 @@ public class Hud {
 	 * @param maxVelocity
 	 */
 	public void update(float targetAngle, float targetAcceleration, float maxVelocity) {
-
 		float diff = targetAngle - angle;
 		int dir = diff < 0 ? -1 : 1;
 
@@ -119,9 +140,9 @@ public class Hud {
 			parent.translate(parent.width / 2 + PApplet.cos(ang) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET),
 					parent.height / 2 + PApplet.sin(ang) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET));
 			parent.rotate(ang + PConstants.HALF_PI);
-			parent.scale(graphics.hudCoop.width / 2, graphics.hudCoop.height / 2);
+			parent.scale(hudCoop.width / 2, hudCoop.height / 2);
 			parent.beginShape(PConstants.QUADS);
-			parent.texture(graphics.hudCoop);
+			parent.texture(hudCoop);
 			parent.vertex(-1, -1, 0, 0, 0);
 			parent.vertex(1, -1, 0, 1, 0);
 			parent.vertex(1, 1, 0, 1, 1);
@@ -133,7 +154,7 @@ public class Hud {
 			parent.fill(255);
 			parent.noStroke();
 			parent.textAlign(PConstants.CENTER, PConstants.BASELINE);
-			parent.textFont(Graphics.font, Hud.FONT_SIZE);
+			parent.textFont(font, Hud.FONT_SIZE);
 			String score = String.valueOf(parent.level.getTotalPoints() / 2);
 			String name = "Coop";
 			while(parent.textWidth(score + name) < 240)
@@ -159,9 +180,9 @@ public class Hud {
 				parent.translate(parent.width / 2 + PApplet.cos(ang) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET),
 						parent.height / 2 + PApplet.sin(ang) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET));
 				parent.rotate(ang + PConstants.HALF_PI);
-				parent.scale(graphics.hudPlayers[i].width / 2, graphics.hudPlayers[i].height / 2);
+				parent.scale(hudPlayers[i].width / 2, hudPlayers[i].height / 2);
 				parent.beginShape(PConstants.QUADS);
-				parent.texture(graphics.hudPlayers[i]);
+				parent.texture(hudPlayers[i]);
 				parent.vertex(-1, -1, 0, 0, 0);
 				parent.vertex(1, -1, 0, 1, 0);
 				parent.vertex(1, 1, 0, 1, 1);
@@ -173,7 +194,7 @@ public class Hud {
 				parent.fill(255);
 				parent.noStroke();
 				parent.textAlign(PConstants.CENTER, PConstants.BASELINE);
-				parent.textFont(Graphics.font, Hud.FONT_SIZE);
+				parent.textFont(font, Hud.FONT_SIZE);
 				String score = String.valueOf(player.score.getScore());
 				String name = player.getName().length() > 12 ? player.getName().substring(0, 12) : player.getName();
 				while(parent.textWidth(score + name) < 240)
@@ -185,6 +206,106 @@ public class Hud {
 				parent.popMatrix();
 			}
 		}
+	}
+
+	public void drawBannerSide(String text, Color color, float angle) {
+		drawBanner(text, color, angle, hudBannerSide);
+	}
+
+	public void drawBannerCenter(String text, Color color, float angle) {
+		drawBanner(text, color, angle, hudBannerCenter);
+	}
+
+	public void drawBanner(String text, Color color, float angle, PImage bannerImg) {
+		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
+		parent.gl.glEnable(GL.GL_BLEND);
+		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+
+		parent.noStroke();
+		parent.noFill();
+
+		parent.pushMatrix();
+		parent.translate(PApplet.cos(angle) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET), PApplet.sin(angle)
+				* (parent.height / 2 - Hud.WIDTH + Hud.OFFSET));
+		parent.rotate(angle + PApplet.PI / 2);
+		parent.scale(bannerImg.width / 2, bannerImg.height / 2);
+		parent.beginShape(PApplet.QUADS);
+		parent.texture(bannerImg);
+		parent.tint(color.toInt(parent));
+		parent.vertex(-1, -1, 0, 0, 0);
+		parent.vertex(1, -1, 0, 1, 0);
+		parent.vertex(1, 1, 0, 1, 1);
+		parent.vertex(-1, 1, 0, 0, 1);
+		parent.noTint();
+		parent.endShape(PApplet.CLOSE);
+		parent.popMatrix();
+
+		parent.pushMatrix();
+		parent.fill(255);
+		parent.noStroke();
+		parent.textAlign(PApplet.CENTER, PApplet.BASELINE);
+		parent.textFont(font, FONT_SIZE);
+		String cropped_text = text.length() > 24 ? text.substring(0, 24) : text;
+		float offset = (parent.textWidth(cropped_text) / 2) / (2 * PApplet.PI * (parent.height / 2 - Hud.SCORE_RADIUS_OFFSET)) * PApplet.TWO_PI;
+		Text.drawArc(cropped_text, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, angle - offset, parent);
+		parent.popMatrix();
+	}
+
+
+	void drawCenterText(String line1) {
+		drawCenterText(line1, null);
+	}
+
+	void drawCenterText(String line1, String line2) {
+		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
+		parent.gl.glEnable(GL.GL_BLEND);
+		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+
+		parent.fill(255);
+		parent.pushMatrix();
+		parent.rotate(parent.frameCount * Hud.PROMPT_ROT_SPEED);
+
+		parent.textFont(font, FONT_SIZE);
+		parent.text(line1, 0, 0);
+		if(line2 != null) parent.text(line2, 0, -20);
+
+		parent.popMatrix();
+	}
+
+	private void drawCenterImage(PImage image) {
+		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
+		parent.gl.glEnable(GL.GL_BLEND);
+		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+
+		parent.fill(255);
+		parent.pushMatrix();
+		parent.rotate(parent.frameCount * Hud.PROMPT_ROT_SPEED);
+
+		parent.image(image, 0, 0);
+
+		parent.popMatrix();
+	}
+
+	public void drawInnerBoundary() {
+		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
+		parent.gl.glEnable(GL.GL_BLEND);
+		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+
+		parent.pushMatrix();
+		parent.translate(parent.width / 2 - 1, parent.height / 2);
+		parent.image(hudInnerBoundary, 0, 0);
+		parent.popMatrix();
+	}
+
+	public void drawOuterBoundary() {
+		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
+		parent.gl.glEnable(GL.GL_BLEND);
+		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+
+		parent.pushMatrix();
+		parent.translate(parent.width / 2 - 1, parent.height / 2);
+		parent.image(hudOuterBoundary, 0, 0);
+		parent.popMatrix();
 	}
 
 }
