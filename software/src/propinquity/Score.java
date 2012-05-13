@@ -58,7 +58,7 @@ public class Score {
 		}
 		
 		liquid.update();
-		if(color.equals(parent.playerColors[1]))
+		if(color.equals(PlayerConstants.PLAYER_COLORS[1]))
 			liquid.applyReverseGravity();
 		else
 			liquid.applyGravity();

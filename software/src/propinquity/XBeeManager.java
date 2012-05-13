@@ -125,13 +125,13 @@ public class XBeeManager implements UIElement {
 
 			parent.pushMatrix();
 			parent.translate(parent.width / 2, parent.height / 2);
-			parent.textFont(Graphics.font, Hud.FONT_SIZE);
+			parent.textFont(Graphics.font, 32);
 			parent.textAlign(PConstants.CENTER, PConstants.CENTER);
 			parent.fill(255);
 			parent.noStroke();
 			parent.text("Detecting XBee modules... ", 0, 0);
 			parent.translate(0, 30);
-			parent.textFont(Graphics.font, Hud.FONT_SIZE * 0.65f);
+			parent.textFont(Graphics.font, 21);
 			parent.text(msg, 0, 0);
 			parent.popMatrix();
 		}

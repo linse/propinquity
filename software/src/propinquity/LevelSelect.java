@@ -15,48 +15,33 @@ import xbee.*;
 public class LevelSelect implements PConstants, UIElement {
 
 	final String LEVEL_FOLDER = "levels/";
-
 	final String LEVEL_FONT = "hud/Calibri-Bold-24.vlw";
-	final int LEVEL_FONT_SIZE = 24;
+
 	final int PLAYERNAME_FONT_SIZE = 30;
-
-	final String PROX_STUB_FILE = "stubs/sequence4/readings.txt";
-	final boolean[] PROX_STUB = { true, true }; // true = stub, false = live
-	final boolean[] SEND_VIBE = { true, true }; // true = vibe, false = don't
-												// vibe
-
-	// tmp until we use the xbee's serial
-	final String[] XBEE_PROX_1_NI = { "P1_PROX1", "P2_PROX1" };
-	final String[] XBEE_PROX_2_NI = { "P1_PROX2", "P2_PROX2" };
-	final String[] XBEE_VIBE_NI = { "P1_VIBE", "P2_VIBE" };
-
-	Propinquity parent;
-	PFont font;
+	final int LEVEL_FONT_SIZE = 24;
 
 	// Level selection states
 	enum LevelSelectState {
 		P1, P2, Song, Done
 	}
 
+	Propinquity parent;
+
 	LevelSelectState state;
 
-	int radius;
+	Player[] players = null;
 	String[] playerNames;
+
+	int radius;
 
 	Particle[] particles;
 	int selected;
 
+	PFont font;
 	PGraphics pgParticle;
 	PImage[] imgPlayers;
 	PImage[] imgSelectPlayer;
 	PImage imgSelectSong;
-
-	Player[] players = null;
-	Vector<String> foundProxPatches;
-	Vector<String> foundVibePatches;
-	Vector<String> foundUndefPatches;
-	int numProxPatches;
-	int numConfigAcks;
 
 	String[] levelFiles;
 	Vector<Level> levels;
@@ -66,48 +51,36 @@ public class LevelSelect implements PConstants, UIElement {
 
 	Sounds sounds;
 
-	private boolean isVisible;
+	boolean isVisible;
 
-	public LevelSelect(Propinquity p, Sounds sounds) {
+	public LevelSelect(Propinquity parent, Sounds sounds) {
+		this.parent = parent;
+		this.sounds = sounds;
 
 		isVisible = true;
 
-		this.parent = p;
-		this.sounds = sounds;
 		this.radius = parent.height / 2 - Hud.WIDTH * 2;
 
-		this.font = p.loadFont(LEVEL_FONT);
-
-		this.foundProxPatches = new Vector<String>();
-		this.foundVibePatches = new Vector<String>();
-		this.foundUndefPatches = new Vector<String>();
-		this.numConfigAcks = 0;
+		this.font = parent.loadFont(LEVEL_FONT);
 
 		loadLevels();
-		initTextures();
-	}
 
-	public void registerPlayers(String[] playerNames) {
-		this.playerNames = playerNames;
-	}
+		PImage imgParticle = parent.graphics.loadParticle();
+		pgParticle = new PGraphics();
+		pgParticle = parent.createGraphics(imgParticle.width, imgParticle.height, PApplet.P2D);
+		pgParticle.background(imgParticle);
+		pgParticle.mask(imgParticle);
 
-	public void reset() {
-		clear();
-		this.players = new Player[2];
-		initP1();
-	}
+		imgPlayers = new PImage[2];
+		for (int i = 0; i < imgPlayers.length; i++)
+			imgPlayers[i] = parent.loadImage(parent.dataPath("hud/player" + (i + 1) + "name.png"));
 
-	public void clear() {
-		if(this.players != null) {
-			for (int i = 0; i < this.players.length; i++) {
-				if(this.players[i] != null) {
-					this.players[i].clear();
-					this.players[i] = null;
-				}
-			}
-		}
+		imgLevel = parent.loadImage(parent.dataPath("hud/level.png"));
 
-		this.players = null;
+		imgSelectPlayer = new PImage[2];
+		imgSelectPlayer[0] = parent.loadImage("hud/selplay1.png");
+		imgSelectPlayer[1] = parent.loadImage("hud/selplay2.png");
+		imgSelectSong = parent.loadImage("hud/selsong.png");
 	}
 
 	void loadLevels() {
@@ -133,27 +106,27 @@ public class LevelSelect implements PConstants, UIElement {
 		}
 	}
 
-	public void xmlEvent(XMLElement levelXML) {
-		loadingLevel.loadSong(levelXML);
+	public void setPlayerNames(String[] playerNames) {
+		this.playerNames = playerNames;
 	}
 
-	void initTextures() {
-		PImage imgParticle = parent.graphics.loadParticle();
-		pgParticle = new PGraphics();
-		pgParticle = parent.createGraphics(imgParticle.width, imgParticle.height, PApplet.P2D);
-		pgParticle.background(imgParticle);
-		pgParticle.mask(imgParticle);
+	public void reset() {
+		if(players != null) {
+			for (int i = 0; i < players.length; i++) {
+				if(players[i] != null) {
+					players[i].clear();
+					players[i] = null;
+				}
+			}
+		}
 
-		imgPlayers = new PImage[2];
-		for (int i = 0; i < imgPlayers.length; i++)
-			imgPlayers[i] = parent.loadImage(parent.dataPath("hud/player" + (i + 1) + "name.png"));
+		players = null;
+		players = new Player[2];
+		initP1();
+	}
 
-		imgLevel = parent.loadImage(parent.dataPath("hud/level.png"));
-
-		imgSelectPlayer = new PImage[2];
-		imgSelectPlayer[0] = parent.loadImage("hud/selplay1.png");
-		imgSelectPlayer[1] = parent.loadImage("hud/selplay2.png");
-		imgSelectSong = parent.loadImage("hud/selsong.png");
+	public void xmlEvent(XMLElement levelXML) {
+		loadingLevel.loadSong(levelXML);
 	}
 
 	void initP1() {
@@ -176,24 +149,19 @@ public class LevelSelect implements PConstants, UIElement {
 		System.out.println("Initializing player " + player);
 
 		// foundPatches = 0;
-		foundProxPatches.clear();
-		foundVibePatches.clear();
-		foundUndefPatches.clear();
-		players[player] = new Player(parent, parent.patches, parent.glove, parent.playerColors[player]);
-
-		// init xbee comm or stubs
-		// for proximity
-		if(PROX_STUB[player])
-			players[player].loadProxStub(player, PROX_STUB_FILE);
-
+		players[player] = new Player(parent, "", PlayerConstants.PLAYER_COLORS[player], parent.patches, parent.glove);
+		System.out.println("a");
 		// ping for patches
 		players[player].discoverPatches();
+		System.out.println("b");
 
 		particles = new Particle[playerNames.length];
 		for (int i = 0; i < particles.length; i++) {
+			System.out.println("c");
 			Particle p = new Particle(parent, new Vec2(PApplet.cos(PApplet.TWO_PI / particles.length * i) * radius,
 					PApplet.sin(PApplet.TWO_PI / particles.length * i) * radius), pgParticle,
-					parent.playerColors[player]);
+					PlayerConstants.PLAYER_COLORS[player]);
+			System.out.println("d");
 			p.scale = 1f;
 			particles[i] = p;
 		}
@@ -226,7 +194,6 @@ public class LevelSelect implements PConstants, UIElement {
 	}
 
 	public void draw() {
-
 		if(!isVisible)
 			return;
 
@@ -281,11 +248,6 @@ public class LevelSelect implements PConstants, UIElement {
 		parent.rotate(parent.frameCount * Hud.PROMPT_ROT_SPEED);
 		parent.image(imgSelectPlayer[player], 0, -65);
 		parent.textFont(font, LEVEL_FONT_SIZE);
-		parent.text(foundProxPatches.size() + " proximity patch" + (foundProxPatches.size() > 1 ? "es" : ""), 0, -20);
-		parent.text(foundVibePatches.size() + " vibration patch" + (foundVibePatches.size() > 1 ? "es" : ""), 0, 15);
-		if(foundUndefPatches.size() > 0)
-			parent.text("found " + foundUndefPatches.size() + " undefined patch"
-					+ (foundUndefPatches.size() > 1 ? "es" : ""), 0, 85);
 		parent.popMatrix();
 	}
 
@@ -386,30 +348,29 @@ public class LevelSelect implements PConstants, UIElement {
 	 * @param keycode the keycode of the keyPressed event.
 	 */
 	public void keyPressed(char key, int keycode) {
-		switch(key) {
+		switch(keycode) {
 			case BACKSPACE: {
-				clear();
+				reset();
 				parent.changeGameState(GameState.PlayerList);
 				break;
 			}
-			case PApplet.LEFT: {
-				moveLeft();
+			case LEFT: {
+				left();
 				break;
 			}
-			case PApplet.RIGHT: {
-				moveRight();
+			case RIGHT: {
+				right();
 				break;
 			}
-			case PApplet.ENTER:
+			case ENTER:
 			case ' ': {
-				doSelect();
+				select();
 				break;
 			}
 		}
 	}
 
-	public void moveLeft() {
-
+	public void left() {
 		selected--;
 
 		switch(state) {
@@ -427,11 +388,9 @@ public class LevelSelect implements PConstants, UIElement {
 				selected = levels.size() - 1;
 			break;
 		}
-
 	}
 
-	public void moveRight() {
-
+	public void right() {
 		selected++;
 
 		switch(state) {
@@ -451,7 +410,7 @@ public class LevelSelect implements PConstants, UIElement {
 		}
 	}
 
-	public void doSelect() {
+	public void select() {
 		switch(state) {
 
 		case P1:
@@ -472,10 +431,6 @@ public class LevelSelect implements PConstants, UIElement {
 			parent.changeGameState(GameState.Play);
 			break;
 		}
-	}
-
-	public boolean isDone() {
-		return state == LevelSelectState.Done;
 	}
 
 	// This function returns all the files in a directory as an array of Strings

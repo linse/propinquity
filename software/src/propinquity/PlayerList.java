@@ -1,13 +1,11 @@
 package propinquity;
 
 import processing.core.*;
+import propinquity.hardware.*;
 import java.util.*;
 import controlP5.*;
 
-public class PlayerList implements UIElement {
-
-	final int MAX_PLAYERS = 2;
-	final int MIN_PLAYERS = 2;
+public class PlayerList implements PlayerConstants, UIElement {
 
 	final int WIDTH = 200;
 	final int PLAYER_HEIGHT = 20;
@@ -15,12 +13,14 @@ public class PlayerList implements UIElement {
 
 	Propinquity parent;
 
-	ControlP5 controlP5;
+	HardwareInterface hardware;
+
+	Player[] players;
+	Vector<Textfield> playerFields;
 
 	String plistFile;
 
-	String[] playerNames;
-	Vector<Textfield> playerFields;
+	ControlP5 controlP5;
 
 	Button nextButton;
 	Button addButton;
@@ -28,19 +28,21 @@ public class PlayerList implements UIElement {
 
 	boolean isVisible;
 
-	public PlayerList(Propinquity parent) {
-		this(parent, null);
+	public PlayerList(Propinquity parent, HardwareInterface hardware) {
+		this(parent, hardware, null);
 	}
 
-	public PlayerList(Propinquity parent, String plistFile) {
+	public PlayerList(Propinquity parent, HardwareInterface hardware, String plistFile) {
 		this.parent = parent;
+		this.hardware = hardware;
 		this.plistFile = plistFile;
+
+		players = new Player[0];
 
 		isVisible = true;
 		controlP5 = new ControlP5(parent);
 
 		// create text fields for each
-		playerNames = null;
 		playerFields = new Vector<Textfield>();
 
 		// create button to add new players
@@ -65,8 +67,8 @@ public class PlayerList implements UIElement {
 		if(playerFields.size() < 2) addPlayer("Player 2");
 	}
 
-	public String[] getNames() {
-		return playerNames;
+	public Player[] getPlayers() {
+		return players;
 	}
 
 	public void draw() {
@@ -117,18 +119,68 @@ public class PlayerList implements UIElement {
 		else removeButton.show();
 	}
 
+	public void reset() {
+		while(playerFields.size() > 0) removePlayer();
+		addPlayer("Player 1");
+		addPlayer("Player 2");
+		process();
+	}
+
 	public void process() {
-		Vector<String> tmp_names = new Vector<String>();
-		// clear empty textfields
-		for(Textfield tf : playerFields) {
-			if(PApplet.trim(tf.getText()).length() != 0) {
-				tmp_names.add(tf.getText());
+		System.out.println("a");
+		for(Player player : players) {
+			hardware.removeGlove(player.getGlove());
+			for(Patch patch : player.getPatches()) {
+				hardware.removePatch(patch);
 			}
+
+			player.reset();
 		}
 
-		playerNames = tmp_names.toArray(new String[0]);
+		System.out.println("b");
+		players = new Player[playerFields.size()];
+		String[] names = new String[playerFields.size()];
 
-		parent.saveStrings(parent.dataPath(plistFile), playerNames);
+		System.out.println("c");
+
+		for(int i = 0;i < playerFields.size();i++) {
+			names[i] = PApplet.trim(playerFields.get(i).getText());
+			System.out.println("1");
+			Patch[] patches;
+
+			System.out.println("2");
+			if(i < PATCH_ADDR.length) {
+				patches = new Patch[PATCH_ADDR[i].length];
+				for(int j = 0;j < PATCH_ADDR[i].length;j++) patches[j] = new Patch(PATCH_ADDR[i][j], hardware);
+			} else {
+				patches = new Patch[] { new Patch(-1, hardware) };
+			}
+
+			System.out.println("3");
+			Glove glove;
+
+			if(i < GLOVE_ADDR.length) {
+				glove = new Glove(GLOVE_ADDR[i], hardware);
+			} else {
+				glove = new Glove(-1, hardware);
+			}
+
+			System.out.println("4");
+			Color color;
+
+			if(i < PLAYER_COLORS.length) {
+				color = PLAYER_COLORS[i];
+			} else {
+				color = NEUTRAL_COLOR;
+			}
+			System.out.println("5");
+
+			players[i] = new Player(parent, names[i], color, patches, glove);
+		}
+		System.out.println("6");
+
+		parent.saveStrings(parent.dataPath(plistFile), names);
+		System.out.println("7");
 
 		parent.changeGameState(GameState.LevelSelect);
 	}

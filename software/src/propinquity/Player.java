@@ -43,7 +43,7 @@ public class Player implements PConstants, ProxEventListener {
 	int lastVibe;
 	// int totalVibe;
 
-	Vector<Patch> patches;
+	Patch[] patches;
 	Glove glove;
 
 	// stubs
@@ -60,13 +60,17 @@ public class Player implements PConstants, ProxEventListener {
 	private long currentTime;
 	private long lastTime;
 
-	public Player(Propinquity parent, Vector<Patch> patches, Glove glove, Color color) {
+	public Player(Propinquity parent, String name, Color color, Patch[] patches, Glove glove) {
 		this.parent = parent;
-		this.name = "noname";
+		
+		this.name = name;
 		this.color = color;
+
 		this.patches = patches;
 		this.glove = glove;
+
 		score = new Score(parent, color);
+
 		reset();
 	}
 
@@ -106,6 +110,14 @@ public class Player implements PConstants, ProxEventListener {
 
 	public Color getColor() {
 		return color;
+	}
+
+	public Glove getGlove() {
+		return glove;
+	}
+
+	public Patch[] getPatches() {
+		return patches;
 	}
 
 	public void registerNegativePlayerSound(AudioPlayer ap) {
@@ -250,8 +262,8 @@ public class Player implements PConstants, ProxEventListener {
 	}
 
 	public void proxEvent(Patch patch) {
-		if (patches.indexOf(patch) != -1) {
-			distance = patch.getProx();
+		for(Patch p : patches) {
+			if(patch == p) distance = patch.getProx();
 		}
 	}
 

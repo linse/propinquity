@@ -14,7 +14,7 @@ import proxml.*;
 
 import propinquity.hardware.*;
 
-public class Propinquity extends PApplet {
+public class Propinquity extends PApplet implements PlayerConstants {
 
 	/** Unique serialization ID. */
 	private static final long serialVersionUID = 6340518174717159418L;
@@ -34,11 +34,13 @@ public class Propinquity extends PApplet {
 	Sounds sounds;
 
 	//Xbee + Hardware
+	HardwareInterface hardware;
+
 	XBeeBaseStation xbeeBaseStation;
 	XBeeManager xbeeManager;
 
 	HardwareSimulator simulator; //Testing 
-	public Vector<Patch> patches = new Vector<Patch>(1);
+	public Patch[] patches;
 	Glove glove;
 
 	//Player/Player List
@@ -46,8 +48,6 @@ public class Propinquity extends PApplet {
 
 	//HUD
 	Hud hud;
-	Color[] playerColors = { Color.blue(), Color.red() };
-	Color neutralColor = Color.violet();
 
 	//Level Select
 	LevelSelect levelSelect;
@@ -77,7 +77,17 @@ public class Propinquity extends PApplet {
 		xbeeBaseStation = new XBeeBaseStation();
 		// xbeeBaseStation.scan();
 		xbeeManager = new XBeeManager(this, xbeeBaseStation);
-		playerList = new PlayerList(this, "player.lst");
+
+		simulator = new HardwareSimulator(this);
+		patches = new Patch[1];
+		patches[0] = new Patch(0, simulator);
+		patches[0].setActive(true);
+		glove = new Glove(1, simulator);
+		simulator.addPatch(patches[0]);
+
+		hardware = simulator;
+
+		playerList = new PlayerList(this, hardware, "player.lst");
 		levelSelect = new LevelSelect(this, sounds);
 
 		hud = new Hud(this, sounds, graphics);
@@ -89,12 +99,6 @@ public class Propinquity extends PApplet {
 		fences = new Fences(this);
 		
 		uiElements = new UIElement[] { xbeeManager, playerList, levelSelect };
-
-		simulator = new HardwareSimulator(this);
-		patches.add(new Patch(0, simulator));
-		patches.get(0).setActive(true);
-		glove = new Glove(1, simulator);
-		simulator.addPatch(patches.get(0));
 		
 		changeGameState(GameState.XBeeInit);
 	}
@@ -151,7 +155,7 @@ public class Propinquity extends PApplet {
 				image(graphics.hudLevelComplete, 0, -25);
 				textFont(Graphics.font, Hud.FONT_SIZE);
 				textAlign(CENTER, CENTER);
-				fill(winner != null ? winner.getColor().toInt(this) : neutralColor.toInt(this));
+				fill(winner != null ? winner.getColor().toInt(this) : NEUTRAL_COLOR.toInt(this));
 				noStroke();
 				text(winner != null ? winner.getName() + " won!" : "You tied!", 0, 0);
 				image(graphics.hudPlayAgain, 0, 30);
@@ -213,7 +217,8 @@ public class Propinquity extends PApplet {
 			}
 
 			case LevelSelect: {
-				levelSelect.registerPlayers(playerList.getNames());
+				// levelSelect.setPlayerNames(playerList.getNames());
+
 				levelSelect.reset();
 				levelSelect.show();
 				break;
