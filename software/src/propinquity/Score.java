@@ -8,8 +8,10 @@ public class Score {
 	 */
 	public static final int SCORE_TIME = 5000;
 
-	public static final int MIN_RANGE = 256;
-	public static final int MAX_RANGE = 512;
+	public static final int MIN_RANGE = 100;
+	public static final int MAX_RANGE = 700;
+	public static final int MIN_SWEETSPOT = 300;
+	public static final int MAX_SWEETSPOT = 500;
 
 	public Liquid liquid;
 
@@ -56,7 +58,6 @@ public class Score {
 			lastTime = currentTime;
 		}
 		
-		liquid.update();
 		if(color.equals(PlayerConstants.PLAYER_COLORS[1]))
 			liquid.applyReverseGravity();
 		else

@@ -72,10 +72,6 @@ public class Particle {
 		return shape;
 	}
 
-	public void update() {
-
-	}
-
 	public void draw() {
 		position = parent.box2d.getBodyPixelCoord(body);
 

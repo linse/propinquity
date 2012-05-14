@@ -71,14 +71,6 @@ public class Liquid {
 			particle.getBody().applyForce(antiGravity, particle.getBody().getWorldCenter());
 	}
 
-	public void update() {
-		for (Particle particle : particlesCreated)
-			particle.update();
-
-		for (Particle particle : particlesHeld)
-			particle.update();
-	}
-
 	public void draw() {
 		for (Particle particle : particlesCreated)
 			particle.draw();

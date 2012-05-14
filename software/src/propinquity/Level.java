@@ -2,9 +2,11 @@ package propinquity;
 
 import processing.core.*;
 import processing.xml.*;
+import propinquity.hardware.Patch;
+import propinquity.hardware.ProxEventListener;
 import ddf.minim.*;
 
-public class Level {
+public class Level implements ProxEventListener {
 
 	static final int DEFAULT_BPM = 120;
 
@@ -21,11 +23,14 @@ public class Level {
 	Step[] steps;
 	long stepInterval;
 	int currentStep;
-	
+
 	String name;
 
 	boolean coop;
 	boolean running;
+
+	int currentTime;
+	int[] lastTime;
 
 	public Level(Propinquity parent, String levelFile, Player[] players, Sounds sounds) throws XMLException {
 		this.parent = parent;
@@ -37,59 +42,64 @@ public class Level {
 
 		name = xml.getString("name");
 
-		if(name == null) {
+		if (name == null) {
 			name = "Level";
 			System.out.println("Warning: XML contained no level name");
 			System.out.println(xml.toString());
 		}
 
-
 		XMLElement[] song_tags = xml.getChildren("song");
 
-		if(song_tags.length > 0) {
-			if(song_tags.length > 1) System.out.println("Warning: XML contained multiple songs tags for a single Level");
+		if (song_tags.length > 0) {
+			if (song_tags.length > 1)
+				System.out.println("Warning: XML contained multiple songs tags for a single Level");
 
 			XMLElement song = song_tags[0];
 
 			songFile = song.getString("file");
-			if(songFile.equals("")) throw new XMLException("XMLException: XML song tag has empty file attribute");
+			if (songFile.equals(""))
+				throw new XMLException("XMLException: XML song tag has empty file attribute");
 
 			songBPM = song.getInt("bpm", DEFAULT_BPM);
 		} else {
-			throw new XMLException("XMLException: XML for level \""+name+"\" has no song tag");
+			throw new XMLException("XMLException: XML for level \"" + name + "\" has no song tag");
 		}
 
 		song = sounds.loadSong(songFile);
 
 		XMLElement[] step_tags = xml.getChildren("sequence/step");
 		steps = new Step[step_tags.length];
-		stepInterval = song.length()/step_tags.length;
+		stepInterval = song.length() / step_tags.length;
 
-		if(step_tags.length > 0) {
-			for(int i = 0;i < step_tags.length;i++) {
+		if (step_tags.length > 0) {
+			for (int i = 0; i < step_tags.length; i++) {
 				String modeString = step_tags[i].getString("mode", "coop");
 				boolean coop = true;
-				if(!modeString.equals("coop")) coop = false;
+				if (!modeString.equals("coop"))
+					coop = false;
 
 				XMLElement[] player_tags = step_tags[i].getChildren("player");
 				boolean patches[][] = new boolean[player_tags.length][4];
-				if(player_tags.length > 1) {
-					for(int j = 0;j < player_tags.length;j++) {
+				if (player_tags.length > 1) {
+					for (int j = 0; j < player_tags.length; j++) {
 						patches[j][0] = (player_tags[j].getInt("patch1", 0) != 0);
 						patches[j][1] = (player_tags[j].getInt("patch2", 0) != 0);
 						patches[j][2] = (player_tags[j].getInt("patch3", 0) != 0);
 						patches[j][3] = (player_tags[j].getInt("patch4", 0) != 0);
 					}
 				} else {
-					throw new XMLException("XMLException: XML for level \""+name+"\", step "+i+" has less than two player tags.");
+					throw new XMLException("XMLException: XML for level \"" + name + "\", step " + i
+							+ " has less than two player tags.");
 				}
 
 				steps[i] = new Step(coop, patches);
 			}
 
 		} else {
-			throw new XMLException("Warning: XML for level \""+name+"\" has no sequence tag and/or no step tags");
+			throw new XMLException("Warning: XML for level \"" + name + "\" has no sequence tag and/or no step tags");
 		}
+
+		lastTime = new int[players.length];
 
 		reset();
 	}
@@ -105,7 +115,8 @@ public class Level {
 	}
 
 	public void reset() {
-		for(int i = 0; i < players.length; i++) players[i].reset();
+		for (int i = 0; i < players.length; i++)
+			players[i].reset();
 		pause();
 		song.rewind();
 		stepUpdate();
@@ -116,12 +127,12 @@ public class Level {
 	}
 
 	void stepUpdate() {
-		int nextStep = (int)PApplet.constrain(song.position()/stepInterval, 0, steps.length-1);
-		if(nextStep != currentStep) {
+		int nextStep = (int) PApplet.constrain(song.position() / stepInterval, 0, steps.length - 1);
+		if (nextStep != currentStep) {
 			System.out.println(nextStep);
 			currentStep = nextStep;
 			coop = steps[currentStep].isCoop();
-			//TODO Handle Patches and set player coop
+			// TODO Handle Patches and set player coop
 		}
 	}
 
@@ -130,24 +141,53 @@ public class Level {
 	}
 
 	public void update() {
-		for(int i = 0; i < players.length; i++) players[i].update();
+
+		currentTime = parent.millis();
+
+		for (int i = 0; i < players.length; i++) {
+
+			for (Patch patch : players[i].patches) {
+
+				int distance = patch.getProx();
+				
+				if (distance > Score.MIN_SWEETSPOT && distance < Score.MAX_SWEETSPOT) {
+
+					if (currentTime - lastTime[i] > Particle.SPAWN_DELAY) {
+						players[i].handleSweetspotRange(patch);
+						lastTime[i] = currentTime;
+					}
+
+				} else if (distance > Score.MIN_RANGE && distance < Score.MAX_RANGE) {
+
+					if (currentTime - lastTime[i] > Particle.SPAWN_DELAY) {
+						players[i].handleScoreRange(patch);
+						lastTime[i] = currentTime;
+					}
+				}
+
+			}
+
+			players[i].update();
+		}
+
 		stepUpdate();
 	}
-	
+
 	public void draw() {
-		for(int i = 0; i < players.length; i++) players[i].draw();
+		for (int i = 0; i < players.length; i++)
+			players[i].draw();
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public Player getWinner() { //TODO ties
+	public Player getWinner() { // TODO ties
 		Player winner = null;
 
-		for(Player player : players) {
-			if(winner == null || player.getScore() > winner.getScore()) {
-				winner = player; //Ties suck, i'm ignoring them
+		for (Player player : players) {
+			if (winner == null || player.getScore() > winner.getScore()) {
+				winner = player; // Ties suck, i'm ignoring them
 			}
 		}
 
@@ -156,7 +196,8 @@ public class Level {
 
 	public int getTotalPoints() {
 		int total = 0;
-		for(int i = 0; i < players.length; i++) total += players[i].getScore();
+		for (int i = 0; i < players.length; i++)
+			total += players[i].getScore();
 		return total;
 	}
 
@@ -165,7 +206,11 @@ public class Level {
 	}
 
 	public boolean isDone() {
-		return (song.position() >= song.length()); //TODO Crappy
+		return (song.position() >= song.length()); // TODO Crappy
+	}
+
+	public void proxEvent(Patch patch) {
+		// TODO: interesting things on prox boundaries
 	}
 
 }
