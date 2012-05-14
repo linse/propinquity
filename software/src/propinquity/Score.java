@@ -15,13 +15,13 @@ public class Score {
 
 	public Liquid liquid;
 
-	private Propinquity parent;
-	private Color color;
-	private int tempScore;
-	private int heldScore;
+	Propinquity parent;
+	Color color;
+	int tempScore;
+	int heldScore;
 
-	private long currentTime;
-	private long lastTime;
+	long currentTime;
+	long lastTime;
 
 	public Score(Propinquity parent, Color color) {
 		this.parent = parent;

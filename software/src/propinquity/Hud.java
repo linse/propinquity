@@ -20,7 +20,7 @@ public class Hud {
 	public static final int SCORE_RADIUS_OFFSET = 40;
 	public static final float SCORE_ANGLE_OFFSET = 0.35f;
 
-	private Propinquity parent;
+	Propinquity parent;
 
 	float angle = 0;
 	float velocity = -PConstants.TWO_PI / 500f;

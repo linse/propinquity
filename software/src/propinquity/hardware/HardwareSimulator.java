@@ -101,7 +101,7 @@ public class HardwareSimulator implements HardwareInterface, UIElement {
 			} else {
 				int vibe = gloves.get(i-num_patch).getVibeLevel();
 				p.fill(vibe);
-				p.rect(0, height, local_width*0.9f, height);
+				p.rect(0, height/2, local_width*0.9f, height/2);
 			}
 
 			if(current_patch == i) {

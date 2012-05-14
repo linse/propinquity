@@ -16,7 +16,7 @@ import java.util.*;
 public class Propinquity extends PApplet implements PlayerConstants {
 
 	/** Unique serialization ID. */
-	private static final long serialVersionUID = 6340518174717159418L;
+	static final long serialVersionUID = 6340518174717159418L;
 	public static final int FPS = 30;
 
 	//General + Util
@@ -100,7 +100,6 @@ public class Propinquity extends PApplet implements PlayerConstants {
 			Color color = PLAYER_COLORS[i];
 
 			players[i] = new Player(this, null, color, patches, glove, sounds);
-			hardware.addProxEventListener(players[i]);
 		}
 
 		playerList = new PlayerList(this, hardware, "player.lst");
@@ -117,25 +116,9 @@ public class Propinquity extends PApplet implements PlayerConstants {
 		uiElements.add(xbeeManager);
 		uiElements.add(playerList);
 		uiElements.add(levelSelect);
-		for(Level l : levelSelect.getLevels()) uiElements.add(l);
+		for(Level level : levelSelect.getLevels()) uiElements.add(level);
 		
 		changeGameState(GameState.XBeeInit);
-	}
-	
-	void resetLevel() {
-		level.reset();
-
-		endedLevel = false;
-		doneTime = -1;
-
-		hud.reset();
-		levelSelect.reset();
-
-		changeGameState(GameState.LevelSelect);
-	}
-
-	public void stop() {
-		for(Level level : levelSelect.getLevels()) level.close();
 	}
 
 	public void draw() {
@@ -145,10 +128,7 @@ public class Propinquity extends PApplet implements PlayerConstants {
 		hud.update(hud.getAngle() + HALF_PI, TWO_PI / 10000f, TWO_PI / 2000f);
 
 		for(UIElement u: uiElements) u.draw();
-
-		if(gameState == GameState.Play) {
-			box2d.step();
-		}
+		if(gameState == GameState.Play) box2d.step();
 
 		pushMatrix();
 		translate(100, 100);
@@ -183,6 +163,7 @@ public class Propinquity extends PApplet implements PlayerConstants {
 			case Play: {
 				level = levelSelect.getCurrentLevel();
 				simulator.addProxEventListener(level);
+
 				level.reset();
 				level.show();
 				break;
@@ -226,48 +207,22 @@ public class Propinquity extends PApplet implements PlayerConstants {
 			}
 
 			case Play: {
-				switch(key) {
-					case BACKSPACE: {
-						if(!level.isRunning()) resetLevel();
-						break;
-					}
-
-					case ESC: {
-						exit();
-						break;
-					}
-
-					case ENTER:
-					case ' ': {
-						if(level.isDone() && endedLevel) resetLevel();
-						else if(!level.isDone() && !level.isRunning()) level.start();
-						else if(!level.isDone()) level.pause();
-						break;
-					}
-
-
-					case 'i': { // info
-						// int score0 = level.getPlayer(0).score.liquid.particlesHeld.size();
-						// int score1 = level.getPlayer(1).score.liquid.particlesHeld.size();
-						// logger.println("Particles: " + (score0 + " " + score1));
-						// logger.println("Framerate: " + frameRate);
-						break;
-					}
-
-					case 'e': {// play stub
-						// level.currentStep = level.stepCount;
-						break;
-					}
-
-					case 'n': {
-						if(simulator.isVisible()) simulator.hide();
-						else simulator.show();
-						break;
-					}
-				}
+				level.keyPressed(key, keyCode);
 				break;
 			}
 		}
+
+		switch(key) {
+			case 'n': {
+				if(simulator.isVisible()) simulator.hide();
+				else simulator.show();
+				break;
+			}
+		}
+	}
+
+	public void stop() {
+		for(Level level : levelSelect.getLevels()) level.close();
 	}
 
 	static public void main(String args[]) {

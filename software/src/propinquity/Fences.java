@@ -40,11 +40,11 @@ public class Fences {
 
 		this.parent = parent;
 		
-		CreateInnerFence();
-		CreateOuterFence();
+		createInnerFence();
+		createOuterFence();
 	}
 	
-	private void CreateInnerFence() {
+	void createInnerFence() {
 		BodyDef bd = new BodyDef();
 		bd.position.set(0.0f, 0.0f);
 		
@@ -67,7 +67,7 @@ public class Fences {
 		}
 	}
 	
-	private void CreateOuterFence() {
+	void createOuterFence() {
 		BodyDef bd = new BodyDef();
 		bd.position.set(0.0f, 0.0f);
 

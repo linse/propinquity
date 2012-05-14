@@ -1,0 +1,8 @@
+TODO
+======
+
+* Think about and implement coop scoring. Both players should get points towards their total during coop. How should we handle score display at that time?
+* The periods need to respect pausing
+* Gravity didn't come back once
+* Verify that particles are properly destroyed always
+* Load/Unload songs as needed

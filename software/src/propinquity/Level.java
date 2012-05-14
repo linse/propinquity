@@ -6,7 +6,7 @@ import propinquity.hardware.Patch;
 import propinquity.hardware.ProxEventListener;
 import ddf.minim.*;
 
-public class Level implements ProxEventListener {
+public class Level implements UIElement, ProxEventListener, PConstants {
 
 	static final int DEFAULT_BPM = 120;
 
@@ -73,7 +73,7 @@ public class Level implements ProxEventListener {
 
 		XMLElement[] step_tags = xml.getChildren("sequence/step");
 		steps = new Step[step_tags.length];
-		stepInterval = song.length() / step_tags.length;
+		stepInterval = song.length()/step_tags.length;
 
 		if (step_tags.length > 0) {
 			for (int i = 0; i < step_tags.length; i++) {
@@ -119,18 +119,18 @@ public class Level implements ProxEventListener {
 	}
 
 	public void reset() {
-		for (int i = 0; i < players.length; i++)
-			players[i].reset();
+		for (int i = 0; i < players.length; i++) players[i].reset();
 		pause();
 		song.rewind();
-		stepUpdate();
+		stepUpdate(0);
 	}
 
 	public void close() {
 		song.close();
 	}
 
-	void stepUpdate() {
+	void stepUpdate(int nextStep) {
+		currentStep = nextStep;
 		coop = steps[currentStep].isCoop();
 		//TODO Handle Patches and set player coop
 	}
@@ -140,11 +140,9 @@ public class Level implements ProxEventListener {
 	}
 
 	public void update() {
-
 		currentTime = parent.millis();
 
 		for (int i = 0; i < players.length; i++) {
-
 			for (Patch patch : players[i].patches) {
 
 				int distance = patch.getProx();
@@ -170,22 +168,24 @@ public class Level implements ProxEventListener {
 		}
 
 		int nextStep = (int)PApplet.constrain(song.position()/stepInterval, 0, steps.length-1);
-		if(nextStep != currentStep) {
-			currentStep = nextStep;
-			stepUpdate();
-		}
+		if(nextStep != currentStep) stepUpdate(nextStep);
 	}
-	
+
 	public String getName() {
 		return name;
 	}
 
-	public Player getWinner() { // TODO ties
+	public Player getWinner() {
 		Player winner = null;
+		int highScore = -1;
 
-		for (Player player : players) {
-			if (winner == null || player.getScore() > winner.getScore()) {
-				winner = player; // Ties suck, i'm ignoring them
+		for(Player player : players) {
+
+			if (player.getScore() > highScore) {
+				winner = player;
+				highScore = player.getScore();
+			} else if(player.getScore() == highScore) {
+				winner = null;
 			}
 		}
 
@@ -204,13 +204,41 @@ public class Level implements ProxEventListener {
 	}
 
 	public boolean isDone() {
-		return (song.position() >= song.length()); // TODO Crappy
+		return (currentStep == steps.length-1); // TODO Crappy
 	}
 
 	public void proxEvent(Patch patch) {
 		// TODO: interesting things on prox boundaries
 	}
 	
+	public void keyPressed(char key, int keyCode) {
+		if(!isVisible) return;
+
+		switch(key) {
+			case BACKSPACE: {
+				if(song.position() == 0) parent.changeGameState(GameState.LevelSelect);
+				reset();
+				break;
+			}
+
+			case ENTER:
+			case ' ': {
+				if(isDone()) {
+					parent.changeGameState(GameState.LevelSelect);
+					reset();
+				} else {
+					if(isRunning()) pause();
+					else start();
+				}
+				break;
+			}
+			case 'e': { //Force End
+				song.cue(song.length()-1000);
+				break;
+			}
+		}
+	}
+
 	public void draw() {
 		if(!isVisible) return;
 
@@ -240,13 +268,13 @@ public class Level implements ProxEventListener {
 		//Particles and Liquid
 		for(int i = 0; i < players.length; i++) players[i].draw();
 
-		if(isRunning()) { //Running
-			update();
-		} else if(isDone()) { //Someone won
+		if(isDone()) { //Someone won
 			Player winner = getWinner();
 			String text = winner != null ? winner.getName() + " won!" : "You tied!";
 			Color color = winner != null ? winner.getColor() : PlayerConstants.NEUTRAL_COLOR;
 			hud.drawCenterText(text, color, hud.getAngle());
+		} else if(isRunning()) { //Running
+			update();
 		} else { //Pause
 			hud.drawCenterImage(hud.hudPlay, hud.getAngle());
 		}
@@ -276,6 +304,5 @@ public class Level implements ProxEventListener {
 	public boolean isVisible() {
 		return isVisible;
 	}
-
 
 }

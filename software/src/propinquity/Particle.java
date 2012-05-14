@@ -24,7 +24,7 @@ public class Particle {
 
 	PGraphics texture;
 
-	private Propinquity parent;
+	Propinquity parent;
 
 	public Particle(Propinquity parent, Vec2 position, Color color, boolean isNew) {
 		this.parent = parent;

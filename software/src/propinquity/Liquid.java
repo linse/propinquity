@@ -15,8 +15,8 @@ public class Liquid {
 	public Vector<Particle> particlesCreated;
 	public Vector<Particle> particlesHeld;
 
-	private Propinquity parent;
-	private Color color;
+	Propinquity parent;
+	Color color;
 
 	public Liquid(Propinquity parent, Color color) {
 
@@ -28,7 +28,9 @@ public class Liquid {
 	}
 
 	public void reset() {
+		for(Particle particle : particlesCreated) particle.kill();
 		particlesCreated = new Vector<Particle>();
+		for(Particle particle : particlesHeld) particle.kill();
 		particlesHeld = new Vector<Particle>();
 	}
 

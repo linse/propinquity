@@ -6,7 +6,7 @@ import controlP5.*;
 public class HardwareSimTest extends PApplet implements ProxEventListener {
 
 	// Unique serialization ID
-	private static final long serialVersionUID = 6340508174717159418L;
+	static final long serialVersionUID = 6340508174717159418L;
 
 	static final int[] PATCH_ADDR = new int[] { 1, 6 };
 	static final int NUM_PATCHES = PATCH_ADDR.length;
