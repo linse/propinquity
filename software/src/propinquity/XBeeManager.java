@@ -5,6 +5,10 @@ import controlP5.*;
 
 import propinquity.hardware.*;
 
+/**
+ * XBeeManager is a simple graphical front end to wrap the XBeeBaseStation.
+ *
+ */
 public class XBeeManager implements UIElement {
 
 	Propinquity parent;
@@ -15,14 +19,15 @@ public class XBeeManager implements UIElement {
 	Button plNextButton;
 	Button plScanButton;
 
+	public PFont font;
+
 	XBeeBaseStation xbeeBaseStation;
 
 	/**
 	 * Create a new XBeeBaseStation.
 	 * 
 	 * @param parent the parent Propinquity object
-	 * @param xbeeBaseStation the XBeeBaseStation object which actually hold the
-	 *            XBee
+	 * @param xbeeBaseStation the XBeeBaseStation object which actually hold the XBee
 	 */
 	public XBeeManager(Propinquity parent, XBeeBaseStation xbeeBaseStation) {
 		this.parent = parent;
@@ -33,14 +38,14 @@ public class XBeeManager implements UIElement {
 		isVisible = true; // controlP5 defaults to true
 		controlP5 = new ControlP5(parent);
 
+		font = parent.loadFont("hud/Calibri-Bold-32.vlw");
+
 		// Button to scan for XBees
-		plScanButton = controlP5.addButton("XBeeBaseStation Scan", 0, parent.width / 2 + 60, parent.height / 2 + 50,
-				50, 20);
+		plScanButton = controlP5.addButton("XBeeBaseStation Scan", 0, parent.width / 2 + 60, parent.height / 2 + 50, 50, 20);
 		plScanButton.setCaptionLabel("SCAN");
 
 		// Next button
-		plNextButton = controlP5.addButton("XBeeBaseStation Next", 0, parent.width / 2 + 60 + 50 + 10,
-				parent.height / 2 + 50, 50, 20);
+		plNextButton = controlP5.addButton("XBeeBaseStation Next", 0, parent.width / 2 + 60 + 50 + 10, parent.height / 2 + 50, 50, 20);
 		plNextButton.setCaptionLabel("NEXT");
 
 		hide();
@@ -54,22 +59,19 @@ public class XBeeManager implements UIElement {
 	 * @param event the controlP5 event.
 	 */
 	public void controlEvent(ControlEvent event) {
-		if (isVisible) {
-			if (event.controller().name().equals("XBeeBaseStation Scan"))
-				xbeeBaseStation.scan();
-			else if (event.controller().name().equals("XBeeBaseStation Next"))
-				processUIEvent();
-		}
+		if(!isVisible) return;
+		if(event.controller().name().equals("XBeeBaseStation Scan")) xbeeBaseStation.scan();
+		else if(event.controller().name().equals("XBeeBaseStation Next")) processUIEvent();
 	}
 
 	/**
 	 * Receive a keyPressed event.
 	 * 
+	 * @param key the char of the keyPressed event.
 	 * @param keycode the keycode of the keyPressed event.
 	 */
-	public void keyPressed(int keycode) {
-		if (isVisible && keycode == PConstants.ENTER)
-			processUIEvent();
+	public void keyPressed(char key, int keycode) {
+		if(isVisible && (key == PConstants.ENTER || keycode == ' ')) processUIEvent();
 	}
 
 	/**
@@ -77,11 +79,8 @@ public class XBeeManager implements UIElement {
 	 * 
 	 */
 	void processUIEvent() {
-		if (xbeeBaseStation.isScanning())
-			return;
-		else if (parent != null)
-			parent.changeGameState(GameState.PlayerList); // TODO Fix this is
-															// horrid.
+		if(xbeeBaseStation.isScanning()) return;
+		else if(parent != null) parent.changeGameState(GameState.PlayerList); // TODO Fix this is sloppy
 	}
 
 	/* --- Graphics --- */
@@ -118,30 +117,26 @@ public class XBeeManager implements UIElement {
 	 * 
 	 */
 	public void draw() {
-		if (isVisible) {
+		if(!isVisible) return;
 
-			String msg = "";
-			if (xbeeBaseStation.isScanning())
-				msg = "Scanning...";
-			else {
-				for (String s : xbeeBaseStation.listXBees())
-					msg += s;
-				if (msg.isEmpty())
-					msg = "No XBees found";
-			}
-
-			parent.pushMatrix();
-			parent.translate(parent.width / 2, parent.height / 2);
-			parent.textFont(Graphics.font, Hud.FONT_SIZE);
-			parent.textAlign(PConstants.CENTER, PConstants.CENTER);
-			parent.fill(255);
-			parent.noStroke();
-			parent.text("Detecting XBee modules... ", 0, 0);
-			parent.translate(0, 30);
-			parent.textFont(Graphics.font, Hud.FONT_SIZE * 0.65f);
-			parent.text(msg, 0, 0);
-			parent.popMatrix();
+		String msg = "";
+		if(xbeeBaseStation.isScanning()) msg = "Scanning...";
+		else {
+			for(String s : xbeeBaseStation.listXBees()) msg += s;
+			if(msg.isEmpty()) msg = "No XBees found";
 		}
+
+		parent.pushMatrix();
+		parent.translate(parent.width / 2, parent.height / 2);
+		parent.textFont(font, 32);
+		parent.textAlign(PConstants.CENTER, PConstants.CENTER);
+		parent.fill(255);
+		parent.noStroke();
+		parent.text("Detecting XBee modules... ", 0, 0);
+		parent.translate(0, 30);
+		parent.textFont(font, 21);
+		parent.text(msg, 0, 0);
+		parent.popMatrix();
 	}
 
 	/**
@@ -150,7 +145,7 @@ public class XBeeManager implements UIElement {
 	 */
 	public void dispose() {
 		xbeeBaseStation.reset();
-		if (controlP5 != null) {
+		if(controlP5 != null) {
 			controlP5.dispose();
 			controlP5 = null;
 		}

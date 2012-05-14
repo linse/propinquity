@@ -1,5 +1,6 @@
 books/
 /software/bin
+/software/doc
 /software/data/xbees.lst
 /software/data/player.lst
 *.class

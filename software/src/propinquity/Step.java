@@ -21,13 +21,13 @@ public class Step {
 
 	public int getPacketComponent() {
 		int p = 0;
-		if (_led0)
+		if(_led0)
 			p |= 8;
-		if (_led1)
+		if(_led1)
 			p |= 4;
-		if (_led2)
+		if(_led2)
 			p |= 2;
-		if (_led3)
+		if(_led3)
 			p |= 1;
 		return p;
 	}
@@ -35,13 +35,13 @@ public class Step {
 	public int[] getCurrentPatches() {
 		int[] patches = { -1, -1, -1, -1 };
 		int num = 0;
-		if (_led0)
+		if(_led0)
 			patches[num++] = 0;
-		if (_led1)
+		if(_led1)
 			patches[num++] = 1;
-		if (_led2)
+		if(_led2)
 			patches[num++] = 2;
-		if (_led3)
+		if(_led3)
 			patches[num] = 3;
 		return patches;
 	}

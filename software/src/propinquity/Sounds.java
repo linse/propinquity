@@ -25,7 +25,7 @@ public class Sounds {
 	/**
 	 * Setup the Minim audio manager.
 	 * 
-	 * @param application
+	 * @param parent
 	 */
 	public Sounds(PApplet parent) {
 		minim = new Minim(parent);

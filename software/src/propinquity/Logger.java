@@ -8,16 +8,13 @@ import processing.video.MovieMaker;
 /**
  * Handles both text and video logging of the application as it runs.
  * 
- * @author Stephane Beniak
  */
 public class Logger {
 
-	/**
-	 * Output log file location.
-	 */
-	public static final String outputFile = "bin/messages.txt";
+	PApplet parent;
 
-	boolean isRecording = false;
+	boolean recording;
+	boolean logging;
 
 	PrintWriter output;
 	MovieMaker movieMaker;
@@ -25,37 +22,85 @@ public class Logger {
 	/**
 	 * Make a new logger object.
 	 * 
-	 * @param p The Propinquity instance.
+	 * @param parent The parent processing applet.
 	 */
 	public Logger(PApplet parent) {
-
-		output = parent.createWriter(outputFile);
-		output.println("Starting Logging of Propinquity Test.");
+		this.parent = parent;
+		parent.registerDispose(this);
 	}
 
 	/**
-	 * Print a line of output to the text log file.
-	 * 
-	 * @param line The string to be logged.
+	 * Start logging text file.
+	 *
+	 * @param outputLogFile The path to the output text log file.
 	 */
-	public void printOutput(String line) {
-		output.println(line);
+	public void startLogging(String outputLogFile) {
+		output = parent.createWriter(outputLogFile);
+		logging = true;
+
+		println("Propinquity Log");
+	}
+
+	/**
+	 * Start recording the movie.
+	 *
+	 * @param outputMovieFile The path to the output movie file.
+	 */
+	public void startRecording(String outputMovieFile) {
+		movieMaker = new MovieMaker(parent, parent.width, parent.height, outputMovieFile);
+		recording = true;
 	}
 
 	/**
 	 * Record a frame of video.
+	 *
 	 */
 	public void recordFrame() {
-		if (isRecording)
-			movieMaker.addFrame();
+		if(recording) movieMaker.addFrame();
+	}
+
+	/**
+	 * Print output text to the log file.
+	 * 
+	 * @param line The string to be logged.
+	 */
+	public void print(String text) {
+		if(logging) {
+			output.print(text);
+			output.flush();
+		}
+	}
+
+	/**
+	 * Print output text to the log file followed by a new line.
+	 * 
+	 * @param line The string to be logged.
+	 */
+	public void println(String text) {
+		if(logging) {
+			output.println(text);
+			output.flush();
+		}
 	}
 
 	/**
 	 * Close the text logger.
+	 *
 	 */
 	public void close() {
-		output.flush();
-		output.close();
+		if(recording) movieMaker.finish();
+		if(logging) {
+			output.flush();
+			output.close();
+		}
+	}
+
+	/**
+	 * Processing triggered dispose method.
+	 *
+	 */
+	public void dispose() {
+		close();
 	}
 
 }

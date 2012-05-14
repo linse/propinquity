@@ -152,23 +152,23 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 
 			try {
 				response = xbee.sendSynchronous(new AtCommand("NI"), XBEE_RESPONSE_TIMEOUT);
-			} catch (XBeeTimeoutException e) {
-			    System.out.println("\t\tTimeout getting NI");
-			    continue;
-			} catch (XBeeException e) {
+			} catch(XBeeTimeoutException e) {
+				System.out.println("\t\tTimeout getting NI");
+				continue;
+			} catch(XBeeException e) {
 				System.out.println("\t\tException getting NI");
 				continue;
 			}
-	
-			if (response != null && response.getApiId() == ApiId.AT_RESPONSE) {
-			    AtCommandResponse atResponse = (AtCommandResponse)response;
-			    if (atResponse.isOk()) {
-			    	ni = new String(atResponse.getValue(), 0, atResponse.getValue().length);
-		        	System.out.println("\t\tGot NI: " + ni);
-			    } else {
-			        System.out.println("\t\tNI Command was not successful");
-			        continue;
-			    }
+
+			if(response != null && response.getApiId() == ApiId.AT_RESPONSE) {
+				AtCommandResponse atResponse = (AtCommandResponse)response;
+				if(atResponse.isOk()) {
+					ni = new String(atResponse.getValue(), 0, atResponse.getValue().length);
+					System.out.println("\t\tGot NI: " + ni);
+				} else {
+					System.out.println("\t\tNI Command was not successful");
+					continue;
+				}
 			} else {
 				System.out.println("\t\tNI Response was null or wrong type");
 				continue;
@@ -184,23 +184,26 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 	}
 
 	/**
-	 * @return an array containing the port names for all serial ports that are not currently being used.
+	 * Scan the COMM port an find the available ones.
+	 *
+	 * @return a String array containing the port names for all serial ports that are not currently being used.
+	 *
 	 */
 	public static String[] getAvailableSerialPorts() {
 		Vector<String> portNames = new Vector<String>();
-		Enumeration ports = CommPortIdentifier.getPortIdentifiers();
+		Enumeration<CommPortIdentifier> ports = CommPortIdentifier.getPortIdentifiers();
 		while(ports.hasMoreElements()) {
-			CommPortIdentifier com = (CommPortIdentifier)ports.nextElement();
+			CommPortIdentifier com = ports.nextElement();
 			switch(com.getPortType()) {
 				case CommPortIdentifier.PORT_SERIAL:
 				try {
 					CommPort port = com.open("CommUtil", 50);
 					port.close();
 					portNames.add(com.getName());
-				} catch (PortInUseException e) {
-					System.out.println("Port, "  + com.getName() + ", is in use.");
-				} catch (Exception e) {
-					System.err.println("Failed to open port " +  com.getName());
+				} catch(PortInUseException e) {
+					System.out.println("Port, " + com.getName() + ", is in use.");
+				} catch(Exception e) {
+					System.err.println("Failed to open port " + com.getName());
 					e.printStackTrace();
 				}
 			}
