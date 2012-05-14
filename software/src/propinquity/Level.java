@@ -127,13 +127,8 @@ public class Level implements ProxEventListener {
 	}
 
 	void stepUpdate() {
-		int nextStep = (int) PApplet.constrain(song.position() / stepInterval, 0, steps.length - 1);
-		if (nextStep != currentStep) {
-			System.out.println(nextStep);
-			currentStep = nextStep;
-			coop = steps[currentStep].isCoop();
-			// TODO Handle Patches and set player coop
-		}
+		coop = steps[currentStep].isCoop();
+		//TODO Handle Patches and set player coop
 	}
 
 	public boolean isCoop() {
@@ -170,7 +165,11 @@ public class Level implements ProxEventListener {
 			players[i].update();
 		}
 
-		stepUpdate();
+		int nextStep = (int)PApplet.constrain(song.position()/stepInterval, 0, steps.length-1);
+		if(nextStep != currentStep) {
+			currentStep = nextStep;
+			stepUpdate();
+		}
 	}
 
 	public void draw() {
