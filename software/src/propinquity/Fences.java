@@ -8,10 +8,19 @@ import org.jbox2d.dynamics.BodyDef;
 import processing.core.PConstants;
 import processing.core.PApplet;
 
+/**
+ * Pertains to the inner and outer fences of the Propinquity game world.
+ * 
+ * @author Stephane Beniak
+ */
 public class Fences {
 
+	/**
+	 * This denotes the number of sections into which the fence circle will be broken up to form a polygon.
+	 */
 	public static final int SECTIONS = 24;
 	public static final int INNER_RADIUS = 100;
+	public static final int OUTER_RADIUS = 350;
 	
 	public static final short CAT_NEW = 0x0001;
 	public static final short CAT_OLD = 0x0002;
@@ -43,9 +52,9 @@ public class Fences {
 		sd.filter.categoryBits = CAT_INNER;
 		sd.filter.maskBits = MASK_INNER;
 
-		float fenceDepth = 0.2f;
+		float fenceDepth = 0.025f;
 		float worldScale = parent.height / parent.worldSize;
-		float radius = INNER_RADIUS / worldScale + fenceDepth;
+		float radius = INNER_RADIUS / worldScale + fenceDepth / 2;
 		float perimeter = 2 * PConstants.PI * radius;
 
 		innerFence = parent.box2d.createBody(bd);
@@ -66,9 +75,9 @@ public class Fences {
 		sd.filter.categoryBits = CAT_OUTER;
 		sd.filter.maskBits = MASK_OUTER;
 
-		float fenceDepth = 0.2f;
+		float fenceDepth = 0.05f;
 		float worldScale = parent.height / parent.worldSize;
-		float radius = (parent.worldSize - (Hud.WIDTH / worldScale)) / 2f + fenceDepth / 2;
+		float radius = OUTER_RADIUS / worldScale + fenceDepth / 2;
 		float perimeter = 2 * PConstants.PI * radius;
 
 		outerFence = parent.box2d.createBody(bd);

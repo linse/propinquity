@@ -8,14 +8,14 @@ import processing.opengl.PGraphicsOpenGL;
 /**
  * 
  * 
- * @author Stephane Beniak
+ * @author Stephane Beniak, Severin Smith
  */
 public class Hud {
 
 	// HUD constants
 	public static final int FONT_SIZE = 30;
 	public static final int WIDTH = 50;
-	public static final int OFFSET = 4;
+	public static final int OFFSET = 20;
 	public static final int SCORE_RADIUS_OFFSET = 40;
 	public static final float SCORE_ANGLE_OFFSET = 0.35f;
 	public static final float SCORE_ROT_SPEED = 0.0001f;
@@ -160,7 +160,7 @@ public class Hud {
 			while(parent.textWidth(score + name) < 240)
 				name += ' ';
 
-			drawArc(name + score, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, ang - Hud.SCORE_ANGLE_OFFSET);
+			drawArc(name + score, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET + Hud.OFFSET, ang - Hud.SCORE_ANGLE_OFFSET);
 
 			parent.popMatrix();
 
@@ -199,7 +199,7 @@ public class Hud {
 				while(parent.textWidth(score + name) < 240)
 					name += ' ';
 
-				drawArc(name + score, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, ang - Hud.SCORE_ANGLE_OFFSET);
+				drawArc(name + score, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET + Hud.OFFSET, ang - Hud.SCORE_ANGLE_OFFSET);
 
 				parent.popMatrix();
 			}
@@ -284,7 +284,7 @@ public class Hud {
 		parent.textFont(font, FONT_SIZE);
 		String cropped_text = text.length() > 24 ? text.substring(0, 24) : text;
 		float offset = (parent.textWidth(cropped_text) / 2) / (2 * PApplet.PI * (parent.height / 2 - Hud.SCORE_RADIUS_OFFSET)) * PApplet.TWO_PI;
-		drawArc(cropped_text, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, angle - offset);
+		drawArc(cropped_text, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET + Hud.OFFSET, angle - offset);
 		parent.popMatrix();
 	}
 
