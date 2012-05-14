@@ -20,9 +20,6 @@ public class Sounds {
 	AudioPlayer negativeCoop;
 	AudioPlayer[] negativePlayer;
 
-	AudioPlayer song;
-
-
 	/**
 	 * Setup the Minim audio manager.
 	 * 
@@ -47,12 +44,7 @@ public class Sounds {
 	 * Load the song for the current level.
 	 */
 	public AudioPlayer loadSong(String file) {
-		if(song != null) song.close();
-		return song = minim.loadFile(SONG_FOLDER + file, BUFFER_SIZE);
-	}
-
-	public AudioPlayer getSong() {
-		return song;
+		return minim.loadFile(SONG_FOLDER + file, BUFFER_SIZE);
 	}
 
 	public AudioPlayer getComplete() {

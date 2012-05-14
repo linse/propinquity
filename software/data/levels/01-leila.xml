@@ -3,72 +3,72 @@
 	<song file="05 Leila Came Round And We Watched A Video.mp3" bpm="60"/>
 	<sequence>
 		<step mode="versus">
-			<player number="1" patch1="1" patch2="0" patch3="0" patch4="0"/>
-			<player number="2" patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 		</step>
 		<step mode="versus">
-			<player number="1" patch1="0" patch2="1" patch3="0" patch4="0"/>
-			<player number="2" patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 		</step> 
 		<step mode="versus">
-			<player number="1" patch1="0" patch2="0" patch3="0" patch4="0"/>
-			<player number="2" patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 		</step>
 		<step mode="versus">
-			<player number="1" patch1="0" patch2="1" patch3="0" patch4="0"/>
-			<player number="2" patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 		</step>
 		<step mode="versus">
-			<player number="1" patch1="0" patch2="0" patch3="0" patch4="0"/>
-			<player number="2" patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 		</step>
 		<step mode="versus">
-			<player number="1" patch1="0" patch2="1" patch3="0" patch4="0"/>
-			<player number="2" patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 		</step>
 		<step mode="versus">
-			<player number="1" patch1="1" patch2="0" patch3="0" patch4="0"/>
-			<player number="2" patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 		</step>
 		<step mode="versus">
-			<player number="1" patch1="0" patch2="1" patch3="0" patch4="0"/>
-			<player number="2" patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 		</step>
 		<step mode="versus">
-			<player number="1" patch1="1" patch2="0" patch3="0" patch4="0"/>
-			<player number="2" patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 		</step>
 		<step mode="versus">
-			<player number="1" patch1="0" patch2="1" patch3="0" patch4="0"/>
-			<player number="2" patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 		</step> 
 		<step mode="versus">
-			<player number="1" patch1="1" patch2="0" patch3="0" patch4="0"/>
-			<player number="2" patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 		</step>
 		<step mode="versus">
-			<player number="1" patch1="0" patch2="1" patch3="0" patch4="0"/>
-			<player number="2" patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 		</step>
 		<step mode="versus">
-			<player number="1" patch1="1" patch2="0" patch3="0" patch4="0"/>
-			<player number="2" patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 		</step>
 		<step mode="versus">
-			<player number="1" patch1="0" patch2="1" patch3="0" patch4="0"/>
-			<player number="2" patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 		</step>
 		<step mode="versus">
-			<player number="1" patch1="1" patch2="0" patch3="0" patch4="0"/>
-			<player number="2" patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 		</step>
 		<step mode="versus">
-			<player number="1" patch1="0" patch2="1" patch3="0" patch4="0"/>
-			<player number="2" patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 		</step>
 		<step mode="versus">
-			<player number="1" patch1="1" patch2="1" patch3="0" patch4="0"/>
-			<player number="2" patch1="1" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 		</step>
 	</sequence>
 </level>

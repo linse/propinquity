@@ -128,7 +128,7 @@ public class Propinquity extends PApplet implements PlayerConstants {
 	}
 
 	public void stop() {
-		if(gameState == GameState.Play) level.clear();
+		//Clear songs
 	}
 
 	public void draw() {
@@ -279,7 +279,6 @@ public class Propinquity extends PApplet implements PlayerConstants {
 			case Play: {
 				switch(key) {
 					case ESC: {
-						level.clear();
 						exit();
 						break;
 					}

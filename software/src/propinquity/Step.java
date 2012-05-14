@@ -14,7 +14,7 @@ public class Step {
 		return patches;
 	}
 
-	public booelan isCoop() {
+	public boolean isCoop() {
 		return coop;
 	}
 

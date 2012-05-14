@@ -88,14 +88,6 @@ public class Player implements PConstants, ProxEventListener {
 
 		score.reset();
 	}
-
-	public void clear() {
-		// clear vibration
-		sendVibes(0);
-
-		// close xbee comm
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -161,7 +153,6 @@ public class Player implements PConstants, ProxEventListener {
 	}
 
 	public void update() {
-
 		currentTime = parent.millis();
 
 		score.update();
