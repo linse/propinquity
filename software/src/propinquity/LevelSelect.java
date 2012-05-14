@@ -8,9 +8,8 @@ import javax.media.opengl.GL;
 import org.jbox2d.common.Vec2;
 
 import processing.core.*;
+import processing.xml.*;
 import processing.opengl.PGraphicsOpenGL;
-import xbee.*;
-import proxml.*;
 
 public class LevelSelect implements PConstants, UIElement {
 
@@ -45,21 +44,23 @@ public class LevelSelect implements PConstants, UIElement {
 
 		isVisible = true;
 
-		loadLevels();
-	}
-
-	void loadLevels() {
-		// get the list of level xml files
 		levelFiles = listFileNames(parent.dataPath(LEVEL_FOLDER), "xml");
-		levels = new Level[levelFiles.length];
 		// load each level to know the song name and duration
+		Vector<Level> tmp_levels = new Vector<Level>();
 		for (int i = 0; i < levelFiles.length; i++) {
-			levels[i] = new Level(parent, sounds, players, LEVEL_FOLDER+levelFiles[i]);
+			try {
+				tmp_levels.add(new Level(parent, LEVEL_FOLDER+levelFiles[i], players, sounds));
+			} catch(XMLException e) {
+				System.out.println("Level not built for file \""+levelFiles[i]+"\" because of the following XMLException");
+				System.out.println(e.getMessage());
+			}
 		}
+
+		levels = tmp_levels.toArray(new Level[0]);
 	}
 
 	// This function returns all the files in a directory as an array of Strings
-	private String[] listFileNames(String dir, String ext) {
+	String[] listFileNames(String dir, String ext) {
 		File file = new File(dir);
 		if(file.isDirectory()) {
 			String names[] = file.list();
@@ -155,13 +156,13 @@ public class LevelSelect implements PConstants, UIElement {
 			hud.drawBannerCenter(playerNames[selected], players[state].getColor(), PApplet.TWO_PI/playerNames.length*selected);
 		} else if(state == playerNames.length) {
 			hud.drawCenterText("Select Song");
-			hud.drawBannerCenter(levels[selected].songName, PlayerConstants.NEUTRAL_COLOR, PApplet.TWO_PI/levels.length*selected);
+			hud.drawBannerCenter(levels[selected].getName(), PlayerConstants.NEUTRAL_COLOR, PApplet.TWO_PI/levels.length*selected);
 		}
 
 		parent.popMatrix();
 	}
 
-	private void drawParticles() {
+	void drawParticles() {
 		if(particles == null) return;
 
 		for (int i = 0; i < particles.length; i++) {

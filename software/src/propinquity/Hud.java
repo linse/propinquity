@@ -171,9 +171,9 @@ public class Hud {
 				sounds.complete.rewind();
 				parent.level.setLastCoopDone(true);
 			}
-			for(int i = 0; i < parent.level.getNumberOfPlayers(); i++) {
+			for(int i = 0; i < parent.players.length; i++) {
 				Player player = parent.level.getPlayer(i);
-				player.approachHudTo(-PConstants.HALF_PI + PConstants.TWO_PI / parent.level.getNumberOfPlayers() * i);
+				player.approachHudTo(-PConstants.HALF_PI + PConstants.TWO_PI / parent.players.length * i);
 				float ang = angle - PConstants.HALF_PI + player.hudAngle;
 				parent.pushMatrix();
 				parent.translate(parent.width / 2 + PApplet.cos(ang) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET),

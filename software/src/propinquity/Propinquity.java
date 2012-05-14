@@ -10,7 +10,6 @@ import pbox2d.*;
 
 import processing.core.*;
 import processing.opengl.PGraphicsOpenGL;
-import proxml.*;
 
 import propinquity.hardware.*;
 
@@ -24,7 +23,6 @@ public class Propinquity extends PApplet implements PlayerConstants {
 	GL gl;
 	
 	Logger logger;
-	XMLInOut xmlInOut;
 
 	GameState gameState;
 
@@ -74,7 +72,6 @@ public class Propinquity extends PApplet implements PlayerConstants {
 		hud = new Hud(this, sounds);
 
 		// Load common artwork and sound
-		sounds.loadCommonContent();
 
 		// Create resources
 		xbeeBaseStation = new XBeeBaseStation();
@@ -102,7 +99,7 @@ public class Propinquity extends PApplet implements PlayerConstants {
 
 			Color color = PLAYER_COLORS[i];
 
-			players[i] = new Player(this, null, color, patches, glove);
+			players[i] = new Player(this, null, color, patches, glove, sounds);
 		}
 
 		playerList = new PlayerList(this, hardware, "player.lst");
@@ -241,8 +238,6 @@ public class Propinquity extends PApplet implements PlayerConstants {
 
 			case Play: {
 				level = levelSelect.chosenLevel;
-
-				level.load();
 				break;
 			}
 		}
@@ -305,10 +300,10 @@ public class Propinquity extends PApplet implements PlayerConstants {
 					}
 
 					case 'i': { // info
-						int score0 = level.getPlayer(0).score.liquid.particlesHeld.size();
-						int score1 = level.getPlayer(1).score.liquid.particlesHeld.size();
-						logger.println("Particles: " + (score0 + " " + score1));
-						logger.println("Framerate: " + frameRate);
+						// int score0 = level.getPlayer(0).score.liquid.particlesHeld.size();
+						// int score1 = level.getPlayer(1).score.liquid.particlesHeld.size();
+						// logger.println("Particles: " + (score0 + " " + score1));
+						// logger.println("Framerate: " + frameRate);
 						break;
 					}
 

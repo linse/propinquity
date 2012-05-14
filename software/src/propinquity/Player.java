@@ -45,7 +45,6 @@ public class Player implements PConstants, ProxEventListener {
 	Patch[] patches;
 	Glove glove;
 
-
 	AudioPlayer negSoundPlayer;
 	AudioPlayer negSoundCoop;
 
@@ -56,7 +55,7 @@ public class Player implements PConstants, ProxEventListener {
 	private long currentTime;
 	private long lastTime;
 
-	public Player(Propinquity parent, String name, Color color, Patch[] patches, Glove glove) {
+	public Player(Propinquity parent, String name, Color color, Patch[] patches, Glove glove, Sounds sounds) {
 		this.parent = parent;
 		
 		this.name = name;
@@ -64,6 +63,9 @@ public class Player implements PConstants, ProxEventListener {
 
 		this.patches = patches;
 		this.glove = glove;
+
+		negSoundPlayer = sounds.getNegativePlayer(0); //TODO
+		negSoundCoop = sounds.getNegativeCoop();
 
 		score = new Score(parent, color);
 
@@ -116,26 +118,16 @@ public class Player implements PConstants, ProxEventListener {
 		return patches;
 	}
 
-	public void registerNegativePlayerSound(AudioPlayer ap) {
-		negSoundPlayer = ap;
-	}
-
-	public void registerNegativeCoopSound(AudioPlayer ap) {
-		negSoundCoop = ap;
-	}
-
 	public void playNegativeSound() {
-		if (!Sounds.MUTE) {
-			if (isInCoopMode()) {
-				if (negSoundCoop != null) {
-					negSoundCoop.play();
-					negSoundCoop.rewind();
-				}
-			} else {
-				if (negSoundPlayer != null) {
-					negSoundPlayer.play();
-					negSoundPlayer.rewind();
-				}
+		if (isInCoopMode()) {
+			if (negSoundCoop != null) {
+				negSoundCoop.play();
+				negSoundCoop.rewind();
+			}
+		} else {
+			if (negSoundPlayer != null) {
+				negSoundPlayer.play();
+				negSoundPlayer.rewind();
 			}
 		}
 	}

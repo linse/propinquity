@@ -49,12 +49,11 @@ public class PlayerList implements PlayerConstants, UIElement {
 		nextButton = controlP5.addButton("NEXT", 0, parent.width / 2 - WIDTH / 2 + 2 * WIDTH / 3, parent.height / 2, 50, 20);
 
 		// load the player list
-		// playerList = new Vector();
-		String[] xml_lines = parent.loadStrings(plistFile);
-		if(xml_lines != null) {
-			for(int i = 0; i < xml_lines.length; i++) {
-				if(PApplet.trim(xml_lines[i]).length() > 0) {
-					addPlayer(xml_lines[i]);
+		String[] plistLines = parent.loadStrings(plistFile);
+		if(plistLines != null) {
+			for(int i = 0; i < plistLines.length; i++) {
+				if(PApplet.trim(plistLines[i]).length() > 0) {
+					addPlayer(plistLines[i]);
 				}
 			}
 		}
