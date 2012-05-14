@@ -6,6 +6,9 @@ TODO
 * Gravity didn't come back once
 * Verify that particles are properly destroyed always
 * Load/Unload songs as needed
+* Multiple scoring patch handling?
+* Max number of particles vs size
+* Meta balls/Liquid 
 
 * Handle actual behavior for vibe and patches
 	* Player name mapping
