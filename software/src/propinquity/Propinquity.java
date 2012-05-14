@@ -240,7 +240,7 @@ public class Propinquity extends PApplet implements PlayerConstants {
 			}
 
 			case Play: {
-				level = new Level(this, sounds, levelSelect.players, levelSelect.levelFile);
+				level = levelSelect.chosenLevel;
 
 				level.load();
 				break;
