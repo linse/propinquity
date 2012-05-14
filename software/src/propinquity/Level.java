@@ -75,7 +75,10 @@ public class Level {
 				boolean patches[][] = new boolean[player_tags.length][4];
 				if(player_tags.length > 1) {
 					for(int j = 0;j < player_tags.length;j++) {
-						patches[j][0] = player_tags[j].getInt("patch1", 0) ? true : false;
+						patches[j][0] = (player_tags[j].getInt("patch1", 0) != 0);
+						patches[j][1] = (player_tags[j].getInt("patch2", 0) != 0);
+						patches[j][2] = (player_tags[j].getInt("patch3", 0) != 0);
+						patches[j][3] = (player_tags[j].getInt("patch4", 0) != 0);
 					}
 				} else {
 					throw new XMLException("XMLException: XML for level \""+name+"\", step "+i+" has less than two player tags.");
@@ -113,7 +116,7 @@ public class Level {
 	}
 
 	void stepUpdate() {
-		int nextStep = PApplet.constrain(song.position()/stepInterval, 0, steps.length);
+		int nextStep = (int)PApplet.constrain(song.position()/stepInterval, 0, steps.length);
 		if(nextStep != currentStep) {
 			currentStep = nextStep;
 			coop = steps[currentStep].isCoop();

@@ -173,7 +173,7 @@ public class Propinquity extends PApplet implements PlayerConstants {
 			} else {
 				// keep track of done time
 				if(doneTime == -1) {
-					level.clear();
+					// level.clear();
 					doneTime = frameCount;
 				}
 
@@ -305,7 +305,7 @@ public class Propinquity extends PApplet implements PlayerConstants {
 					}
 
 					case 'e': {// play stub
-						level.currentStep = level.stepCount;
+						// level.currentStep = level.stepCount;
 						break;
 					}
 
