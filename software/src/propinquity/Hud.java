@@ -133,7 +133,8 @@ public class Hud {
 		parent.noStroke();
 		parent.noFill();
 
-		if(parent.level.isCoop() && !parent.level.isCoopDone()) {
+		// if(parent.level.isCoop() && !parent.level.isCoopDone()) {
+		if(parent.level.isCoop()) {
 
 			float ang = angle - PConstants.HALF_PI;
 			parent.pushMatrix();
@@ -166,13 +167,13 @@ public class Hud {
 
 		} else {
 
-			if(!parent.level.getLastCoopDone()) {
-				sounds.complete.play();
-				sounds.complete.rewind();
-				parent.level.setLastCoopDone(true);
-			}
+			// if(!parent.level.getLastCoopDone()) {
+			// 	sounds.complete.play();
+			// 	sounds.complete.rewind();
+			// 	parent.level.setLastCoopDone(true);
+			// }
 			for(int i = 0; i < parent.players.length; i++) {
-				Player player = parent.level.getPlayer(i);
+				Player player = parent.players[i];
 				player.approachHudTo(-PConstants.HALF_PI + PConstants.TWO_PI / parent.players.length * i);
 				float ang = angle - PConstants.HALF_PI + player.hudAngle;
 				parent.pushMatrix();
@@ -208,7 +209,8 @@ public class Hud {
 	
 	public void drawScoreBanners() {
 		
-		if (parent.level.isCoop() && !parent.level.isCoopDone()) {
+		// if (parent.level.isCoop() && !parent.level.isCoopDone()) {
+		if (parent.level.isCoop()) {
 			String score = String.valueOf(parent.level.getTotalPoints());
 			String name = "Coop";
 			while(parent.textWidth(score + name) < 240)
