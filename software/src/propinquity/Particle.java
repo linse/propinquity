@@ -80,7 +80,6 @@ public class Particle {
 		position = parent.box2d.getBodyPixelCoord(body);
 
 		parent.pushMatrix();
-		parent.translate(parent.width / 2, parent.height / 2);
 		parent.translate(position.x, position.y);
 		parent.scale(scale * texture.width / 2f);
 		parent.beginShape();

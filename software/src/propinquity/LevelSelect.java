@@ -167,9 +167,14 @@ public class LevelSelect implements PConstants, UIElement {
 	void drawParticles() {
 		if(particles == null) return;
 
+		parent.pushMatrix();
+		parent.translate(parent.width / 2, parent.height / 2);
+		
 		for (int i = 0; i < particles.length; i++) {
 			particles[i].draw();
 		}
+		
+		parent.popMatrix();
 	}
 
 	/**
