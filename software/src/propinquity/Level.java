@@ -235,27 +235,6 @@ public class Level {
 			parent.simulator.addProxEventListener(players[i]);
 	}
 
-	public void loadSong(XMLElement songXML) {
-		// load number of players
-		int numPlayers = songXML.countChildren() - 1;
-
-		// check if we have an correct level file
-		if(numPlayers < 0) {
-			System.out.println("Error: Empty level file");
-			successfullyRead = 0;
-			return;
-		}
-
-		// read song
-		songName = songXML.getChild(0).getAttribute("name");
-		songFile = songXML.getChild(0).getAttribute("file");
-		songDuration = songXML.getChild(0).getAttribute("duration");
-		tempo = songXML.getChild(0).getIntAttribute("bpm");
-		multiplier = songXML.getChild(0).getIntAttribute("multiplier");
-
-		successfullyRead = 1;
-	}
-
 	private void loadDefaults() {
 
 		tempo = DEFAULT_TEMPO;
@@ -278,6 +257,25 @@ public class Level {
 		XMLElement sequence;
 		XMLElement step;
 		int numPlayers, numSteps;
+
+		// load number of players
+		numPlayers = songXML.countChildren() - 1;
+
+		// check if we have an correct level file
+		if(numPlayers < 0) {
+			System.out.println("Error: Empty level file");
+			successfullyRead = 0;
+			return;
+		}
+
+		// read song
+		songName = songXML.getChild(0).getAttribute("name");
+		songFile = songXML.getChild(0).getAttribute("file");
+		songDuration = songXML.getChild(0).getAttribute("duration");
+		tempo = songXML.getChild(0).getIntAttribute("bpm");
+		multiplier = songXML.getChild(0).getIntAttribute("multiplier");
+
+		successfullyRead = 1;
 
 		// load number of players
 		numPlayers = levelXML.countChildren() - 1;
@@ -443,18 +441,18 @@ public class Level {
 			return -1;
 	}
 
-	public void processProxReading(ProxData data) {
-		// check if we are in coop mode
-		if(isCoop && (coopPoints == 0 || getTotalPoints() < coopPoints * 2)) {
-			for(int i = 0; i < players.length; i++)
-				players[i].processProxReading(data.patch, data.step, data.touched, data.proximity);
-			// println("Proximity reading: " + data + " (coop)");
-		}
-		// if not only need to process for incoming player
-		else {
-			players[data.player].processProxReading(data.patch, data.step, data.touched, data.proximity);
-			// println("Proximity reading: " + data);
-		}
-	}
+	// public void processProxReading(ProxData data) {
+	// 	// check if we are in coop mode
+	// 	if(isCoop && (coopPoints == 0 || getTotalPoints() < coopPoints * 2)) {
+	// 		for(int i = 0; i < players.length; i++)
+	// 			players[i].processProxReading(data.patch, data.step, data.touched, data.proximity);
+	// 		// println("Proximity reading: " + data + " (coop)");
+	// 	}
+	// 	// if not only need to process for incoming player
+	// 	else {
+	// 		players[data.player].processProxReading(data.patch, data.step, data.touched, data.proximity);
+	// 		// println("Proximity reading: " + data);
+	// 	}
+	// }
 
 }

@@ -31,7 +31,7 @@ public class LevelSelect implements PConstants, UIElement {
 	String[] levelFiles;
 	Level[] levels;
 	Level loadingLevel;
-	String levelFile;
+	Level chosenLevel;
 
 	int state, selected;
 
@@ -51,30 +51,11 @@ public class LevelSelect implements PConstants, UIElement {
 	void loadLevels() {
 		// get the list of level xml files
 		levelFiles = listFileNames(parent.dataPath(LEVEL_FOLDER), "xml");
-
+		levels = new Level[levelFiles.length];
 		// load each level to know the song name and duration
-		Vector<Level> tmp_levels = new Vector<Level>();
 		for (int i = 0; i < levelFiles.length; i++) {
-			loadingLevel = new Level(parent, sounds);
-			parent.xmlInOut = new XMLInOut(parent, this);
-			parent.xmlInOut.loadElement(LEVEL_FOLDER + levelFiles[i]);
-			while (true)
-				if(loadingLevel.successfullyRead > -1)
-					break;
-
-			if(loadingLevel.successfullyRead == 0) {
-				System.err.println("I had some trouble reading the level file:" + levelFiles[i]);
-			}
-
-			tmp_levels.add(loadingLevel);
-			loadingLevel = null;
+			levels[i] = new Level(parent, sounds, players, LEVEL_FOLDER+levelFiles[i]);
 		}
-
-		levels = tmp_levels.toArray(new Level[0]);
-	}
-
-	public void xmlEvent(XMLElement levelXML) {
-		loadingLevel.loadSong(levelXML);
 	}
 
 	// This function returns all the files in a directory as an array of Strings
@@ -248,7 +229,7 @@ public class LevelSelect implements PConstants, UIElement {
 		if(state < playerNames.length) {
 			players[state].setName(playerNames[selected]);
 		} else if(state == playerNames.length) {
-			levelFile = LEVEL_FOLDER + levelFiles[selected];
+			chosenLevel = levels[selected];
 		}
 
 		stateChange(state+1);
