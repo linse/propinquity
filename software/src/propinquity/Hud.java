@@ -23,7 +23,6 @@ public class Hud {
 	public static final int BOUNDARY_WIDTH = 5;
 
 	private Propinquity parent;
-	private Sounds sounds;
 
 	float angle = 0;
 	float velocity = -PConstants.TWO_PI / 500f;
@@ -35,7 +34,6 @@ public class Hud {
 	public PImage hudInnerBoundary, hudOuterBoundary;
 	public PImage hudPlay, hudLevelComplete, hudPlayAgain;
 	public PImage hudBannerSide, hudBannerCenter;
-	public PImage hudPlayers[], hudCoop;
 
 	/**
 	 * 
@@ -44,7 +42,6 @@ public class Hud {
 	 */
 	public Hud(Propinquity parent, Sounds sounds) {
 		this.parent = parent;
-		this.sounds = sounds;
 
 		font = parent.loadFont("hud/Calibri-Bold-32.vlw");
 
@@ -57,14 +54,6 @@ public class Hud {
 		hudPlay = parent.loadImage("hud/sbtoplay.png");
 		hudLevelComplete = parent.loadImage("hud/levelcomplete.png");
 		hudPlayAgain = parent.loadImage("hud/sbtoplayagain.png");
-
-		hudPlayers = new PImage[2];
-		for(int i = 0; i < 2; i++) //TODO this is going out, should be gone
-			hudPlayers[i] = parent.loadImage("data/hud/player" + (i + 1) + "score.png");
-
-		// Load co-op HUD
-		hudCoop = parent.loadImage("data/hud/level.png");
-
 	}
 
 	/**
@@ -120,104 +109,28 @@ public class Hud {
 
 		angle += velocity;
 	}
-
-	/**
-	 * 
-	 */
-	public void draw() {
-		// TODO: Fix this
-		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
-		parent.gl.glEnable(GL.GL_BLEND);
-		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-
-		parent.noStroke();
-		parent.noFill();
-
-		if(parent.level.isCoop() && !parent.level.isCoopDone()) {
-
-			float ang = angle - PConstants.HALF_PI;
-			parent.pushMatrix();
-			parent.translate(parent.width / 2 + PApplet.cos(ang) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET),
-					parent.height / 2 + PApplet.sin(ang) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET));
-			parent.rotate(ang + PConstants.HALF_PI);
-			parent.scale(hudCoop.width / 2, hudCoop.height / 2);
-			parent.beginShape(PConstants.QUADS);
-			parent.texture(hudCoop);
-			parent.vertex(-1, -1, 0, 0, 0);
-			parent.vertex(1, -1, 0, 1, 0);
-			parent.vertex(1, 1, 0, 1, 1);
-			parent.vertex(-1, 1, 0, 0, 1);
-			parent.endShape(PConstants.CLOSE);
-			parent.popMatrix();
-			parent.pushMatrix();
-			parent.translate(parent.width / 2, parent.height / 2);
-			parent.fill(255);
-			parent.noStroke();
-			parent.textAlign(PConstants.CENTER, PConstants.BASELINE);
-			parent.textFont(font, Hud.FONT_SIZE);
-			String score = String.valueOf(parent.level.getTotalPoints());
-			String name = "Coop";
-			while(parent.textWidth(score + name) < 240)
-				name += ' ';
-
-			drawArc(name + score, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET + Hud.OFFSET, ang - Hud.SCORE_ANGLE_OFFSET);
-
-			parent.popMatrix();
-
-		} else {
-
-			if(!parent.level.getLastCoopDone()) {
-				sounds.complete.play();
-				sounds.complete.rewind();
-				parent.level.setLastCoopDone(true);
-			}
-			for(int i = 0; i < parent.level.getNumberOfPlayers(); i++) {
-				Player player = parent.level.getPlayer(i);
-				player.approachHudTo(-PConstants.HALF_PI + PConstants.TWO_PI / parent.level.getNumberOfPlayers() * i);
-				float ang = angle - PConstants.HALF_PI + player.hudAngle;
-				parent.pushMatrix();
-				parent.translate(parent.width / 2 + PApplet.cos(ang) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET),
-						parent.height / 2 + PApplet.sin(ang) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET));
-				parent.rotate(ang + PConstants.HALF_PI);
-				parent.scale(hudPlayers[i].width / 2, hudPlayers[i].height / 2);
-				parent.beginShape(PConstants.QUADS);
-				parent.texture(hudPlayers[i]);
-				parent.vertex(-1, -1, 0, 0, 0);
-				parent.vertex(1, -1, 0, 1, 0);
-				parent.vertex(1, 1, 0, 1, 1);
-				parent.vertex(-1, 1, 0, 0, 1);
-				parent.endShape(PConstants.CLOSE);
-				parent.popMatrix();
-				parent.pushMatrix();
-				parent.translate(parent.width / 2, parent.height / 2);
-				parent.fill(255);
-				parent.noStroke();
-				parent.textAlign(PConstants.CENTER, PConstants.BASELINE);
-				parent.textFont(font, Hud.FONT_SIZE);
-				String score = String.valueOf(player.score.getScore());
-				String name = player.getName().length() > 12 ? player.getName().substring(0, 12) : player.getName();
-				while(parent.textWidth(score + name) < 240)
-					name += ' ';
-
-				drawArc(name + score, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET + Hud.OFFSET, ang - Hud.SCORE_ANGLE_OFFSET);
-
-				parent.popMatrix();
-			}
-		}
-	}
 	
 	public void drawScoreBanners() {
 		
-		if (parent.level.isCoop() && !parent.level.isCoopDone()) {
+		if (parent.level.isCoop()) {
 			String score = String.valueOf(parent.level.getTotalPoints());
 			String name = "Coop";
+			
 			while(parent.textWidth(score + name) < 240)
 				name += ' ';
 			
 			drawBannerCenter(name + score, PlayerConstants.NEUTRAL_COLOR, angle);
-		}
-		else {
+		} else {
 			
+			for(int i = 0; i < parent.level.getNumberOfPlayers(); i++) {
+				String score = String.valueOf(parent.players[i].score.getScore());
+				String name = parent.players[i].getName();
+				
+				while(parent.textWidth(score + name) < 240)
+					name += ' ';
+				
+				drawBannerSide(name + score, PlayerConstants.PLAYER_COLORS[i], angle + (i * PConstants.PI));
+			}
 		}
 	}
 
@@ -299,7 +212,7 @@ public class Hud {
 		parent.translate(parent.width / 2, parent.height / 2);
 		parent.textAlign(PApplet.CENTER, PApplet.BASELINE);
 		parent.textFont(font, FONT_SIZE);
-		String cropped_text = text.length() > 24 ? text.substring(0, 24) : text;
+		String cropped_text = text.length() > 30 ? text.substring(0, 30) : text;
 		float offset = (parent.textWidth(cropped_text) / 2) / (2 * PApplet.PI * (parent.height / 2 - Hud.SCORE_RADIUS_OFFSET)) * PApplet.TWO_PI;
 		drawArc(cropped_text, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET + Hud.OFFSET, angle - offset);
 		parent.popMatrix();
@@ -327,7 +240,7 @@ public class Hud {
 		parent.popMatrix();
 	}
 
-	private void drawCenterImage(PImage image) {
+	public void drawCenterImage(PImage image) {
 		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
 		parent.gl.glEnable(GL.GL_BLEND);
 		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
