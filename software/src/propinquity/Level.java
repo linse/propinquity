@@ -121,7 +121,7 @@ public class Level {
 			System.out.println(nextStep);
 			currentStep = nextStep;
 			coop = steps[currentStep].isCoop();
-			//TODO Handle Patches
+			//TODO Handle Patches and set player coop
 		}
 	}
 

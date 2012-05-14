@@ -47,7 +47,6 @@ public class Score {
 	}
 
 	public void update() {
-
 		currentTime = parent.millis();
 
 		if(currentTime - lastTime > Score.SCORE_TIME) {
