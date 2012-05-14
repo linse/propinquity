@@ -151,7 +151,7 @@ public class Propinquity extends PApplet implements PlayerConstants {
 		hud.drawInnerBoundary();
 		hud.drawOuterBoundary();
 
-		hud.draw();
+		hud.drawScoreBanners();
 
 		if(level.isDone()) {
 

@@ -22,8 +22,8 @@ public class Hud {
 	public static final float PROMPT_ROT_SPEED = 0.002f;
 	public static final int BOUNDARY_WIDTH = 5;
 
-	Propinquity parent;
-	Sounds sounds;
+	private Propinquity parent;
+	private Sounds sounds;
 
 	float angle = 0;
 	float velocity = -PConstants.TWO_PI / 500f;
@@ -155,7 +155,7 @@ public class Hud {
 			parent.noStroke();
 			parent.textAlign(PConstants.CENTER, PConstants.BASELINE);
 			parent.textFont(font, Hud.FONT_SIZE);
-			String score = String.valueOf(parent.level.getTotalPoints() / 2);
+			String score = String.valueOf(parent.level.getTotalPoints());
 			String name = "Coop";
 			while(parent.textWidth(score + name) < 240)
 				name += ' ';
@@ -203,6 +203,21 @@ public class Hud {
 
 				parent.popMatrix();
 			}
+		}
+	}
+	
+	public void drawScoreBanners() {
+		
+		if (parent.level.isCoop() && !parent.level.isCoopDone()) {
+			String score = String.valueOf(parent.level.getTotalPoints());
+			String name = "Coop";
+			while(parent.textWidth(score + name) < 240)
+				name += ' ';
+			
+			drawBannerCenter(name + score, PlayerConstants.NEUTRAL_COLOR, angle);
+		}
+		else {
+			
 		}
 	}
 
@@ -262,6 +277,7 @@ public class Hud {
 		parent.noFill();
 
 		parent.pushMatrix();
+		parent.translate(parent.width / 2, parent.height / 2);
 		parent.translate(PApplet.cos(angle) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET), PApplet.sin(angle)
 				* (parent.height / 2 - Hud.WIDTH + Hud.OFFSET));
 		parent.rotate(angle + PApplet.PI / 2);
@@ -300,6 +316,7 @@ public class Hud {
 
 		parent.fill(255);
 		parent.pushMatrix();
+		parent.translate(parent.width / 2, parent.height / 2);
 		parent.rotate(parent.frameCount * Hud.PROMPT_ROT_SPEED);
 
 		parent.textFont(font, FONT_SIZE);

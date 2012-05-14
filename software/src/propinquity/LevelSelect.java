@@ -150,10 +150,7 @@ public class LevelSelect implements PConstants, UIElement {
 
 		hud.drawInnerBoundary();
 		hud.drawOuterBoundary();
-
-		parent.pushMatrix();
-		parent.translate(parent.width / 2, parent.height / 2);
-
+		
 		drawParticles();
 
 		if (state < playerNames.length) {
@@ -165,7 +162,6 @@ public class LevelSelect implements PConstants, UIElement {
 			hud.drawBannerCenter(levels[selected].getName(), PlayerConstants.NEUTRAL_COLOR, PApplet.TWO_PI/levels.length*selected);
 		}
 
-		parent.popMatrix();
 	}
 
 	void drawParticles() {
