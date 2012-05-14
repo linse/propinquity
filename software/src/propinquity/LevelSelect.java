@@ -7,7 +7,6 @@ import org.jbox2d.common.Vec2;
 
 import processing.core.*;
 import processing.xml.*;
-import processing.opengl.PGraphicsOpenGL;
 
 public class LevelSelect implements PConstants, UIElement {
 

@@ -125,14 +125,14 @@ public class Hud {
 
 			drawBannerCenter(name + score, PlayerConstants.NEUTRAL_COLOR, angle);
 		} else {
-			for (int i = 0; i < parent.level.getNumberOfPlayers(); i++) {
+			for (int i = 0; i < parent.players.length; i++) {
 				String score = String.valueOf(parent.players[i].score.getScore());
 				String name = parent.players[i].getName();
 
 				while (parent.textWidth(score + name) < 240)
 					name += ' ';
 
-				drawBannerSide(name + score, PlayerConstants.PLAYER_COLORS[i], angle + (i * PConstants.PI));
+				drawBannerSide(name + score, PlayerConstants.PLAYER_COLORS[i], angle  - PConstants.HALF_PI + (i * PConstants.PI));
 			}
 		}
 	}
