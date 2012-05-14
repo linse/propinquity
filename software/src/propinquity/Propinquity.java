@@ -69,7 +69,7 @@ public class Propinquity extends PApplet implements PlayerConstants {
 
 		// Setup sound
 		sounds = new Sounds(this);
-		hud = new Hud(this, sounds);
+		hud = new Hud(this);
 
 		// Load common artwork and sound
 		sounds.loadCommonContent();
@@ -180,10 +180,8 @@ public class Propinquity extends PApplet implements PlayerConstants {
 					doneTime = frameCount;
 				}
 
-				// TODO: physics and things
 				box2d.step();
 
-				// snap score in final position
 				hud.snap();
 
 				// flag as ended
@@ -194,7 +192,6 @@ public class Propinquity extends PApplet implements PlayerConstants {
 
 			hud.update(hud.getAngle() + HALF_PI, TWO_PI / 10000f, TWO_PI / 2000f);
 
-			// TODO: physics and things
 			box2d.step();
 
 			level.update();
