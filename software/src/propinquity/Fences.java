@@ -8,64 +8,85 @@ import org.jbox2d.dynamics.BodyDef;
 import processing.core.PConstants;
 import processing.core.PApplet;
 
+/**
+ * Pertains to the inner and outer fences of the Propinquity game world.
+ * 
+ * @author Stephane Beniak
+ */
 public class Fences {
 
+	/**
+	 * This denotes the number of sections into which the fence circle will be broken up to form a polygon.
+	 */
 	public static final int SECTIONS = 24;
 	public static final int INNER_RADIUS = 100;
-	public static final int OUTER_MASK = 0x8;
-	public static final int INNER_MASK = 0x4;
-	public static final int PLAYERS_MASK = 0x1 | 0x2;
+	public static final int OUTER_RADIUS = 350;
+	
+	public static final short CAT_NEW = 0x0001;
+	public static final short CAT_OLD = 0x0002;
+	public static final short CAT_INNER = 0x0004;
+	public static final short CAT_OUTER = 0x0008;
+	
+	public static final short MASK_NEW = CAT_NEW | CAT_OLD | CAT_INNER | CAT_OUTER;
+	public static final short MASK_OLD = CAT_NEW | CAT_OLD | CAT_OUTER;
+	public static final short MASK_INNER = CAT_NEW;
+	public static final short MASK_OUTER = CAT_NEW | CAT_OLD;
 
 	Propinquity parent;
+	
+	Body innerFence, outerFence;
 
 	public Fences(Propinquity parent) {
 
 		this.parent = parent;
+		
+		CreateInnerFence();
+		CreateOuterFence();
+	}
+	
+	private void CreateInnerFence() {
+		BodyDef bd = new BodyDef();
+		bd.position.set(0.0f, 0.0f);
+		
+		PolygonDef sd = new PolygonDef();
+		sd.filter.categoryBits = CAT_INNER;
+		sd.filter.maskBits = MASK_INNER;
 
-		Body innerFence = null;
-		{
-			BodyDef bd = new BodyDef();
-			bd.position.set(0.0f, 0.0f);
-			innerFence = parent.box2d.createBody(bd);
+		float fenceDepth = 0.025f;
+		float worldScale = parent.height / parent.worldSize;
+		float radius = INNER_RADIUS / worldScale + fenceDepth / 2;
+		float perimeter = 2 * PConstants.PI * radius;
 
-			PolygonDef sd = new PolygonDef();
-			sd.filter.categoryBits = INNER_MASK;
-			sd.filter.maskBits = PLAYERS_MASK;
-
-			float fenceDepth = 0.2f;
-			float worldScale = parent.height / parent.worldSize;
-			float radius = INNER_RADIUS / worldScale + fenceDepth;
-			float perimeter = 2 * PConstants.PI * radius;
-
-			for(int i = 0; i < SECTIONS; i++) {
-				float angle = 2 * PConstants.PI / SECTIONS * i;
-				sd.setAsBox(perimeter / SECTIONS, fenceDepth, new Vec2(PApplet.cos(angle) * radius, PApplet.sin(angle)
-						* radius), angle + PConstants.PI / 2);
-				innerFence.createShape(sd);
-			}
+		innerFence = parent.box2d.createBody(bd);
+		
+		for(int i = 0; i < SECTIONS; i++) {
+			float angle = 2 * PConstants.PI / SECTIONS * i;
+			sd.setAsBox(perimeter / SECTIONS, fenceDepth, new Vec2(PApplet.cos(angle) * radius, PApplet.sin(angle)
+					* radius), angle + PConstants.PI / 2);
+			innerFence.createShape(sd);
 		}
+	}
+	
+	private void CreateOuterFence() {
+		BodyDef bd = new BodyDef();
+		bd.position.set(0.0f, 0.0f);
 
-		Body outerFence = null;
-		{
-			BodyDef bd = new BodyDef();
-			bd.position.set(0.0f, 0.0f);
-			outerFence = parent.box2d.createBody(bd);
+		PolygonDef sd = new PolygonDef();
+		sd.filter.categoryBits = CAT_OUTER;
+		sd.filter.maskBits = MASK_OUTER;
 
-			PolygonDef sd = new PolygonDef();
-			sd.filter.categoryBits = OUTER_MASK;
-			sd.filter.maskBits = PLAYERS_MASK;
+		float fenceDepth = 0.05f;
+		float worldScale = parent.height / parent.worldSize;
+		float radius = OUTER_RADIUS / worldScale + fenceDepth / 2;
+		float perimeter = 2 * PConstants.PI * radius;
 
-			float fenceDepth = 0.2f;
-			float worldScale = parent.height / parent.worldSize;
-			float radius = (parent.worldSize - (Hud.WIDTH / worldScale)) / 2f + fenceDepth / 2;
-			float perimeter = 2 * PConstants.PI * radius;
-
-			for(int i = 0; i < SECTIONS; i++) {
-				float angle = 2 * PConstants.PI / SECTIONS * i;
-				sd.setAsBox(perimeter / SECTIONS, fenceDepth, new Vec2(PApplet.cos(angle) * radius, PApplet.sin(angle)
-						* radius), angle + PConstants.PI / 2);
-				outerFence.createShape(sd);
-			}
+		outerFence = parent.box2d.createBody(bd);
+		
+		for(int i = 0; i < SECTIONS; i++) {
+			float angle = 2 * PConstants.PI / SECTIONS * i;
+			sd.setAsBox(perimeter / SECTIONS, fenceDepth, new Vec2(PApplet.cos(angle) * radius, PApplet.sin(angle)
+					* radius), angle + PConstants.PI / 2);
+			outerFence.createShape(sd);
 		}
 	}
 
