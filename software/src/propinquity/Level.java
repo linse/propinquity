@@ -15,14 +15,14 @@ public class Level {
 	Sounds sounds;
 
 	AudioPlayer song;
-	public String songFile;
-	public int songBPM;
+	String songFile;
+	int songBPM;
 
 	Step[] steps;
 	long stepInterval;
-	public int currentStep;
+	int currentStep;
 	
-	public String name;
+	String name;
 
 	boolean coop;
 	boolean running;
@@ -71,7 +71,7 @@ public class Level {
 				boolean coop = true;
 				if(!modeString.equals("coop")) coop = false;
 
-				XMLElement[] player_tags = xml.getChildren("player");
+				XMLElement[] player_tags = step_tags[i].getChildren("player");
 				boolean patches[][] = new boolean[player_tags.length][4];
 				if(player_tags.length > 1) {
 					for(int j = 0;j < player_tags.length;j++) {
@@ -116,8 +116,9 @@ public class Level {
 	}
 
 	void stepUpdate() {
-		int nextStep = (int)PApplet.constrain(song.position()/stepInterval, 0, steps.length);
+		int nextStep = (int)PApplet.constrain(song.position()/stepInterval, 0, steps.length-1);
 		if(nextStep != currentStep) {
+			System.out.println(nextStep);
 			currentStep = nextStep;
 			coop = steps[currentStep].isCoop();
 			//TODO Handle Patches
@@ -141,31 +142,21 @@ public class Level {
 		return name;
 	}
 
-	public Player getWinner() {
-		int maxScore = -1;
-		int winner = -1;
+	public Player getWinner() { //TODO ties
+		Player winner = null;
 
-		// TODO: This "loop" looks a little fishy...
-		for(int i = 0; i < players.length; i++)
-			// check if we have a winner
-			if(players[i].score.getScore() > maxScore) {
-				maxScore = players[i].score.getScore();
-				winner = i;
+		for(Player player : players) {
+			if(winner == null || player.getScore() > winner.getScore()) {
+				winner = player; //Ties suck, i'm ignoring them
 			}
-			// if not check if we have a tie
-			else if(players[i].score.getScore() == maxScore) {
-				winner = -1;
-			}
+		}
 
-		if(winner == -1)
-			return null;
-		else
-			return players[winner];
+		return winner;
 	}
 
 	public int getTotalPoints() {
 		int total = 0;
-		for(int i = 0; i < players.length; i++) total += players[i].score.getScore();
+		for(int i = 0; i < players.length; i++) total += players[i].getScore();
 		return total;
 	}
 
@@ -174,7 +165,7 @@ public class Level {
 	}
 
 	public boolean isDone() {
-		return (currentStep > steps.length);
-	} // extra step to make sure the last one got in
+		return (song.position() >= song.length()); //TODO Crappy
+	}
 
 }

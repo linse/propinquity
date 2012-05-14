@@ -27,8 +27,7 @@ public class LevelSelect implements PConstants, UIElement {
 
 	String[] levelFiles;
 	Level[] levels;
-	Level loadingLevel;
-	Level chosenLevel;
+	Level currentLevel;
 
 	int state, selected;
 
@@ -81,6 +80,10 @@ public class LevelSelect implements PConstants, UIElement {
 			// If it's not a directory
 			return null;
 		}
+	}
+
+	public Level getCurrentLevel() {
+		return currentLevel;
 	}
 
 	public void setPlayerNames(String[] playerNames) {
@@ -239,7 +242,7 @@ public class LevelSelect implements PConstants, UIElement {
 		if (state < playerNames.length) {
 			players[state].setName(playerNames[selected]);
 		} else if (state == playerNames.length) {
-			chosenLevel = levels[selected];
+			currentLevel = levels[selected];
 		}
 
 		stateChange(state + 1);

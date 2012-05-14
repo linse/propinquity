@@ -235,7 +235,8 @@ public class Propinquity extends PApplet implements PlayerConstants {
 			}
 
 			case Play: {
-				level = levelSelect.chosenLevel;
+				level = levelSelect.getCurrentLevel();
+				level.reset();
 				break;
 			}
 		}

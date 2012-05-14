@@ -92,6 +92,10 @@ public class Player implements PConstants, ProxEventListener {
 		return name;
 	}
 
+	public int getScore() {
+		return score.getScore();
+	}
+
 	public void setName(String name) {
 		this.name = name;
 	}

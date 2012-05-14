@@ -52,7 +52,7 @@ public class Fences {
 		sd.filter.categoryBits = CAT_INNER;
 		sd.filter.maskBits = MASK_INNER;
 
-		float fenceDepth = 0.025f;
+		float fenceDepth = 0.25f;
 		float worldScale = parent.height / parent.worldSize;
 		float radius = INNER_RADIUS / worldScale + fenceDepth / 2;
 		float perimeter = 2 * PConstants.PI * radius;
