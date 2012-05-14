@@ -1,7 +1,5 @@
 package propinquity;
 
-import java.util.Vector;
-
 import processing.core.PConstants;
 
 import propinquity.hardware.*;

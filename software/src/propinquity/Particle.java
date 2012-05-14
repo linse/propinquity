@@ -17,16 +17,16 @@ public class Particle {
 
 	public Vec2 position;
 	public float scale;
+	public Color color;
 
 	Body body;
 	CircleDef shape;
 
 	PGraphics texture;
-	Color color;
 
-	Propinquity parent;
+	private Propinquity parent;
 
-	public Particle(Propinquity parent, Vec2 position, Color color) {
+	public Particle(Propinquity parent, Vec2 position, Color color, boolean isNew) {
 		this.parent = parent;
 		this.position = position;
 		this.color = color;
@@ -44,6 +44,13 @@ public class Particle {
 		shape.density = 1.0f;
 		shape.friction = 0.01f;
 		shape.restitution = 0.3f;
+		if (isNew) {
+			shape.filter.categoryBits = Fences.CAT_NEW;
+			shape.filter.maskBits = Fences.MASK_NEW;
+		} else {
+			shape.filter.categoryBits = Fences.CAT_OLD;
+			shape.filter.maskBits = Fences.MASK_OLD;
+		}
 
 		BodyDef bd = new BodyDef();
 		bd.position.set(parent.box2d.coordPixelsToWorld(position));
@@ -60,7 +67,7 @@ public class Particle {
 	public Body getBody() {
 		return body;
 	}
-	
+
 	public CircleDef getCircleDef() {
 		return shape;
 	}

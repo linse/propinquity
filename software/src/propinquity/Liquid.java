@@ -2,12 +2,11 @@ package propinquity;
 
 import java.util.Vector;
 
+import org.jbox2d.collision.FilterData;
 import org.jbox2d.common.Vec2;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
-import processing.core.PGraphics;
-import processing.core.PImage;
 
 public class Liquid {
 
@@ -36,14 +35,14 @@ public class Liquid {
 
 	public void createParticle() {
 		particlesCreated.add(new Particle(parent, new Vec2(parent.width / 2f, parent.height / 2f),
-				color));
+				color, true));
 	}
 
 	public void transferParticles() {
 		for (Particle particle : particlesCreated) {
-			particle.getCircleDef().filter.categoryBits = 0;
-			particle.getCircleDef().filter.maskBits = 0;
-			particlesHeld.add(particle);
+			Particle newParticle = new Particle(parent, particle.position, particle.color, false);
+			particlesHeld.add(newParticle);
+			particle.kill();
 		}
 
 		particlesCreated = new Vector<Particle>();

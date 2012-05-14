@@ -1,7 +1,5 @@
 package propinquity;
 
-import java.util.Vector;
-
 import javax.media.opengl.GL;
 
 import controlP5.ControlEvent;
