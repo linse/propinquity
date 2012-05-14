@@ -146,10 +146,7 @@ public class LevelSelect implements PConstants, UIElement {
 
 		hud.drawInnerBoundary();
 		hud.drawOuterBoundary();
-
-		parent.pushMatrix();
-		parent.translate(parent.width / 2, parent.height / 2);
-
+		
 		drawParticles();
 
 		if (state < playerNames.length) {
@@ -162,7 +159,6 @@ public class LevelSelect implements PConstants, UIElement {
 					/ levels.length * selected);
 		}
 
-		parent.popMatrix();
 	}
 
 	private void drawParticles() {
