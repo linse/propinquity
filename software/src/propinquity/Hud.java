@@ -132,7 +132,7 @@ public class Hud {
 				while (parent.textWidth(score + name) < 240)
 					name += ' ';
 
-				drawBannerSide(name + score, PlayerConstants.PLAYER_COLORS[i], angle + (i * PConstants.PI));
+				drawBannerSide(name + score, PlayerConstants.PLAYER_COLORS[i], angle  - PConstants.HALF_PI + (i * PConstants.PI));
 			}
 		}
 	}
