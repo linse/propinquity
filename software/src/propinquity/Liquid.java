@@ -2,7 +2,6 @@ package propinquity;
 
 import java.util.Vector;
 
-import org.jbox2d.collision.FilterData;
 import org.jbox2d.common.Vec2;
 
 import processing.core.PApplet;

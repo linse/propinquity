@@ -296,6 +296,7 @@ public class Hud {
 		parent.pushMatrix();
 		parent.fill(255);
 		parent.noStroke();
+		parent.translate(parent.width / 2, parent.height / 2);
 		parent.textAlign(PApplet.CENTER, PApplet.BASELINE);
 		parent.textFont(font, FONT_SIZE);
 		String cropped_text = text.length() > 24 ? text.substring(0, 24) : text;
