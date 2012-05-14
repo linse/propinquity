@@ -182,6 +182,7 @@ public class Propinquity extends PApplet implements PlayerConstants {
 
 			case Play: {
 				level = levelSelect.getCurrentLevel();
+				simulator.addProxEventListener(level);
 				level.reset();
 				level.show();
 				break;

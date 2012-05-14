@@ -6,7 +6,7 @@ import propinquity.hardware.*;
 
 import ddf.minim.AudioPlayer;
 
-public class Player implements PConstants, ProxEventListener {
+public class Player implements PConstants {
 
 	Propinquity parent;
 
@@ -20,8 +20,6 @@ public class Player implements PConstants, ProxEventListener {
 	AudioPlayer negSoundCoop;
 
 	Score score;
-
-	int distance, currentTime, lastTime;
 
 	boolean coop;
 
@@ -93,25 +91,22 @@ public class Player implements PConstants, ProxEventListener {
 	}
 
 	public void update() {
-		currentTime = parent.millis();
-
 		score.update();
-
-		if (currentTime - lastTime > Particle.SPAWN_DELAY) {
-			if (distance > Score.MIN_RANGE && distance < Score.MAX_RANGE) {
-				score.increment();
-				lastTime = currentTime;
-			}
-		}
 	}
 
 	public void draw() {
 		score.draw();
 	}
 
-	public void proxEvent(Patch patch) {
-		for(Patch p : patches) {
-			if(patch == p) distance = patch.getProx();
-		}
+	public void handleSweetspotRange(Patch patch) {
+		// TODO
+		score.increment();
+		score.increment();
 	}
+	
+	public void handleScoreRange(Patch patch) {
+		// TODO
+		score.increment();
+	}
+	
 }
