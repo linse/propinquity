@@ -45,7 +45,7 @@ public class LevelSelect implements PConstants, UIElement {
 		Vector<Level> tmp_levels = new Vector<Level>();
 		for (int i = 0; i < levelFiles.length; i++) {
 			try {
-				tmp_levels.add(new Level(parent, LEVEL_FOLDER+levelFiles[i], players, sounds));
+				tmp_levels.add(new Level(parent, hud, LEVEL_FOLDER+levelFiles[i], players, sounds));
 			} catch(XMLException e) {
 				System.out.println("Level not built for file \""+levelFiles[i]+"\" because of the following XMLException");
 				System.out.println(e.getMessage());
@@ -83,6 +83,10 @@ public class LevelSelect implements PConstants, UIElement {
 
 	public Level getCurrentLevel() {
 		return currentLevel;
+	}
+
+	public Level[] getLevels() {
+		return levels;
 	}
 
 	public void setPlayerNames(String[] playerNames) {
@@ -156,11 +160,11 @@ public class LevelSelect implements PConstants, UIElement {
 		drawParticles();
 
 		if (state < playerNames.length) {
-			hud.drawCenterText("Select Player " + (state + 1));
+			hud.drawCenterText("Select Player " + (state + 1), hud.getAngle());
 			hud.drawBannerCenter(playerNames[selected], players[state].getColor(), PApplet.TWO_PI / playerNames.length
 					* selected);
 		} else if (state == playerNames.length) {
-			hud.drawCenterText("Select Song");
+			hud.drawCenterText("Select Song", hud.getAngle());
 			hud.drawBannerCenter(levels[selected].getName(), PlayerConstants.NEUTRAL_COLOR, PApplet.TWO_PI/levels.length*selected);
 		}
 

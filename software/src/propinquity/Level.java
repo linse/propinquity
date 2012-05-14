@@ -4,11 +4,13 @@ import processing.core.*;
 import processing.xml.*;
 import ddf.minim.*;
 
-public class Level {
+public class Level implements UIElement {
 
 	static final int DEFAULT_BPM = 120;
 
 	Propinquity parent;
+	
+	Hud hud;
 
 	Player[] players;
 
@@ -26,10 +28,12 @@ public class Level {
 
 	boolean coop;
 	boolean running;
+	boolean isVisible;
 
-	public Level(Propinquity parent, String levelFile, Player[] players, Sounds sounds) throws XMLException {
+	public Level(Propinquity parent, Hud hud, String levelFile, Player[] players, Sounds sounds) throws XMLException {
 		this.parent = parent;
 		this.players = players;
+		this.hud = hud;
 
 		this.sounds = sounds;
 
@@ -132,10 +136,6 @@ public class Level {
 			stepUpdate();
 		}
 	}
-	
-	public void draw() {
-		for(int i = 0; i < players.length; i++) players[i].draw();
-	}
 
 	public String getName() {
 		return name;
@@ -166,5 +166,72 @@ public class Level {
 	public boolean isDone() {
 		return (song.position() >= song.length()); //TODO Crappy
 	}
+	
+	public void draw() {
+		if(!isVisible) return;
+
+		//Outlines
+		hud.drawInnerBoundary();
+		hud.drawOuterBoundary();
+
+		//Scores
+		if (isCoop()) {
+			String score = String.valueOf(getTotalPoints());
+			String name = "Coop";
+
+			while (parent.textWidth(score + name) < 240) name += ' ';
+
+			hud.drawBannerCenter(name + score, PlayerConstants.NEUTRAL_COLOR, hud.getAngle());
+		} else {
+			for (int i = 0; i < players.length; i++) {
+				String score = String.valueOf(players[i].score.getScore());
+				String name = players[i].getName();
+
+				while (parent.textWidth(score + name) < 240) name += ' ';
+
+				hud.drawBannerSide(name + score, PlayerConstants.PLAYER_COLORS[i], hud.getAngle() - PConstants.HALF_PI + (i * PConstants.PI));
+			}
+		}
+
+		//Particles and Liquid
+		for(int i = 0; i < players.length; i++) players[i].draw();
+
+		if(isRunning()) { //Running
+			update();
+		} else if(isDone()) { //Someone won
+			Player winner = getWinner();
+			String text = winner != null ? winner.getName() + " won!" : "You tied!";
+			Color color = winner != null ? winner.getColor() : PlayerConstants.NEUTRAL_COLOR;
+			hud.drawCenterText(text, color, hud.getAngle());
+		} else { //Pause
+			hud.drawCenterImage(hud.hudPlay, hud.getAngle());
+		}
+	}
+
+	/**
+	 * Shows the GUI.
+	 * 
+	 */
+	public void show() {
+		isVisible = true;
+	}
+
+	/**
+	 * Hides the GUI.
+	 * 
+	 */
+	public void hide() {
+		isVisible = false;
+	}
+
+	/**
+	 * Returns true if the GUI is visible.
+	 * 
+	 * @return true is and only if the GUI is visible.
+	 */
+	public boolean isVisible() {
+		return isVisible;
+	}
+
 
 }

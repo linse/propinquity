@@ -118,6 +118,15 @@ public class Color {
 	}
 	
 	/**
+	 * Gets a predefined color with the value R:255 G:255 B:255 A:255.
+	 * 
+	 * @return The color "white" as a Color object.
+	 */
+	public static Color white() {
+		return new Color(255, 255, 255);
+	}
+	
+	/**
 	 * Gets a predefined color with the value R:55 G:137 B:254 A:255.
 	 * 
 	 * @return The color "blue" as a Color object.

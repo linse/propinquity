@@ -11,6 +11,8 @@ import processing.opengl.PGraphicsOpenGL;
 
 import propinquity.hardware.*;
 
+import java.util.*;
+
 public class Propinquity extends PApplet implements PlayerConstants {
 
 	/** Unique serialization ID. */
@@ -24,7 +26,7 @@ public class Propinquity extends PApplet implements PlayerConstants {
 
 	GameState gameState;
 
-	UIElement[] uiElements;
+	Vector<UIElement> uiElements;
 
 	Sounds sounds;
 
@@ -111,7 +113,11 @@ public class Propinquity extends PApplet implements PlayerConstants {
 		box2d.setGravity(0.0f, 0.0f);
 		fences = new Fences(this);
 		
-		uiElements = new UIElement[] { xbeeManager, playerList, levelSelect };
+		uiElements = new Vector<UIElement>();
+		uiElements.add(xbeeManager);
+		uiElements.add(playerList);
+		uiElements.add(levelSelect);
+		for(Level l : levelSelect.getLevels()) uiElements.add(l);
 		
 		changeGameState(GameState.XBeeInit);
 	}
@@ -129,16 +135,20 @@ public class Propinquity extends PApplet implements PlayerConstants {
 	}
 
 	public void stop() {
-		//Clear songs
+		for(Level level : levelSelect.getLevels()) level.close();
 	}
 
 	public void draw() {
 		// clear black
 		background(Color.black().toInt(this));
 
-		for(int i = 0; i < uiElements.length; i++) uiElements[i].draw();
+		hud.update(hud.getAngle() + HALF_PI, TWO_PI / 10000f, TWO_PI / 2000f);
 
-		if(gameState == GameState.Play) drawPlay();
+		for(UIElement u: uiElements) u.draw();
+
+		if(gameState == GameState.Play) {
+			box2d.step();
+		}
 
 		pushMatrix();
 		translate(100, 100);
@@ -148,70 +158,8 @@ public class Propinquity extends PApplet implements PlayerConstants {
 		logger.recordFrame();
 	}
 
-	void drawPlay() {
-		hud.drawInnerBoundary();
-		hud.drawOuterBoundary();
-
-		hud.drawScoreBanners();
-
-		if(level.isDone()) {
-
-			if(endedLevel) {
-				Player winner = level.getWinner();
-
-				textAlign(CENTER);
-				pushMatrix();
-				translate(width / 2, height / 2);
-				rotate(frameCount * Hud.PROMPT_ROT_SPEED);
-				image(hud.hudLevelComplete, 0, -25);
-				textFont(hud.font, Hud.FONT_SIZE);
-				textAlign(CENTER, CENTER);
-				fill(winner != null ? winner.getColor().toInt(this) : NEUTRAL_COLOR.toInt(this));
-				noStroke();
-				text(winner != null ? winner.getName() + " won!" : "You tied!", 0, 0);
-				image(hud.hudPlayAgain, 0, 30);
-				popMatrix();
-			} else {
-				// keep track of done time
-				if(doneTime == -1) {
-					// level.clear();
-					doneTime = frameCount;
-				}
-
-				box2d.step();
-
-				hud.snap();
-
-				// flag as ended
-				if(doneTime != -1 && frameCount > doneTime + FPS * endLevelTime) endedLevel = true;
-			}
-
-		} else if(level.isRunning()) {
-
-			hud.update(hud.getAngle() + HALF_PI, TWO_PI / 10000f, TWO_PI / 2000f);
-
-			box2d.step();
-
-			level.update();
-			level.draw();
-
-		} else {
-			gl = ((PGraphicsOpenGL) g).gl;
-			gl.glEnable(GL.GL_BLEND);
-			gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-
-			fill(255);
-			textAlign(CENTER);
-			pushMatrix();
-			translate(width / 2, height / 2);
-			rotate(frameCount * Hud.PROMPT_ROT_SPEED);
-			image(hud.hudPlay, 0, 0);
-			popMatrix();
-		}
-	}
-
 	public void changeGameState(GameState newState) {
-		for(int i = 0; i < uiElements.length; i++) uiElements[i].hide();
+		for(UIElement u: uiElements) u.hide();
 
 		switch(newState) {
 			case XBeeInit: {
@@ -235,6 +183,7 @@ public class Propinquity extends PApplet implements PlayerConstants {
 			case Play: {
 				level = levelSelect.getCurrentLevel();
 				level.reset();
+				level.show();
 				break;
 			}
 		}
@@ -277,6 +226,11 @@ public class Propinquity extends PApplet implements PlayerConstants {
 
 			case Play: {
 				switch(key) {
+					case BACKSPACE: {
+						if(!level.isRunning()) resetLevel();
+						break;
+					}
+
 					case ESC: {
 						exit();
 						break;
@@ -290,10 +244,6 @@ public class Propinquity extends PApplet implements PlayerConstants {
 						break;
 					}
 
-					case BACKSPACE: {
-						if(!level.isRunning()) resetLevel();
-						break;
-					}
 
 					case 'i': { // info
 						// int score0 = level.getPlayer(0).score.liquid.particlesHeld.size();
@@ -309,12 +259,8 @@ public class Propinquity extends PApplet implements PlayerConstants {
 					}
 
 					case 'n': {
-						simulator.show();
-						break;
-					}
-
-					case 'm': {
-						simulator.hide();
+						if(simulator.isVisible()) simulator.hide();
+						else simulator.show();
 						break;
 					}
 				}

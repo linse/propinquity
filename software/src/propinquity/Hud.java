@@ -19,16 +19,11 @@ public class Hud {
 	public static final int OFFSET = 20;
 	public static final int SCORE_RADIUS_OFFSET = 40;
 	public static final float SCORE_ANGLE_OFFSET = 0.35f;
-	public static final float SCORE_ROT_SPEED = 0.0001f;
-	public static final float PROMPT_ROT_SPEED = 0.002f;
-	public static final int BOUNDARY_WIDTH = 5;
 
 	private Propinquity parent;
 
 	float angle = 0;
 	float velocity = -PConstants.TWO_PI / 500f;
-
-	boolean isSnapped = false;
 
 	public PFont font;
 
@@ -70,20 +65,7 @@ public class Hud {
 	 * Reset the HUD to its default angle and velocity.
 	 */
 	public void reset() {
-		isSnapped = false;
 		velocity = -PConstants.TWO_PI / 500f;
-	}
-
-	/**
-	 * Snap the hud to its final position when displaying scores.
-	 */
-	public void snap() {
-		if (!isSnapped) {
-			angle -= ((int) (angle / PConstants.TWO_PI)) * PConstants.TWO_PI;
-			isSnapped = true;
-		}
-
-		update(PConstants.TWO_PI, PConstants.TWO_PI / 500f, PConstants.TWO_PI / 10f);
 	}
 
 	/**
@@ -109,32 +91,6 @@ public class Hud {
 		velocity *= 0.85;
 
 		angle += velocity;
-	}
-
-	/**
-	 * Draw the score banner(s) for the current level based on the game mode and
-	 * number of players.
-	 */
-	public void drawScoreBanners() {
-		if (parent.level.isCoop()) {
-			String score = String.valueOf(parent.level.getTotalPoints());
-			String name = "Coop";
-
-			while (parent.textWidth(score + name) < 240)
-				name += ' ';
-
-			drawBannerCenter(name + score, PlayerConstants.NEUTRAL_COLOR, angle);
-		} else {
-			for (int i = 0; i < parent.players.length; i++) {
-				String score = String.valueOf(parent.players[i].score.getScore());
-				String name = parent.players[i].getName();
-
-				while (parent.textWidth(score + name) < 240)
-					name += ' ';
-
-				drawBannerSide(name + score, PlayerConstants.PLAYER_COLORS[i], angle  - PConstants.HALF_PI + (i * PConstants.PI));
-			}
-		}
 	}
 
 	/**
@@ -248,9 +204,21 @@ public class Hud {
 	 * Draw the given text in the center of the game world.
 	 * 
 	 * @param line1 The line of text to be drawn.
+	 * @param angle The angle in radians at which the text will be drawn.
 	 */
-	void drawCenterText(String line1) {
-		drawCenterText(line1, null);
+	public void drawCenterText(String line1, float angle) {
+		drawCenterText(line1, null, Color.white(), angle);
+	}
+
+	/**
+	 * Draw the given text in the given color in the center of the game world.
+	 * 
+	 * @param line1 The line of text to be drawn.
+	 * @param color the text color
+	 * @param angle The angle in radians at which the text will be drawn.
+	 */
+	public void drawCenterText(String line1, Color color, float angle) {
+		drawCenterText(line1, null, color, angle);
 	}
 
 	/**
@@ -258,16 +226,29 @@ public class Hud {
 	 * 
 	 * @param line1 The first line of text to be drawn.
 	 * @param line2 The second line of text to be drawn.
+	 * @param angle The angle in radians at which the text will be drawn.
 	 */
-	void drawCenterText(String line1, String line2) {
+	public void drawCenterText(String line1, String line2, float angle) {
+		drawCenterText(line1, line2, Color.white(), angle);
+	}
+
+	/**
+	 * Draw the given text in the given color in the center of the game world.
+	 * 
+	 * @param line1 The first line of text to be drawn.
+	 * @param line2 The second line of text to be drawn.
+	 * @param color the text color
+	 * @param angle The angle in radians at which the text will be drawn.
+	 */
+	public void drawCenterText(String line1, String line2, Color color, float angle) {
 		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
 		parent.gl.glEnable(GL.GL_BLEND);
 		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 
-		parent.fill(255);
+		parent.fill(color.toInt(parent));
 		parent.pushMatrix();
 		parent.translate(parent.width / 2, parent.height / 2);
-		parent.rotate(parent.frameCount * Hud.PROMPT_ROT_SPEED);
+		parent.rotate(angle);
 
 		parent.textFont(font, FONT_SIZE);
 		parent.text(line1, 0, 0);
@@ -281,15 +262,28 @@ public class Hud {
 	 * Draw the given image in the center of the game world.
 	 * 
 	 * @param image The image to be drawn.
+	 * @param angle The angle in radians at which the text will be drawn.
 	 */
-	public void drawCenterImage(PImage image) {
+	public void drawCenterImage(PImage image, float angle) {
+		drawCenterImage(image, Color.white(), angle);
+	}
+
+	/**
+	 * Draw the given image in the given color in the center of the game world.
+	 * 
+	 * @param image The image to be drawn.
+	 * @param color the image color
+	 * @param angle The angle in radians at which the text will be drawn.
+	 */
+	public void drawCenterImage(PImage image, Color color, float angle) {
 		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
 		parent.gl.glEnable(GL.GL_BLEND);
 		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 
-		parent.fill(255);
+		parent.fill(color.toInt(parent));
 		parent.pushMatrix();
-		parent.rotate(parent.frameCount * Hud.PROMPT_ROT_SPEED);
+		parent.translate(parent.width / 2, parent.height / 2);
+		parent.rotate(angle);
 
 		parent.image(image, 0, 0);
 
