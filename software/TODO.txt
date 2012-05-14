@@ -6,3 +6,18 @@ TODO
 * Gravity didn't come back once
 * Verify that particles are properly destroyed always
 * Load/Unload songs as needed
+
+* Handle actual behavior for vibe and patches
+	* Player name mapping
+	* Prox events
+
+* Retry mechanism ...
+
+* Testing ... ?
+
+* Can HUD be cleaned up
+* Can score be cleaned up
+
+* Provide more robust behavior for variable quantity objects (Gloves, Patches, Xbees, Levels, etc)
+* Provide meaning full null error messages throughout 
+* Use logger + test video logger
