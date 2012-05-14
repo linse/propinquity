@@ -39,10 +39,9 @@ public class Propinquity extends PApplet implements PlayerConstants {
 	XBeeManager xbeeManager;
 
 	HardwareSimulator simulator; //Testing 
-	public Patch[] patches;
-	Glove glove;
 
 	//Player/Player List
+	Player[] players;
 	PlayerList playerList;
 
 	//HUD
@@ -83,16 +82,31 @@ public class Propinquity extends PApplet implements PlayerConstants {
 		xbeeManager = new XBeeManager(this, xbeeBaseStation);
 
 		simulator = new HardwareSimulator(this);
-		patches = new Patch[1];
-		patches[0] = new Patch(0, simulator);
-		patches[0].setActive(true);
-		glove = new Glove(1, simulator);
-		simulator.addPatch(patches[0]);
 
 		hardware = simulator;
 
+		players = new Player[MAX_PLAYERS];
+
+		for(int i = 0;i < MAX_PLAYERS;i++) {
+			Patch[] patches = new Patch[PATCH_ADDR[i].length];
+
+			for(int j = 0;j < PATCH_ADDR[i].length;j++) {
+				patches[j] = new Patch(PATCH_ADDR[i][j], hardware);
+				patches[j].setActive(true);
+				hardware.addPatch(patches[j]);
+			}
+
+			Glove glove = new Glove(GLOVE_ADDR[i], hardware);
+
+			hardware.addGlove(glove);
+
+			Color color = PLAYER_COLORS[i];
+
+			players[i] = new Player(this, null, color, patches, glove);
+		}
+
 		playerList = new PlayerList(this, hardware, "player.lst");
-		levelSelect = new LevelSelect(this, hud, sounds);
+		levelSelect = new LevelSelect(this, hud, players, sounds);
 
 		logger = new Logger(this);
 
@@ -218,7 +232,7 @@ public class Propinquity extends PApplet implements PlayerConstants {
 			}
 
 			case LevelSelect: {
-				levelSelect.setPlayers(playerList.getPlayerNames(), playerList.getPlayers());
+				levelSelect.setPlayerNames(playerList.getPlayerNames());
 
 				levelSelect.reset();
 				levelSelect.show();

@@ -35,7 +35,6 @@ public class Player implements PConstants, ProxEventListener {
 	boolean stepTouched;
 	int stepReadings;
 
-	// boolean stubbed;
 	final int NUM_PROX_READINGS = 4;
 	int[] recentReadings = new int[NUM_PROX_READINGS];
 	int ri = 0;
@@ -46,9 +45,6 @@ public class Player implements PConstants, ProxEventListener {
 	Patch[] patches;
 	Glove glove;
 
-	// stubs
-	Vector<String> proxStub = null;
-	int proxStubIndex = 0;
 
 	AudioPlayer negSoundPlayer;
 	AudioPlayer negSoundCoop;
@@ -89,10 +85,6 @@ public class Player implements PConstants, ProxEventListener {
 			recentReadings[i] = 0;
 
 		lastVibe = 0;
-
-		// reset stub
-		if (proxStub != null)
-			proxStubIndex = 0;
 
 		score.reset();
 	}
@@ -271,61 +263,6 @@ public class Player implements PConstants, ProxEventListener {
 		}
 	}
 
-	ProxData nextProxStub(long time) {
-		if (proxStub == null)
-			return null;
-		if (proxStubIndex >= proxStub.size())
-			return null;
-
-		String[] data = (proxStub.get(proxStubIndex)).split(",");
-
-		// check if we reached the time for this step
-		if (Integer.valueOf(data[0]) >= time)
-			return null;
-
-		// System.out.println(time + ": " + Integer.valueOf(data[2]) + " " +
-		// (Integer.valueOf(data[3])==1) + " " + Integer.valueOf(data[4]));
-
-		/*
-		 * processProxReading(Integer.valueOf(data[2]), proxStubIndex,
-		 * Integer.valueOf(data[3])==1, Integer.valueOf(data[4]));
-		 */
-
-		return new ProxData(Integer.valueOf(data[1]), Integer.valueOf(data[2]), proxStubIndex++,
-				Integer.valueOf(data[3]) == 1, Integer.valueOf(data[4]));
-	}
-
-	void loadProxStub(int index, String stubFile) {
-		// proximity data stub
-		String[] data = parent.loadStrings(stubFile);
-		if (data == null || data.length == 0) {
-			System.out.println("Error: Proximity stub was empty. I don't think that's right.");
-		}
-
-		proxStub = new Vector<String>();
-
-		// parse to keep only data for this player
-		String[] dataline;
-		for (int i = 0; i < data.length; i++) {
-			dataline = data[i].split(",");
-
-			if (dataline.length != 5) {
-				System.out.println("Warning: Proximity stub line " + i + " (" + data[i]
-						+ ") is not formatted correctly");
-				continue;
-			}
-
-			if (Integer.valueOf(dataline[1]) == index) {
-				proxStub.add(data[i]);
-			}
-		}
-
-		// start the stub at the beginning
-		proxStubIndex = 0;
-
-		System.out.println(" Proximity stub... " + proxStub.size());
-	}
-
 	public void sendVibes(int avgReading) {
 		sendVibes(avgReading, false);
 	}
@@ -348,8 +285,5 @@ public class Player implements PConstants, ProxEventListener {
 
 		// keep track of last sent value
 		lastVibe = avgReading;
-	}
-
-	public void sendConfig(int stepLength) {
 	}
 }

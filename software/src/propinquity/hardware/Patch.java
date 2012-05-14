@@ -1,6 +1,7 @@
 package propinquity.hardware;
 
 import processing.core.PApplet;
+import propinquity.Color;
 
 /**
  * The Patch class reflects the patch the player will wear. 
@@ -53,6 +54,7 @@ public class Patch {
 	 * @param active the new state of the device.
 	 */
 	public void setActive(boolean active) {
+		if(this.active == active) return;
 		this.active = active;
 		hardware.sendPacket(new Packet(address, PacketType.CONF, new int[] {active?1:0}));
 	}
@@ -85,6 +87,7 @@ public class Patch {
 	 * @param level the vibration level, constrained to the range 0-255.
 	 */
 	 public void setVibeLevel(int level) {
+	 	if(vibe_level == level) return;
 		vibe_level = PApplet.constrain(level, 0, 255);
 		hardware.sendPacket(new Packet(address, PacketType.VIBE_LEVEL, new int[] {vibe_level}));
 	}
@@ -95,6 +98,7 @@ public class Patch {
 	 * @param period the vibration period, constrained to the range 0-255.
 	 */
 	public void setVibePeriod(int period) {
+		if(vibe_period == period) return;
 		vibe_period = PApplet.constrain(period, 0, 255);
 		hardware.sendPacket(new Packet(address, PacketType.VIBE_PERIOD, new int[] {vibe_period}));
 	}
@@ -105,8 +109,18 @@ public class Patch {
 	 * @param duty the vibration duty cycle, constrained to the range 0-255. 0 = 0% duty cycle 255=100% duty cycle.
 	 */
 	public void setVibeDuty(int duty) {
+		if(vibe_duty == duty) return;
 		vibe_duty = PApplet.constrain(duty, 0, 255);
 		hardware.sendPacket(new Packet(address, PacketType.VIBE_DUTY, new int[] {vibe_duty}));
+	}
+
+	/**
+	 * Configure the color and propagate changes to the HardwareInterface.
+	 *
+	 * @param color the color
+	 */
+	public void setColor(Color color) {
+		setColor(color.r, color.g, color.b);
 	}
 
 	/**
@@ -117,6 +131,7 @@ public class Patch {
 	 * @param blue the blue color level, constrained to the range 0-255.
 	 */
 	public void setColor(int red, int green, int blue) {
+		if(color[0] == red && color[1] == green && color[2] == blue) return;
 		color[0] = PApplet.constrain(red, 0, 255);
 		color[1] = PApplet.constrain(green, 0, 255);
 		color[2] = PApplet.constrain(blue, 0, 255);
@@ -129,6 +144,7 @@ public class Patch {
 	 * @param period the color period, constrained to the range 0-255.
 	 */
 	public void setColorPeriod(int period) {
+		if(color_period == period) return;
 		color_period = PApplet.constrain(period, 0, 255);
 		hardware.sendPacket(new Packet(address, PacketType.COLOR_PERIOD, new int[] {color_period}));
 	}
@@ -139,6 +155,7 @@ public class Patch {
 	 * @param duty the color duty cycle, constrained to the range 0-255. 0 = 0% duty cycle 255=100% duty cycle.
 	 */
 	public void setColorDuty(int duty) {
+		if(color_duty == duty) return;
 		color_duty = PApplet.constrain(duty, 0, 255);
 		hardware.sendPacket(new Packet(address, PacketType.COLOR_DUTY, new int[] {color_duty}));
 	}

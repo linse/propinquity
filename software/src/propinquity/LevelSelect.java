@@ -37,9 +37,10 @@ public class LevelSelect implements PConstants, UIElement {
 
 	boolean isVisible;
 
-	public LevelSelect(Propinquity parent, Hud hud, Sounds sounds) {
+	public LevelSelect(Propinquity parent, Hud hud, Player[] players, Sounds sounds) {
 		this.parent = parent;
 		this.hud = hud;
+		this.players = players;
 		this.sounds = sounds;
 
 		isVisible = true;
@@ -72,14 +73,16 @@ public class LevelSelect implements PConstants, UIElement {
 		levels = tmp_levels.toArray(new Level[0]);
 	}
 
+	public void xmlEvent(XMLElement levelXML) {
+		loadingLevel.loadSong(levelXML);
+	}
 
 	// This function returns all the files in a directory as an array of Strings
 	private String[] listFileNames(String dir, String ext) {
 		File file = new File(dir);
 		if(file.isDirectory()) {
 			String names[] = file.list();
-			if(ext == null)
-				return names;
+			if(ext == null) return names;
 
 			// if extension is specify, parse out the rest
 			Vector<String> parsedNames = new Vector<String>();
@@ -99,16 +102,12 @@ public class LevelSelect implements PConstants, UIElement {
 		}
 	}
 
-	public void xmlEvent(XMLElement levelXML) {
-		loadingLevel.loadSong(levelXML);
-	}
-
-	public void setPlayers(String[] playerNames, Player[] players) {
+	public void setPlayerNames(String[] playerNames) {
 		this.playerNames = playerNames;
-		this.players = players;
 	}
 
 	public void reset() {
+		for(Player player : players) player.setName(null);
 		stateChange(0);
 	}
 
@@ -118,12 +117,12 @@ public class LevelSelect implements PConstants, UIElement {
 
 		killParticles();
 
-		if(state < players.length) {
-			//TODO Turn on patches here
+		if(state < playerNames.length) {
+			while(nameTaken(playerNames[selected])) selected = (selected+1)%playerNames.length;
 			createParticles(playerNames.length, players[state].getColor());
-		} else if(state == players.length) {
+		} else if(state == playerNames.length) {
 			createParticles(levels.length, PlayerConstants.NEUTRAL_COLOR);
-		} else if(state == players.length+1) {
+		} else if(state == playerNames.length+1) {
 			parent.changeGameState(GameState.Play);
 		} else {
 			System.out.println("Unknown Level Select State");
@@ -147,7 +146,6 @@ public class LevelSelect implements PConstants, UIElement {
 		for(Particle particle : particles) particle.kill();
 	}
 
-
 	public void show() {
 		isVisible = true;
 	}
@@ -163,7 +161,6 @@ public class LevelSelect implements PConstants, UIElement {
 	public void draw() {
 		if(!isVisible) return;
 
-		// TODO: Fix this too
 		hud.drawInnerBoundary();
 		hud.drawOuterBoundary();
 		
@@ -172,10 +169,10 @@ public class LevelSelect implements PConstants, UIElement {
 
 		drawParticles();
 
-		if(state < players.length) {
-			hud.drawCenterText("Select Player "+(state+1), players[state].getName());
+		if(state < playerNames.length) {
+			hud.drawCenterText("Select Player "+(state+1));
 			hud.drawBannerCenter(playerNames[selected], players[state].getColor(), PApplet.TWO_PI/playerNames.length*selected);
-		} else if(state == players.length) {
+		} else if(state == playerNames.length) {
 			hud.drawCenterText("Select Song");
 			hud.drawBannerCenter(levels[selected].songName, PlayerConstants.NEUTRAL_COLOR, PApplet.TWO_PI/levels.length*selected);
 		}
@@ -200,8 +197,8 @@ public class LevelSelect implements PConstants, UIElement {
 	public void keyPressed(char key, int keycode) {
 		switch(keycode) {
 			case BACKSPACE: {
+				if(state == 0) parent.changeGameState(GameState.PlayerList);
 				reset();
-				parent.changeGameState(GameState.PlayerList);
 				break;
 			}
 			case LEFT: {
@@ -220,36 +217,37 @@ public class LevelSelect implements PConstants, UIElement {
 		}
 	}
 
+	boolean nameTaken(String name) {
+		for(Player player : players) {
+			if(player.getName() == playerNames[selected]) return true; //Use == not .equals
+		}
+		return false;
+	}
+
 	public void left() {
-		if(state < players.length) {
-			selected = (selected+playerNames.length-1)%playerNames.length;
-		} else if(state == players.length) {
+		if(state < playerNames.length) {
+			do {
+				selected = (selected+playerNames.length-1)%playerNames.length;
+			} while(nameTaken(playerNames[selected]));
+		} else if(state == playerNames.length) {
 			selected = (selected+levels.length-1)%levels.length;
 		}
 	}
 
 	public void right() {
-		if(state < players.length) {
-			selected = (selected+1)%playerNames.length;
-		} else if(state == players.length) {
+		if(state < playerNames.length) {
+			do {
+				selected = (selected+1)%playerNames.length;
+			} while(nameTaken(playerNames[selected]));
+		} else if(state == playerNames.length) {
 			selected = (selected+1)%levels.length;
 		}
 	}
 
 	public void select() {
-		if(state < players.length) {
+		if(state < playerNames.length) {
 			players[state].setName(playerNames[selected]);
-			String[] remainingNames = new String[playerNames.length-1];
-			int j = 0;
-			for(int i = 0;i < playerNames.length;i++) {
-				if(i != selected) {
-					remainingNames[j] = playerNames[i];
-					j++;
-				}
-			}
-			
-			playerNames = remainingNames; //TODO Ugly
-		} else if(state == players.length) {
+		} else if(state == playerNames.length) {
 			levelFile = LEVEL_FOLDER + levelFiles[selected];
 		}
 

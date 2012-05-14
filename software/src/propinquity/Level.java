@@ -63,25 +63,24 @@ public class Level {
 		this.sounds = sounds;
 
 		if(players == null) {
-			players = new Player[2];
-			players[0] = new Player(parent, "", PlayerConstants.PLAYER_COLORS[0], parent.patches, parent.glove);
-			players[0].name = "Player 1";
-			players[1] = new Player(parent, "", PlayerConstants.PLAYER_COLORS[1], parent.patches, parent.glove);
-			players[1].name = "Player 2";
+			// players = new Player[2];
+			// players[0] = new Player(parent, "", PlayerConstants.PLAYER_COLORS[0], parent.patches, parent.glove);
+			// players[0].name = "Player 1";
+			// players[1] = new Player(parent, "", PlayerConstants.PLAYER_COLORS[1], parent.patches, parent.glove);
+			// players[1].name = "Player 2";
 		} else {
 			this.players = players;
+
+			players[0].registerNegativePlayerSound(sounds.negativeP1);
+			players[0].registerNegativeCoopSound(sounds.negativeCoop);
+			players[1].registerNegativePlayerSound(sounds.negativeP2);
+			players[1].registerNegativeCoopSound(sounds.negativeCoop);
 		}
 
 		if(levelFile != null) {
 			parent.xmlInOut = new XMLInOut(parent, this);
 			parent.xmlInOut.loadElement(levelFile);
 		}
-		
-		players[0].registerNegativePlayerSound(sounds.negativeP1);
-		players[0].registerNegativeCoopSound(sounds.negativeCoop);
-		players[1].registerNegativePlayerSound(sounds.negativeP2);
-		players[1].registerNegativeCoopSound(sounds.negativeCoop);
-
 		lastCoopDone = false;
 		reset();
 	}
@@ -127,12 +126,7 @@ public class Level {
 		time = parent.millis();
 		
 		// process stubs
-		for(int i = 0; i < players.length; i++) {
-			ProxData psd;
-			while((psd = players[i].nextProxStub(time)) != null) {
-				processProxReading(psd);
-			}
-			
+		for(int i = 0; i < players.length; i++) {			
 			players[i].update();
 		}
 
@@ -355,7 +349,6 @@ public class Level {
 
 			// init player steps
 			System.out.println("Sending Config for Step Interval " + stepInterval);
-			players[i].sendConfig((int) stepInterval);
 			players[i].initializeSteps(numSteps);
 			player = levelXML.getChild(i + 1);
 			sequence = player.getChild(0);

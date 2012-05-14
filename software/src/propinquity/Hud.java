@@ -160,8 +160,7 @@ public class Hud {
 			while(parent.textWidth(score + name) < 240)
 				name += ' ';
 
-			Text.drawArc(name + score, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, ang - Hud.SCORE_ANGLE_OFFSET,
-					parent);
+			drawArc(name + score, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, ang - Hud.SCORE_ANGLE_OFFSET);
 
 			parent.popMatrix();
 
@@ -200,11 +199,49 @@ public class Hud {
 				while(parent.textWidth(score + name) < 240)
 					name += ' ';
 
-				Text.drawArc(name + score, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, ang - Hud.SCORE_ANGLE_OFFSET,
-						parent);
+				drawArc(name + score, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, ang - Hud.SCORE_ANGLE_OFFSET);
 
 				parent.popMatrix();
 			}
+		}
+	}
+
+	/**
+	 * 
+	 * @param message
+	 * @param radius
+	 * @param startAngle
+	 * @param parent
+	 */
+	public void drawArc(String message, float radius, float startAngle) {
+		// We must keep track of our position along the curve
+		float arclength = 0;
+
+		// For every box
+		for(int i = 0; i < message.length(); i++) {
+			// Instead of a constant width, we check the width of each
+			// character.
+			char currentChar = message.charAt(i);
+			float w = parent.textWidth(currentChar);
+
+			// Each box is centered so we move half the width
+			arclength += w / 2;
+			// Angle in radians is the arclength divided by the radius
+			// Starting on the left side of the circle by adding PI
+			float theta = startAngle + arclength / radius;
+
+			parent.pushMatrix();
+			// Polar to cartesian coordinate conversion
+			parent.translate(radius * PApplet.cos(theta), radius * PApplet.sin(theta));
+			// Rotate the box
+			parent.rotate(theta + PConstants.PI / 2); // rotation is offset by
+														// 90 degrees
+			// Display the character
+			// fill(0);
+			parent.text(currentChar, 0, 0);
+			parent.popMatrix();
+			// Move halfway again
+			arclength += w / 2;
 		}
 	}
 
@@ -247,7 +284,7 @@ public class Hud {
 		parent.textFont(font, FONT_SIZE);
 		String cropped_text = text.length() > 24 ? text.substring(0, 24) : text;
 		float offset = (parent.textWidth(cropped_text) / 2) / (2 * PApplet.PI * (parent.height / 2 - Hud.SCORE_RADIUS_OFFSET)) * PApplet.TWO_PI;
-		Text.drawArc(cropped_text, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, angle - offset, parent);
+		drawArc(cropped_text, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, angle - offset);
 		parent.popMatrix();
 	}
 

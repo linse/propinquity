@@ -15,7 +15,6 @@ public class PlayerList implements PlayerConstants, UIElement {
 
 	HardwareInterface hardware;
 
-	Player[] players;
 	String[] playerNames;
 
 	Vector<Textfield> playerFields;
@@ -30,9 +29,6 @@ public class PlayerList implements PlayerConstants, UIElement {
 
 	boolean isVisible;
 
-	public PlayerList(Propinquity parent, HardwareInterface hardware) {
-		this(parent, hardware, null);
-	}
 
 	public PlayerList(Propinquity parent, HardwareInterface hardware, String plistFile) {
 		this.parent = parent;
@@ -40,9 +36,6 @@ public class PlayerList implements PlayerConstants, UIElement {
 		this.plistFile = plistFile;
 
 		isVisible = true;
-
-		players = new Player[0];
-		playerNames = new String[0];
 
 		playerFields = new Vector<Textfield>();
 
@@ -68,10 +61,6 @@ public class PlayerList implements PlayerConstants, UIElement {
 
 		if(playerFields.size() < 1) addPlayer("Player 1");
 		if(playerFields.size() < 2) addPlayer("Player 2");
-	}
-
-	public Player[] getPlayers() {
-		return players;
 	}
 
 	public String[] getPlayerNames() {
@@ -134,47 +123,10 @@ public class PlayerList implements PlayerConstants, UIElement {
 	}
 
 	public void process() {
-		for(Player player : players) {
-			hardware.removeGlove(player.getGlove());
-			for(Patch patch : player.getPatches()) {
-				hardware.removePatch(patch);
-			}
-
-			player.reset();
-		}
-
-		players = new Player[playerFields.size()];
 		playerNames = new String[playerFields.size()];
 
 		for(int i = 0;i < playerFields.size();i++) {
 			playerNames[i] = PApplet.trim(playerFields.get(i).getText());
-
-			Patch[] patches;
-
-			if(i < PATCH_ADDR.length) {
-				patches = new Patch[PATCH_ADDR[i].length];
-				for(int j = 0;j < PATCH_ADDR[i].length;j++) patches[j] = new Patch(PATCH_ADDR[i][j], hardware);
-			} else {
-				patches = new Patch[] { new Patch(-1, hardware) };
-			}
-
-			Glove glove;
-
-			if(i < GLOVE_ADDR.length) {
-				glove = new Glove(GLOVE_ADDR[i], hardware);
-			} else {
-				glove = new Glove(-1, hardware);
-			}
-
-			Color color;
-
-			if(i < PLAYER_COLORS.length) {
-				color = PLAYER_COLORS[i];
-			} else {
-				color = NEUTRAL_COLOR;
-			}
-
-			players[i] = new Player(parent, "", color, patches, glove);
 		}
 
 		parent.saveStrings(parent.dataPath(plistFile), playerNames);
