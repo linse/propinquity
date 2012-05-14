@@ -2,287 +2,287 @@
 <level name="Medium">
 	<song file="02 Twenty Three.mp3" bpm="80"/>
 	<sequence>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 		</step> 
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 		</step> 
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 		</step>	
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 		</step> 
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 		</step> 
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 		</step>	
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 		</step> 
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 		</step> 
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 		</step>	
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 		</step> 
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 		</step> 
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 		</step>	
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 		</step> 
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
 		</step>

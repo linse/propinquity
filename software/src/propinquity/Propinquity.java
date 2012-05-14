@@ -98,6 +98,7 @@ public class Propinquity extends PApplet implements PlayerConstants {
 			Color color = PLAYER_COLORS[i];
 
 			players[i] = new Player(this, null, color, patches, glove, sounds);
+			hardware.addProxEventListener(players[i]);
 		}
 
 		playerList = new PlayerList(this, hardware, "player.lst");

@@ -125,7 +125,7 @@ public class Hud {
 
 			drawBannerCenter(name + score, PlayerConstants.NEUTRAL_COLOR, angle);
 		} else {
-			for (int i = 0; i < parent.level.getNumberOfPlayers(); i++) {
+			for (int i = 0; i < parent.players.length; i++) {
 				String score = String.valueOf(parent.players[i].score.getScore());
 				String name = parent.players[i].getName();
 
