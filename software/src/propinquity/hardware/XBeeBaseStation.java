@@ -23,6 +23,8 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 	HashMap<Integer, Patch> patches;
 	Vector<ProxEventListener> proxListeners;
 
+	HashMap<Integer, TxRequest16> latestRequest;
+	
 	/**
 	 * Create a new XBeeBaseStation.
 	 *
@@ -33,6 +35,8 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 		gloves = new HashMap<Integer, Glove>();
 		patches = new HashMap<Integer, Patch>();
 		proxListeners = new Vector<ProxEventListener>();
+
+		latestRequest = new HashMap<Integer, TxRequest16>();		
 	}
 
 	/**
@@ -247,16 +251,18 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 		sendPacketAsynchronous(packet);	
 	}
 
+
 	public void sendPacketAsynchronous(Packet packet) {
 		XBeeAddress16 addr = new XBeeAddress16(((packet.getDestAddr() & 0xFF00) >> 8), packet.getDestAddr() & 0x00FF);
 		
 		int[] fullPayload = new int[packet.getPayload().length+1];
 		fullPayload[0] = packet.getPacketType().getCode();
 		System.arraycopy(packet.getPayload(), 0, fullPayload, 1, packet.getPayload().length);
-		
+
 		for(XBee xbee : xbees.values()) {
 			try {
 				TxRequest16 request = new TxRequest16(addr, xbee.getNextFrameId(), fullPayload);
+				latestRequest.put(fullPayload[0], request); // Store the last request per packet type
 				xbee.sendAsynchronous(request);
 			} catch(XBeeException e) {
 				System.out.println("\t\tException sending request");
@@ -279,7 +285,6 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 
 				if(response.getApiId() == ApiId.TX_STATUS_RESPONSE) {
 					TxStatusResponse tx_response = (TxStatusResponse)response;
-					System.out.println(tx_response.toString());
 				}
 			} catch(XBeeTimeoutException e) {
 				System.out.println("\t\tTimeout sending request");
@@ -291,9 +296,16 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 
 	public void processResponse(XBeeResponse response) {
 		switch(response.getApiId()) {
-			case TX_STATUS_RESPONSE: {//ACK
+			case TX_STATUS_RESPONSE: {
 				TxStatusResponse tx_response = (TxStatusResponse)response;
-				System.out.println(tx_response.toString());
+				if(tx_response.isSuccess()) { // ACK - remove TxRequest16 from lastestRequest
+					for(Integer key : latestRequest.keySet()) {
+						if(tx_response.getFrameId() == latestRequest.get(key).getFrameId()) {
+							latestRequest.remove(key);
+							System.out.println("succes: " + key);
+						}
+					}
+				}
 				break;
 			}
 			case RX_16_RESPONSE: {//From remote radio
