@@ -9,7 +9,7 @@ import gnu.io.*;
 /**
  * This class scans for XBees connected to the computer. It then instantiates and holds Xbee objects for each such device.
  *
-*/
+ */
 public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListener {
 
 	final int XBEE_BAUDRATE = 115200;
