@@ -75,7 +75,6 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 	public void scan() {
 		if(scanningThread != null && scanningThread.isAlive()) return;
 		else {
-			//TODO add reset here
 			scanningThread = new Thread(this);
 			scanningThread.start();
 		}

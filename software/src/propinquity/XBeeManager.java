@@ -80,7 +80,7 @@ public class XBeeManager implements UIElement {
 	 */
 	void processUIEvent() {
 		if(xbeeBaseStation.isScanning()) return;
-		else if(parent != null) parent.changeGameState(GameState.PlayerList); // TODO Fix this is sloppy
+		else if(parent != null) parent.changeGameState(GameState.PlayerList);
 	}
 
 	/* --- Graphics --- */

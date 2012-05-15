@@ -6,8 +6,6 @@ import org.jbox2d.common.Vec2;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
-import processing.core.PGraphics;
-import processing.core.PImage;
 
 public class Liquid {
 
@@ -17,8 +15,8 @@ public class Liquid {
 	public Vector<Particle> particlesCreated;
 	public Vector<Particle> particlesHeld;
 
-	private Propinquity parent;
-	private Color color;
+	Propinquity parent;
+	Color color;
 
 	public Liquid(Propinquity parent, Color color) {
 
@@ -30,20 +28,22 @@ public class Liquid {
 	}
 
 	public void reset() {
+		for(Particle particle : particlesCreated) particle.kill();
 		particlesCreated = new Vector<Particle>();
+		for(Particle particle : particlesHeld) particle.kill();
 		particlesHeld = new Vector<Particle>();
 	}
 
 	public void createParticle() {
 		particlesCreated.add(new Particle(parent, new Vec2(parent.width / 2f, parent.height / 2f),
-				color));
+				color, true));
 	}
 
 	public void transferParticles() {
 		for (Particle particle : particlesCreated) {
-			particle.getCircleDef().filter.categoryBits = 0;
-			particle.getCircleDef().filter.maskBits = 0;
-			particlesHeld.add(particle);
+			Particle newParticle = new Particle(parent, particle.position, particle.color, false);
+			particlesHeld.add(newParticle);
+			particle.kill();
 		}
 
 		particlesCreated = new Vector<Particle>();
@@ -71,14 +71,6 @@ public class Liquid {
 
 		for (Particle particle : particlesHeld)
 			particle.getBody().applyForce(antiGravity, particle.getBody().getWorldCenter());
-	}
-
-	public void update() {
-		for (Particle particle : particlesCreated)
-			particle.update();
-
-		for (Particle particle : particlesHeld)
-			particle.update();
 	}
 
 	public void draw() {

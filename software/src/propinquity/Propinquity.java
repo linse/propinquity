@@ -1,7 +1,5 @@
 package propinquity;
 
-import java.util.Vector;
-
 import javax.media.opengl.GL;
 
 import controlP5.ControlEvent;
@@ -10,25 +8,25 @@ import pbox2d.*;
 
 import processing.core.*;
 import processing.opengl.PGraphicsOpenGL;
-import proxml.*;
 
 import propinquity.hardware.*;
+
+import java.util.*;
 
 public class Propinquity extends PApplet implements PlayerConstants {
 
 	/** Unique serialization ID. */
-	private static final long serialVersionUID = 6340518174717159418L;
+	static final long serialVersionUID = 6340518174717159418L;
 	public static final int FPS = 30;
 
 	//General + Util
 	GL gl;
 	
 	Logger logger;
-	XMLInOut xmlInOut;
 
 	GameState gameState;
 
-	UIElement[] uiElements;
+	Vector<UIElement> uiElements;
 
 	Sounds sounds;
 
@@ -71,10 +69,9 @@ public class Propinquity extends PApplet implements PlayerConstants {
 
 		// Setup sound
 		sounds = new Sounds(this);
-		hud = new Hud(this, sounds);
+		hud = new Hud(this);
 
 		// Load common artwork and sound
-		sounds.loadCommonContent();
 
 		// Create resources
 		xbeeBaseStation = new XBeeBaseStation();
@@ -102,7 +99,7 @@ public class Propinquity extends PApplet implements PlayerConstants {
 
 			Color color = PLAYER_COLORS[i];
 
-			players[i] = new Player(this, null, color, patches, glove);
+			players[i] = new Player(this, null, color, patches, glove, sounds);
 		}
 
 		playerList = new PlayerList(this, hardware, "player.lst");
@@ -115,34 +112,23 @@ public class Propinquity extends PApplet implements PlayerConstants {
 		box2d.setGravity(0.0f, 0.0f);
 		fences = new Fences(this);
 		
-		uiElements = new UIElement[] { xbeeManager, playerList, levelSelect };
+		uiElements = new Vector<UIElement>();
+		uiElements.add(xbeeManager);
+		uiElements.add(playerList);
+		uiElements.add(levelSelect);
+		for(Level level : levelSelect.getLevels()) uiElements.add(level);
 		
 		changeGameState(GameState.XBeeInit);
-	}
-	
-	void resetLevel() {
-		level.reset();
-
-		endedLevel = false;
-		doneTime = -1;
-
-		hud.reset();
-		levelSelect.reset();
-
-		changeGameState(GameState.LevelSelect);
-	}
-
-	public void stop() {
-		if(gameState == GameState.Play) level.clear();
 	}
 
 	public void draw() {
 		// clear black
 		background(Color.black().toInt(this));
 
-		for(int i = 0; i < uiElements.length; i++) uiElements[i].draw();
+		hud.update(hud.getAngle() + HALF_PI, TWO_PI / 10000f, TWO_PI / 2000f);
 
-		if(gameState == GameState.Play) drawPlay();
+		for(UIElement u: uiElements) u.draw();
+		if(gameState == GameState.Play) box2d.step();
 
 		pushMatrix();
 		translate(100, 100);
@@ -152,73 +138,8 @@ public class Propinquity extends PApplet implements PlayerConstants {
 		logger.recordFrame();
 	}
 
-	void drawPlay() {
-		hud.drawInnerBoundary();
-		hud.drawOuterBoundary();
-
-		hud.draw();
-
-		if(level.isDone()) {
-
-			if(endedLevel) {
-				Player winner = level.getWinner();
-
-				textAlign(CENTER);
-				pushMatrix();
-				translate(width / 2, height / 2);
-				rotate(frameCount * Hud.PROMPT_ROT_SPEED);
-				image(hud.hudLevelComplete, 0, -25);
-				textFont(hud.font, Hud.FONT_SIZE);
-				textAlign(CENTER, CENTER);
-				fill(winner != null ? winner.getColor().toInt(this) : NEUTRAL_COLOR.toInt(this));
-				noStroke();
-				text(winner != null ? winner.getName() + " won!" : "You tied!", 0, 0);
-				image(hud.hudPlayAgain, 0, 30);
-				popMatrix();
-			} else {
-				// keep track of done time
-				if(doneTime == -1) {
-					level.clear();
-					doneTime = frameCount;
-				}
-
-				// TODO: physics and things
-				box2d.step();
-
-				// snap score in final position
-				hud.snap();
-
-				// flag as ended
-				if(doneTime != -1 && frameCount > doneTime + FPS * endLevelTime) endedLevel = true;
-			}
-
-		} else if(level.isRunning()) {
-
-			hud.update(hud.getAngle() + HALF_PI, TWO_PI / 10000f, TWO_PI / 2000f);
-
-			// TODO: physics and things
-			box2d.step();
-
-			level.update();
-			level.draw();
-
-		} else {
-			gl = ((PGraphicsOpenGL) g).gl;
-			gl.glEnable(GL.GL_BLEND);
-			gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-
-			fill(255);
-			textAlign(CENTER);
-			pushMatrix();
-			translate(width / 2, height / 2);
-			rotate(frameCount * Hud.PROMPT_ROT_SPEED);
-			image(hud.hudPlay, 0, 0);
-			popMatrix();
-		}
-	}
-
 	public void changeGameState(GameState newState) {
-		for(int i = 0; i < uiElements.length; i++) uiElements[i].hide();
+		for(UIElement u: uiElements) u.hide();
 
 		switch(newState) {
 			case XBeeInit: {
@@ -240,9 +161,11 @@ public class Propinquity extends PApplet implements PlayerConstants {
 			}
 
 			case Play: {
-				level = levelSelect.chosenLevel;
+				level = levelSelect.getCurrentLevel();
+				simulator.addProxEventListener(level);
 
-				level.load();
+				level.reset();
+				level.show();
 				break;
 			}
 		}
@@ -284,52 +207,22 @@ public class Propinquity extends PApplet implements PlayerConstants {
 			}
 
 			case Play: {
-				switch(key) {
-					case ESC: {
-						level.clear();
-						exit();
-						break;
-					}
-
-					case ENTER:
-					case ' ': {
-						if(level.isDone() && endedLevel) resetLevel();
-						else if(!level.isDone() && !level.isRunning()) level.start();
-						else if(!level.isDone()) level.pause();
-						break;
-					}
-
-					case BACKSPACE: {
-						if(!level.isRunning()) resetLevel();
-						break;
-					}
-
-					case 'i': { // info
-						int score0 = level.getPlayer(0).score.liquid.particlesHeld.size();
-						int score1 = level.getPlayer(1).score.liquid.particlesHeld.size();
-						logger.println("Particles: " + (score0 + " " + score1));
-						logger.println("Framerate: " + frameRate);
-						break;
-					}
-
-					case 'e': {// play stub
-						level.currentStep = level.stepCount;
-						break;
-					}
-
-					case 'n': {
-						simulator.show();
-						break;
-					}
-
-					case 'm': {
-						simulator.hide();
-						break;
-					}
-				}
+				level.keyPressed(key, keyCode);
 				break;
 			}
 		}
+
+		switch(key) {
+			case 'n': {
+				if(simulator.isVisible()) simulator.hide();
+				else simulator.show();
+				break;
+			}
+		}
+	}
+
+	public void stop() {
+		for(Level level : levelSelect.getLevels()) level.close();
 	}
 
 	static public void main(String args[]) {

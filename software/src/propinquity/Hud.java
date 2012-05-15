@@ -6,45 +6,38 @@ import processing.core.*;
 import processing.opengl.PGraphicsOpenGL;
 
 /**
+ * Handles Propinquity's Heads-Up Display, which shows player names, scores and
+ * other graphics.
  * 
- * 
- * @author Stephane Beniak
+ * @author Stephane Beniak, Severin Smith
  */
 public class Hud {
 
 	// HUD constants
 	public static final int FONT_SIZE = 30;
 	public static final int WIDTH = 50;
-	public static final int OFFSET = 4;
+	public static final int OFFSET = 20;
 	public static final int SCORE_RADIUS_OFFSET = 40;
 	public static final float SCORE_ANGLE_OFFSET = 0.35f;
-	public static final float SCORE_ROT_SPEED = 0.0001f;
-	public static final float PROMPT_ROT_SPEED = 0.002f;
-	public static final int BOUNDARY_WIDTH = 5;
 
 	Propinquity parent;
-	Sounds sounds;
 
 	float angle = 0;
 	float velocity = -PConstants.TWO_PI / 500f;
-
-	boolean isSnapped = false;
 
 	public PFont font;
 
 	public PImage hudInnerBoundary, hudOuterBoundary;
 	public PImage hudPlay, hudLevelComplete, hudPlayAgain;
 	public PImage hudBannerSide, hudBannerCenter;
-	public PImage hudPlayers[], hudCoop;
 
 	/**
+	 * Create the hud and load the images it will use.
 	 * 
-	 * 
-	 * @param parent
+	 * @param parent The parent processing applet.
 	 */
-	public Hud(Propinquity parent, Sounds sounds) {
+	public Hud(Propinquity parent) {
 		this.parent = parent;
-		this.sounds = sounds;
 
 		font = parent.loadFont("hud/Calibri-Bold-32.vlw");
 
@@ -57,14 +50,6 @@ public class Hud {
 		hudPlay = parent.loadImage("hud/sbtoplay.png");
 		hudLevelComplete = parent.loadImage("hud/levelcomplete.png");
 		hudPlayAgain = parent.loadImage("hud/sbtoplayagain.png");
-
-		hudPlayers = new PImage[2];
-		for(int i = 0; i < 2; i++) //TODO this is going out, should be gone
-			hudPlayers[i] = parent.loadImage("data/hud/player" + (i + 1) + "score.png");
-
-		// Load co-op HUD
-		hudCoop = parent.loadImage("data/hud/level.png");
-
 	}
 
 	/**
@@ -80,26 +65,13 @@ public class Hud {
 	 * Reset the HUD to its default angle and velocity.
 	 */
 	public void reset() {
-		isSnapped = false;
 		velocity = -PConstants.TWO_PI / 500f;
 	}
 
 	/**
 	 * 
-	 */
-	public void snap() {
-		if(!isSnapped) {
-			angle -= ((int) (angle / PConstants.TWO_PI)) * PConstants.TWO_PI;
-			isSnapped = true;
-		}
-
-		update(PConstants.TWO_PI, PConstants.TWO_PI / 500f, PConstants.TWO_PI / 10f);
-	}
-
-	/**
 	 * 
-	 * 
-	 * @param targetAngle
+	 * @param targetAngle 
 	 * @param targetAcceleration
 	 * @param maxVelocity
 	 */
@@ -107,13 +79,13 @@ public class Hud {
 		float diff = targetAngle - angle;
 		int dir = diff < 0 ? -1 : 1;
 
-		if(diff * dir < PConstants.TWO_PI / 5000f) {
+		if (diff * dir < PConstants.TWO_PI / 5000f) {
 			angle = targetAngle;
 			return;
 		}
 
 		velocity += dir * targetAcceleration;
-		if(velocity / dir > maxVelocity)
+		if (velocity / dir > maxVelocity)
 			velocity = dir * maxVelocity;
 
 		velocity *= 0.85;
@@ -122,103 +94,18 @@ public class Hud {
 	}
 
 	/**
+	 * Draw a string of text in a nice circular arc.
 	 * 
-	 */
-	public void draw() {
-		// TODO: Fix this
-		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
-		parent.gl.glEnable(GL.GL_BLEND);
-		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-
-		parent.noStroke();
-		parent.noFill();
-
-		if(parent.level.isCoop() && !parent.level.isCoopDone()) {
-
-			float ang = angle - PConstants.HALF_PI;
-			parent.pushMatrix();
-			parent.translate(parent.width / 2 + PApplet.cos(ang) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET),
-					parent.height / 2 + PApplet.sin(ang) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET));
-			parent.rotate(ang + PConstants.HALF_PI);
-			parent.scale(hudCoop.width / 2, hudCoop.height / 2);
-			parent.beginShape(PConstants.QUADS);
-			parent.texture(hudCoop);
-			parent.vertex(-1, -1, 0, 0, 0);
-			parent.vertex(1, -1, 0, 1, 0);
-			parent.vertex(1, 1, 0, 1, 1);
-			parent.vertex(-1, 1, 0, 0, 1);
-			parent.endShape(PConstants.CLOSE);
-			parent.popMatrix();
-			parent.pushMatrix();
-			parent.translate(parent.width / 2, parent.height / 2);
-			parent.fill(255);
-			parent.noStroke();
-			parent.textAlign(PConstants.CENTER, PConstants.BASELINE);
-			parent.textFont(font, Hud.FONT_SIZE);
-			String score = String.valueOf(parent.level.getTotalPoints() / 2);
-			String name = "Coop";
-			while(parent.textWidth(score + name) < 240)
-				name += ' ';
-
-			drawArc(name + score, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, ang - Hud.SCORE_ANGLE_OFFSET);
-
-			parent.popMatrix();
-
-		} else {
-
-			if(!parent.level.getLastCoopDone()) {
-				sounds.complete.play();
-				sounds.complete.rewind();
-				parent.level.setLastCoopDone(true);
-			}
-			for(int i = 0; i < parent.level.getNumberOfPlayers(); i++) {
-				Player player = parent.level.getPlayer(i);
-				player.approachHudTo(-PConstants.HALF_PI + PConstants.TWO_PI / parent.level.getNumberOfPlayers() * i);
-				float ang = angle - PConstants.HALF_PI + player.hudAngle;
-				parent.pushMatrix();
-				parent.translate(parent.width / 2 + PApplet.cos(ang) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET),
-						parent.height / 2 + PApplet.sin(ang) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET));
-				parent.rotate(ang + PConstants.HALF_PI);
-				parent.scale(hudPlayers[i].width / 2, hudPlayers[i].height / 2);
-				parent.beginShape(PConstants.QUADS);
-				parent.texture(hudPlayers[i]);
-				parent.vertex(-1, -1, 0, 0, 0);
-				parent.vertex(1, -1, 0, 1, 0);
-				parent.vertex(1, 1, 0, 1, 1);
-				parent.vertex(-1, 1, 0, 0, 1);
-				parent.endShape(PConstants.CLOSE);
-				parent.popMatrix();
-				parent.pushMatrix();
-				parent.translate(parent.width / 2, parent.height / 2);
-				parent.fill(255);
-				parent.noStroke();
-				parent.textAlign(PConstants.CENTER, PConstants.BASELINE);
-				parent.textFont(font, Hud.FONT_SIZE);
-				String score = String.valueOf(player.score.getScore());
-				String name = player.getName().length() > 12 ? player.getName().substring(0, 12) : player.getName();
-				while(parent.textWidth(score + name) < 240)
-					name += ' ';
-
-				drawArc(name + score, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, ang - Hud.SCORE_ANGLE_OFFSET);
-
-				parent.popMatrix();
-			}
-		}
-	}
-
-	/**
-	 * 
-	 * @param message
-	 * @param radius
-	 * @param startAngle
-	 * @param parent
+	 * @param message The message to be displayed.
+	 * @param radius The radius of the circle it'll be drawn on.
+	 * @param startAngle The angle heading in radians where it will be drawn..
 	 */
 	public void drawArc(String message, float radius, float startAngle) {
 		// We must keep track of our position along the curve
 		float arclength = 0;
 
 		// For every box
-		for(int i = 0; i < message.length(); i++) {
+		for (int i = 0; i < message.length(); i++) {
 			// Instead of a constant width, we check the width of each
 			// character.
 			char currentChar = message.charAt(i);
@@ -231,7 +118,7 @@ public class Hud {
 			float theta = startAngle + arclength / radius;
 
 			parent.pushMatrix();
-			// Polar to cartesian coordinate conversion
+			// Polar to Cartesian coordinate conversion
 			parent.translate(radius * PApplet.cos(theta), radius * PApplet.sin(theta));
 			// Rotate the box
 			parent.rotate(theta + PConstants.PI / 2); // rotation is offset by
@@ -245,14 +132,36 @@ public class Hud {
 		}
 	}
 
+	/**
+	 * Draws a side banner on the border of the outer game boundary.
+	 * 
+	 * @param text The text to be printed on the banner.
+	 * @param color The tint color applied to the image.
+	 * @param angle The angle in radians at which the banner will be drawn.
+	 */
 	public void drawBannerSide(String text, Color color, float angle) {
 		drawBanner(text, color, angle, hudBannerSide);
 	}
 
+	/**
+	 * Draws a center banner on the border of the outer game boundary.
+	 * 
+	 * @param text The text to be printed on the banner.
+	 * @param color The tint color applied to the image.
+	 * @param angle The angle in radians at which the banner will be drawn.
+	 */
 	public void drawBannerCenter(String text, Color color, float angle) {
 		drawBanner(text, color, angle, hudBannerCenter);
 	}
 
+	/**
+	 * Draws a banner on the border of the outer game boundary.
+	 * 
+	 * @param text The text to be printed on the banner.
+	 * @param color The tint color applied to the image.
+	 * @param angle The angle in radians at which the banner will be drawn.
+	 * @param bannerImg The banner image to be drawn.
+	 */
 	public void drawBanner(String text, Color color, float angle, PImage bannerImg) {
 		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
 		parent.gl.glEnable(GL.GL_BLEND);
@@ -262,6 +171,7 @@ public class Hud {
 		parent.noFill();
 
 		parent.pushMatrix();
+		parent.translate(parent.width / 2, parent.height / 2);
 		parent.translate(PApplet.cos(angle) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET), PApplet.sin(angle)
 				* (parent.height / 2 - Hud.WIDTH + Hud.OFFSET));
 		parent.rotate(angle + PApplet.PI / 2);
@@ -280,49 +190,109 @@ public class Hud {
 		parent.pushMatrix();
 		parent.fill(255);
 		parent.noStroke();
+		parent.translate(parent.width / 2, parent.height / 2);
 		parent.textAlign(PApplet.CENTER, PApplet.BASELINE);
 		parent.textFont(font, FONT_SIZE);
-		String cropped_text = text.length() > 24 ? text.substring(0, 24) : text;
-		float offset = (parent.textWidth(cropped_text) / 2) / (2 * PApplet.PI * (parent.height / 2 - Hud.SCORE_RADIUS_OFFSET)) * PApplet.TWO_PI;
-		drawArc(cropped_text, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET, angle - offset);
+		String cropped_text = text.length() > 30 ? text.substring(0, 30) : text;
+		float offset = (parent.textWidth(cropped_text) / 2)
+				/ (2 * PApplet.PI * (parent.height / 2 - Hud.SCORE_RADIUS_OFFSET)) * PApplet.TWO_PI;
+		drawArc(cropped_text, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET + Hud.OFFSET, angle - offset);
 		parent.popMatrix();
 	}
 
-
-	void drawCenterText(String line1) {
-		drawCenterText(line1, null);
+	/**
+	 * Draw the given text in the center of the game world.
+	 * 
+	 * @param line1 The line of text to be drawn.
+	 * @param angle The angle in radians at which the text will be drawn.
+	 */
+	public void drawCenterText(String line1, float angle) {
+		drawCenterText(line1, null, Color.white(), angle);
 	}
 
-	void drawCenterText(String line1, String line2) {
+	/**
+	 * Draw the given text in the given color in the center of the game world.
+	 * 
+	 * @param line1 The line of text to be drawn.
+	 * @param color the text color
+	 * @param angle The angle in radians at which the text will be drawn.
+	 */
+	public void drawCenterText(String line1, Color color, float angle) {
+		drawCenterText(line1, null, color, angle);
+	}
+
+	/**
+	 * Draw the given text in the center of the game world.
+	 * 
+	 * @param line1 The first line of text to be drawn.
+	 * @param line2 The second line of text to be drawn.
+	 * @param angle The angle in radians at which the text will be drawn.
+	 */
+	public void drawCenterText(String line1, String line2, float angle) {
+		drawCenterText(line1, line2, Color.white(), angle);
+	}
+
+	/**
+	 * Draw the given text in the given color in the center of the game world.
+	 * 
+	 * @param line1 The first line of text to be drawn.
+	 * @param line2 The second line of text to be drawn.
+	 * @param color the text color
+	 * @param angle The angle in radians at which the text will be drawn.
+	 */
+	public void drawCenterText(String line1, String line2, Color color, float angle) {
 		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
 		parent.gl.glEnable(GL.GL_BLEND);
 		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 
-		parent.fill(255);
+		parent.fill(color.toInt(parent));
 		parent.pushMatrix();
-		parent.rotate(parent.frameCount * Hud.PROMPT_ROT_SPEED);
+		parent.translate(parent.width / 2, parent.height / 2);
+		parent.rotate(angle);
 
 		parent.textFont(font, FONT_SIZE);
 		parent.text(line1, 0, 0);
-		if(line2 != null) parent.text(line2, 0, -20);
+		if (line2 != null)
+			parent.text(line2, 0, -20);
 
 		parent.popMatrix();
 	}
 
-	private void drawCenterImage(PImage image) {
+	/**
+	 * Draw the given image in the center of the game world.
+	 * 
+	 * @param image The image to be drawn.
+	 * @param angle The angle in radians at which the text will be drawn.
+	 */
+	public void drawCenterImage(PImage image, float angle) {
+		drawCenterImage(image, Color.white(), angle);
+	}
+
+	/**
+	 * Draw the given image in the given color in the center of the game world.
+	 * 
+	 * @param image The image to be drawn.
+	 * @param color the image color
+	 * @param angle The angle in radians at which the text will be drawn.
+	 */
+	public void drawCenterImage(PImage image, Color color, float angle) {
 		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
 		parent.gl.glEnable(GL.GL_BLEND);
 		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 
-		parent.fill(255);
+		parent.fill(color.toInt(parent));
 		parent.pushMatrix();
-		parent.rotate(parent.frameCount * Hud.PROMPT_ROT_SPEED);
+		parent.translate(parent.width / 2, parent.height / 2);
+		parent.rotate(angle);
 
 		parent.image(image, 0, 0);
 
 		parent.popMatrix();
 	}
 
+	/**
+	 * Draw the inner fence boundary circle graphic.
+	 */
 	public void drawInnerBoundary() {
 		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
 		parent.gl.glEnable(GL.GL_BLEND);
@@ -334,6 +304,9 @@ public class Hud {
 		parent.popMatrix();
 	}
 
+	/**
+	 * Draw the outer fence boundary circle graphic.
+	 */
 	public void drawOuterBoundary() {
 		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
 		parent.gl.glEnable(GL.GL_BLEND);

@@ -1,154 +1,290 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<level coop="0">
-<song file="02 Twenty Three" name="Medium" duration="3:34" bpm="80" multiplier="4"/>
-<player number="1">
+<level name="Medium">
+	<song file="02 Twenty Three.mp3" bpm="80"/>
 	<sequence>
-		<step number="1" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="2" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/> 
-		<step number="3" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="4" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="5" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="6" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="7" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="8" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="9" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="10" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/> 
-		<step number="11" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="12" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="13" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="14" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="15" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="16" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>	
-		<step number="17" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="18" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/> 
-		<step number="19" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="20" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="21" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="22" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="23" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="24" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="25" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="26" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/> 
-		<step number="27" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="28" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="29" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="30" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="31" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="32" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>	
-		<step number="33" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="34" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/> 
-		<step number="35" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="36" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="37" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="38" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="39" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="40" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="41" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="42" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/> 
-		<step number="43" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="44" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="45" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="46" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="47" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="48" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>	
-		<step number="49" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="50" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/> 
-		<step number="51" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="52" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="53" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="54" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="55" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="56" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="57" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="58" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/> 
-		<step number="59" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="60" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="61" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="62" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>	
-		<step number="63" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="64" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/> 
-		<step number="65" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="66" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="67" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="68" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="69" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="70" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="71" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
+		<step mode="coop">
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+		</step> 
+		<step mode="coop">
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+		</step> 
+		<step mode="coop">
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+		</step>	
+		<step mode="coop">
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+		</step> 
+		<step mode="coop">
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+		</step> 
+		<step mode="coop">
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+		</step>	
+		<step mode="coop">
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+		</step> 
+		<step mode="coop">
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+		</step> 
+		<step mode="coop">
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+		</step>	
+		<step mode="coop">
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+		</step> 
+		<step mode="coop">
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+		</step> 
+		<step mode="coop">
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+		</step>	
+		<step mode="coop">
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+		</step> 
+		<step mode="coop">
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="0" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="0" patch2="1" patch3="0" patch4="0"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
+		</step>
 	</sequence>
-</player>
-<player number="2">
-	<sequence>
-		<step number="1" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="2" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/> 
-		<step number="3" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="4" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="5" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="6" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="7" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="8" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="9" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="10" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/> 
-		<step number="11" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="12" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="13" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="14" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="15" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="16" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>	
-		<step number="17" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="18" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/> 
-		<step number="19" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="20" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="21" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="22" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="23" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="24" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="25" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="26" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/> 
-		<step number="27" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="28" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="29" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="30" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="31" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="32" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>	
-		<step number="33" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="34" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/> 
-		<step number="35" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="36" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="37" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="38" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="39" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="40" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="41" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="42" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/> 
-		<step number="43" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="44" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="45" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="46" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="47" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="48" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>	
-		<step number="49" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="50" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/> 
-		<step number="51" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="52" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="53" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="54" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="55" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="56" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="57" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="58" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/> 
-		<step number="59" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="60" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="61" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="62" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>	
-		<step number="63" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="64" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/> 
-		<step number="65" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="66" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="67" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="68" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="69" pad1="1" pad2="0" pad3="0" pad4="0" free="0"/>
-		<step number="70" pad1="0" pad2="1" pad3="0" pad4="0" free="0"/>
-		<step number="71" pad1="1" pad2="1" pad3="0" pad4="0" free="0"/>
-	</sequence>
-</player>
 </level>
