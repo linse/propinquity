@@ -1,5 +1,7 @@
 package propinquity;
 
+import pbox2d.*;
+
 import org.jbox2d.collision.shapes.PolygonDef;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
@@ -33,12 +35,12 @@ public class Fences {
 	public static final short MASK_OUTER = CAT_NEW | CAT_OLD;
 
 	Propinquity parent;
-	
+	PBox2D box2d;
 	Body innerFence, outerFence;
 
-	public Fences(Propinquity parent) {
-
+	public Fences(Propinquity parent, PBox2D box2d) {
 		this.parent = parent;
+		this.box2d = box2d;
 		
 		createInnerFence();
 		createOuterFence();
@@ -57,7 +59,7 @@ public class Fences {
 		float radius = INNER_RADIUS / worldScale + fenceDepth / 2 + 0.0125f;
 		float perimeter = 2 * PConstants.PI * radius;
 
-		innerFence = parent.box2d.createBody(bd);
+		innerFence = box2d.createBody(bd);
 		
 		for(int i = 0; i < SECTIONS; i++) {
 			float angle = 2 * PConstants.PI / SECTIONS * i;
@@ -80,7 +82,7 @@ public class Fences {
 		float radius = OUTER_RADIUS / worldScale + fenceDepth / 2;
 		float perimeter = 2 * PConstants.PI * radius;
 
-		outerFence = parent.box2d.createBody(bd);
+		outerFence = box2d.createBody(bd);
 		
 		for(int i = 0; i < SECTIONS; i++) {
 			float angle = 2 * PConstants.PI / SECTIONS * i;

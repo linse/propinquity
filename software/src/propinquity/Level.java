@@ -6,9 +6,7 @@ import propinquity.hardware.Patch;
 import propinquity.hardware.ProxEventListener;
 import ddf.minim.*;
 
-public class Level implements UIElement, ProxEventListener, PConstants {
-
-	static final int DEFAULT_BPM = 120;
+public class Level implements UIElement, ProxEventListener, LevelConstants, PConstants {
 
 	Propinquity parent;
 	

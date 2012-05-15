@@ -1,92 +1,43 @@
 package propinquity;
 
-import java.io.File;
 import java.util.Vector;
 
 import org.jbox2d.common.Vec2;
 
 import processing.core.*;
-import processing.xml.*;
 
 public class LevelSelect implements PConstants, UIElement {
 
-	final String LEVEL_FOLDER = "levels/";
-
 	Propinquity parent;
 
-	Sounds sounds;
-
 	Hud hud;
-	Particle[] particles;
 
-	String[] names;
+	Sounds sounds;
 
 	String[] playerNames;
 	Player[] players;
 
-	String[] levelFiles;
 	Level[] levels;
 	Level currentLevel;
+
+	Particle[] particles;
 
 	int state, selected;
 
 	boolean isVisible;
 
-	public LevelSelect(Propinquity parent, Hud hud, Player[] players, Sounds sounds) {
+	public LevelSelect(Propinquity parent, Hud hud, Player[] players, Level[] levels, Sounds sounds) {
 		this.parent = parent;
 		this.hud = hud;
 		this.players = players;
+		this.levels = levels;
 		this.sounds = sounds;
 
-		isVisible = true;
-
-		levelFiles = listFileNames(parent.dataPath(LEVEL_FOLDER), "xml");
-		// load each level to know the song name and duration
-		Vector<Level> tmp_levels = new Vector<Level>();
-		for (int i = 0; i < levelFiles.length; i++) {
-			try {
-				tmp_levels.add(new Level(parent, hud, LEVEL_FOLDER+levelFiles[i], players, sounds));
-			} catch(XMLException e) {
-				System.out.println("Level not built for file \""+levelFiles[i]+"\" because of the following XMLException");
-				System.out.println(e.getMessage());
-			}
-		}
-
-		levels = tmp_levels.toArray(new Level[0]);
-	}
-
-	// This function returns all the files in a directory as an array of Strings
-	String[] listFileNames(String dir, String ext) {
-		File file = new File(dir);
-		if (file.isDirectory()) {
-			String names[] = file.list();
-			if (ext == null)
-				return names;
-
-			// if extension is specify, parse out the rest
-			Vector<String> parsedNames = new Vector<String>();
-			for (int i = 0; i < names.length; i++) {
-				if (names[i].lastIndexOf("." + ext) == names[i].length() - 4)
-					parsedNames.add(names[i]);
-			}
-
-			String[] namesWithExt = new String[parsedNames.size()];
-			for (int i = 0; i < namesWithExt.length; i++)
-				namesWithExt[i] = parsedNames.get(i);
-
-			return namesWithExt;
-		} else {
-			// If it's not a directory
-			return null;
-		}
+		isVisible = false;
 	}
 
 	public Level getCurrentLevel() {
 		return currentLevel;
-	}
-
-	public Level[] getLevels() {
-		return levels;
 	}
 
 	public void setPlayerNames(String[] playerNames) {
@@ -151,8 +102,7 @@ public class LevelSelect implements PConstants, UIElement {
 	}
 
 	public void draw() {
-		if (!isVisible)
-			return;
+		if (!isVisible) return;
 
 		hud.drawInnerBoundary();
 		hud.drawOuterBoundary();
