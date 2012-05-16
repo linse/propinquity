@@ -1,6 +1,8 @@
 package propinquity;
 
-public interface UIElement {
+import processing.core.PConstants;
+
+public interface UIElement extends PConstants {
 
 	public void draw();
 

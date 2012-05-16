@@ -4,7 +4,7 @@ import org.jbox2d.common.Vec2;
 
 import processing.core.*;
 
-public class LevelSelect implements PConstants, UIElement {
+public class LevelSelect implements UIElement {
 
 	Propinquity parent;
 

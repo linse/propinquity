@@ -71,7 +71,18 @@ public class XBeeManager implements UIElement {
 	 * @param keycode the keycode of the keyPressed event.
 	 */
 	public void keyPressed(char key, int keycode) {
-		if(isVisible && (key == PConstants.ENTER || keycode == ' ')) processUIEvent();
+		if(!isVisible) return;
+		switch(key) {
+			case ENTER:
+			case ' ': {
+				processUIEvent();
+				break;
+			}
+			case 's': {
+				xbeeBaseStation.scan();
+				break;
+			}
+		}
 	}
 
 	/**

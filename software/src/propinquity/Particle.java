@@ -15,16 +15,16 @@ public class Particle {
 	 */
 	public static final int SPAWN_DELAY = 500;
 
-	public static final float SMALL_SIZE = 0.5f;
-	public static final float LARGE_SIZE = 1f;
+	public static final float SMALL_SIZE = 0.33f;
+	public static final float LARGE_SIZE = 0.66f;
 	
-	public Vec2 position;
-	public Color color;
+	Vec2 position;
+	Color color;
 
-	private float scale;
-	private Body body;
-	private CircleDef shape;
-	private PGraphics texture;
+	float scale;
+	Body body;
+	CircleDef shape;
+	PGraphics texture;
 
 	private Propinquity parent;
 
@@ -59,6 +59,18 @@ public class Particle {
 		body = parent.box2d.createBody(bd);
 		body.createShape(shape);
 		body.setMassFromShapes();
+	}
+
+	public float getScale() {
+		return scale;
+	}
+
+	public Color getColor() {
+		return color;
+	}
+
+	public Vec2 getPosition() {
+		return position;
 	}
 
 	public void kill() {

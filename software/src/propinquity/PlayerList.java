@@ -12,11 +12,10 @@ public class PlayerList implements PlayerConstants, UIElement {
 
 	Propinquity parent;
 
+	String plistFile;
 	String[] playerNames;
 
 	Vector<Textfield> playerFields;
-
-	String plistFile;
 
 	ControlP5 controlP5;
 
@@ -44,21 +43,7 @@ public class PlayerList implements PlayerConstants, UIElement {
 
 		playerFields = new Vector<Textfield>();
 
-		// load the player list
-		String[] plistLines = parent.loadStrings(plistFile);
-		if(plistLines != null) {
-			for(int i = 0; i < plistLines.length; i++) {
-				if(PApplet.trim(plistLines[i]).length() > 0) {
-					addPlayer(plistLines[i]);
-				}
-			}
-		}
-
-		if(playerFields.size() < 1) addPlayer("Player 1");
-		if(playerFields.size() < 2) addPlayer("Player 2");
-
-		playerNames = new String[playerFields.size()];
-		for(int i = 0;i < playerFields.size();i++) playerNames[i] = playerFields.get(i).getText();
+		reset();
 
 		hide();
 	}
@@ -115,11 +100,24 @@ public class PlayerList implements PlayerConstants, UIElement {
 		else removeButton.show();
 	}
 
-	public void reset() {
+	public void reset() { //TODO can we lock the fields for go sakes
 		while(playerFields.size() > 0) removePlayer();
-		addPlayer("Player 1");
-		addPlayer("Player 2");
-		process();
+
+		// load the player list
+		String[] plistLines = parent.loadStrings(plistFile);
+		if(plistLines != null) {
+			for(int i = 0; i < plistLines.length; i++) {
+				if(PApplet.trim(plistLines[i]).length() > 0) {
+					addPlayer(plistLines[i]);
+				}
+			}
+		}
+
+		if(playerFields.size() < 1) addPlayer("Player 1");
+		if(playerFields.size() < 2) addPlayer("Player 2");
+
+		playerNames = new String[playerFields.size()];
+		for(int i = 0;i < playerFields.size();i++) playerNames[i] = playerFields.get(i).getText();
 	}
 
 	public void process() {
@@ -136,11 +134,13 @@ public class PlayerList implements PlayerConstants, UIElement {
 
 	public void show() {
 		isVisible = true;
+		for(Textfield tf : playerFields) tf.unlock();
 		controlP5.show();
 	}
 
 	public void hide() {
 		isVisible = false;
+		for(Textfield tf : playerFields) tf.lock();
 		controlP5.hide();
 	}
 

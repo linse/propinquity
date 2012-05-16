@@ -68,6 +68,7 @@ public class HardwareSimulator implements HardwareInterface, UIElement {
 
 	public void draw() {
 		if(!isVisible) return;
+
 		p.strokeWeight(3);
 		p.stroke(100);
 		p.fill(0);
@@ -77,7 +78,7 @@ public class HardwareSimulator implements HardwareInterface, UIElement {
 		int num_patch = patches.size();
 		int num_gloves = gloves.size();
 		int total = num_patch+num_gloves;
-		int local_width = width/total;
+		int local_width = width/(total+1);
 
 		p.strokeWeight(1);
 		p.noStroke();
@@ -139,14 +140,16 @@ public class HardwareSimulator implements HardwareInterface, UIElement {
 		if(keycode >= 48 && keycode <= 57) {
 			current_patch = PApplet.constrain(keycode-48, 0, patches.size()-1);
 		} else if(keycode == KeyEvent.VK_MINUS) {
+			if(current_patch >= patches.size()) return;
 			Patch patch = patches.get(current_patch);
 			if(patch.getActive()) {
 				patch.setProx(patch.getProx()-50);
 				for(ProxEventListener listener : proxListeners) listener.proxEvent(patch);
 			}
 		} else if(keycode == KeyEvent.VK_EQUALS) {
+			if(current_patch >= patches.size()) return;
 			Patch patch = patches.get(current_patch);
-			if(patch.getActive()) {
+			if(patch != null && patch.getActive()) {
 				patch.setProx(patch.getProx()+50);
 				for(ProxEventListener listener : proxListeners) listener.proxEvent(patch);
 			}

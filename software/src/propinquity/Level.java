@@ -5,7 +5,7 @@ import processing.xml.*;
 import propinquity.hardware.*;
 import ddf.minim.*;
 
-public class Level implements UIElement, ProxEventListener, LevelConstants, PConstants {
+public class Level implements UIElement, ProxEventListener, LevelConstants {
 
 	Propinquity parent;
 	

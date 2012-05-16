@@ -3,8 +3,9 @@ package propinquity;
 import java.lang.System;
 import org.jbox2d.common.Vec2;
 import processing.core.*;
+import propinquity.hardware.*;
 
-public class PlayerSelect implements PConstants, UIElement {
+public class PlayerSelect implements UIElement {
 
 	Propinquity parent;
 
@@ -47,9 +48,12 @@ public class PlayerSelect implements PConstants, UIElement {
 
 		if(state < playerNames.length) {
 			while(nameTaken(playerNames[selected])) selected = (selected + 1) % playerNames.length;
+			for(Patch patch : players[state].getPatches()) {
+				patch.setActive(true);
+				patch.setColor(players[state].getColor());
+			}
 			createParticles(playerNames.length, players[state].getColor());
 		} else if(state == playerNames.length) {
-			killParticles();
 			parent.changeGameState(GameState.LevelSelect);
 		} else {
 			System.out.println("Warning: Unknown Player Select State");
@@ -68,9 +72,16 @@ public class PlayerSelect implements PConstants, UIElement {
 		}
 	}
 
-	void killParticles() {
-		if(particles == null) return;
-		for(Particle particle : particles) particle.kill();
+	void cleanup() {
+		for(Player player : players) {
+			for(Patch patch : player.getPatches()) {
+				patch.setActive(false);
+			}
+		}
+
+		if(particles != null) {
+			for(Particle particle : particles) particle.kill();
+		}
 	}
 
 	void drawParticles() {
@@ -119,8 +130,9 @@ public class PlayerSelect implements PConstants, UIElement {
 	public void keyPressed(char key, int keycode) {
 		switch(keycode) {
 		case BACKSPACE: {
+			cleanup();
+
 			if(state == 0) {
-				killParticles();
 				parent.changeGameState(GameState.PlayerList);
 			} else {
 				reset();
@@ -165,6 +177,7 @@ public class PlayerSelect implements PConstants, UIElement {
 
 	public void select() {
 		players[state].setName(playerNames[selected]);
+		cleanup();
 		stateChange(state + 1);
 	}
 }

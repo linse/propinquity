@@ -20,6 +20,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 	public static final int FPS = 30;
 
 	//General/Util		
+	HeapDebug heapDebug;
 	Logger logger;
 
 	GameState gameState;
@@ -60,6 +61,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 		hint(PConstants.ENABLE_OPENGL_4X_SMOOTH);
 
 		//General/Util
+		heapDebug = new HeapDebug();
 		logger = new Logger(this);
 
 		sounds = new Sounds(this);
@@ -69,9 +71,10 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 		simulator = new HardwareSimulator(this);
 		
 		xbeeBaseStation = new XBeeBaseStation();
+		xbeeBaseStation.scan();
 		xbeeManager = new XBeeManager(this, xbeeBaseStation);
 
-		hardware = simulator;
+		hardware = xbeeBaseStation;
 
 		//Player/Player List
 		players = new Player[MAX_PLAYERS];
@@ -81,12 +84,10 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 
 			for(int j = 0;j < PATCH_ADDR[i].length;j++) {
 				patches[j] = new Patch(PATCH_ADDR[i][j], hardware);
-				patches[j].setActive(true);
 				hardware.addPatch(patches[j]);
 			}
 
 			Glove glove = new Glove(GLOVE_ADDR[i], hardware);
-
 			hardware.addGlove(glove);
 
 			Color color = PLAYER_COLORS[i];
@@ -166,6 +167,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 			}
 
 			case PlayerList: {
+				playerList.reset();
 				playerList.show();
 				break;
 			}
@@ -242,6 +244,12 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 			case 'n': {
 				if(simulator.isVisible()) simulator.hide();
 				else simulator.show();
+				break;
+			}
+
+			case 'h': {
+				if(heapDebug.isRunning()) heapDebug.stop();
+				else heapDebug.start();
 				break;
 			}
 		}
