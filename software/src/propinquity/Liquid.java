@@ -13,9 +13,9 @@ public class Liquid {
 	public static final float GRAVITY_STRENGTH = 0.01f;
 	
 	/** The maximum allowable number of particles per player's liquid. */
-	public static final int MAX_PARTICLES = 250;
-	
-	private static final int MERGE_COUNT = 5;
+	public static final int MAX_PARTICLES = 100;
+	private static final int MERGE_COUNT = 3;	
+	private static final int MERGE_VOLUME = 5;
 
 	private Vector<Particle> particlesCreated;
 	private Vector<Particle> particlesHeld;
@@ -50,7 +50,7 @@ public class Liquid {
 
 	public void transferParticles() {
 		for(Particle particle : particlesCreated) {
-			Particle newParticle = new Particle(parent, particle.position, particle.color, Particle.SMALL_SIZE, false);
+			Particle newParticle = new Particle(parent, particle.getPosition(), particle.getColor(), Particle.SMALL_SIZE, false);
 			particlesHeld.add(newParticle);
 			particle.kill();
 		}
@@ -58,22 +58,32 @@ public class Liquid {
 		particlesCreated = new Vector<Particle>();
 	}
 	
-	private void MergeParticles() {
-		
-		Particle[] toMerge = new Particle[MERGE_COUNT];
-		for (int i = 0; i < MERGE_COUNT; i++) 
-			toMerge[i] = particlesHeld.get(i);
+	private void mergeParticles() {
+		for(int i = 0;i < MERGE_COUNT;i++) {
+			Particle[] toMerge = new Particle[MERGE_VOLUME];
+			int k = 0;			
 
-		float avgX = 0, avgY = 0;
-		
-		for (int i = 0; i < MERGE_COUNT; i++) {
-			avgX += toMerge[i].position.x;
-			avgY += toMerge[i].position.y;
-			toMerge[i].kill();
-			particlesHeld.remove(toMerge[i]);
+			for(Particle particle : particlesHeld) { //Search for remaining small particles
+				if(particle.getScale() == Particle.SMALL_SIZE) {
+					toMerge[k] = particle;
+					k++;
+					if(k == toMerge.length) break;
+				}
+			}
+
+			if(k < toMerge.length-1) break; //Insufficient particles to merge
+
+			float avgX = 0, avgY = 0;
+			
+			for (int j = 0; j < MERGE_VOLUME; j++) {
+				avgX += toMerge[j].getPosition().x;
+				avgY += toMerge[j].getPosition().y;
+				toMerge[j].kill();
+				particlesHeld.remove(toMerge[j]);
+			}
+			
+			particlesLarge.add(new Particle(parent, new Vec2(avgX / MERGE_VOLUME, avgY / MERGE_VOLUME), color, Particle.LARGE_SIZE, false));
 		}
-		
-		particlesLarge.add(new Particle(parent, new Vec2(avgX / MERGE_COUNT, avgY / MERGE_COUNT), color, Particle.LARGE_SIZE, false));
 	}
 
 	private void applyGravity() {
@@ -114,7 +124,7 @@ public class Liquid {
 			applyGravity();
 		
 		if (particlesCreated.size() + particlesHeld.size() > MAX_PARTICLES) {
-			MergeParticles();
+			mergeParticles();
 		}
 	}
 	
