@@ -1,7 +1,6 @@
 package propinquity;
 
 import processing.core.*;
-import propinquity.hardware.*;
 import java.util.*;
 import controlP5.*;
 
@@ -12,8 +11,6 @@ public class PlayerList implements PlayerConstants, UIElement {
 	final int VERT_SPACER = 20;
 
 	Propinquity parent;
-
-	HardwareInterface hardware;
 
 	String[] playerNames;
 
@@ -30,14 +27,11 @@ public class PlayerList implements PlayerConstants, UIElement {
 	boolean isVisible;
 
 
-	public PlayerList(Propinquity parent, HardwareInterface hardware, String plistFile) {
+	public PlayerList(Propinquity parent, String plistFile) {
 		this.parent = parent;
-		this.hardware = hardware;
 		this.plistFile = plistFile;
 
 		isVisible = true;
-
-		playerFields = new Vector<Textfield>();
 
 		controlP5 = new ControlP5(parent);
 
@@ -47,6 +41,8 @@ public class PlayerList implements PlayerConstants, UIElement {
 
 		// create next button
 		nextButton = controlP5.addButton("NEXT", 0, parent.width / 2 - WIDTH / 2 + 2 * WIDTH / 3, parent.height / 2, 50, 20);
+
+		playerFields = new Vector<Textfield>();
 
 		// load the player list
 		String[] plistLines = parent.loadStrings(plistFile);
@@ -60,6 +56,11 @@ public class PlayerList implements PlayerConstants, UIElement {
 
 		if(playerFields.size() < 1) addPlayer("Player 1");
 		if(playerFields.size() < 2) addPlayer("Player 2");
+
+		playerNames = new String[playerFields.size()];
+		for(int i = 0;i < playerFields.size();i++) playerNames[i] = playerFields.get(i).getText();
+
+		hide();
 	}
 
 	public String[] getPlayerNames() {
@@ -130,7 +131,7 @@ public class PlayerList implements PlayerConstants, UIElement {
 
 		parent.saveStrings(parent.dataPath(plistFile), playerNames);
 
-		parent.changeGameState(GameState.LevelSelect);
+		parent.changeGameState(GameState.PlayerSelect);
 	}
 
 	public void show() {

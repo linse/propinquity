@@ -38,12 +38,12 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 
 	HardwareInterface hardware;
 
-	//Player/Player List
+	//Player/Player List/PlayerSelect
 	Player[] players;
 	PlayerList playerList;
+	PlayerSelect playerSelect;
 
 	//Level/Level Select
-	Level level;
 	Level[] levels;
 	LevelSelect levelSelect;
 
@@ -94,7 +94,8 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 			players[i] = new Player(this, null, color, patches, glove, sounds);
 		}
 
-		playerList = new PlayerList(this, hardware, "player.lst");
+		playerList = new PlayerList(this, "player.lst");
+		playerSelect = new PlayerSelect(this, hud, players);
 
 		//Level/Level Select
 		Vector<Level> tmp_levels = new Vector<Level>();
@@ -119,7 +120,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 		levels = tmp_levels.toArray(new Level[0]);
 		if(levels.length == 0) System.out.println("Warning: No valid levels were built");
 
-		levelSelect = new LevelSelect(this, hud, players, levels, sounds);
+		levelSelect = new LevelSelect(this, hud, levels);
 
 		//Box 2D
 		box2d = new PBox2D(this, (float) height / worldSize);
@@ -132,6 +133,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 		uiElements = new Vector<UIElement>();
 		uiElements.add(xbeeManager);
 		uiElements.add(playerList);
+		uiElements.add(playerSelect);
 		uiElements.add(levelSelect);
 		for(Level level : levels) uiElements.add(level);
 		
@@ -139,10 +141,9 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 	}
 
 	public void draw() {
-		// clear black
 		background(Color.black().toInt(this));
 
-		hud.update(hud.getAngle() + HALF_PI, TWO_PI / 10000f, TWO_PI / 2000f);
+		hud.update(hud.getAngle() + HALF_PI, TWO_PI/10000f, TWO_PI/2000f);
 
 		for(UIElement u: uiElements) u.draw();
 		if(gameState == GameState.Play) box2d.step();
@@ -169,19 +170,21 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 				break;
 			}
 
-			case LevelSelect: {
-				levelSelect.setPlayerNames(playerList.getPlayerNames());
+			case PlayerSelect: {
+				playerSelect.setPlayerNames(playerList.getPlayerNames());
+				playerSelect.reset();
+				playerSelect.show();
+				break;
+			}
 
+			case LevelSelect: {
 				levelSelect.reset();
 				levelSelect.show();
 				break;
 			}
 
 			case Play: {
-				if(level != null) hardware.removeProxEventListener(level);
-				level = levelSelect.getCurrentLevel();
-				hardware.addProxEventListener(level);
-
+				Level level = levelSelect.getSelectedLevel();
 				level.reset();
 				level.show();
 				break;
@@ -216,6 +219,11 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 
 			case PlayerList: {
 				playerList.keyPressed(key, keyCode);
+				break;
+			}
+
+			case PlayerSelect: {
+				playerSelect.keyPressed(key, keyCode);
 				break;
 			}
 

@@ -12,61 +12,28 @@ public class LevelSelect implements PConstants, UIElement {
 
 	Hud hud;
 
-	Sounds sounds;
-
-	String[] playerNames;
-	Player[] players;
-
+	int selected;
 	Level[] levels;
-	Level currentLevel;
 
 	Particle[] particles;
 
-	int state, selected;
-
 	boolean isVisible;
 
-	public LevelSelect(Propinquity parent, Hud hud, Player[] players, Level[] levels, Sounds sounds) {
+	public LevelSelect(Propinquity parent, Hud hud, Level[] levels) {
 		this.parent = parent;
 		this.hud = hud;
-		this.players = players;
 		this.levels = levels;
-		this.sounds = sounds;
 
 		isVisible = false;
 	}
 
-	public Level getCurrentLevel() {
-		return currentLevel;
-	}
-
-	public void setPlayerNames(String[] playerNames) {
-		this.playerNames = playerNames;
+	public Level getSelectedLevel() {
+		return levels[selected];
 	}
 
 	public void reset() {
-		for (Player player : players)
-			player.setName(null);
-		stateChange(0);
-	}
-
-	void stateChange(int state) {
-		this.state = state;
 		selected = 0;
-
-		killParticles();
-
-		if (state < playerNames.length) {
-			while (nameTaken(playerNames[selected]))
-				selected = (selected + 1) % playerNames.length;
-			createParticles(playerNames.length, players[state].getColor());
-		} else if (state == playerNames.length) {
-			createParticles(levels.length, PlayerConstants.NEUTRAL_COLOR);
-		} else if (state == playerNames.length + 1) {
-			parent.changeGameState(GameState.Play);
-		} else {
-			System.out.println("Unknown Level Select State");
-		}
+		createParticles(levels.length, PlayerConstants.NEUTRAL_COLOR);
 	}
 
 	void createParticles(int num, Color color) {
@@ -83,41 +50,8 @@ public class LevelSelect implements PConstants, UIElement {
 	}
 
 	void killParticles() {
-		if (particles == null)
-			return;
-		for (Particle particle : particles)
-			particle.kill();
-	}
-
-	public void show() {
-		isVisible = true;
-	}
-
-	public void hide() {
-		isVisible = false;
-	}
-
-	public boolean isVisible() {
-		return isVisible;
-	}
-
-	public void draw() {
-		if (!isVisible) return;
-
-		hud.drawInnerBoundary();
-		hud.drawOuterBoundary();
-		
-		drawParticles();
-
-		if (state < playerNames.length) {
-			hud.drawCenterText("Select Player " + (state + 1), hud.getAngle());
-			hud.drawBannerCenter(playerNames[selected], players[state].getColor(), PApplet.TWO_PI / playerNames.length
-					* selected);
-		} else if (state == playerNames.length) {
-			hud.drawCenterText("Select Song", hud.getAngle());
-			hud.drawBannerCenter(levels[selected].getName(), PlayerConstants.NEUTRAL_COLOR, PApplet.TWO_PI/levels.length*selected);
-		}
-
+		if (particles == null) return;
+		for (Particle particle : particles) particle.kill();
 	}
 
 	void drawParticles() {
@@ -133,6 +67,30 @@ public class LevelSelect implements PConstants, UIElement {
 		parent.popMatrix();
 	}
 
+	public void draw() {
+		if (!isVisible) return;
+
+		hud.drawInnerBoundary();
+		hud.drawOuterBoundary();
+		
+		drawParticles();
+
+		hud.drawCenterText("Select Song", hud.getAngle());
+		hud.drawBannerCenter(levels[selected].getName(), PlayerConstants.NEUTRAL_COLOR, PApplet.TWO_PI/levels.length*selected);
+	}
+
+	public void show() {
+		isVisible = true;
+	}
+
+	public void hide() {
+		isVisible = false;
+	}
+
+	public boolean isVisible() {
+		return isVisible;
+	}
+
 	/**
 	 * Receive a keyPressed event.
 	 * 
@@ -142,9 +100,8 @@ public class LevelSelect implements PConstants, UIElement {
 	public void keyPressed(char key, int keycode) {
 		switch (keycode) {
 		case BACKSPACE: {
-			if (state == 0)
-				parent.changeGameState(GameState.PlayerList);
-			reset();
+			killParticles();
+			parent.changeGameState(GameState.PlayerSelect);
 			break;
 		}
 		case LEFT: {
@@ -163,41 +120,16 @@ public class LevelSelect implements PConstants, UIElement {
 		}
 	}
 
-	boolean nameTaken(String name) {
-		for (Player player : players) {
-			if (player.getName() == playerNames[selected])
-				return true; // Use == not .equals
-		}
-		return false;
-	}
-
 	public void left() {
-		if (state < playerNames.length) {
-			do {
-				selected = (selected + playerNames.length - 1) % playerNames.length;
-			} while (nameTaken(playerNames[selected]));
-		} else if (state == playerNames.length) {
-			selected = (selected + levels.length - 1) % levels.length;
-		}
+		selected = (selected + levels.length - 1) % levels.length;
 	}
 
 	public void right() {
-		if (state < playerNames.length) {
-			do {
-				selected = (selected + 1) % playerNames.length;
-			} while (nameTaken(playerNames[selected]));
-		} else if (state == playerNames.length) {
-			selected = (selected + 1) % levels.length;
-		}
+		selected = (selected + 1) % levels.length;
 	}
 
 	public void select() {
-		if (state < playerNames.length) {
-			players[state].setName(playerNames[selected]);
-		} else if (state == playerNames.length) {
-			currentLevel = levels[selected];
-		}
-
-		stateChange(state + 1);
+		killParticles();
+		parent.changeGameState(GameState.Play);
 	}
 }

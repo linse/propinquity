@@ -37,7 +37,6 @@ public class Level implements UIElement, ProxEventListener, LevelConstants, PCon
 		this.parent = parent;
 		this.players = players;
 		this.hud = hud;
-
 		this.sounds = sounds;
 
 		XMLElement xml = new XMLElement(parent, levelFile);
@@ -90,8 +89,7 @@ public class Level implements UIElement, ProxEventListener, LevelConstants, PCon
 						patches[j][3] = (player_tags[j].getInt("patch4", 0) != 0);
 					}
 				} else {
-					throw new XMLException("XMLException: XML for level \"" + name + "\", step " + i
-							+ " has less than two player tags.");
+					throw new XMLException("XMLException: XML for level \"" + name + "\", step " + i + " has less than two player tags.");
 				}
 
 				steps[i] = new Step(coop, patches);
@@ -117,7 +115,7 @@ public class Level implements UIElement, ProxEventListener, LevelConstants, PCon
 	}
 
 	public void reset() {
-		for (int i = 0; i < players.length; i++) players[i].reset();
+		for (int i = 0; i < players.length; i++) players[i].reset(); //Clears all the particles etc
 		pause();
 		song.rewind();
 		stepUpdate(0);
@@ -130,7 +128,7 @@ public class Level implements UIElement, ProxEventListener, LevelConstants, PCon
 	void stepUpdate(int nextStep) {
 		currentStep = nextStep;
 		coop = steps[currentStep].isCoop();
-		//TODO Handle Patches and set player coop
+		//TODO Handle Patches on/off and set player coop
 	}
 
 	public boolean isCoop() {

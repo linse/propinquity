@@ -1,5 +1,5 @@
 package propinquity;
 
 public enum GameState {
-	XBeeInit, PlayerList, LevelSelect, Play
+	XBeeInit, PlayerList, PlayerSelect, LevelSelect, Play;
 }
