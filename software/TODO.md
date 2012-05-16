@@ -29,5 +29,5 @@ TODO for Propinquity Software
 	* Provide more robust behavior for variable quantity objects (Gloves, Patches, Xbees, Levels, etc)
 	* Provide meaning full null error messages throughout 
 
-	* if/switch/catch
+	* if/switch/catch/for/while
 	* Standard constructor arg ordering

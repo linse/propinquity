@@ -44,7 +44,7 @@ public class Particle {
 		shape.density = 1.0f;
 		shape.friction = 0.01f;
 		shape.restitution = 0.3f;
-		if (isNew) {
+		if(isNew) {
 			shape.filter.categoryBits = Fences.CAT_NEW;
 			shape.filter.maskBits = Fences.MASK_NEW;
 		} else {

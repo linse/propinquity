@@ -82,13 +82,13 @@ public class Hud {
 		float diff = targetAngle - angle;
 		int dir = diff < 0 ? -1 : 1;
 
-		if (diff * dir < PConstants.TWO_PI / 5000f) {
+		if(diff * dir < PConstants.TWO_PI / 5000f) {
 			angle = targetAngle;
 			return;
 		}
 
 		velocity += dir * targetAcceleration;
-		if (velocity / dir > maxVelocity)
+		if(velocity / dir > maxVelocity)
 			velocity = dir * maxVelocity;
 
 		velocity *= 0.85;
@@ -108,7 +108,7 @@ public class Hud {
 		float arclength = 0;
 
 		// For every box
-		for (int i = 0; i < message.length(); i++) {
+		for(int i = 0; i < message.length(); i++) {
 			// Instead of a constant width, we check the width of each
 			// character.
 			char currentChar = message.charAt(i);
@@ -253,7 +253,7 @@ public class Hud {
 
 		parent.textFont(font, FONT_SIZE);
 		parent.text(line1, 0, 0);
-		if (line2 != null)
+		if(line2 != null)
 			parent.text(line2, 0, -20);
 
 		parent.popMatrix();

@@ -40,7 +40,7 @@ public class Liquid {
 	}
 
 	public void transferParticles() {
-		for (Particle particle : particlesCreated) {
+		for(Particle particle : particlesCreated) {
 			Particle newParticle = new Particle(parent, particle.position, particle.color, false);
 			particlesHeld.add(newParticle);
 			particle.kill();
@@ -54,10 +54,10 @@ public class Liquid {
 		float gravY = Liquid.GRAVITY_STRENGTH * PApplet.sin(-parent.hud.angle + PConstants.HALF_PI);
 		Vec2 gravity = new Vec2(gravX, gravY);
 
-		for (Particle particle : particlesCreated)
+		for(Particle particle : particlesCreated)
 			particle.getBody().applyForce(gravity, particle.getBody().getWorldCenter());
 
-		for (Particle particle : particlesHeld)
+		for(Particle particle : particlesHeld)
 			particle.getBody().applyForce(gravity, particle.getBody().getWorldCenter());
 	}
 
@@ -66,18 +66,18 @@ public class Liquid {
 		float gravY = Liquid.GRAVITY_STRENGTH * PApplet.sin(-parent.hud.angle - PConstants.HALF_PI);
 		Vec2 antiGravity = new Vec2(gravX, gravY);
 
-		for (Particle particle : particlesCreated)
+		for(Particle particle : particlesCreated)
 			particle.getBody().applyForce(antiGravity, particle.getBody().getWorldCenter());
 
-		for (Particle particle : particlesHeld)
+		for(Particle particle : particlesHeld)
 			particle.getBody().applyForce(antiGravity, particle.getBody().getWorldCenter());
 	}
 
 	public void draw() {
-		for (Particle particle : particlesCreated)
+		for(Particle particle : particlesCreated)
 			particle.draw();
 
-		for (Particle particle : particlesHeld)
+		for(Particle particle : particlesHeld)
 			particle.draw();
 	}
 }

@@ -23,7 +23,7 @@ public class Player implements PConstants {
 
 	boolean coop;
 
-	public Player(Propinquity parent, String name, Color color, Patch[] patches, Glove glove, Sounds sounds) {
+	public Player(Propinquity parent, Sounds sounds, String name, Color color, Patch[] patches, Glove glove) {
 		this.parent = parent;
 		
 		this.name = name;
@@ -69,13 +69,13 @@ public class Player implements PConstants {
 	}
 
 	public void playNegativeSound() {
-		if (isCoop()) {
-			if (negSoundCoop != null) {
+		if(isCoop()) {
+			if(negSoundCoop != null) {
 				negSoundCoop.play();
 				negSoundCoop.rewind();
 			}
 		} else {
-			if (negSoundPlayer != null) {
+			if(negSoundPlayer != null) {
 				negSoundPlayer.play();
 				negSoundPlayer.rewind();
 			}

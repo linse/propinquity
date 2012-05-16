@@ -2,8 +2,7 @@ package propinquity;
 
 import processing.core.*;
 import processing.xml.*;
-import propinquity.hardware.Patch;
-import propinquity.hardware.ProxEventListener;
+import propinquity.hardware.*;
 import ddf.minim.*;
 
 public class Level implements UIElement, ProxEventListener, LevelConstants, PConstants {
@@ -11,10 +10,9 @@ public class Level implements UIElement, ProxEventListener, LevelConstants, PCon
 	Propinquity parent;
 	
 	Hud hud;
+	Sounds sounds;
 
 	Player[] players;
-
-	Sounds sounds;
 
 	AudioPlayer song;
 	String songFile;
@@ -33,7 +31,7 @@ public class Level implements UIElement, ProxEventListener, LevelConstants, PCon
 	int currentTime;
 	int[] lastTime;
 
-	public Level(Propinquity parent, Hud hud, String levelFile, Player[] players, Sounds sounds) throws XMLException {
+	public Level(Propinquity parent, Hud hud, Sounds sounds, String levelFile, Player[] players) throws XMLException {
 		this.parent = parent;
 		this.players = players;
 		this.hud = hud;
@@ -43,7 +41,7 @@ public class Level implements UIElement, ProxEventListener, LevelConstants, PCon
 
 		name = xml.getString("name");
 
-		if (name == null) {
+		if(name == null) {
 			name = "Level";
 			System.out.println("Warning: XML contained no level name");
 			System.out.println(xml.toString());
@@ -51,14 +49,14 @@ public class Level implements UIElement, ProxEventListener, LevelConstants, PCon
 
 		XMLElement[] song_tags = xml.getChildren("song");
 
-		if (song_tags.length > 0) {
-			if (song_tags.length > 1)
+		if(song_tags.length > 0) {
+			if(song_tags.length > 1)
 				System.out.println("Warning: XML contained multiple songs tags for a single Level");
 
 			XMLElement song = song_tags[0];
 
 			songFile = song.getString("file");
-			if (songFile.equals(""))
+			if(songFile.equals(""))
 				throw new XMLException("XMLException: XML song tag has empty file attribute");
 
 			songBPM = song.getInt("bpm", DEFAULT_BPM);
@@ -72,17 +70,17 @@ public class Level implements UIElement, ProxEventListener, LevelConstants, PCon
 		steps = new Step[step_tags.length];
 		stepInterval = song.length()/step_tags.length;
 
-		if (step_tags.length > 0) {
-			for (int i = 0; i < step_tags.length; i++) {
+		if(step_tags.length > 0) {
+			for(int i = 0; i < step_tags.length; i++) {
 				String modeString = step_tags[i].getString("mode", "coop");
 				boolean coop = true;
-				if (!modeString.equals("coop"))
+				if(!modeString.equals("coop"))
 					coop = false;
 
 				XMLElement[] player_tags = step_tags[i].getChildren("player");
 				boolean patches[][] = new boolean[player_tags.length][4];
-				if (player_tags.length > 1) {
-					for (int j = 0; j < player_tags.length; j++) {
+				if(player_tags.length > 1) {
+					for(int j = 0; j < player_tags.length; j++) {
 						patches[j][0] = (player_tags[j].getInt("patch1", 0) != 0);
 						patches[j][1] = (player_tags[j].getInt("patch2", 0) != 0);
 						patches[j][2] = (player_tags[j].getInt("patch3", 0) != 0);
@@ -115,7 +113,7 @@ public class Level implements UIElement, ProxEventListener, LevelConstants, PCon
 	}
 
 	public void reset() {
-		for (int i = 0; i < players.length; i++) players[i].reset(); //Clears all the particles etc
+		for(int i = 0; i < players.length; i++) players[i].reset(); //Clears all the particles etc
 		pause();
 		song.rewind();
 		stepUpdate(0);
@@ -138,21 +136,21 @@ public class Level implements UIElement, ProxEventListener, LevelConstants, PCon
 	public void update() {
 		currentTime = parent.millis();
 
-		for (int i = 0; i < players.length; i++) {
-			for (Patch patch : players[i].patches) {
+		for(int i = 0; i < players.length; i++) {
+			for(Patch patch : players[i].patches) {
 
 				int distance = patch.getProx();
 				
-				if (distance > Score.MIN_SWEETSPOT && distance < Score.MAX_SWEETSPOT) {
+				if(distance > Score.MIN_SWEETSPOT && distance < Score.MAX_SWEETSPOT) {
 
-					if (currentTime - lastTime[i] > Particle.SPAWN_DELAY) {
+					if(currentTime - lastTime[i] > Particle.SPAWN_DELAY) {
 						players[i].handleSweetspotRange(patch);
 						lastTime[i] = currentTime;
 					}
 
-				} else if (distance > Score.MIN_RANGE && distance < Score.MAX_RANGE) {
+				} else if(distance > Score.MIN_RANGE && distance < Score.MAX_RANGE) {
 
-					if (currentTime - lastTime[i] > Particle.SPAWN_DELAY) {
+					if(currentTime - lastTime[i] > Particle.SPAWN_DELAY) {
 						players[i].handleScoreRange(patch);
 						lastTime[i] = currentTime;
 					}
@@ -177,7 +175,7 @@ public class Level implements UIElement, ProxEventListener, LevelConstants, PCon
 
 		for(Player player : players) {
 
-			if (player.getScore() > highScore) {
+			if(player.getScore() > highScore) {
 				winner = player;
 				highScore = player.getScore();
 			} else if(player.getScore() == highScore) {
@@ -190,7 +188,7 @@ public class Level implements UIElement, ProxEventListener, LevelConstants, PCon
 
 	public int getTotalPoints() {
 		int total = 0;
-		for (int i = 0; i < players.length; i++)
+		for(int i = 0; i < players.length; i++)
 			total += players[i].getScore();
 		return total;
 	}
@@ -243,19 +241,19 @@ public class Level implements UIElement, ProxEventListener, LevelConstants, PCon
 		hud.drawOuterBoundary();
 
 		//Scores
-		if (isCoop()) {
+		if(isCoop()) {
 			String score = String.valueOf(getTotalPoints());
 			String name = "Coop";
 
-			while (parent.textWidth(score + name) < 240) name += ' ';
+			while(parent.textWidth(score + name) < 240) name += ' ';
 
 			hud.drawBannerCenter(name + score, PlayerConstants.NEUTRAL_COLOR, hud.getAngle());
 		} else {
-			for (int i = 0; i < players.length; i++) {
+			for(int i = 0; i < players.length; i++) {
 				String score = String.valueOf(players[i].score.getScore());
 				String name = players[i].getName();
 
-				while (parent.textWidth(score + name) < 240) name += ' ';
+				while(parent.textWidth(score + name) < 240) name += ' ';
 
 				hud.drawBannerSide(name + score, PlayerConstants.PLAYER_COLORS[i], hud.getAngle() - PConstants.HALF_PI + (i * PConstants.PI));
 			}

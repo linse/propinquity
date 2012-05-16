@@ -91,7 +91,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 
 			Color color = PLAYER_COLORS[i];
 
-			players[i] = new Player(this, null, color, patches, glove, sounds);
+			players[i] = new Player(this, sounds, null, color, patches, glove);
 		}
 
 		playerList = new PlayerList(this, "player.lst");
@@ -106,9 +106,9 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 
 			// if extension is specify, parse out the rest
 			for(String name : names) {
-				if (name.lastIndexOf(".xml") == name.length()-4) {
+				if(name.lastIndexOf(".xml") == name.length()-4) {
 					try {
-						tmp_levels.add(new Level(this, hud, LEVEL_FOLDER+name, players, sounds));
+						tmp_levels.add(new Level(this, hud, sounds, LEVEL_FOLDER+name, players));
 					} catch(XMLException e) {
 						System.out.println("Level not built for file \""+name+"\" because of the following XMLException");
 						System.out.println(e.getMessage());

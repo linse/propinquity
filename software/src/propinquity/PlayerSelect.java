@@ -46,10 +46,10 @@ public class PlayerSelect implements PConstants, UIElement {
 		this.state = state;
 		selected = 0;
 
-		if (state < playerNames.length) {
-			while (nameTaken(playerNames[selected])) selected = (selected + 1) % playerNames.length;
+		if(state < playerNames.length) {
+			while(nameTaken(playerNames[selected])) selected = (selected + 1) % playerNames.length;
 			createParticles(playerNames.length, players[state].getColor());
-		} else if (state == playerNames.length) {
+		} else if(state == playerNames.length) {
 			killParticles();
 			parent.changeGameState(GameState.LevelSelect);
 		} else {
@@ -62,7 +62,7 @@ public class PlayerSelect implements PConstants, UIElement {
 
 		particles = new Particle[num];
 
-		for (int i = 0; i < num; i++) {
+		for(int i = 0; i < num; i++) {
 			Particle p = new Particle(parent, new Vec2(PApplet.cos(PApplet.TWO_PI / particles.length * i) * radius,
 					PApplet.sin(PApplet.TWO_PI / particles.length * i) * radius), color, true);
 			p.scale = 1f;
@@ -71,8 +71,8 @@ public class PlayerSelect implements PConstants, UIElement {
 	}
 
 	void killParticles() {
-		if (particles == null) return;
-		for (Particle particle : particles) particle.kill();
+		if(particles == null) return;
+		for(Particle particle : particles) particle.kill();
 	}
 
 	void drawParticles() {
@@ -81,7 +81,7 @@ public class PlayerSelect implements PConstants, UIElement {
 		parent.pushMatrix();
 		parent.translate(parent.width / 2, parent.height / 2);
 		
-		for (int i = 0; i < particles.length; i++) {
+		for(int i = 0; i < particles.length; i++) {
 			particles[i].draw();
 		}
 		
@@ -89,7 +89,7 @@ public class PlayerSelect implements PConstants, UIElement {
 	}
 
 	public void draw() {
-		if (!isVisible) return;
+		if(!isVisible) return;
 
 		hud.drawInnerBoundary();
 		hud.drawOuterBoundary();
@@ -119,7 +119,7 @@ public class PlayerSelect implements PConstants, UIElement {
 	 * @param keycode the keycode of the keyPressed event.
 	 */
 	public void keyPressed(char key, int keycode) {
-		switch (keycode) {
+		switch(keycode) {
 		case BACKSPACE: {
 			if(state == 0) {
 				killParticles();
@@ -146,8 +146,8 @@ public class PlayerSelect implements PConstants, UIElement {
 	}
 
 	boolean nameTaken(String name) {
-		for (Player player : players) {
-			if (player.getName() == playerNames[selected])
+		for(Player player : players) {
+			if(player.getName() == playerNames[selected])
 				return true; // Use == not .equals
 		}
 		return false;
@@ -156,13 +156,13 @@ public class PlayerSelect implements PConstants, UIElement {
 	public void left() {
 		do {
 			selected = (selected + playerNames.length - 1) % playerNames.length;
-		} while (nameTaken(playerNames[selected]));
+		} while(nameTaken(playerNames[selected]));
 	}
 
 	public void right() {
 		do {
 			selected = (selected + 1) % playerNames.length;
-		} while (nameTaken(playerNames[selected]));
+		} while(nameTaken(playerNames[selected]));
 	}
 
 	public void select() {
