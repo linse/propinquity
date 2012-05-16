@@ -58,10 +58,7 @@ public class Score {
 			lastTime = currentTime;
 		}
 		
-		if(color.equals(PlayerConstants.PLAYER_COLORS[1]))
-			liquid.applyReverseGravity();
-		else
-			liquid.applyGravity();
+		liquid.Update();
 	}
 
 	public void draw() {

@@ -16,28 +16,26 @@ public class Particle {
 	public static final int SPAWN_DELAY = 500;
 
 	public Vec2 position;
-	public float scale;
 	public Color color;
 
-	Body body;
-	CircleDef shape;
+	private float scale;
+	private Body body;
+	private CircleDef shape;
+	private PGraphics texture;
 
-	PGraphics texture;
+	private Propinquity parent;
 
-	Propinquity parent;
-
-	public Particle(Propinquity parent, Vec2 position, Color color, boolean isNew) {
+	public Particle(Propinquity parent, Vec2 position, Color color, float scale, boolean isNew) {
 		this.parent = parent;
 		this.position = position;
 		this.color = color;
+		this.scale = scale;
 
 		PImage imgParticle = parent.loadImage("data/particles/particle.png");
 		texture = new PGraphics();
 		texture = parent.createGraphics(imgParticle.width, imgParticle.height, PApplet.P2D);
 		texture.background(imgParticle);
 		texture.mask(imgParticle);
-
-		scale = 0.5f;
 
 		shape = new CircleDef();
 		shape.radius = parent.box2d.scalarPixelsToWorld((texture.width - 22) * scale/2f);
