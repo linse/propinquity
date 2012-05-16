@@ -55,16 +55,16 @@ public class Fences {
 		sd.filter.maskBits = MASK_INNER;
 
 		float fenceDepth = 0.05f;
-		float worldScale = parent.height / parent.worldSize;
-		float radius = INNER_RADIUS / worldScale + fenceDepth / 2 + 0.0125f;
+		float worldScale = parent.height/parent.worldSize;
+		float radius = INNER_RADIUS/worldScale + fenceDepth/2 + 0.0125f;
 		float perimeter = 2 * PConstants.PI * radius;
 
 		innerFence = box2d.createBody(bd);
 		
 		for(int i = 0; i < SECTIONS; i++) {
-			float angle = 2 * PConstants.PI / SECTIONS * i;
-			sd.setAsBox(perimeter / SECTIONS, fenceDepth, new Vec2(PApplet.cos(angle) * radius, PApplet.sin(angle)
-					* radius), angle + PConstants.PI / 2);
+			float angle = 2 * PConstants.PI/SECTIONS * i;
+			sd.setAsBox(perimeter/SECTIONS, fenceDepth, new Vec2(PApplet.cos(angle) * radius, PApplet.sin(angle)
+					* radius), angle + PConstants.PI/2);
 			innerFence.createShape(sd);
 		}
 	}
@@ -78,16 +78,16 @@ public class Fences {
 		sd.filter.maskBits = MASK_OUTER;
 
 		float fenceDepth = 0.05f;
-		float worldScale = parent.height / parent.worldSize;
-		float radius = OUTER_RADIUS / worldScale + fenceDepth / 2;
+		float worldScale = parent.height/parent.worldSize;
+		float radius = OUTER_RADIUS/worldScale + fenceDepth/2;
 		float perimeter = 2 * PConstants.PI * radius;
 
 		outerFence = box2d.createBody(bd);
 		
 		for(int i = 0; i < SECTIONS; i++) {
-			float angle = 2 * PConstants.PI / SECTIONS * i;
-			sd.setAsBox(perimeter / SECTIONS, fenceDepth, new Vec2(PApplet.cos(angle) * radius, PApplet.sin(angle)
-					* radius), angle + PConstants.PI / 2);
+			float angle = 2 * PConstants.PI/SECTIONS * i;
+			sd.setAsBox(perimeter/SECTIONS, fenceDepth, new Vec2(PApplet.cos(angle) * radius, PApplet.sin(angle)
+					* radius), angle + PConstants.PI/2);
 			outerFence.createShape(sd);
 		}
 	}

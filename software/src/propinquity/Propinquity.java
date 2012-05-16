@@ -44,6 +44,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 	PlayerSelect playerSelect;
 
 	//Level/Level Select
+	Level level;
 	Level[] levels;
 	LevelSelect levelSelect;
 
@@ -123,8 +124,8 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 		levelSelect = new LevelSelect(this, hud, levels);
 
 		//Box 2D
-		box2d = new PBox2D(this, (float) height / worldSize);
-		box2d.createWorld(-worldSize / 2f, -worldSize / 2f, worldSize, worldSize);
+		box2d = new PBox2D(this, (float) height/worldSize);
+		box2d.createWorld(-worldSize/2f, -worldSize/2f, worldSize, worldSize);
 		box2d.setGravity(0.0f, 0.0f);
 
 		fences = new Fences(this, box2d);
@@ -184,7 +185,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 			}
 
 			case Play: {
-				Level level = levelSelect.getSelectedLevel();
+				level = levelSelect.getSelectedLevel();
 				level.reset();
 				level.show();
 				break;

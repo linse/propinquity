@@ -41,11 +41,11 @@ public class XBeeManager implements UIElement {
 		font = parent.loadFont("hud/Calibri-Bold-32.vlw");
 
 		// Button to scan for XBees
-		plScanButton = controlP5.addButton("XBeeBaseStation Scan", 0, parent.width / 2 + 60, parent.height / 2 + 50, 50, 20);
+		plScanButton = controlP5.addButton("XBeeBaseStation Scan", 0, parent.width/2 + 60, parent.height/2 + 50, 50, 20);
 		plScanButton.setCaptionLabel("SCAN");
 
 		// Next button
-		plNextButton = controlP5.addButton("XBeeBaseStation Next", 0, parent.width / 2 + 60 + 50 + 10, parent.height / 2 + 50, 50, 20);
+		plNextButton = controlP5.addButton("XBeeBaseStation Next", 0, parent.width/2 + 60 + 50 + 10, parent.height/2 + 50, 50, 20);
 		plNextButton.setCaptionLabel("NEXT");
 
 		hide();
@@ -127,7 +127,7 @@ public class XBeeManager implements UIElement {
 		}
 
 		parent.pushMatrix();
-		parent.translate(parent.width / 2, parent.height / 2);
+		parent.translate(parent.width/2, parent.height/2);
 		parent.textFont(font, 32);
 		parent.textAlign(PConstants.CENTER, PConstants.CENTER);
 		parent.fill(255);

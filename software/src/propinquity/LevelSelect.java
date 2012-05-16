@@ -37,13 +37,13 @@ public class LevelSelect implements PConstants, UIElement {
 	}
 
 	void createParticles(int num, Color color) {
-		int radius = parent.height / 2 - Hud.WIDTH * 2;
+		int radius = parent.height/2 - Hud.WIDTH * 2;
 
 		particles = new Particle[num];
 
 		for(int i = 0; i < num; i++) {
-			Particle p = new Particle(parent, new Vec2(PApplet.cos(PApplet.TWO_PI / particles.length * i) * radius,
-					PApplet.sin(PApplet.TWO_PI / particles.length * i) * radius), color, true);
+			Particle p = new Particle(parent, new Vec2(PApplet.cos(PApplet.TWO_PI/particles.length * i) * radius,
+					PApplet.sin(PApplet.TWO_PI/particles.length * i) * radius), color, true);
 			p.scale = 1f;
 			particles[i] = p;
 		}
@@ -58,7 +58,7 @@ public class LevelSelect implements PConstants, UIElement {
 		if(particles == null) return;
 
 		parent.pushMatrix();
-		parent.translate(parent.width / 2, parent.height / 2);
+		parent.translate(parent.width/2, parent.height/2);
 		
 		for(int i = 0; i < particles.length; i++) {
 			particles[i].draw();

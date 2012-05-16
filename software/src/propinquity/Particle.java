@@ -40,7 +40,7 @@ public class Particle {
 		scale = 0.5f;
 
 		shape = new CircleDef();
-		shape.radius = parent.box2d.scalarPixelsToWorld((texture.width - 22) * scale / 2f);
+		shape.radius = parent.box2d.scalarPixelsToWorld((texture.width - 22) * scale/2f);
 		shape.density = 1.0f;
 		shape.friction = 0.01f;
 		shape.restitution = 0.3f;
@@ -77,7 +77,7 @@ public class Particle {
 
 		parent.pushMatrix();
 		parent.translate(position.x, position.y);
-		parent.scale(scale * texture.width / 2f);
+		parent.scale(scale * texture.width/2f);
 		parent.beginShape();
 		parent.texture(texture);
 		parent.tint(color.toInt(parent));

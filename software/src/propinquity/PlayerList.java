@@ -36,11 +36,11 @@ public class PlayerList implements PlayerConstants, UIElement {
 		controlP5 = new ControlP5(parent);
 
 		// create button to add new players
-		addButton = controlP5.addButton("ADD", 0, parent.width / 2 - WIDTH / 2, parent.height / 2, 50, 20);
-		removeButton = controlP5.addButton("REMOVE", 0, parent.width / 2 - WIDTH / 2 + WIDTH / 3, parent.height / 2, 50, 20);
+		addButton = controlP5.addButton("ADD", 0, parent.width/2 - WIDTH/2, parent.height/2, 50, 20);
+		removeButton = controlP5.addButton("REMOVE", 0, parent.width/2 - WIDTH/2 + WIDTH/3, parent.height/2, 50, 20);
 
 		// create next button
-		nextButton = controlP5.addButton("NEXT", 0, parent.width / 2 - WIDTH / 2 + 2 * WIDTH / 3, parent.height / 2, 50, 20);
+		nextButton = controlP5.addButton("NEXT", 0, parent.width/2 - WIDTH/2 + 2 * WIDTH/3, parent.height/2, 50, 20);
 
 		playerFields = new Vector<Textfield>();
 
@@ -73,7 +73,7 @@ public class PlayerList implements PlayerConstants, UIElement {
 
 	void addPlayer(String name) {
 		// add a new text field to the list
-		Textfield tf = controlP5.addTextfield("Player " + playerFields.size(), parent.width / 2 - WIDTH / 2, parent.height / 2, WIDTH, PLAYER_HEIGHT);
+		Textfield tf = controlP5.addTextfield("Player " + playerFields.size(), parent.width/2 - WIDTH/2, parent.height/2, WIDTH, PLAYER_HEIGHT);
 		tf.setAutoClear(false);
 		tf.setText(name);
 		tf.setCaptionLabel("Player " + (playerFields.size() + 1));
@@ -91,7 +91,7 @@ public class PlayerList implements PlayerConstants, UIElement {
 	}
 
 	public void layout() {
-		float y = parent.height / 2 - (PLAYER_HEIGHT + VERT_SPACER) * (playerFields.size() + 1) / 2;
+		float y = parent.height/2 - (PLAYER_HEIGHT + VERT_SPACER) * (playerFields.size() + 1)/2;
 
 		// move existing player fields up
 		for(int i = 0; i < playerFields.size();i++) {

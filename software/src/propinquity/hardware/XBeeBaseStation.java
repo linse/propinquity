@@ -230,6 +230,7 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 	 */
 	public static String[] getAvailableSerialPorts() {
 		Vector<String> portNames = new Vector<String>();
+		@SuppressWarnings("unchecked")
 		Enumeration<CommPortIdentifier> ports = CommPortIdentifier.getPortIdentifiers();
 		while(ports.hasMoreElements()) {
 			CommPortIdentifier com = ports.nextElement();
