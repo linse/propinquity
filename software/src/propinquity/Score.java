@@ -17,11 +17,12 @@ public class Score {
 
 	Propinquity parent;
 	Color color;
+
 	int tempScore;
 	int heldScore;
 
-	long currentTime;
 	long lastTime;
+	long pauseDifferential;
 
 	public Score(Propinquity parent, Color color) {
 		this.parent = parent;
@@ -32,10 +33,19 @@ public class Score {
 		liquid = new Liquid(parent, color);
 	}
 
+	public void pause() {
+		pauseDifferential = parent.millis()-lastTime;
+	}
+
+	public void start() {
+		lastTime = parent.millis()-pauseDifferential;
+	}
+
 	public void reset() {
 		tempScore = 0;
 		heldScore = 0;
 		lastTime = 0;
+		pauseDifferential = 0;
 		liquid.reset();
 	}
 
@@ -49,7 +59,7 @@ public class Score {
 	}
 
 	public void update() {
-		currentTime = parent.millis();
+		long currentTime = parent.millis();
 
 		if(currentTime - lastTime > Score.SCORE_TIME) {
 			liquid.transferParticles();

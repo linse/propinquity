@@ -105,16 +105,18 @@ public class Level implements UIElement, ProxEventListener, LevelConstants {
 	public void pause() {
 		running = false;
 		song.pause();
+		for(Player player : players) player.pause();
 	}
 
 	public void start() {
 		running = true;
+		for(Player player : players) player.start();
 		song.play();
 	}
 
 	public void reset() {
 		pause();
-		for(int i = 0; i < players.length; i++) players[i].reset(); //Clears all the particles etc
+		for(Player player : players) player.reset(); //Clears all the particles etc
 		song.rewind();
 		stepUpdate(0);
 	}
@@ -129,6 +131,7 @@ public class Level implements UIElement, ProxEventListener, LevelConstants {
 	
 	void stepUpdate(int nextStep) {
 		currentStep = nextStep;
+
 		coop = steps[currentStep].isCoop();
 		//TODO Handle Patches on/off and set player coop
 	}

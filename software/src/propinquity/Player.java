@@ -43,6 +43,14 @@ public class Player implements PConstants {
 	public void reset() {
 		score.reset();
 	}
+
+	public void pause() {
+		score.pause();
+	}
+
+	public void start() {
+		score.start();
+	}
 	
 	public void setName(String name) {
 		this.name = name;
