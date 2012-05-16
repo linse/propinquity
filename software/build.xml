@@ -49,6 +49,7 @@
 		<java classname="${propinquity-class}" fork="true">
 			<sysproperty key="java.library.path" value="${java.library.path}:${nativepath.prop}"/>
 			<jvmarg value="-d32"/>
+			<jvmarg value="-Xmx256m"/>
 			<classpath>
 				<path refid="classpath"/>
 				<path location="${build.dir}"/>

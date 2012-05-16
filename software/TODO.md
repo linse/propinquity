@@ -10,13 +10,15 @@ TODO for Propinquity Software
 	* Multiple scoring patch handling?
 	* Max number of particles vs size
 	* Meta balls/Liquid 
+	* Merge should get bigger and bigger
 	* N player gravity
 
 * Hardware control
 	* Handle actual behavior for vibe and patches
 	* Player name mapping
 	* Prox events
-
+	* Add clear all command (diff from active)
+	
 * Xbees
 	* Retry mechanism ...
 
