@@ -50,8 +50,8 @@ public class Hud {
 		hudBannerCenter = parent.loadImage("hud/bannercenter.png");
 		hudBannerSide = parent.loadImage("hud/bannerside.png");
 
-		hudPlay = parent.loadImage("hud/sbtoplay.png");
 		hudLevelComplete = parent.loadImage("hud/levelcomplete.png");
+		hudPlay = parent.loadImage("hud/sbtoplay.png");
 		hudPlayAgain = parent.loadImage("hud/sbtoplayagain.png");
 	}
 
