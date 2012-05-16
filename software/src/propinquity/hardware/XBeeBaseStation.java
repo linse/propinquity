@@ -18,13 +18,13 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 	Thread scanningThread;
 
 	HashMap<String, XBee> xbees;
+	HashMap<Integer, RequestMonitor> requestMonitors;
 
 	HashMap<Integer, Glove> gloves;
 	HashMap<Integer, Patch> patches;
 	Vector<ProxEventListener> proxListeners;
 
-	volatile HashMap<Integer, TxRequest16> latestRequest;
-	boolean monitor;
+	int currentFrameID;
 
 	/**
 	 * Create a new XBeeBaseStation.
@@ -32,51 +32,12 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 	 */
 	public XBeeBaseStation() {
 		xbees = new HashMap<String, XBee>();
+		requestMonitors = new HashMap<Integer, RequestMonitor>();
 
 		gloves = new HashMap<Integer, Glove>();
 		patches = new HashMap<Integer, Patch>();
 		proxListeners = new Vector<ProxEventListener>();
-
-		latestRequest = new HashMap<Integer, TxRequest16>();
-		monitor = true;
-	}
-
-	/**
-	 * Add a TxRequest16 to a HashMap of sent requests.
-	 * @param request The TxRequest16 to be added to the HashMap
-	 */
-	public void addMonitor(TxRequest16 request) {
-		latestRequest.put(request.getFrameId(), request);
-	}
-
-	/**
-	 * Remove a TxRequest16 from the sent request HashMap
-	 * @param frameId The frameId of the TxRequest16 to be removed
-	 */
-	public void removeMonitor(int frameId) {
-		if(latestRequest.containsKey(frameId)) latestRequest.remove(frameId);
-	}
-
-
-	/**
-	 * Monitor the HashMap of sent TxRequest16 and resend each one that are still present after a specified delay.
-	 */
-	public void monitorResponse() {
-		Thread monitorThread = new Thread(new Runnable() {
-				public void run() {
-					while(monitor) {
-						for(TxRequest16 request: latestRequest.values()) resendRequest(request);
-						
-						try {
-							Thread.sleep(250); 
-						} catch(Exception e) {
-						}
-					}
-				}
-			});
-		monitorThread.start();
-	}
- 			
+	}	
 
 	/**
 	 * Get the XBee object for the XBee with the matching NodeIdentifier (NI).
@@ -152,8 +113,6 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 	 *
 	*/
 	public void run() {
-		reset();
-
 		System.out.println("XBeeBaseStation Scan");
 
 		String[] availablePorts = getAvailableSerialPorts();
@@ -172,7 +131,6 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 
 			try {
 				xbee.open(availablePorts[portNum], XBEE_BAUDRATE);
-				monitorResponse();
 			} catch(XBeeException e) {
 				System.out.println(e.getMessage());
 				System.out.println("Failed to connect to XBee");
@@ -294,33 +252,20 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 		sendPacketAsynchronous(packet);	
 	}
 
-	public void resendRequest(TxRequest16 request) {
-		for(XBee xbee : xbees.values()) {
-			try {
-				xbee.sendAsynchronous(request);
-			} catch(XBeeException e) {
-				System.out.println("\t\tException sending request");
-			}
-		}
-	}		
+	int getNextFrameId() {
+		currentFrameID++;
+		if(currentFrameID > 255) currentFrameID = 1;
+		return currentFrameID;
+	}
 
+	void removeMonitor(int frameId) {
+		RequestMonitor oldRequestMonitor = requestMonitors.remove(frameId);
+		if(oldRequestMonitor != null) oldRequestMonitor.ack();
+	}
 
-	public void sendPacketAsynchronous(Packet packet) {
-		XBeeAddress16 addr = new XBeeAddress16(((packet.getDestAddr() & 0xFF00) >> 8), packet.getDestAddr() & 0x00FF);
-		
-		int[] fullPayload = new int[packet.getPayload().length+1];
-		fullPayload[0] = packet.getPacketType().getCode();
-		System.arraycopy(packet.getPayload(), 0, fullPayload, 1, packet.getPayload().length);
-
-		for(XBee xbee : xbees.values()) {
-			try {
-				TxRequest16 request = new TxRequest16(addr, xbee.getNextFrameId(), fullPayload);
-				addMonitor(request);
-				xbee.sendAsynchronous(request);
-			} catch(XBeeException e) {
-				System.out.println("\t\tException sending request");
-			}
-		}
+	void addMonitor(XBeeRequest request) {
+		RequestMonitor oldRequestMonitor = requestMonitors.put(request.getFrameId(), new RequestMonitor(request));
+		if(oldRequestMonitor != null) oldRequestMonitor.ack();
 	}
 
 	public void sendPacketSynchrous(Packet packet) {
@@ -330,10 +275,13 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 		fullPayload[0] = packet.getPacketType().getCode();
 		System.arraycopy(packet.getPayload(), 0, fullPayload, 1, packet.getPayload().length);
 		
+		TxRequest16 request = new TxRequest16(addr, getNextFrameId(), fullPayload);
+
+		removeMonitor(request.getFrameId());
+
 		for(XBee xbee : xbees.values()) {
 			try {
 				// send a request and wait up to 10 seconds for the response
-				TxRequest16 request = new TxRequest16(addr, xbee.getNextFrameId(), fullPayload);
 				XBeeResponse response = xbee.sendSynchronous(request, 10*1000);
 
 				if(response.getApiId() == ApiId.TX_STATUS_RESPONSE) {
@@ -345,6 +293,19 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 				System.out.println("\t\tException sending request");
 			}
 		}
+	}
+
+	public void sendPacketAsynchronous(Packet packet) {
+		XBeeAddress16 addr = new XBeeAddress16(((packet.getDestAddr() & 0xFF00) >> 8), packet.getDestAddr() & 0x00FF);
+		
+		int[] fullPayload = new int[packet.getPayload().length+1];
+		fullPayload[0] = packet.getPacketType().getCode();
+		System.arraycopy(packet.getPayload(), 0, fullPayload, 1, packet.getPayload().length);
+
+		TxRequest16 request = new TxRequest16(addr, getNextFrameId(), fullPayload);
+		
+		//Request monitor does all the sending
+		addMonitor(request);
 	}
 
 	public void processResponse(XBeeResponse response) {
@@ -378,10 +339,46 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 				break;
 			}
 			default: {
-				System.out.println("Got something: "+response.getApiId().toString());
+				System.out.println("XBee got something don't know what it is: "+response.getApiId().toString());
 				break;
 			}
 		}		
+	}
+
+	class RequestMonitor implements Runnable {
+
+		boolean ack;
+		XBeeRequest request;
+
+		RequestMonitor(XBeeRequest request) {
+			this.request = request;
+			ack = false;
+
+			(new Thread(this)).start();
+		}
+
+		void ack() {
+			ack = true;
+		}
+
+		public void run() {
+			while(!ack) {
+				for(XBee xbee : xbees.values()) {
+					try {
+						xbee.sendAsynchronous(request);
+					} catch(XBeeException e) {
+						System.out.println("\t\tException sending request");
+					}
+				}
+
+				try {
+					Thread.sleep(100); 
+				} catch(Exception e) {
+
+				}
+			}
+		}
+
 	}
 
 }
