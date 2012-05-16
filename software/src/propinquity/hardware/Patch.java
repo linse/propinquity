@@ -11,6 +11,11 @@ import propinquity.Color;
  */
 public class Patch {
 
+	public static final int MIN_RANGE = 100;
+	public static final int MAX_RANGE = 700;
+	public static final int MIN_SWEETSPOT = 300;
+	public static final int MAX_SWEETSPOT = 500;
+
 	final int address;
 
 	boolean active;
@@ -230,6 +235,12 @@ public class Patch {
 	 */
 	public int getProx() {
 		return prox;
+	}
+
+	public int getZone() {
+		if(prox < MIN_RANGE || prox > MAX_RANGE) return 0; //Out of range or too close
+		else if(prox > MIN_SWEETSPOT && prox < MAX_SWEETSPOT) return 2; //In the sweet spot
+		else return 1; //Else normal zone
 	}
 
 	/**

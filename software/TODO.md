@@ -10,6 +10,7 @@ TODO for Propinquity Software
 	* Multiple scoring patch handling?
 	* Max number of particles vs size
 	* Meta balls/Liquid 
+	* N player gravity
 
 * Hardware control
 	* Handle actual behavior for vibe and patches

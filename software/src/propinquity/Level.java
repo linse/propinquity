@@ -113,8 +113,8 @@ public class Level implements UIElement, ProxEventListener, LevelConstants, PCon
 	}
 
 	public void reset() {
-		for(int i = 0; i < players.length; i++) players[i].reset(); //Clears all the particles etc
 		pause();
+		for(int i = 0; i < players.length; i++) players[i].reset(); //Clears all the particles etc
 		song.rewind();
 		stepUpdate(0);
 	}
@@ -123,14 +123,18 @@ public class Level implements UIElement, ProxEventListener, LevelConstants, PCon
 		song.close();
 	}
 
+	public boolean isCoop() {
+		return coop;
+	}
+	
 	void stepUpdate(int nextStep) {
 		currentStep = nextStep;
 		coop = steps[currentStep].isCoop();
 		//TODO Handle Patches on/off and set player coop
 	}
 
-	public boolean isCoop() {
-		return coop;
+	public void proxEvent(Patch patch) {
+		// TODO: interesting things on prox boundaries
 	}
 
 	public void update() {
@@ -188,8 +192,7 @@ public class Level implements UIElement, ProxEventListener, LevelConstants, PCon
 
 	public int getTotalPoints() {
 		int total = 0;
-		for(int i = 0; i < players.length; i++)
-			total += players[i].getScore();
+		for(int i = 0; i < players.length; i++) total += players[i].getScore();
 		return total;
 	}
 
@@ -198,11 +201,7 @@ public class Level implements UIElement, ProxEventListener, LevelConstants, PCon
 	}
 
 	public boolean isDone() {
-		return (currentStep == steps.length-1); // TODO Crappy
-	}
-
-	public void proxEvent(Patch patch) {
-		// TODO: interesting things on prox boundaries
+		return (currentStep == steps.length-1); //TODO Crappy ?
 	}
 	
 	public void keyPressed(char key, int keyCode) {
@@ -210,23 +209,24 @@ public class Level implements UIElement, ProxEventListener, LevelConstants, PCon
 
 		switch(key) {
 			case BACKSPACE: {
+				reset(); //Make sure particles are gone
 				if(song.position() == 0) parent.changeGameState(GameState.LevelSelect);
-				reset();
 				break;
 			}
 
 			case ENTER:
 			case ' ': {
 				if(isDone()) {
+					reset(); //Make sure particles are gone
 					parent.changeGameState(GameState.LevelSelect);
-					reset();
 				} else {
 					if(isRunning()) pause();
 					else start();
 				}
 				break;
 			}
-			case 'e': { //Force End
+
+			case 'e': { //Force End 
 				song.cue(song.length()-1000);
 				break;
 			}
@@ -240,7 +240,7 @@ public class Level implements UIElement, ProxEventListener, LevelConstants, PCon
 		hud.drawInnerBoundary();
 		hud.drawOuterBoundary();
 
-		//Scores
+		//Score Banners
 		if(isCoop()) {
 			String score = String.valueOf(getTotalPoints());
 			String name = "Coop";
@@ -264,9 +264,14 @@ public class Level implements UIElement, ProxEventListener, LevelConstants, PCon
 
 		if(isDone()) { //Someone won
 			Player winner = getWinner();
-			String text = winner != null ? winner.getName() + " won!" : "You tied!";
+			String text = winner != null ? winner.getName() + " won!" : "You Tied!";
 			Color color = winner != null ? winner.getColor() : PlayerConstants.NEUTRAL_COLOR;
-			hud.drawCenterText(text, color, hud.getAngle());
+			if(coop) {
+				text = "";
+				color = PlayerConstants.NEUTRAL_COLOR;
+			}
+			hud.drawCenterText("", text, color, hud.getAngle());
+			hud.drawCenterImage(hud.hudPlayAgain, hud.getAngle());
 		} else if(isRunning()) { //Running
 			update();
 		} else { //Pause
