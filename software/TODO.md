@@ -11,6 +11,7 @@ TODO for Propinquity Software
 	* Max number of particles vs size
 	* Meta balls/Liquid 
 	* Merge should get bigger and bigger
+	* Merge should be prox based
 	* N player gravity
 
 * Hardware control

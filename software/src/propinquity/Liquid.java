@@ -14,8 +14,8 @@ public class Liquid {
 	
 	/** The maximum allowable number of particles per player's liquid. */
 	public static final int MAX_PARTICLES = 100;
-	private static final int MERGE_COUNT = 3;	
-	private static final int MERGE_VOLUME = 5;
+	private static final int MERGE_COUNT = 5;	
+	private static final int MERGE_VOLUME = 4;
 
 	private Vector<Particle> particlesCreated;
 	private Vector<Particle> particlesHeld;
@@ -61,14 +61,11 @@ public class Liquid {
 	private void mergeParticles() {
 		for(int i = 0;i < MERGE_COUNT;i++) {
 			Particle[] toMerge = new Particle[MERGE_VOLUME];
-			int k = 0;			
-
-			for(Particle particle : particlesHeld) { //Search for remaining small particles
-				if(particle.getScale() == Particle.SMALL_SIZE) {
-					toMerge[k] = particle;
-					k++;
-					if(k == toMerge.length) break;
-				}
+			int k = 0;
+			for(Particle particle : particlesHeld) {
+				toMerge[k] = particle;
+				k++;
+				if(k == toMerge.length) break;
 			}
 
 			if(k < toMerge.length-1) break; //Insufficient particles to merge
