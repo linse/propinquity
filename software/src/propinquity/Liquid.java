@@ -14,6 +14,8 @@ public class Liquid {
 	
 	/** The maximum allowable number of particles per player's liquid. */
 	public static final int MAX_PARTICLES = 250;
+	
+	private static final int MERGE_COUNT = 5;
 
 	private Vector<Particle> particlesCreated;
 	private Vector<Particle> particlesHeld;
@@ -43,12 +45,12 @@ public class Liquid {
 
 	public void createParticle() {
 		particlesCreated.add(new Particle(parent, new Vec2(parent.width/2f, parent.height/2f),
-				color, 0.5f, true));
+				color, Particle.SMALL_SIZE, true));
 	}
 
 	public void transferParticles() {
 		for(Particle particle : particlesCreated) {
-			Particle newParticle = new Particle(parent, particle.position, particle.color, 0.5f, false);
+			Particle newParticle = new Particle(parent, particle.position, particle.color, Particle.SMALL_SIZE, false);
 			particlesHeld.add(newParticle);
 			particle.kill();
 		}
@@ -58,6 +60,20 @@ public class Liquid {
 	
 	private void MergeParticles() {
 		
+		Particle[] toMerge = new Particle[MERGE_COUNT];
+		for (int i = 0; i < MERGE_COUNT; i++) 
+			toMerge[i] = particlesHeld.get(i);
+
+		float avgX = 0, avgY = 0;
+		
+		for (int i = 0; i < MERGE_COUNT; i++) {
+			avgX += toMerge[i].position.x;
+			avgY += toMerge[i].position.y;
+			toMerge[i].kill();
+			particlesHeld.remove(toMerge[i]);
+		}
+		
+		particlesLarge.add(new Particle(parent, new Vec2(avgX / MERGE_COUNT, avgY / MERGE_COUNT), color, Particle.LARGE_SIZE, false));
 	}
 
 	private void applyGravity() {
@@ -107,6 +123,9 @@ public class Liquid {
 			particle.draw();
 
 		for(Particle particle : particlesHeld)
+			particle.draw();
+		
+		for(Particle particle : particlesLarge)
 			particle.draw();
 	}
 }

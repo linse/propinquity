@@ -7,7 +7,6 @@ import pbox2d.*;
 import java.io.File;
 
 import processing.core.*;
-import processing.opengl.*;
 import processing.xml.*;
 
 import propinquity.hardware.*;

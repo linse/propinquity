@@ -1,7 +1,5 @@
 package propinquity;
 
-import java.util.Vector;
-
 import org.jbox2d.common.Vec2;
 
 import processing.core.*;
@@ -43,7 +41,7 @@ public class LevelSelect implements PConstants, UIElement {
 
 		for(int i = 0; i < num; i++) {
 			Particle p = new Particle(parent, new Vec2(PApplet.cos(PApplet.TWO_PI/particles.length * i) * radius,
-					PApplet.sin(PApplet.TWO_PI/particles.length * i) * radius), color, 1f, true);
+					PApplet.sin(PApplet.TWO_PI/particles.length * i) * radius), color, Particle.LARGE_SIZE, true);
 			particles[i] = p;
 		}
 	}

@@ -15,6 +15,9 @@ public class Particle {
 	 */
 	public static final int SPAWN_DELAY = 500;
 
+	public static final float SMALL_SIZE = 0.5f;
+	public static final float LARGE_SIZE = 1f;
+	
 	public Vec2 position;
 	public Color color;
 
