@@ -1,27 +1,26 @@
 package propinquity;
 
-import javax.media.opengl.GL;
-
 import controlP5.ControlEvent;
 
 import pbox2d.*;
 
+import java.io.File;
+
 import processing.core.*;
-import processing.opengl.PGraphicsOpenGL;
+import processing.opengl.*;
+import processing.xml.*;
 
 import propinquity.hardware.*;
 
 import java.util.*;
 
-public class Propinquity extends PApplet implements PlayerConstants {
+public class Propinquity extends PApplet implements PlayerConstants, LevelConstants {
 
 	/** Unique serialization ID. */
 	static final long serialVersionUID = 6340518174717159418L;
 	public static final int FPS = 30;
 
-	//General + Util
-	GL gl;
-	
+	//General/Util		
 	Logger logger;
 
 	GameState gameState;
@@ -29,36 +28,29 @@ public class Propinquity extends PApplet implements PlayerConstants {
 	Vector<UIElement> uiElements;
 
 	Sounds sounds;
+	Hud hud;
 
-	//Xbee + Hardware
-	HardwareInterface hardware;
+	//Xbee/Hardware
+	HardwareSimulator simulator; //Testing 
 
 	XBeeBaseStation xbeeBaseStation;
 	XBeeManager xbeeManager;
 
-	HardwareSimulator simulator; //Testing 
+	HardwareInterface hardware;
 
 	//Player/Player List
 	Player[] players;
 	PlayerList playerList;
 
-	//HUD
-	Hud hud;
-
-	//Level Select
-	LevelSelect levelSelect;
-
-	//Level
-	boolean endedLevel = false;
-	int endLevelTime = 6;
-	long doneTime = -1;
-
+	//Level/Level Select
 	Level level;
+	Level[] levels;
+	LevelSelect levelSelect;
 
 	//Box 2D
 	public float worldSize = 2f;
-	Fences fences;
 	PBox2D box2d;
+	Fences fences;
 
 	public void setup() {
 		size(1024, 768, PConstants.OPENGL);
@@ -67,21 +59,21 @@ public class Propinquity extends PApplet implements PlayerConstants {
 		textureMode(PConstants.NORMAL);
 		hint(PConstants.ENABLE_OPENGL_4X_SMOOTH);
 
-		// Setup sound
+		//General/Util
+		logger = new Logger(this);
+
 		sounds = new Sounds(this);
 		hud = new Hud(this);
 
-		// Load common artwork and sound
-
-		// Create resources
-		xbeeBaseStation = new XBeeBaseStation();
-		// xbeeBaseStation.scan();
-		xbeeManager = new XBeeManager(this, xbeeBaseStation);
-
+		//Xbee/Hardware
 		simulator = new HardwareSimulator(this);
+		
+		xbeeBaseStation = new XBeeBaseStation();
+		xbeeManager = new XBeeManager(this, xbeeBaseStation);
 
 		hardware = simulator;
 
+		//Player/Player List
 		players = new Player[MAX_PLAYERS];
 
 		for(int i = 0;i < MAX_PLAYERS;i++) {
@@ -103,20 +95,45 @@ public class Propinquity extends PApplet implements PlayerConstants {
 		}
 
 		playerList = new PlayerList(this, hardware, "player.lst");
-		levelSelect = new LevelSelect(this, hud, players, sounds);
 
-		logger = new Logger(this);
+		//Level/Level Select
+		Vector<Level> tmp_levels = new Vector<Level>();
+		File file = new File(dataPath(LEVEL_FOLDER));
 
+		if(file.isDirectory()) {
+			String names[] = file.list();
+
+			// if extension is specify, parse out the rest
+			for(String name : names) {
+				if (name.lastIndexOf(".xml") == name.length()-4) {
+					try {
+						tmp_levels.add(new Level(this, hud, LEVEL_FOLDER+name, players, sounds));
+					} catch(XMLException e) {
+						System.out.println("Level not built for file \""+name+"\" because of the following XMLException");
+						System.out.println(e.getMessage());
+					}
+				}
+			}
+		}
+
+		levels = tmp_levels.toArray(new Level[0]);
+		if(levels.length == 0) System.out.println("Warning: No valid levels were built");
+
+		levelSelect = new LevelSelect(this, hud, players, levels, sounds);
+
+		//Box 2D
 		box2d = new PBox2D(this, (float) height / worldSize);
 		box2d.createWorld(-worldSize / 2f, -worldSize / 2f, worldSize, worldSize);
 		box2d.setGravity(0.0f, 0.0f);
-		fences = new Fences(this);
+
+		fences = new Fences(this, box2d);
 		
+		//General + Util	
 		uiElements = new Vector<UIElement>();
 		uiElements.add(xbeeManager);
 		uiElements.add(playerList);
 		uiElements.add(levelSelect);
-		for(Level level : levelSelect.getLevels()) uiElements.add(level);
+		for(Level level : levels) uiElements.add(level);
 		
 		changeGameState(GameState.XBeeInit);
 	}
@@ -161,8 +178,9 @@ public class Propinquity extends PApplet implements PlayerConstants {
 			}
 
 			case Play: {
+				if(level != null) hardware.removeProxEventListener(level);
 				level = levelSelect.getCurrentLevel();
-				simulator.addProxEventListener(level);
+				hardware.addProxEventListener(level);
 
 				level.reset();
 				level.show();
@@ -222,7 +240,7 @@ public class Propinquity extends PApplet implements PlayerConstants {
 	}
 
 	public void stop() {
-		for(Level level : levelSelect.getLevels()) level.close();
+		for(Level level : levels) level.close();
 	}
 
 	static public void main(String args[]) {

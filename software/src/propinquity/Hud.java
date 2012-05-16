@@ -22,6 +22,8 @@ public class Hud {
 
 	Propinquity parent;
 
+	GL gl;
+
 	float angle = 0;
 	float velocity = -PConstants.TWO_PI / 500f;
 
@@ -38,6 +40,7 @@ public class Hud {
 	 */
 	public Hud(Propinquity parent) {
 		this.parent = parent;
+		this.gl = ((PGraphicsOpenGL) parent.g).gl;
 
 		font = parent.loadFont("hud/Calibri-Bold-32.vlw");
 
@@ -163,9 +166,8 @@ public class Hud {
 	 * @param bannerImg The banner image to be drawn.
 	 */
 	public void drawBanner(String text, Color color, float angle, PImage bannerImg) {
-		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
-		parent.gl.glEnable(GL.GL_BLEND);
-		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+		gl.glEnable(GL.GL_BLEND);
+		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 
 		parent.noStroke();
 		parent.noFill();
@@ -241,9 +243,8 @@ public class Hud {
 	 * @param angle The angle in radians at which the text will be drawn.
 	 */
 	public void drawCenterText(String line1, String line2, Color color, float angle) {
-		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
-		parent.gl.glEnable(GL.GL_BLEND);
-		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+		gl.glEnable(GL.GL_BLEND);
+		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 
 		parent.fill(color.toInt(parent));
 		parent.pushMatrix();
@@ -276,9 +277,8 @@ public class Hud {
 	 * @param angle The angle in radians at which the text will be drawn.
 	 */
 	public void drawCenterImage(PImage image, Color color, float angle) {
-		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
-		parent.gl.glEnable(GL.GL_BLEND);
-		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+		gl.glEnable(GL.GL_BLEND);
+		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 
 		parent.fill(color.toInt(parent));
 		parent.pushMatrix();
@@ -294,9 +294,8 @@ public class Hud {
 	 * Draw the inner fence boundary circle graphic.
 	 */
 	public void drawInnerBoundary() {
-		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
-		parent.gl.glEnable(GL.GL_BLEND);
-		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+		gl.glEnable(GL.GL_BLEND);
+		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 
 		parent.pushMatrix();
 		parent.translate(parent.width / 2 - 1, parent.height / 2);
@@ -308,9 +307,8 @@ public class Hud {
 	 * Draw the outer fence boundary circle graphic.
 	 */
 	public void drawOuterBoundary() {
-		parent.gl = ((PGraphicsOpenGL) parent.g).gl;
-		parent.gl.glEnable(GL.GL_BLEND);
-		parent.gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+		gl.glEnable(GL.GL_BLEND);
+		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 
 		parent.pushMatrix();
 		parent.translate(parent.width / 2 - 1, parent.height / 2);
