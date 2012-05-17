@@ -84,8 +84,19 @@ public class Liquid {
 	}
 
 	private void applyGravity() {
-		float gravX = Liquid.GRAVITY_STRENGTH * PApplet.cos(-parent.hud.angle + PConstants.HALF_PI);
-		float gravY = Liquid.GRAVITY_STRENGTH * PApplet.sin(-parent.hud.angle + PConstants.HALF_PI);
+		
+		int playerCount = parent.level.players.length;
+		int playerIndex = 0;
+		
+		for (int i = 0; i < playerCount; i++) {
+			if (color.equals(PlayerConstants.PLAYER_COLORS[i]))
+				playerIndex = i;
+		}
+		
+		float offset = (PConstants.PI + PConstants.TWO_PI * playerIndex) / playerCount;
+		
+		float gravX = Liquid.GRAVITY_STRENGTH * PApplet.cos(-parent.hud.angle + offset);
+		float gravY = Liquid.GRAVITY_STRENGTH * PApplet.sin(-parent.hud.angle + offset);
 		Vec2 gravity = new Vec2(gravX, gravY);
 
 		for(Particle particle : particlesCreated)
@@ -98,27 +109,9 @@ public class Liquid {
 			particle.getBody().applyForce(gravity, particle.getBody().getWorldCenter());
 	}
 
-	private void applyReverseGravity() {
-		float gravX = Liquid.GRAVITY_STRENGTH * PApplet.cos(-parent.hud.angle - PConstants.HALF_PI);
-		float gravY = Liquid.GRAVITY_STRENGTH * PApplet.sin(-parent.hud.angle - PConstants.HALF_PI);
-		Vec2 antiGravity = new Vec2(gravX, gravY);
-
-		for(Particle particle : particlesCreated)
-			particle.getBody().applyForce(antiGravity, particle.getBody().getWorldCenter());
-
-		for(Particle particle : particlesHeld)
-			particle.getBody().applyForce(antiGravity, particle.getBody().getWorldCenter());
-		
-		for(Particle particle : particlesLarge)
-			particle.getBody().applyForce(antiGravity, particle.getBody().getWorldCenter());
-	}
-
 	public void Update() {
 		
-		if(color.equals(PlayerConstants.PLAYER_COLORS[1]))
-			applyReverseGravity();
-		else
-			applyGravity();
+		applyGravity();
 		
 		if (particlesCreated.size() + particlesHeld.size() > MAX_PARTICLES) {
 			mergeParticles();
