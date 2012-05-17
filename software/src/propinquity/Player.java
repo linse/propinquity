@@ -16,6 +16,9 @@ public class Player implements PConstants {
 	Patch[] patches;
 	Glove glove;
 
+	boolean paused;
+	boolean[] pausePatchStates;
+
 	AudioPlayer negSoundPlayer;
 	AudioPlayer negSoundCoop;
 
@@ -32,6 +35,8 @@ public class Player implements PConstants {
 		this.patches = patches;
 		this.glove = glove;
 
+		pausePatchStates = new boolean[patches.length];
+
 		negSoundPlayer = sounds.getNegativePlayer(0); //TODO
 		negSoundCoop = sounds.getNegativeCoop();
 
@@ -42,14 +47,53 @@ public class Player implements PConstants {
 
 	public void reset() {
 		score.reset();
+
+		for(int i = 0;i < patches.length;i++) {
+			pausePatchStates[i] = false;
+			patches[i].setActive(false);
+			patches[i].clear();
+		}
+
+		glove.setActive(false);
+		glove.clear();
+
+		paused = true;
 	}
 
 	public void pause() {
 		score.pause();
+		
+		for(int i = 0;i < patches.length;i++) {
+			pausePatchStates[i] = patches[i].getActive();
+			patches[i].setActive(false);
+		}
+		glove.setActive(false);
+
+		paused = true;
 	}
 
 	public void start() {
+		for(int i = 0;i < patches.length;i++) {
+			patches[i].setActive(pausePatchStates[i]);
+		}
+		glove.setActive(true);
+
 		score.start();
+
+		paused = false;
+	}
+
+	public void step(boolean coop, boolean[] patchStates) {
+		this.coop = coop;
+
+		for(int i = 0;i < patchStates.length;i++) {
+			if(i < patches.length) {
+				pausePatchStates[i] = patchStates[i];
+				if(!paused) patches[i].setActive(patchStates[i]);
+			} else {
+				break;
+			}
+		}
 	}
 	
 	public void setName(String name) {
@@ -88,10 +132,6 @@ public class Player implements PConstants {
 				negSoundPlayer.rewind();
 			}
 		}
-	}
-
-	public void setCoop(boolean coop) {
-		this.coop = coop;
 	}
 
 	public boolean isCoop() {

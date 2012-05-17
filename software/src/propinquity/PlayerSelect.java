@@ -76,6 +76,7 @@ public class PlayerSelect implements UIElement {
 		for(Player player : players) {
 			for(Patch patch : player.getPatches()) {
 				patch.setActive(false);
+				patch.clear();
 			}
 		}
 

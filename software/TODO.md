@@ -9,6 +9,8 @@ TODO for Propinquity Software
 	* Merge should be prox based
 	* N player gravity
 
+* Negative sounds?
+
 * Hardware control
 	* Handle actual behavior for vibe and patches
 	* Prox events

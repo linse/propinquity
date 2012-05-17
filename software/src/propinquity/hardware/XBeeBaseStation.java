@@ -14,6 +14,7 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 
 	final int XBEE_BAUDRATE = 115200;
 	final int XBEE_RESPONSE_TIMEOUT = 1000;
+	final int XBEE_RETRY_COUNT = 10;
 
 	Thread scanningThread;
 
@@ -348,6 +349,7 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 	class RequestMonitor implements Runnable {
 
 		boolean ack;
+		int retryCount;
 		XBeeRequest request;
 
 		RequestMonitor(XBeeRequest request) {
@@ -370,6 +372,8 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 						System.out.println("\t\tException sending request");
 					}
 				}
+
+				if(++retryCount > XBEE_RETRY_COUNT) break; //Give up
 
 				try {
 					Thread.sleep(100); 

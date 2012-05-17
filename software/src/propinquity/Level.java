@@ -79,7 +79,7 @@ public class Level implements UIElement, ProxEventListener, LevelConstants {
 
 				XMLElement[] player_tags = step_tags[i].getChildren("player");
 				boolean patches[][] = new boolean[player_tags.length][4];
-				if(player_tags.length > 1) {
+				if(player_tags.length >= players.length) {
 					for(int j = 0; j < player_tags.length; j++) {
 						patches[j][0] = (player_tags[j].getInt("patch1", 0) != 0);
 						patches[j][1] = (player_tags[j].getInt("patch2", 0) != 0);
@@ -87,7 +87,7 @@ public class Level implements UIElement, ProxEventListener, LevelConstants {
 						patches[j][3] = (player_tags[j].getInt("patch4", 0) != 0);
 					}
 				} else {
-					throw new XMLException("XMLException: XML for level \"" + name + "\", step " + i + " has less than two player tags.");
+					throw new XMLException("XMLException: XML for level \"" + name + "\", step " + i + " has too few player tags.");
 				}
 
 				steps[i] = new Step(coop, patches);
@@ -103,22 +103,25 @@ public class Level implements UIElement, ProxEventListener, LevelConstants {
 	}
 
 	public void pause() {
-		running = false;
 		song.pause();
+		running = false;
 		for(Player player : players) player.pause();
 	}
 
 	public void start() {
-		running = true;
 		for(Player player : players) player.start();
+		running = true;
 		song.play();
 	}
 
 	public void reset() {
-		pause();
-		for(Player player : players) player.reset(); //Clears all the particles etc
+		song.pause();
+		running = false;
+
+		for(Player player : players) player.reset(); //Clears all the particles, scores, patches and gloves
+
 		song.rewind();
-		stepUpdate(0);
+		stepUpdate(0); //Load for banner
 	}
 
 	public void close() {
@@ -133,7 +136,16 @@ public class Level implements UIElement, ProxEventListener, LevelConstants {
 		currentStep = nextStep;
 
 		coop = steps[currentStep].isCoop();
-		//TODO Handle Patches on/off and set player coop
+		boolean[][] patchStates = steps[currentStep].getPatches();
+
+		for(int i = 0;i < players.length;i++) {
+			if(i < patchStates.length) {
+				players[i].step(coop, patchStates[i]);
+			} else {
+				//TODO warning here, there are too few patchStates, shoudn't happen
+				break;
+			}
+		}
 	}
 
 	public void proxEvent(Patch patch) {
@@ -244,7 +256,7 @@ public class Level implements UIElement, ProxEventListener, LevelConstants {
 		hud.drawOuterBoundary();
 
 		//Score Banners
-		if(isCoop()) {
+		if(coop) {
 			String score = String.valueOf(getTotalPoints());
 			String name = "Coop";
 

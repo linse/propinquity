@@ -35,6 +35,16 @@ public class Glove {
 	}
 
 	/**
+	 * Clear all output, doesn't affect active flag.
+	 *
+	 */
+	public void clear() {
+		setVibeLevel(0);
+		setVibePeriod(0);
+		setVibeDuty(0);
+	}
+
+	/**
 	 * Enables or disables the device. This will stop/start all output (vibration, color, prox sensor, other).
 	 *
 	 * @param active the new state of the device.
