@@ -75,6 +75,7 @@ public class Patch {
 		if(this.active == active) return;
 		this.active = active;
 		hardware.sendPacket(new Packet(address, PacketType.CONF, new int[] {active?1:0}));
+		if(!active) prox = 0; //Clear prox when not active
 	}
 
 	/**
@@ -184,7 +185,9 @@ public class Patch {
 	 * @param prox the prox value, constrained to the range 0-1024.
 	 */
 	public void setProx(int prox) {
-		this.prox = PApplet.constrain(prox, 0, 1024);
+		//Prevent straggler packet from changing the prox value when active if false
+		if(active) this.prox = PApplet.constrain(prox, 0, 1024);
+		else this.prox = 0;
 	}
 
 	/**
@@ -247,7 +250,9 @@ public class Patch {
 	 * @return the prox value, constrained to the 0-1024 range.
 	 */
 	public int getProx() {
-		return prox;
+		//Return 0 if not active
+		if(active) return prox;
+		else return 0;
 	}
 
 	public int getZone() {
