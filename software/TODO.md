@@ -7,7 +7,6 @@ TODO for Propinquity Software
 	* Meta balls/Liquid/Coolness
 	* Merge should work forever by summing particles size and getting bigger and bigger ....
 	* Merge should be prox based
-	* N player gravity
 
 * Negative sounds?
 
