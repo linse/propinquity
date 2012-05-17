@@ -71,11 +71,11 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 		simulator = new HardwareSimulator(this);
 		
 		xbeeBaseStation = new XBeeBaseStation();
-		//xbeeBaseStation.scan();
+		xbeeBaseStation.scan();
 		xbeeManager = new XBeeManager(this, xbeeBaseStation);
 
-		//hardware = xbeeBaseStation;
-		hardware = simulator;
+		hardware = xbeeBaseStation;
+		// hardware = simulator;
 
 		//Player/Player List
 		players = new Player[MAX_PLAYERS];
@@ -121,7 +121,8 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 
 		levels = tmp_levels.toArray(new Level[0]);
 		if(levels.length == 0) System.out.println("Warning: No valid levels were built");
-
+		for(Level level : levels) hardware.addProxEventListener(level);
+		
 		levelSelect = new LevelSelect(this, hud, levels);
 
 		//Box 2D

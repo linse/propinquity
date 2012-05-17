@@ -9,12 +9,6 @@ import processing.core.*;
 
 public class Particle {
 
-	/**
-	 * The minimum amount of time (in ms) a player must have their glove in the
-	 * sweet spot to get a single point.
-	 */
-	public static final int SPAWN_DELAY = 500;
-
 	public static final float SMALL_SIZE = 0.5f;
 	public static final float LARGE_SIZE = 1f;
 	

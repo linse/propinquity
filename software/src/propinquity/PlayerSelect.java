@@ -75,8 +75,8 @@ public class PlayerSelect implements UIElement {
 	void cleanup() {
 		for(Player player : players) {
 			for(Patch patch : player.getPatches()) {
-				patch.setActive(false);
 				patch.clear();
+				patch.setActive(false);
 			}
 		}
 

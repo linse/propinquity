@@ -1,4 +1,4 @@
-package propinquity.hardware;
+package propinquity;
 
 public interface LevelConstants {
 

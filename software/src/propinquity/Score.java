@@ -53,9 +53,9 @@ public class Score {
 		return heldScore;
 	}
 
-	public void increment() {
-		tempScore++;
-		liquid.createParticle();
+	public void addPoints(int points) {
+		tempScore += points;
+		for(int i = 0;i < points;i++) liquid.createParticle();
 	}
 
 	public void update() {

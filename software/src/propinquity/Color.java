@@ -143,6 +143,16 @@ public class Color {
 	public static Color red() {
 		return new Color(255, 25, 0);
 	}
+
+	/**
+	 * Gets a predefined color with the value R:0 G:255 B:0 A:255.
+	 * 
+	 * @return The color "green" as a Color object.
+	 */
+	public static Color green() {
+		return new Color(0, 255, 0);
+	}
+	
 	
 	/**
 	 * Gets a predefined color with the value R:142 G:20 B:252 A:255.

@@ -17,7 +17,7 @@ public interface PlayerConstants {
 
 	public static final Color[] PLAYER_COLORS = {
 		Color.blue(),
-		Color.red()
+		Color.green()
 	};
 
 	public static final Color NEUTRAL_COLOR = Color.violet();

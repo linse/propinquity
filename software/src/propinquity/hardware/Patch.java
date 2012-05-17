@@ -9,7 +9,7 @@ import propinquity.Color;
  * If the Patch is registered with a HardwareInterface it will have it's prox update as data is receive from the remote device. This registration is not automatic and must be done externally via {@link HardwareInterface#addPatch(Patch patch)}.
  *
  */
-public class Patch {
+public class Patch implements HardwareConstants {
 
 	public static final int MIN_RANGE = 100;
 	public static final int MAX_RANGE = 700;
@@ -255,10 +255,48 @@ public class Patch {
 		else return 0;
 	}
 
+	/**
+	 * Get the "zone" which the prox is reading.
+	 *
+	 * @return 0 if there is nothing in range, 1 if something is in range, 2 if something is in the "sweet spot"
+	 */
 	public int getZone() {
 		if(prox < MIN_RANGE || prox > MAX_RANGE) return 0; //Out of range or too close
 		else if(prox > MIN_SWEETSPOT && prox < MAX_SWEETSPOT) return 2; //In the sweet spot
 		else return 1; //Else normal zone
+	}
+
+	/**
+	 * Sets the patch in a preset "mode". Assumes that the patch color, vibe duty and color duty are already set.
+	 * 
+	 * 0 is color only, 1 is color blink and vibe blink, 2 is fast color blink and vibe
+	 *
+	 * @param mode the mode to put the patch in.
+	 */
+	public void setMode(int mode) {
+		switch(mode) {
+			case 0:
+			default: { //Not in range: just patch color
+				setColorPeriod(0);
+				setVibeLevel(0);
+				break;
+			}
+			case 1: { //In range: color and vibe pulse
+				setColorPeriod(SLOW_BLINK);
+
+				setVibeLevel(0);
+				setVibePeriod(SLOW_BLINK);
+				break;
+			}
+			case 2: { //Sweet stop: vibe one, fast color pulse
+				setColorPeriod(FAST_BLINK);
+
+				setVibeLevel(0);
+				setVibePeriod(0);
+				break;
+			}
+		}
+
 	}
 
 	/**

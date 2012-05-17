@@ -7,7 +7,7 @@ import processing.core.PApplet;
  * Making changes (e.g. vibration settings) in this class should transparently propagate down to the hardware via the HardwareInterface.
  *
  */
-public class Glove {
+public class Glove implements HardwareConstants {
 
 	final int address;
 
@@ -134,6 +134,34 @@ public class Glove {
 	 */
 	public int getVibeDuty() {
 		return vibe_duty;
+	}
+
+	/**
+	 * Sets the patch in a preset "mode". Assumes that the patch color, vibe duty and color duty are already set.
+	 * 
+	 * 0 is color only, 1 is color blink and vibe blink, 2 is fast color blink and vibe
+	 *
+	 * @param mode the mode to put the patch in.
+	 */
+	public void setMode(int mode) {
+		switch(mode) {
+			case 0:
+			default: { //Not in range: just patch color
+				setVibeLevel(0);
+				break;
+			}
+			case 1: { //In range: color and vibe pulse
+				setVibeLevel(255);
+				setVibePeriod(SLOW_BLINK);
+				break;
+			}
+			case 2: { //Sweet stop: vibe one, fast color pulse
+				setVibeLevel(255);
+				setVibePeriod(FAST_BLINK);
+				break;
+			}
+		}
+
 	}
 
 	/**
