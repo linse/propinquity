@@ -20,18 +20,19 @@ public class Hud {
 	public static final int SCORE_RADIUS_OFFSET = 40;
 	public static final float SCORE_ANGLE_OFFSET = 0.35f;
 
-	Propinquity parent;
-
-	GL gl;
+	private Propinquity parent;
+	private GL gl;
 
 	float angle = 0;
-	float velocity = -PConstants.TWO_PI/500f;
+	float velocity = -PConstants.TWO_PI / 500f;
 
 	public PFont font;
 
 	public PImage hudInnerBoundary, hudOuterBoundary;
 	public PImage hudPlay, hudLevelComplete, hudPlayAgain;
 	public PImage hudBannerSide, hudBannerCenter;
+
+	PGraphics hudMask;
 
 	/**
 	 * Create the hud and load the images it will use.
@@ -53,6 +54,14 @@ public class Hud {
 		hudLevelComplete = parent.loadImage("hud/levelcomplete.png");
 		hudPlay = parent.loadImage("hud/sbtoplay.png");
 		hudPlayAgain = parent.loadImage("hud/sbtoplayagain.png");
+
+		hudMask = parent.createGraphics(parent.width, parent.height, PConstants.P2D);
+		hudMask.background(0);
+		hudMask.beginDraw();
+		hudMask.noStroke();
+		hudMask.fill(255);
+		hudMask.ellipse(parent.width / 2, parent.height / 2, Fences.OUTER_RADIUS * 2 - 5, Fences.OUTER_RADIUS * 2 - 5);
+		hudMask.endDraw();
 	}
 
 	/**
@@ -67,7 +76,7 @@ public class Hud {
 	/**
 	 * 
 	 * 
-	 * @param targetAngle 
+	 * @param targetAngle
 	 * @param targetAcceleration
 	 * @param maxVelocity
 	 */
@@ -75,13 +84,14 @@ public class Hud {
 		float diff = targetAngle - angle;
 		int dir = diff < 0 ? -1 : 1;
 
-		if(diff * dir < PConstants.TWO_PI/5000f) {
+		if (diff * dir < PConstants.TWO_PI / 5000f) {
 			angle = targetAngle;
 			return;
 		}
 
 		velocity += dir * targetAcceleration;
-		if(velocity/dir > maxVelocity) velocity = dir * maxVelocity;
+		if (velocity / dir > maxVelocity)
+			velocity = dir * maxVelocity;
 
 		velocity *= 0.85;
 
@@ -100,29 +110,31 @@ public class Hud {
 		float arclength = 0;
 
 		// For every box
-		for(int i = 0; i < message.length(); i++) {
-			// Instead of a constant width, we check the width of each character.
+		for (int i = 0; i < message.length(); i++) {
+			// Instead of a constant width, we check the width of each
+			// character.
 			char currentChar = message.charAt(i);
 			float w = parent.textWidth(currentChar);
 
 			// Each box is centered so we move half the width
-			arclength += w/2;
+			arclength += w / 2;
 			// Angle in radians is the arclength divided by the radius
 			// Starting on the left side of the circle by adding PI
-			float theta = startAngle + arclength/radius;
+			float theta = startAngle + arclength / radius;
 
 			parent.pushMatrix();
 			// Polar to Cartesian coordinate conversion
 			parent.translate(radius * PApplet.cos(theta), radius * PApplet.sin(theta));
 			// Rotate the box
-			parent.rotate(theta + PConstants.PI/2); // rotation is offset by 90 degrees
+			parent.rotate(theta + PConstants.PI / 2); // rotation is offset by
+														// 90 degrees
 
 			// Display the character
 			// fill(0);
 			parent.text(currentChar, 0, 0);
 			parent.popMatrix();
 			// Move halfway again
-			arclength += w/2;
+			arclength += w / 2;
 		}
 	}
 
@@ -164,11 +176,11 @@ public class Hud {
 		parent.noFill();
 
 		parent.pushMatrix();
-		parent.translate(parent.width/2, parent.height/2);
-		parent.translate(PApplet.cos(angle) * (parent.height/2 - Hud.WIDTH + Hud.OFFSET), PApplet.sin(angle)
-				* (parent.height/2 - Hud.WIDTH + Hud.OFFSET));
-		parent.rotate(angle + PApplet.PI/2);
-		parent.scale(bannerImg.width/2, bannerImg.height/2);
+		parent.translate(parent.width / 2, parent.height / 2);
+		parent.translate(PApplet.cos(angle) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET), PApplet.sin(angle)
+				* (parent.height / 2 - Hud.WIDTH + Hud.OFFSET));
+		parent.rotate(angle + PApplet.PI / 2);
+		parent.scale(bannerImg.width / 2, bannerImg.height / 2);
 		parent.beginShape(PApplet.QUADS);
 		parent.texture(bannerImg);
 		parent.tint(color.toInt(parent));
@@ -183,12 +195,13 @@ public class Hud {
 		parent.pushMatrix();
 		parent.fill(255);
 		parent.noStroke();
-		parent.translate(parent.width/2, parent.height/2);
+		parent.translate(parent.width / 2, parent.height / 2);
 		parent.textAlign(PApplet.CENTER, PApplet.BASELINE);
 		parent.textFont(font, FONT_SIZE);
 		String cropped_text = text.length() > 30 ? text.substring(0, 30) : text;
-		float offset = (parent.textWidth(cropped_text)/2)/(2 * PApplet.PI * (parent.height/2 - Hud.SCORE_RADIUS_OFFSET)) * PApplet.TWO_PI;
-		drawArc(cropped_text, parent.height/2 - Hud.SCORE_RADIUS_OFFSET + Hud.OFFSET, angle - offset);
+		float offset = (parent.textWidth(cropped_text) / 2)
+				/ (2 * PApplet.PI * (parent.height / 2 - Hud.SCORE_RADIUS_OFFSET)) * PApplet.TWO_PI;
+		drawArc(cropped_text, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET + Hud.OFFSET, angle - offset);
 		parent.popMatrix();
 	}
 
@@ -238,12 +251,13 @@ public class Hud {
 
 		parent.fill(color.toInt(parent));
 		parent.pushMatrix();
-		parent.translate(parent.width/2, parent.height/2);
+		parent.translate(parent.width / 2, parent.height / 2);
 		parent.rotate(angle);
 
 		parent.textFont(font, FONT_SIZE);
 		parent.text(line1, 0, 0);
-		if(line2 != null) parent.text(line2, 0, -20);
+		if (line2 != null)
+			parent.text(line2, 0, -20);
 
 		parent.popMatrix();
 	}
@@ -271,7 +285,7 @@ public class Hud {
 
 		parent.fill(color.toInt(parent));
 		parent.pushMatrix();
-		parent.translate(parent.width/2, parent.height/2);
+		parent.translate(parent.width / 2, parent.height / 2);
 		parent.rotate(angle);
 
 		parent.image(image, 0, 0);
@@ -287,7 +301,7 @@ public class Hud {
 		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 
 		parent.pushMatrix();
-		parent.translate(parent.width/2 - 1, parent.height/2);
+		parent.translate(parent.width / 2 - 1, parent.height / 2);
 		parent.image(hudInnerBoundary, 0, 0);
 		parent.popMatrix();
 	}
@@ -300,7 +314,7 @@ public class Hud {
 		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 
 		parent.pushMatrix();
-		parent.translate(parent.width/2 - 1, parent.height/2);
+		parent.translate(parent.width / 2 - 1, parent.height / 2);
 		parent.image(hudOuterBoundary, 0, 0);
 		parent.popMatrix();
 	}
