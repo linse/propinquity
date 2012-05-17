@@ -71,11 +71,11 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 		simulator = new HardwareSimulator(this);
 		
 		xbeeBaseStation = new XBeeBaseStation();
-		xbeeBaseStation.scan();
+		//xbeeBaseStation.scan();
 		xbeeManager = new XBeeManager(this, xbeeBaseStation);
 
-		hardware = xbeeBaseStation;
-		// hardware = simulator;
+		//hardware = xbeeBaseStation;
+		hardware = simulator;
 
 		//Player/Player List
 		players = new Player[MAX_PLAYERS];
