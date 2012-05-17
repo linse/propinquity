@@ -15,6 +15,7 @@ TODO for Propinquity Software
 	* Handle actual behavior for vibe and patches
 	* Prox events
 	* Add clear all command (diff from active)
+	* Prox data = 0 when inactive !!!
 	
 * XBee stress test
 
