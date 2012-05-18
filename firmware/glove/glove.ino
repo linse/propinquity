@@ -12,12 +12,15 @@
 
 /* ---- Protocol ---- */
 #define BASE_ADDR      0
-#define PROX_PACKET    1
-#define CONF_PACKET    2
 
-#define VIBE_PACKET    6
-#define VIBE_DUTY_PACKET      7
-#define VIBE_PERIOD_PACKET    8
+#define PROX_PACKET    1
+
+#define CONF_PACKET    2
+#define CLEAR_PACKET   3
+
+#define VIBE_PACKET    7
+#define VIBE_DUTY_PACKET      8
+#define VIBE_PERIOD_PACKET    9
 
 /* ---- Timer ---- */
 
@@ -113,6 +116,10 @@ void reset() {
 void parse_data(uint8_t* data, uint8_t len) {
 	if(data[0] == CONF_PACKET && len > 1) {
 		setActive(data[1]);
+	} else if(data[0] == CLEAR_PACKET) {
+		vibe_level = 0;
+		vibe_period = 0;
+		vibe_duty = 0;
 	} else if(data[0] == VIBE_PACKET && len > 1) {
 		vibe_level = data[1];
 	} else if(data[0] == VIBE_DUTY_PACKET && len > 1) { 

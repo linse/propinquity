@@ -21,14 +21,15 @@
 #define PROX_PACKET    1
 
 #define CONF_PACKET    2
+#define CLEAR_PACKET   3
 
-#define COLOR_PACKET   3
-#define COLOR_DUTY_PACKET     4
-#define COLOR_PERIOD_PACKET   5
+#define COLOR_PACKET   4
+#define COLOR_DUTY_PACKET     5
+#define COLOR_PERIOD_PACKET   6
 
-#define VIBE_PACKET    6
-#define VIBE_DUTY_PACKET      7
-#define VIBE_PERIOD_PACKET    8
+#define VIBE_PACKET    7
+#define VIBE_DUTY_PACKET      8
+#define VIBE_PERIOD_PACKET    9
 
 /* ---- Timer ---- */
 
@@ -169,6 +170,17 @@ void send_data() {
 void parse_data(uint8_t* data, uint8_t len) {
 	if(data[0] == CONF_PACKET && len > 1) {
 		setActive(data[1]);
+	} else if(data[0] == CLEAR_PACKET) {
+		rgb[0] = 0;
+		rgb[1] = 0;
+		rgb[2] = 0;
+
+		led_duty = 0;
+		led_period = 0;
+
+		vibe_level = 0;
+		vibe_period = 0;
+		vibe_duty = 0;
 	} else if(data[0] == COLOR_PACKET && len > 3) {
 		rgb[0] = data[1];
 		rgb[1] = data[2];
