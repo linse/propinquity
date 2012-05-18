@@ -28,3 +28,6 @@ TODO for Propinquity Software
 
 	* if/switch/catch/for/while
 	* Standard constructor arg ordering
+
+* Clear vibe for glove at the last step !
+* Graceful fail (duty 0)

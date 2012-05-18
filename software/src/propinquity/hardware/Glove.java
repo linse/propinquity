@@ -39,9 +39,11 @@ public class Glove implements HardwareConstants {
 	 *
 	 */
 	public void clear() {
-		setVibeLevel(0);
-		setVibePeriod(0);
-		setVibeDuty(0);
+		hardware.sendPacket(new Packet(address, PacketType.CLEAR, new int[0]));
+
+		vibe_level = 0;
+		vibe_period = 0;
+		vibe_duty = 0;
 	}
 
 	/**
@@ -50,10 +52,10 @@ public class Glove implements HardwareConstants {
 	 * @param active the new state of the device.
 	 */
 	public void setActive(boolean active) {
+		if(this.active == active) return;
 		this.active = active;
 		hardware.sendPacket(new Packet(address, PacketType.CONF, new int[] {active?1:0}));
 	}
-
 	/**
 	 * Gets the current state of the device, enabled or disabled
 	 *
@@ -152,12 +154,13 @@ public class Glove implements HardwareConstants {
 			}
 			case 1: { //In range: color and vibe pulse
 				setVibeLevel(255);
+				setVibeDuty(127);
 				setVibePeriod(SLOW_BLINK);
 				break;
 			}
 			case 2: { //Sweet stop: vibe one, fast color pulse
 				setVibeLevel(255);
-				setVibePeriod(FAST_BLINK);
+				setVibePeriod(0);
 				break;
 			}
 		}

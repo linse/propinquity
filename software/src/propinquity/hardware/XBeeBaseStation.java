@@ -12,9 +12,9 @@ import gnu.io.*;
  */
 public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListener {
 
-	final int XBEE_BAUDRATE = 115200;
+	final int XBEE_BAUDRATE = 57600;
 	final int XBEE_RESPONSE_TIMEOUT = 1000;
-	final int XBEE_RETRY_COUNT = 10;
+	final int XBEE_RETRY_COUNT = 5;
 
 	Thread scanningThread;
 
@@ -250,6 +250,7 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 	}
 
 	public void sendPacket(Packet packet) {
+		if(xbees.size() == 0) return;
 		sendPacketAsynchronous(packet);	
 	}
 
@@ -334,7 +335,7 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 						}
 					}
 				} else {
-					System.out.println("Got reponse from an unregistered patch or glove with address" + addr);
+					System.out.println("Got reponse from an unregistered patch or glove with address " + addr);
 				}
 
 				break;

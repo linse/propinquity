@@ -58,12 +58,18 @@ public class Patch implements HardwareConstants {
 	 *
 	 */
 	public void clear() {
-		setColor(0, 0, 0);
-		setColorDuty(0);
-		setColorPeriod(0);
-		setVibeLevel(0);
-		setVibePeriod(0);
-		setVibeDuty(0);
+		hardware.sendPacket(new Packet(address, PacketType.CLEAR, new int[0]));
+
+		color[0] = 0;
+		color[1] = 0;
+		color[2] = 0;
+
+		color_period = 0;
+		color_duty = 0;
+
+		vibe_level = 0;
+		vibe_period = 0;
+		vibe_duty = 0;
 	}
 
 	/**
