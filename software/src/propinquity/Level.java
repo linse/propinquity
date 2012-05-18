@@ -161,7 +161,10 @@ public class Level implements UIElement, ProxEventListener, LevelConstants {
 		}
 
 		if(currentStep == steps.length-1) {
-			for(Player player : players) player.clearPatchAndGloves();
+			for(Player player : players) {
+				player.transferScore();
+				player.clearPatchAndGloves();
+			}
 		}
 	}
 
@@ -205,7 +208,6 @@ public class Level implements UIElement, ProxEventListener, LevelConstants {
 		}
 
 		int nextStep = (int)PApplet.constrain(song.position()/stepInterval, 0, steps.length-1);
-		System.out.println(song.position()+" - "+nextStep+" - "+steps.length);
 		if(nextStep != currentStep) stepUpdate(nextStep);
 	}
 

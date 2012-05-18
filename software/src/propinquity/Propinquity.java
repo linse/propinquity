@@ -242,19 +242,19 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 			}
 		}
 
-		switch(key) {
-			case 'n': {
-				if(simulator.isVisible()) simulator.hide();
-				else simulator.show();
-				break;
-			}
+		// switch(key) {
+		// 	case 'n': {
+		// 		if(simulator.isVisible()) simulator.hide();
+		// 		else simulator.show();
+		// 		break;
+		// 	}
 
-			case 'h': {
-				if(heapDebug.isRunning()) heapDebug.stop();
-				else heapDebug.start();
-				break;
-			}
-		}
+		// 	case 'h': {
+		// 		if(heapDebug.isRunning()) heapDebug.stop();
+		// 		else heapDebug.start();
+		// 		break;
+		// 	}
+		// }
 	}
 
 	public void stop() {

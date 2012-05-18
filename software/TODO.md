@@ -4,6 +4,7 @@ Software
 * Gameplay
 	* Think about and implement coop scoring. Both players should get points towards their total during coop. How should we handle score display at that time?
 	* Negative sounds?
+	* Release particles at the end of the game
 
 * Visual
 	* Meta balls/Liquid/Coolness
@@ -32,3 +33,11 @@ Hardware
 * Could the red/prox issue be due to current draw issues
 * XBee stress test
 * Fix Glove charger
+
+Playtest
+-----------------------------
+* Sounds for particles
+* Single zone
+* Coop
+* Boppers
+* Health

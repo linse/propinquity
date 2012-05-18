@@ -62,13 +62,17 @@ public class Score {
 		long currentTime = parent.millis();
 
 		if(currentTime - lastTime > Score.SCORE_TIME) {
-			liquid.transferParticles();
-			heldScore += tempScore;
-			tempScore = 0;
+			transfer();
 			lastTime = currentTime;
 		}
 		
 		liquid.Update();
+	}
+
+	public void transfer() {
+		liquid.transferParticles();
+		heldScore += tempScore;
+		tempScore = 0;
 	}
 
 	public void draw() {

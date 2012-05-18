@@ -7,10 +7,10 @@ import java.lang.Math;
 
 public class Player implements PConstants {
 	
-	public static final int SPAWN_DELAY_SHORT = 350;
-	public static final int SPAWN_DELAY_MED = 700;
-	public static final int SPAWN_DELAY_LONG = 1500;
-	public static final double SPAWN_DELAY_TAU = 5000;
+	public static final int SPAWN_DELAY_SHORT = 250;
+	public static final int SPAWN_DELAY_MED = 500;
+	public static final int SPAWN_DELAY_LONG = 1000;
+	public static final double SPAWN_DELAY_TAU = 3000;
 
 	Propinquity parent;
 
@@ -154,6 +154,10 @@ public class Player implements PConstants {
 
 	public Patch[] getPatches() {
 		return patches;
+	}
+
+	public void transferScore() {
+		score.transfer();
 	}
 
 	public boolean isPatchOwner(Patch p) {
