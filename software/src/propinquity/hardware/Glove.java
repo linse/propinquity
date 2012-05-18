@@ -52,7 +52,7 @@ public class Glove implements HardwareConstants {
 	 * @param active the new state of the device.
 	 */
 	public void setActive(boolean active) {
-		if(this.active == active) return;
+		if(MIN_PACK && this.active == active) return;
 		this.active = active;
 		hardware.sendPacket(new Packet(address, PacketType.CONF, new int[] {active?1:0}));
 	}
@@ -84,7 +84,7 @@ public class Glove implements HardwareConstants {
 	 * @param level the vibration level, constrained to the range 0-255.
 	 */
 	public void setVibeLevel(int level) {
-		// if(vibe_level == level) return;
+		if(MIN_PACK && vibe_level == level) return;
 		vibe_level = PApplet.constrain(level, 0, 255);
 		hardware.sendPacket(new Packet(address, PacketType.VIBE_LEVEL, new int[] {vibe_level}));
 	}
@@ -95,7 +95,7 @@ public class Glove implements HardwareConstants {
 	 * @param period the vibration period, constrained to the range 0-255.
 	 */
 	public void setVibePeriod(int period) {
-		// if(vibe_period == period) return;
+		if(MIN_PACK && vibe_period == period) return;
 		vibe_period = PApplet.constrain(period, 0, 255);
 		hardware.sendPacket(new Packet(address, PacketType.VIBE_PERIOD, new int[] {vibe_period}));
 	}
@@ -106,7 +106,7 @@ public class Glove implements HardwareConstants {
 	 * @param duty the vibration duty cycle, constrained to the range 0-255. 0 = 0% duty cycle 255=100% duty cycle.
 	 */
 	public void setVibeDuty(int duty) {
-		// if(vibe_duty == duty) return;
+		if(MIN_PACK && vibe_duty == duty) return;
 		vibe_duty = PApplet.constrain(duty, 0, 255);
 		hardware.sendPacket(new Packet(address, PacketType.VIBE_DUTY, new int[] {vibe_duty}));
 	}

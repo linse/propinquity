@@ -60,6 +60,12 @@ public class Player implements PConstants {
 		bestPatchTime = 0;
 		bestPatchTimePauseDiff = 0;
 
+		clearPatchAndGloves();
+
+		paused = true;
+	}
+
+	public void clearPatchAndGloves() {
 		for(int i = 0;i < patches.length;i++) {
 			pausePatchStates[i] = false;
 			patches[i].setActive(false);
@@ -72,8 +78,6 @@ public class Player implements PConstants {
 		glove.clear();
 
 		setGloveDefaults();
-
-		paused = true;
 	}
 
 	public void setPatchesDefaults() {

@@ -69,7 +69,7 @@ public class Level implements UIElement, ProxEventListener, LevelConstants {
 		song = sounds.loadSong(songFile);
 
 		XMLElement[] step_tags = xml.getChildren("sequence/step");
-		steps = new Step[step_tags.length];
+		steps = new Step[step_tags.length+1];
 		stepInterval = song.length()/step_tags.length;
 
 		if(step_tags.length > 0) {
@@ -95,6 +95,10 @@ public class Level implements UIElement, ProxEventListener, LevelConstants {
 				steps[i] = new Step(coop, patches);
 			}
 
+			boolean[][] tmpPatchState = new boolean[players.length][];
+			for(int i = 0;i < tmpPatchState.length;i++) tmpPatchState[i] = new boolean[] {false, false, false, false};
+
+			steps[step_tags.length] = new Step(false, tmpPatchState);
 		} else {
 			throw new XMLException("Warning: XML for level \"" + name + "\" has no sequence tag and/or no step tags");
 		}
@@ -155,6 +159,10 @@ public class Level implements UIElement, ProxEventListener, LevelConstants {
 				break;
 			}
 		}
+
+		if(currentStep == steps.length) {
+			for(Player player : players) player.clearPatchAndGloves();
+		}
 	}
 
 	public void proxEvent(Patch patch) {
@@ -192,7 +200,7 @@ public class Level implements UIElement, ProxEventListener, LevelConstants {
 					lastScoreTime[i] = currentTime;
 				}
 			} else {
-				lastScoreTime[i] = currentTime;
+				// lastScoreTime[i] = currentTime;
 			}
 		}
 
