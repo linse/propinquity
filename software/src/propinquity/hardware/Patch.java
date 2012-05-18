@@ -112,7 +112,7 @@ public class Patch implements HardwareConstants {
 	 * @param level the vibration level, constrained to the range 0-255.
 	 */
 	 public void setVibeLevel(int level) {
-	 	if(vibe_level == level) return;
+	 	// if(vibe_level == level) return;
 		vibe_level = PApplet.constrain(level, 0, 255);
 		hardware.sendPacket(new Packet(address, PacketType.VIBE_LEVEL, new int[] {vibe_level}));
 	}
@@ -123,7 +123,7 @@ public class Patch implements HardwareConstants {
 	 * @param period the vibration period, constrained to the range 0-255.
 	 */
 	public void setVibePeriod(int period) {
-		if(vibe_period == period) return;
+		// if(vibe_period == period) return;
 		vibe_period = PApplet.constrain(period, 0, 255);
 		hardware.sendPacket(new Packet(address, PacketType.VIBE_PERIOD, new int[] {vibe_period}));
 	}
@@ -134,7 +134,7 @@ public class Patch implements HardwareConstants {
 	 * @param duty the vibration duty cycle, constrained to the range 0-255. 0 = 0% duty cycle 255=100% duty cycle.
 	 */
 	public void setVibeDuty(int duty) {
-		if(vibe_duty == duty) return;
+		// if(vibe_duty == duty) return;
 		vibe_duty = PApplet.constrain(duty, 0, 255);
 		hardware.sendPacket(new Packet(address, PacketType.VIBE_DUTY, new int[] {vibe_duty}));
 	}
@@ -156,7 +156,7 @@ public class Patch implements HardwareConstants {
 	 * @param blue the blue color level, constrained to the range 0-255.
 	 */
 	public void setColor(int red, int green, int blue) {
-		if(color[0] == red && color[1] == green && color[2] == blue) return;
+		// if(color[0] == red && color[1] == green && color[2] == blue) return;
 		color[0] = PApplet.constrain(red, 0, 255);
 		color[1] = PApplet.constrain(green, 0, 255);
 		color[2] = PApplet.constrain(blue, 0, 255);
@@ -169,7 +169,7 @@ public class Patch implements HardwareConstants {
 	 * @param period the color period, constrained to the range 0-255.
 	 */
 	public void setColorPeriod(int period) {
-		if(color_period == period) return;
+		// if(color_period == period) return;
 		color_period = PApplet.constrain(period, 0, 255);
 		hardware.sendPacket(new Packet(address, PacketType.COLOR_PERIOD, new int[] {color_period}));
 	}
@@ -180,7 +180,7 @@ public class Patch implements HardwareConstants {
 	 * @param duty the color duty cycle, constrained to the range 0-255. 0 = 0% duty cycle 255=100% duty cycle.
 	 */
 	public void setColorDuty(int duty) {
-		if(color_duty == duty) return;
+		// if(color_duty == duty) return;
 		color_duty = PApplet.constrain(duty, 0, 255);
 		hardware.sendPacket(new Packet(address, PacketType.COLOR_DUTY, new int[] {color_duty}));
 	}
@@ -283,21 +283,24 @@ public class Patch implements HardwareConstants {
 		switch(mode) {
 			case 0:
 			default: { //Not in range: just patch color
+				setColor(color[0], color[1], color[2]);
 				setColorPeriod(0);
 				setVibeLevel(0);
 				break;
 			}
 			case 1: { //In range: color and vibe pulse
+				setColor(color[0], color[1], color[2]);
 				setColorPeriod(SLOW_BLINK);
-
-				setVibeLevel(0);
+				setColorDuty(127);
+				setVibeLevel(255);
 				setVibePeriod(SLOW_BLINK);
 				break;
 			}
 			case 2: { //Sweet stop: vibe one, fast color pulse
+				setColor(color[0], color[1], color[2]);
 				setColorPeriod(FAST_BLINK);
-
-				setVibeLevel(0);
+				setColorDuty(127);
+				setVibeLevel(255);
 				setVibePeriod(0);
 				break;
 			}

@@ -265,8 +265,16 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 		if(oldRequestMonitor != null) oldRequestMonitor.ack();
 	}
 
-	void addMonitor(XBeeRequest request) {
-		RequestMonitor oldRequestMonitor = requestMonitors.put(request.getFrameId(), new RequestMonitor(request));
+	synchronized void addMonitor(PacketType type, XBeeRequest request) {
+		for(Map.Entry<Integer, RequestMonitor> entry : requestMonitors.entrySet()) {
+			int id = entry.getKey();
+			RequestMonitor monitor = entry.getValue();
+			if(monitor.getPacketType() == type) {
+				removeMonitor(id);
+			}
+		}
+
+		RequestMonitor oldRequestMonitor = requestMonitors.put(request.getFrameId(), new RequestMonitor(type, request));
 		if(oldRequestMonitor != null) oldRequestMonitor.ack();
 	}
 
@@ -307,10 +315,10 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 		TxRequest16 request = new TxRequest16(addr, getNextFrameId(), fullPayload);
 		
 		//Request monitor does all the sending
-		addMonitor(request);
+		addMonitor(packet.getPacketType(), request);
 	}
 
-	public void processResponse(XBeeResponse response) {
+	public synchronized void processResponse(XBeeResponse response) {
 		switch(response.getApiId()) {
 			case TX_STATUS_RESPONSE: {
 				TxStatusResponse tx_response = (TxStatusResponse)response;
@@ -351,13 +359,23 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 
 		boolean ack;
 		int retryCount;
+
+		PacketType type;
 		XBeeRequest request;
 
-		RequestMonitor(XBeeRequest request) {
+		RequestMonitor(PacketType type, XBeeRequest request) {
 			this.request = request;
 			ack = false;
 
 			(new Thread(this)).start();
+		}
+
+		int getFrameId() {
+			return request.getFrameId();
+		}
+
+		PacketType getPacketType() {
+			return type;
 		}
 
 		void ack() {

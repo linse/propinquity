@@ -31,3 +31,6 @@ TODO for Propinquity Software
 
 * Clear vibe for glove at the last step !
 * Graceful fail (duty 0)
+* "Drop" patch if it hasn't been seen in a certain amount of time (to avoid points when patches spaz out)
+* alt send mechanism (everything 5 times a sec?)
+* Could the red/prox issue be due to current draw issues
