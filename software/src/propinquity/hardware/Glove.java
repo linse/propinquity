@@ -17,6 +17,8 @@ public class Glove implements HardwareConstants {
 
 	HardwareInterface hardware;
 
+	GloveDameon daemon;
+
 	/**
 	 * Contruct a Glove with the specified address (usually the address of the associate XBee) and use the given HardwareInterface for low level comunication.
 	 *
@@ -32,6 +34,8 @@ public class Glove implements HardwareConstants {
 		vibe_level = 0;
 		vibe_period = 0;
 		vibe_duty = 0;
+
+		if(USE_DAEMON) daemon = new GloveDameon();
 	}
 
 	/**
@@ -54,7 +58,7 @@ public class Glove implements HardwareConstants {
 	public void setActive(boolean active) {
 		if(MIN_PACK && this.active == active) return;
 		this.active = active;
-		hardware.sendPacket(new Packet(address, PacketType.CONF, new int[] {active?1:0}));
+		if(MANUAL_PACK) hardware.sendPacket(new Packet(address, PacketType.CONF, new int[] {active?1:0}));
 	}
 	/**
 	 * Gets the current state of the device, enabled or disabled
@@ -86,7 +90,7 @@ public class Glove implements HardwareConstants {
 	public void setVibeLevel(int level) {
 		if(MIN_PACK && vibe_level == level) return;
 		vibe_level = PApplet.constrain(level, 0, 255);
-		hardware.sendPacket(new Packet(address, PacketType.VIBE_LEVEL, new int[] {vibe_level}));
+		if(MANUAL_PACK) hardware.sendPacket(new Packet(address, PacketType.VIBE_LEVEL, new int[] {vibe_level}));
 	}
 
 	/**
@@ -97,7 +101,7 @@ public class Glove implements HardwareConstants {
 	public void setVibePeriod(int period) {
 		if(MIN_PACK && vibe_period == period) return;
 		vibe_period = PApplet.constrain(period, 0, 255);
-		hardware.sendPacket(new Packet(address, PacketType.VIBE_PERIOD, new int[] {vibe_period}));
+		if(MANUAL_PACK) hardware.sendPacket(new Packet(address, PacketType.VIBE_PERIOD, new int[] {vibe_period}));
 	}
 
 	/**
@@ -108,7 +112,7 @@ public class Glove implements HardwareConstants {
 	public void setVibeDuty(int duty) {
 		if(MIN_PACK && vibe_duty == duty) return;
 		vibe_duty = PApplet.constrain(duty, 0, 255);
-		hardware.sendPacket(new Packet(address, PacketType.VIBE_DUTY, new int[] {vibe_duty}));
+		if(MANUAL_PACK) hardware.sendPacket(new Packet(address, PacketType.VIBE_DUTY, new int[] {vibe_duty}));
 	}
 
 	/**
@@ -174,6 +178,42 @@ public class Glove implements HardwareConstants {
 	 */
 	public int getAddress() {
 		return address;
+	}
+
+	class GloveDameon implements Runnable {
+
+		Thread thread;
+		boolean running;
+
+		GloveDameon() {
+			running = true;
+
+			thread = new Thread(this);
+			thread.setDaemon(true);
+			thread.start();
+		}
+
+		void stop() {
+			running = false;
+			if(thread != null) while(thread.isAlive()) Thread.yield();
+		}
+
+		public void run() {
+			while(running) {
+				hardware.sendPacket(new Packet(address, PacketType.CONF, new int[] {active?1:0}));
+
+				hardware.sendPacket(new Packet(address, PacketType.VIBE_LEVEL, new int[] {vibe_level}));
+				hardware.sendPacket(new Packet(address, PacketType.VIBE_DUTY, new int[] {vibe_duty}));
+				hardware.sendPacket(new Packet(address, PacketType.VIBE_PERIOD, new int[] {vibe_period}));
+
+				try {
+					Thread.sleep(DAEMON_PERIOD);
+				} catch(Exception e) {
+
+				}
+			}
+		}
+
 	}
 
 }

@@ -258,8 +258,8 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 	}
 
 	public void stop() {
+		// for(Player player : players) player.reset();
 		for(Level level : levels) level.close();
-		for(Player player : players) player.reset();
 	}
 
 	static public void main(String args[]) {

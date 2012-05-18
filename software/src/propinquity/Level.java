@@ -70,7 +70,7 @@ public class Level implements UIElement, ProxEventListener, LevelConstants {
 
 		XMLElement[] step_tags = xml.getChildren("sequence/step");
 		steps = new Step[step_tags.length+1];
-		stepInterval = song.length()/step_tags.length;
+		stepInterval = song.length()/(step_tags.length+1);
 
 		if(step_tags.length > 0) {
 			for(int i = 0; i < step_tags.length; i++) {
@@ -160,7 +160,7 @@ public class Level implements UIElement, ProxEventListener, LevelConstants {
 			}
 		}
 
-		if(currentStep == steps.length) {
+		if(currentStep == steps.length-1) {
 			for(Player player : players) player.clearPatchAndGloves();
 		}
 	}
@@ -200,11 +200,12 @@ public class Level implements UIElement, ProxEventListener, LevelConstants {
 					lastScoreTime[i] = currentTime;
 				}
 			} else {
-				// lastScoreTime[i] = currentTime;
+				// lastScoreTime[i] = currentTime; //Uncomment this to block multiplier transfer
 			}
 		}
 
 		int nextStep = (int)PApplet.constrain(song.position()/stepInterval, 0, steps.length-1);
+		System.out.println(song.position()+" - "+nextStep+" - "+steps.length);
 		if(nextStep != currentStep) stepUpdate(nextStep);
 	}
 

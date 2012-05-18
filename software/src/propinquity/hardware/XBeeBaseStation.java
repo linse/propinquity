@@ -14,7 +14,7 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 
 	final int XBEE_BAUDRATE = 57600;
 	final int XBEE_RESPONSE_TIMEOUT = 1000;
-	final int XBEE_RETRY_COUNT = 5;
+	final int XBEE_RETRY_COUNT = 2;
 
 	Thread scanningThread;
 
@@ -175,7 +175,7 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 			xbee.addPacketListener(this);
 			xbees.put(ni, xbee); //TODO Check for collision
 
-			break; //TODO this is temporary
+			break; //TODO this is temporary to only get one xbee and got quicker
 		}
 
 		System.out.println("Scan Complete");
@@ -350,6 +350,7 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 			}
 			default: {
 				System.out.println("XBee got something don't know what it is: "+response.getApiId().toString());
+				System.out.println(response.toString());
 				break;
 			}
 		}		
@@ -367,7 +368,9 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 			this.request = request;
 			ack = false;
 
-			(new Thread(this)).start();
+			Thread reqThread = new Thread(this);
+			reqThread.setDaemon(true);
+			reqThread.start();
 		}
 
 		int getFrameId() {
