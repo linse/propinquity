@@ -45,14 +45,14 @@ public class Level implements UIElement, ProxEventListener, LevelConstants {
 
 		if(name == null) {
 			name = "Level";
-			parent.logger.errln("Warning: XML file \""+levelFile+"\" contained no level name. Name defaulted to \"Level\"");
+			System.err.println("Warning: XML file \""+levelFile+"\" contained no level name. Name defaulted to \"Level\"");
 		}
 
 		XMLElement[] song_tags = xml.getChildren("song");
 
 		if(song_tags.length > 0) {
 			if(song_tags.length > 1) {
-				parent.logger.errln("Warning: XML contained multiple songs tags for a single Level. Ignoring extra tags.");
+				System.err.println("Warning: XML contained multiple songs tags for a single Level. Ignoring extra tags.");
 			}
 
 			XMLElement song = song_tags[0];

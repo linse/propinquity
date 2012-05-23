@@ -63,8 +63,6 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 		//General/Util
 		heapDebug = new HeapDebug();
 		logger = new Logger(this);
-		logger.startPrinting();
-		logger.startLogging("test.txt")
 
 		sounds = new Sounds(this);
 		hud = new Hud(this);
@@ -81,7 +79,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 
 		//Player/Player List
 		if(MAX_PLAYERS < 2) {
-			logger.errln("Fatal Error: MAX_PLAYERS must be at least 2");
+			System.err.println("Fatal Error: MAX_PLAYERS must be at least 2");
 			System.exit(1);
 		}
 
@@ -104,8 +102,8 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 				players[i] = new Player(this, sounds, null, color, patches, glove);
 			}
 		} catch(Exception e) {
-			logger.errln("Fatal Error: Malformed data structures for player patches/gloves/colors");
-			logger.errln(e.getMessage());
+			System.err.println("Fatal Error: Malformed data structures for player patches/gloves/colors");
+			System.err.println(e.getMessage());
 			System.exit(1);
 		}
 
@@ -125,8 +123,8 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 					try {
 						tmp_levels.add(new Level(this, hud, sounds, LEVEL_FOLDER+name, players));
 					} catch(XMLException e) {
-						logger.errln("Warning: Level not built for file \""+name+"\" because of the following XMLException");
-						logger.errln(e.getMessage());
+						System.err.println("Warning: Level not built for file \""+name+"\" because of the following XMLException");
+						System.err.println(e.getMessage());
 					}
 				}
 			}
@@ -134,7 +132,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 
 		levels = tmp_levels.toArray(new Level[0]);
 		if(levels.length == 0) {
-			logger.errln("Fatal Error: No valid levels were built ... quitting");
+			System.err.println("Fatal Error: No valid levels were built ... quitting");
 			System.exit(1);
 		}
 
@@ -213,8 +211,6 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 		}
 
 		gameState = newState;
-
-		logger.println("Game State = " + gameState);
 	}
 
 	public void controlEvent(ControlEvent event) {

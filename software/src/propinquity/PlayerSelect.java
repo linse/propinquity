@@ -31,7 +31,7 @@ public class PlayerSelect implements UIElement {
 	public void setPlayerNames(String[] playerNames) {
 		this.playerNames = playerNames;
 		if(playerNames.length > players.length) {
-			System.out.println("Warning too many player names passed to PlayerSelect, truncating names");
+			System.err.println("Warning: More player names passed to PlayerSelect than there are players, truncating names. Maybe you should define more players in PlayerConstants.java");
 			this.playerNames = new String[players.length];
 			System.arraycopy(playerNames, 0, this.playerNames, 0, players.length);
 		}
@@ -56,7 +56,7 @@ public class PlayerSelect implements UIElement {
 		} else if(state == playerNames.length) {
 			parent.changeGameState(GameState.LevelSelect);
 		} else {
-			System.out.println("Warning: Unknown Player Select State");
+			System.err.println("Warning: Unknown Player Select State");
 		}
 	}
 
@@ -107,7 +107,7 @@ public class PlayerSelect implements UIElement {
 		drawParticles();
 
 		hud.drawCenterText("Select Player " + (state + 1), hud.getAngle());
-		hud.drawBannerCenter(playerNames[selected], players[state].getColor(), PApplet.TWO_PI/playerNames.length * selected);
+		hud.drawBannerCenter(playerNames[selected], players[PApplet.constrain(state, 0, players.length)].getColor(), PApplet.TWO_PI/playerNames.length * selected);
 	}
 
 	public void show() {
@@ -177,7 +177,7 @@ public class PlayerSelect implements UIElement {
 	}
 
 	public void select() {
-		players[state].setName(playerNames[selected]);
+		players[PApplet.constrain(state, 0, players.length)].setName(playerNames[selected]);
 		cleanup();
 		stateChange(state + 1);
 	}
