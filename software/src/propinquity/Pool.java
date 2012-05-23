@@ -13,7 +13,7 @@ public class Pool {
 	/** The starting height of the liquid's pool. */
 	public static final float INITIAL_HEIGHT = 50f;
 
-	private static final int POINTS = 9;
+	private static final int POINTS = 7;
 
 	private Propinquity parent;
 	private GL gl;
@@ -91,10 +91,6 @@ public class Pool {
 
 	public void draw() {
 
-		float lineHeight1 = height + 15f;
-		float lineHeight2 = height + 5f;
-		float lineHeight3 = height - 5f;
-
 		gl.glEnable(GL.GL_BLEND);
 		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 		gl.glBlendEquation(GL.GL_FUNC_ADD);
@@ -108,33 +104,24 @@ public class Pool {
 		parent.translate(PApplet.cos(parent.hud.angle - liquid.angleOffset) * (Fences.OUTER_RADIUS),
 				PApplet.sin(parent.hud.angle - liquid.angleOffset) * (Fences.OUTER_RADIUS));
 		parent.rotate(parent.hud.angle + liquid.angleOffset - PConstants.HALF_PI);
-		parent.beginShape();
-		parent.curveVertex(-Fences.OUTER_RADIUS * 1.5f, lineHeight1);
-		parent.curveVertex(-Fences.OUTER_RADIUS, lineHeight1 + waveHit * randomHeights[0] - rising);
-		parent.curveVertex(-Fences.OUTER_RADIUS / 2, lineHeight1 + waveHit * randomHeights[1]);
-		parent.curveVertex(0, lineHeight1 + waveHit * randomHeights[2] - rising * 3);
-		parent.curveVertex(Fences.OUTER_RADIUS / 2, lineHeight1 + waveHit * randomHeights[3]);
-		parent.curveVertex(Fences.OUTER_RADIUS, lineHeight1 + waveHit * randomHeights[4] - rising);
-		parent.curveVertex(Fences.OUTER_RADIUS * 1.5f, lineHeight1);
-		parent.endShape();
-		parent.beginShape();
-		parent.curveVertex(-Fences.OUTER_RADIUS * 1.5f, lineHeight2);
-		parent.curveVertex(-Fences.OUTER_RADIUS, lineHeight2 + waveHit * randomHeights[0]);
-		parent.curveVertex(-Fences.OUTER_RADIUS / 2, lineHeight2 + waveHit * randomHeights[1]);
-		parent.curveVertex(0, lineHeight2 + waveHit * randomHeights[2] - rising);
-		parent.curveVertex(Fences.OUTER_RADIUS / 2, lineHeight2 + waveHit * randomHeights[3]);
-		parent.curveVertex(Fences.OUTER_RADIUS, lineHeight2 + waveHit * randomHeights[4]);
-		parent.curveVertex(Fences.OUTER_RADIUS * 1.5f, lineHeight2);
-		parent.endShape();
-		parent.beginShape();
-		parent.curveVertex(-Fences.OUTER_RADIUS * 1.5f, lineHeight3);
-		parent.curveVertex(-Fences.OUTER_RADIUS, lineHeight3 + waveHit * randomHeights[0]);
-		parent.curveVertex(-Fences.OUTER_RADIUS / 2, lineHeight3 + waveHit * randomHeights[1]);
-		parent.curveVertex(0, lineHeight3 + waveHit * randomHeights[2] - rising);
-		parent.curveVertex(Fences.OUTER_RADIUS / 2, lineHeight3 + waveHit * randomHeights[3]);
-		parent.curveVertex(Fences.OUTER_RADIUS, lineHeight3 + waveHit * randomHeights[4]);
-		parent.curveVertex(Fences.OUTER_RADIUS * 1.5f, lineHeight3);
-		parent.endShape();
+		
+		for (int i = 0; i < 4; i++) {
+			float lineHeight = height + 14f - (8f * i);
+			
+			parent.beginShape();
+			parent.curveVertex(-Fences.OUTER_RADIUS * 1.5f, lineHeight);
+			
+			parent.curveVertex(-Fences.OUTER_RADIUS, lineHeight + waveHit * randomHeights[0] - rising);
+			parent.curveVertex(-Fences.OUTER_RADIUS * 0.666f, lineHeight + waveHit * randomHeights[1]);
+			parent.curveVertex(-Fences.OUTER_RADIUS * 0.333f, lineHeight + waveHit * randomHeights[2] - rising);
+			parent.curveVertex(0, lineHeight + waveHit * randomHeights[3] - rising * 3);
+			parent.curveVertex(Fences.OUTER_RADIUS * 0.333f, lineHeight + waveHit * randomHeights[4] - rising);
+			parent.curveVertex(Fences.OUTER_RADIUS * 0.666f, lineHeight + waveHit * randomHeights[5]);
+			parent.curveVertex(Fences.OUTER_RADIUS, lineHeight + waveHit * randomHeights[6] - rising);
+			
+			parent.curveVertex(Fences.OUTER_RADIUS * 1.5f, lineHeight);
+			parent.endShape();
+		}
 		parent.popMatrix();
 
 		parent.fill(color.toInt(parent));

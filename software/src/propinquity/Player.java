@@ -4,8 +4,6 @@ import processing.core.PConstants;
 import propinquity.hardware.*;
 import java.lang.Math;
 
-import ddf.minim.AudioPlayer;
-
 public class Player implements PConstants {
 	
 	public static final int SPAWN_DELAY_SHORT = 250;
