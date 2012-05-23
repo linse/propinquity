@@ -89,11 +89,13 @@ public class HardwareSimulator implements HardwareInterface, UIElement {
 
 			if(i < num_patch) {
 				int[] color = patches.get(i).getColor();
-				p.fill(color[0], color[1], color[2]);
+				if(patches.get(i).getActive()) p.fill(color[0], color[1], color[2]);
+				else p.fill(0);
 				p.rect(0, 0, local_width*0.9f, height/2);
 
 				int vibe = patches.get(i).getVibeLevel();
-				p.fill(vibe);
+				if(patches.get(i).getActive()) p.fill(vibe);
+				else p.fill(0);
 				p.rect(0, height/2, local_width*0.9f, height/2);
 
 				int prox = patches.get(i).getProx();
@@ -101,7 +103,8 @@ public class HardwareSimulator implements HardwareInterface, UIElement {
 				p.rect(local_width*0.9f, height, local_width*0.1f, PApplet.map(prox, 0, 1024, 0, -height));
 			} else {
 				int vibe = gloves.get(i-num_patch).getVibeLevel();
-				p.fill(vibe);
+				if(gloves.get(i-num_patch).getActive()) p.fill(vibe);
+				else p.fill(0);
 				p.rect(0, height/2, local_width*0.9f, height/2);
 			}
 

@@ -71,11 +71,11 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 		simulator = new HardwareSimulator(this);
 		
 		xbeeBaseStation = new XBeeBaseStation();
-		xbeeBaseStation.scanBlocking(); //TODO use nonblock and resolve the timing issues with packet sending
+		// xbeeBaseStation.scanBlocking(); //TODO use nonblock and resolve the timing issues with packet sending
 		xbeeManager = new XBeeManager(this, xbeeBaseStation);
 
-		hardware = xbeeBaseStation;
-		// hardware = simulator;
+		// hardware = xbeeBaseStation;
+		hardware = simulator;
 
 		//Player/Player List
 		if(MAX_PLAYERS < 2) {
@@ -121,7 +121,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 			for(String name : names) {
 				if(name.lastIndexOf(".xml") == name.length()-4) {
 					try {
-						tmp_levels.add(new Level(this, hud, sounds, LEVEL_FOLDER+name, players));
+						tmp_levels.add(new ProxLevel(this, hud, sounds, LEVEL_FOLDER+name, players));
 					} catch(XMLException e) {
 						System.err.println("Warning: Level not built for file \""+name+"\" because of the following XMLException");
 						System.err.println(e.getMessage());

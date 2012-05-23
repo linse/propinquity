@@ -160,11 +160,7 @@ public class Player implements PConstants {
 		}
 		return false;
 	}
-
-	public boolean isCoop() {
-		return coop;
-	}
-
+	
 	public void update() {
 		score.update();
 
