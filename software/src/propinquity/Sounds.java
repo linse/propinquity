@@ -15,6 +15,7 @@ public class Sounds {
 
 	Minim minim;
 
+	AudioPlayer bubbleLow, bubbleHigh;
 	AudioPlayer complete;
 	AudioPlayer positive;
 	AudioPlayer negativeCoop;
@@ -28,6 +29,9 @@ public class Sounds {
 	public Sounds(PApplet parent) {
 		minim = new Minim(parent);
 
+		bubbleLow = minim.loadFile("sounds/bubble350Hz.mp3", BUFFER_SIZE);
+		bubbleHigh = minim.loadFile("sounds/bubble600Hz.mp3", BUFFER_SIZE);
+		
 		complete = minim.loadFile("sounds/comp.mp3", BUFFER_SIZE);
 		complete.setGain(5);
 
