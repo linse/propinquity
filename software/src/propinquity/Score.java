@@ -1,5 +1,7 @@
 package propinquity;
 
+import ddf.minim.AudioPlayer;
+
 public class Score {
 
 	/**
@@ -23,6 +25,8 @@ public class Score {
 
 	long lastTime;
 	long pauseDifferential;
+	
+	private AudioPlayer bubbleSound;
 
 	public Score(Propinquity parent, Color color) {
 		this.parent = parent;
@@ -31,14 +35,22 @@ public class Score {
 		heldScore = 0;
 		lastTime = 0;
 		liquid = new Liquid(parent, color);
+		
+		if (this.color.equals(PlayerConstants.PLAYER_COLORS[0]))
+			bubbleSound = parent.sounds.bubbleHigh;
+		else 
+			bubbleSound = parent.sounds.bubbleLow;
+		
+		bubbleSound.play(); // mad hax
+		bubbleSound.rewind();
 	}
 
 	public void pause() {
-		pauseDifferential = parent.millis()-lastTime;
+		pauseDifferential = parent.millis() - lastTime;
 	}
 
 	public void start() {
-		lastTime = parent.millis()-pauseDifferential;
+		lastTime = parent.millis() - pauseDifferential;
 	}
 
 	public void reset() {
@@ -55,17 +67,21 @@ public class Score {
 
 	public void addPoints(int points) {
 		tempScore += points;
-		for(int i = 0;i < points;i++) liquid.createParticle();
+		for (int i = 0; i < points; i++) {
+			liquid.createParticle();
+			bubbleSound.play();
+			bubbleSound.rewind();
+		}
 	}
 
 	public void update() {
 		long currentTime = parent.millis();
 
-		if(currentTime - lastTime > Score.SCORE_TIME) {
+		if (currentTime - lastTime > Score.SCORE_TIME) {
 			transfer();
 			lastTime = currentTime;
 		}
-		
+
 		liquid.Update();
 	}
 
