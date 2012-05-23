@@ -16,6 +16,7 @@
 #define PROX_PIN       4
 
 /* ---- Protocol ---- */
+
 #define BASE_ADDR      0
 
 #define PROX_PACKET    1
@@ -62,6 +63,8 @@ uint8_t vibe_level = 0;
 boolean vibe_on = true;
 uint8_t vibe_duty = 0;
 uint8_t vibe_period = 0;
+
+/* ---- Prox ----*/
 
 #define PROX_AVG_LEN 8
 
@@ -229,6 +232,7 @@ void updateLEDs() {
 }
 
 /* ---- Low Level ---- */
+
 void color(unsigned char red, unsigned char green, unsigned char blue) {
 	analogWrite(RED_LED_PIN, 255-red);	 
 	analogWrite(BLUE_LED_PIN, 255-blue);
