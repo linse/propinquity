@@ -29,9 +29,6 @@ public class Player implements PConstants {
 	boolean paused;
 	boolean[] pausePatchStates;
 
-	AudioPlayer negSoundPlayer;
-	AudioPlayer negSoundCoop;
-
 	boolean coop;
 
 	public Player(Propinquity parent, Sounds sounds, String name, Color color, Patch[] patches, Glove glove) {
@@ -44,9 +41,6 @@ public class Player implements PConstants {
 		this.glove = glove;
 
 		pausePatchStates = new boolean[patches.length];
-
-		negSoundPlayer = sounds.getNegativePlayer(0); //TODO
-		negSoundCoop = sounds.getNegativeCoop();
 
 		score = new Score(parent, color);
 
@@ -165,20 +159,6 @@ public class Player implements PConstants {
 			if(patch == p) return true;
 		}
 		return false;
-	}
-
-	public void playNegativeSound() {
-		if(isCoop()) {
-			if(negSoundCoop != null) {
-				negSoundCoop.play();
-				negSoundCoop.rewind();
-			}
-		} else {
-			if(negSoundPlayer != null) {
-				negSoundPlayer.play();
-				negSoundPlayer.rewind();
-			}
-		}
 	}
 
 	public boolean isCoop() {
