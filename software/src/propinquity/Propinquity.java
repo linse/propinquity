@@ -255,7 +255,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 			}
 		}
 
-		if(gamestate != GameState.PlayerList) {
+		if(gameState != GameState.PlayerList) {
 			switch(key) {
 				case 'n': {
 					if(simulator.isVisible()) simulator.hide();
