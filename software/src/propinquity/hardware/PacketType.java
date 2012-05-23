@@ -5,14 +5,15 @@ public enum PacketType {
 	PROX(1),
 
 	CONF(2),
+	CLEAR(3),
 
-	COLOR(3),
-	COLOR_DUTY(4),
-	COLOR_PERIOD(5),
+	COLOR(4),
+	COLOR_DUTY(5),
+	COLOR_PERIOD(6),
 
-	VIBE_LEVEL(6),
-	VIBE_DUTY(7),
-	VIBE_PERIOD(8);
+	VIBE_LEVEL(7),
+	VIBE_DUTY(8),
+	VIBE_PERIOD(9);
 	
 	final int code;
 

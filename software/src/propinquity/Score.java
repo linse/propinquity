@@ -8,10 +8,10 @@ public class Score {
 	 */
 	public static final int SCORE_TIME = 5000;
 
-	public static final int MIN_RANGE = 100;
-	public static final int MAX_RANGE = 700;
-	public static final int MIN_SWEETSPOT = 300;
-	public static final int MAX_SWEETSPOT = 500;
+	public static final int MIN_RANGE = 50;
+	public static final int MAX_RANGE = 650;
+	public static final int MIN_SWEETSPOT = 450;
+	public static final int MAX_SWEETSPOT = 650;
 
 	public Liquid liquid;
 
@@ -53,22 +53,26 @@ public class Score {
 		return heldScore;
 	}
 
-	public void increment() {
-		tempScore++;
-		liquid.createParticle();
+	public void addPoints(int points) {
+		tempScore += points;
+		for(int i = 0;i < points;i++) liquid.createParticle();
 	}
 
 	public void update() {
 		long currentTime = parent.millis();
 
 		if(currentTime - lastTime > Score.SCORE_TIME) {
-			liquid.transferParticles();
-			heldScore += tempScore;
-			tempScore = 0;
+			transfer();
 			lastTime = currentTime;
 		}
 		
 		liquid.Update();
+	}
+
+	public void transfer() {
+		liquid.transferParticles();
+		heldScore += tempScore;
+		tempScore = 0;
 	}
 
 	public void draw() {

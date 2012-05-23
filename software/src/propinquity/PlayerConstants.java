@@ -6,8 +6,8 @@ public interface PlayerConstants {
 	public static final int MAX_PLAYERS = 2;
 
 	public static final int[][] PATCH_ADDR = new int[][] {
-		{1},
-		{6}
+		{1, 2, 3},
+		{6, 7, 8}
 	};
 
 	public static final int[] GLOVE_ADDR = new int[] {
@@ -17,7 +17,7 @@ public interface PlayerConstants {
 
 	public static final Color[] PLAYER_COLORS = {
 		Color.blue(),
-		Color.red()
+		Color.green()
 	};
 
 	public static final Color NEUTRAL_COLOR = Color.violet();

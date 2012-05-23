@@ -13,8 +13,8 @@ public class Liquid {
 	public static final float GRAVITY_STRENGTH = 0.01f;
 
 	/** The maximum allowable number of particles per player's liquid. */
-	public static final int MAX_PARTICLES = 100;
-	private static final int MERGE_COUNT = 5;
+	public static final int MAX_PARTICLES = 30;
+	private static final int MERGE_COUNT = 5;	
 	private static final int MERGE_VOLUME = 4;
 
 	Vector<Particle> particlesCreated;

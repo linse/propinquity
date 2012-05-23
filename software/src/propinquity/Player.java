@@ -1,12 +1,15 @@
 package propinquity;
 
 import processing.core.PConstants;
-
 import propinquity.hardware.*;
-
-import ddf.minim.AudioPlayer;
+import java.lang.Math;
 
 public class Player implements PConstants {
+	
+	public static final int SPAWN_DELAY_SHORT = 250;
+	public static final int SPAWN_DELAY_MED = 500;
+	public static final int SPAWN_DELAY_LONG = 1000;
+	public static final double SPAWN_DELAY_TAU = 3000;
 
 	Propinquity parent;
 
@@ -15,14 +18,15 @@ public class Player implements PConstants {
 
 	Patch[] patches;
 	Glove glove;
-
-	boolean paused;
-	boolean[] pausePatchStates;
-
-	AudioPlayer negSoundPlayer;
-	AudioPlayer negSoundCoop;
+	
+	Patch bestPatch;
+	long bestPatchTime;
+	long bestPatchTimePauseDiff;
 
 	Score score;
+	
+	boolean paused;
+	boolean[] pausePatchStates;
 
 	boolean coop;
 
@@ -37,9 +41,6 @@ public class Player implements PConstants {
 
 		pausePatchStates = new boolean[patches.length];
 
-		negSoundPlayer = sounds.getNegativePlayer(0); //TODO
-		negSoundCoop = sounds.getNegativeCoop();
-
 		score = new Score(parent, color);
 
 		reset();
@@ -48,16 +49,40 @@ public class Player implements PConstants {
 	public void reset() {
 		score.reset();
 
+		bestPatch = null;
+		bestPatchTime = 0;
+		bestPatchTimePauseDiff = 0;
+
+		clearPatchAndGloves();
+
+		paused = true;
+	}
+
+	public void clearPatchAndGloves() {
 		for(int i = 0;i < patches.length;i++) {
 			pausePatchStates[i] = false;
 			patches[i].setActive(false);
 			patches[i].clear();
 		}
 
+		setPatchesDefaults();
+
 		glove.setActive(false);
 		glove.clear();
 
-		paused = true;
+		setGloveDefaults();
+	}
+
+	public void setPatchesDefaults() {
+		for(Patch patch : patches) {
+			patch.setColor(color);
+			patch.setColorDuty(HardwareConstants.DEFAULT_DUTY_CYCLE);
+			patch.setVibeDuty(HardwareConstants.DEFAULT_DUTY_CYCLE);
+		}
+	}
+
+	public void setGloveDefaults() {
+		glove.setVibeDuty(HardwareConstants.DEFAULT_DUTY_CYCLE);
 	}
 
 	public void pause() {
@@ -69,6 +94,8 @@ public class Player implements PConstants {
 		}
 		glove.setActive(false);
 
+		bestPatchTimePauseDiff = parent.millis()-bestPatchTime;
+
 		paused = true;
 	}
 
@@ -79,6 +106,8 @@ public class Player implements PConstants {
 		glove.setActive(true);
 
 		score.start();
+
+		bestPatchTime = parent.millis()-bestPatchTimePauseDiff;
 
 		paused = false;
 	}
@@ -120,18 +149,15 @@ public class Player implements PConstants {
 		return patches;
 	}
 
-	public void playNegativeSound() {
-		if(isCoop()) {
-			if(negSoundCoop != null) {
-				negSoundCoop.play();
-				negSoundCoop.rewind();
-			}
-		} else {
-			if(negSoundPlayer != null) {
-				negSoundPlayer.play();
-				negSoundPlayer.rewind();
-			}
+	public void transferScore() {
+		score.transfer();
+	}
+
+	public boolean isPatchOwner(Patch p) {
+		for(Patch patch : patches) {
+			if(patch == p) return true;
 		}
+		return false;
 	}
 
 	public boolean isCoop() {
@@ -140,21 +166,43 @@ public class Player implements PConstants {
 
 	public void update() {
 		score.update();
+
+		Patch newBestPatch = null;
+
+		for(Patch patch : patches) {
+			if(!patch.getActive() || patch.getZone() == 0) continue;
+			if(newBestPatch == null || patch.getZone() > newBestPatch.getZone()) newBestPatch = patch;
+		}
+
+		if(newBestPatch == null || bestPatch != newBestPatch) {
+			bestPatch = newBestPatch;
+			bestPatchTime = parent.millis();
+		}
+	}
+
+	public long getSpawnInterval() {
+		double timediff = parent.millis()-bestPatchTime;
+		if(bestPatch.getZone() == 1) {
+			double val = SPAWN_DELAY_MED+(SPAWN_DELAY_LONG-SPAWN_DELAY_MED)*Math.exp(-timediff/SPAWN_DELAY_TAU);
+			return Math.round(val);
+		} else if(bestPatch.getZone() == 2) {
+			double val = SPAWN_DELAY_SHORT+(SPAWN_DELAY_LONG-SPAWN_DELAY_SHORT)*Math.exp(-timediff/SPAWN_DELAY_TAU);
+			return Math.round(val);
+		} else {
+			return SPAWN_DELAY_LONG;
+		}
+	}
+
+	public Patch getBestPatch() {
+		return bestPatch;
 	}
 
 	public void draw() {
 		score.draw();
 	}
 
-	public void handleSweetspotRange(Patch patch) {
-		// TODO
-		score.increment();
-		score.increment();
-	}
-	
-	public void handleScoreRange(Patch patch) {
-		// TODO
-		score.increment();
+	public void addPoints(int points) {
+		score.addPoints(points);
 	}
 	
 }

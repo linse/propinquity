@@ -13,6 +13,8 @@ public class Level implements UIElement, ProxEventListener, LevelConstants {
 	Sounds sounds;
 
 	Player[] players;
+	long[] lastScoreTime;
+	long[] lastScoreTimePauseDiff;
 
 	AudioPlayer song;
 	String songFile;
@@ -28,14 +30,14 @@ public class Level implements UIElement, ProxEventListener, LevelConstants {
 	boolean running;
 	boolean isVisible;
 
-	int currentTime;
-	int[] lastTime;
-
 	public Level(Propinquity parent, Hud hud, Sounds sounds, String levelFile, Player[] players) throws XMLException {
 		this.parent = parent;
 		this.players = players;
 		this.hud = hud;
 		this.sounds = sounds;
+
+		lastScoreTime = new long[players.length];
+		lastScoreTimePauseDiff = new long[players.length];
 
 		XMLElement xml = new XMLElement(parent, levelFile);
 
@@ -43,21 +45,22 @@ public class Level implements UIElement, ProxEventListener, LevelConstants {
 
 		if (name == null) {
 			name = "Level";
-			System.out.println("Warning: XML contained no level name");
-			System.out.println(xml.toString());
+			System.err.println("Warning: XML file \""+levelFile+"\" contained no level name. Name defaulted to \"Level\"");
 		}
 
 		XMLElement[] song_tags = xml.getChildren("song");
 
-		if (song_tags.length > 0) {
-			if (song_tags.length > 1)
-				System.out.println("Warning: XML contained multiple songs tags for a single Level");
+		if(song_tags.length > 0) {
+			if(song_tags.length > 1) {
+				System.err.println("Warning: XML contained multiple songs tags for a single Level. Ignoring extra tags.");
+			}
 
 			XMLElement song = song_tags[0];
 
 			songFile = song.getString("file");
-			if (songFile.equals(""))
+			if(songFile.equals("")) {
 				throw new XMLException("XMLException: XML song tag has empty file attribute");
+			}
 
 			songBPM = song.getInt("bpm", DEFAULT_BPM);
 		} else {
@@ -67,8 +70,8 @@ public class Level implements UIElement, ProxEventListener, LevelConstants {
 		song = sounds.loadSong(songFile);
 
 		XMLElement[] step_tags = xml.getChildren("sequence/step");
-		steps = new Step[step_tags.length];
-		stepInterval = song.length() / step_tags.length;
+		steps = new Step[step_tags.length+1];
+		stepInterval = song.length()/(step_tags.length+1);
 
 		if (step_tags.length > 0) {
 			for (int i = 0; i < step_tags.length; i++) {
@@ -94,11 +97,13 @@ public class Level implements UIElement, ProxEventListener, LevelConstants {
 				steps[i] = new Step(coop, patches);
 			}
 
+			boolean[][] tmpPatchState = new boolean[players.length][];
+			for(int i = 0;i < tmpPatchState.length;i++) tmpPatchState[i] = new boolean[] {false, false, false, false};
+
+			steps[step_tags.length] = new Step(false, tmpPatchState);
 		} else {
 			throw new XMLException("Warning: XML for level \"" + name + "\" has no sequence tag and/or no step tags");
 		}
-
-		lastTime = new int[players.length];
 
 		reset();
 	}
@@ -106,13 +111,17 @@ public class Level implements UIElement, ProxEventListener, LevelConstants {
 	public void pause() {
 		song.pause();
 		running = false;
-		for (Player player : players)
-			player.pause();
+		for(int i = 0;i < players.length;i++) {
+			players[i].pause();
+			lastScoreTimePauseDiff[i] = parent.millis()-lastScoreTime[i];
+		}
 	}
 
 	public void start() {
-		for (Player player : players)
-			player.start();
+		for(int i = 0;i < players.length;i++) {
+			players[i].start();
+			lastScoreTime[i] = parent.millis()-lastScoreTimePauseDiff[i];
+		}
 		running = true;
 		song.play();
 	}
@@ -124,6 +133,9 @@ public class Level implements UIElement, ProxEventListener, LevelConstants {
 		for (Player player : players)
 			player.reset(); // Clears all the particles, scores, patches and
 							// gloves
+
+		lastScoreTime = new long[players.length];
+		lastScoreTimePauseDiff = new long[players.length];
 
 		song.rewind();
 		stepUpdate(0); // Load for banner
@@ -152,38 +164,52 @@ public class Level implements UIElement, ProxEventListener, LevelConstants {
 				break;
 			}
 		}
+
+		if(currentStep == steps.length-1) { //Last step is the end of the level we want all patches off
+			for(Player player : players) {
+				player.transferScore();
+				player.clearPatchAndGloves();
+			}
+		}
 	}
 
 	public void proxEvent(Patch patch) {
-		// TODO: interesting things on prox boundaries
+		if(!isRunning() || isDone()) return;
+		if(!patch.getActive()) return;
+		//Handle patch feedback
+		patch.setMode(patch.getZone());
 	}
 
 	public void update() {
-		currentTime = parent.millis();
+		for(Player player : players) player.update();
 
-		for (int i = 0; i < players.length; i++) {
-			for (Patch patch : players[i].patches) {
-
-				int distance = patch.getProx();
-
-				if (distance > Score.MIN_SWEETSPOT && distance < Score.MAX_SWEETSPOT) {
-
-					if (currentTime - lastTime[i] > Particle.SPAWN_DELAY) {
-						players[i].handleSweetspotRange(patch);
-						lastTime[i] = currentTime;
-					}
-
-				} else if (distance > Score.MIN_RANGE && distance < Score.MAX_RANGE) {
-
-					if (currentTime - lastTime[i] > Particle.SPAWN_DELAY) {
-						players[i].handleScoreRange(patch);
-						lastTime[i] = currentTime;
-					}
-				}
-
+		//Handle Glove feedback
+		for(int i = 0;i < players.length;i++) {
+			Glove glove = players[i].getGlove();
+			if(glove.getActive()) {
+				Patch bestPatch = players[(i+1)%players.length].getBestPatch();
+				if(bestPatch != null) glove.setMode(bestPatch.getZone()); //TODO wut hack sorta
+				else glove.setMode(0);
 			}
+		}
 
-			players[i].update();
+		//Handle score
+		long currentTime = parent.millis();
+		
+		for(int i = 0;i < players.length;i++) {
+			Player proxPlayer = players[(i+1)%players.length]; //TODO wut hack sorta
+			Player scoringPlayer = players[i];
+
+			Patch bestPatch = proxPlayer.getBestPatch();
+
+			if(bestPatch != null && bestPatch.getZone() > 0) {
+				if(currentTime-lastScoreTime[i] > proxPlayer.getSpawnInterval()) {
+					scoringPlayer.addPoints(1);
+					lastScoreTime[i] = currentTime;
+				}
+			} else {
+				// lastScoreTime[i] = currentTime; //Uncomment this to block multiplier transfer
+			}
 		}
 
 		int nextStep = (int) PApplet.constrain(song.position() / stepInterval, 0, steps.length - 1);

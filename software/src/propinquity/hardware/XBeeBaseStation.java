@@ -12,9 +12,9 @@ import gnu.io.*;
  */
 public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListener {
 
-	final int XBEE_BAUDRATE = 115200;
+	final int XBEE_BAUDRATE = 57600;
 	final int XBEE_RESPONSE_TIMEOUT = 1000;
-	final int XBEE_RETRY_COUNT = 10;
+	final int XBEE_RETRY_COUNT = 2;
 
 	Thread scanningThread;
 
@@ -175,7 +175,7 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 			xbee.addPacketListener(this);
 			xbees.put(ni, xbee); //TODO Check for collision
 
-			break; //TODO this is temporary
+			break; //TODO this is temporary to only get one xbee and got quicker
 		}
 
 		System.out.println("Scan Complete");
@@ -250,6 +250,7 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 	}
 
 	public void sendPacket(Packet packet) {
+		if(xbees.size() == 0) return;
 		sendPacketAsynchronous(packet);	
 	}
 
@@ -264,8 +265,16 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 		if(oldRequestMonitor != null) oldRequestMonitor.ack();
 	}
 
-	void addMonitor(XBeeRequest request) {
-		RequestMonitor oldRequestMonitor = requestMonitors.put(request.getFrameId(), new RequestMonitor(request));
+	synchronized void addMonitor(PacketType type, XBeeRequest request) {
+		for(Map.Entry<Integer, RequestMonitor> entry : requestMonitors.entrySet()) {
+			int id = entry.getKey();
+			RequestMonitor monitor = entry.getValue();
+			if(monitor.getPacketType() == type) {
+				removeMonitor(id);
+			}
+		}
+
+		RequestMonitor oldRequestMonitor = requestMonitors.put(request.getFrameId(), new RequestMonitor(type, request));
 		if(oldRequestMonitor != null) oldRequestMonitor.ack();
 	}
 
@@ -306,10 +315,10 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 		TxRequest16 request = new TxRequest16(addr, getNextFrameId(), fullPayload);
 		
 		//Request monitor does all the sending
-		addMonitor(request);
+		addMonitor(packet.getPacketType(), request);
 	}
 
-	public void processResponse(XBeeResponse response) {
+	public synchronized void processResponse(XBeeResponse response) {
 		switch(response.getApiId()) {
 			case TX_STATUS_RESPONSE: {
 				TxStatusResponse tx_response = (TxStatusResponse)response;
@@ -334,13 +343,14 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 						}
 					}
 				} else {
-					System.out.println("Got reponse from an unregistered patch or glove with address" + addr);
+					System.out.println("Got reponse from an unregistered patch or glove with address " + addr);
 				}
 
 				break;
 			}
 			default: {
 				System.out.println("XBee got something don't know what it is: "+response.getApiId().toString());
+				System.out.println(response.toString());
 				break;
 			}
 		}		
@@ -350,13 +360,25 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 
 		boolean ack;
 		int retryCount;
+
+		PacketType type;
 		XBeeRequest request;
 
-		RequestMonitor(XBeeRequest request) {
+		RequestMonitor(PacketType type, XBeeRequest request) {
 			this.request = request;
 			ack = false;
 
-			(new Thread(this)).start();
+			Thread reqThread = new Thread(this);
+			reqThread.setDaemon(true);
+			reqThread.start();
+		}
+
+		int getFrameId() {
+			return request.getFrameId();
+		}
+
+		PacketType getPacketType() {
+			return type;
 		}
 
 		void ack() {

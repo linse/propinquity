@@ -177,8 +177,8 @@ public class Hud {
 
 		parent.pushMatrix();
 		parent.translate(parent.width / 2, parent.height / 2);
-		parent.translate(PApplet.cos(angle) * (parent.height / 2 - Hud.WIDTH + Hud.OFFSET), PApplet.sin(angle)
-				* (parent.height / 2 - Hud.WIDTH + Hud.OFFSET));
+		parent.translate(PApplet.cos(angle) * (parent.height / 2 - WIDTH + OFFSET), PApplet.sin(angle)
+				* (parent.height / 2 - WIDTH + OFFSET));
 		parent.rotate(angle + PApplet.PI / 2);
 		parent.scale(bannerImg.width / 2, bannerImg.height / 2);
 		parent.beginShape(PApplet.QUADS);
@@ -200,8 +200,8 @@ public class Hud {
 		parent.textFont(font, FONT_SIZE);
 		String cropped_text = text.length() > 30 ? text.substring(0, 30) : text;
 		float offset = (parent.textWidth(cropped_text) / 2)
-				/ (2 * PApplet.PI * (parent.height / 2 - Hud.SCORE_RADIUS_OFFSET)) * PApplet.TWO_PI;
-		drawArc(cropped_text, parent.height / 2 - Hud.SCORE_RADIUS_OFFSET + Hud.OFFSET, angle - offset);
+				/ (2 * PApplet.PI * (parent.height / 2 - SCORE_RADIUS_OFFSET)) * PApplet.TWO_PI;
+		drawArc(cropped_text, parent.height / 2 - SCORE_RADIUS_OFFSET + OFFSET, angle - offset);
 		parent.popMatrix();
 	}
 

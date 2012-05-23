@@ -7,17 +7,26 @@
 #include <Timer.h>
 
 /* ---- Pin List ---- */
+
 #define VIBE_PIN       3
 #define STATUS_LED_PIN 13
 
 /* ---- Protocol ---- */
-#define BASE_ADDR      0
-#define PROX_PACKET    1
-#define CONF_PACKET    2
 
-#define VIBE_PACKET    6
-#define VIBE_DUTY_PACKET      7
-#define VIBE_PERIOD_PACKET    8
+ #define BASE_ADDR      0
+
+ #define PROX_PACKET    1
+
+ #define CONF_PACKET    2
+ #define CLEAR_PACKET   3
+
+ #define COLOR_PACKET   4
+ #define COLOR_DUTY_PACKET     5
+ #define COLOR_PERIOD_PACKET   6
+
+ #define VIBE_PACKET    7
+ #define VIBE_DUTY_PACKET      8
+ #define VIBE_PERIOD_PACKET    9
 
 /* ---- Timer ---- */
 
@@ -38,7 +47,9 @@ uint8_t send_period = 10;
 /* ---- Vibe ----- */
 
 uint8_t active = 0;
+
 int vibe_level = 0;
+
 boolean vibe_on = true;
 uint8_t vibe_duty = 0;
 uint8_t vibe_period = 0;
@@ -97,22 +108,13 @@ void reset() {
 
 /* ---- Xbee ---- */
 
-/* No sending for the glove... add status packets? */
-/* void send_data() { */
-/* 	uint8_t outPacket[3]; */
-
-/* 	outPacket[0] = PROX_PACKET; */
-/* 	outPacket[1] = uint8_t(prox_val >> 8); */
-/* 	outPacket[2] = uint8_t(prox_val); */
-
-/* 	tx = Tx16Request(BASE_ADDR, outPacket, 3); */
-
-/* 	xbee.send(tx); */
-/* } */
-
 void parse_data(uint8_t* data, uint8_t len) {
 	if(data[0] == CONF_PACKET && len > 1) {
 		setActive(data[1]);
+	} else if(data[0] == CLEAR_PACKET) {
+		vibe_level = 0;
+		vibe_period = 0;
+		vibe_duty = 0;
 	} else if(data[0] == VIBE_PACKET && len > 1) {
 		vibe_level = data[1];
 	} else if(data[0] == VIBE_DUTY_PACKET && len > 1) { 
@@ -133,10 +135,13 @@ void setActive(int val) {
 }
 
 /* ---- Blinking ---- */
+
 void updateVibe() {
 	if(vibe_on) vibe(vibe_level);
 	else vibe(0);
 }
+
+/* ---- Low Level ---- */
 
 void vibe(unsigned char level) {
 	analogWrite(VIBE_PIN, level);

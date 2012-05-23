@@ -16,19 +16,21 @@
 #define PROX_PIN       4
 
 /* ---- Protocol ---- */
+
 #define BASE_ADDR      0
 
 #define PROX_PACKET    1
 
 #define CONF_PACKET    2
+#define CLEAR_PACKET   3
 
-#define COLOR_PACKET   3
-#define COLOR_DUTY_PACKET     4
-#define COLOR_PERIOD_PACKET   5
+#define COLOR_PACKET   4
+#define COLOR_DUTY_PACKET     5
+#define COLOR_PERIOD_PACKET   6
 
-#define VIBE_PACKET    6
-#define VIBE_DUTY_PACKET      7
-#define VIBE_PERIOD_PACKET    8
+#define VIBE_PACKET    7
+#define VIBE_DUTY_PACKET      8
+#define VIBE_PERIOD_PACKET    9
 
 /* ---- Timer ---- */
 
@@ -56,15 +58,19 @@ boolean led_on = true;
 uint8_t led_duty = 0;
 uint8_t led_period = 0;
 
-int vibe_level = 0;
+uint8_t vibe_level = 0;
 
 boolean vibe_on = true;
 uint8_t vibe_duty = 0;
 uint8_t vibe_period = 0;
 
-int prox_val = 0;
-int prox_adju = 0; //250
+/* ---- Prox ----*/
 
+#define PROX_AVG_LEN 8
+
+uint8_t prox_val_pointer = 0;
+uint16_t avg_prox_val = 0;
+uint16_t prox_val[PROX_AVG_LEN];
 
 void setup() {
 	pinMode(RED_LED_PIN, OUTPUT);
@@ -76,6 +82,8 @@ void setup() {
 	setActive(0);
 	color(0, 0, 0);
 	vibe(0);
+
+	for(uint8_t i = 0;i < PROX_AVG_LEN;i++) prox_val[i] = 0;
 
 	t.every(10, timerCallback);
 
@@ -114,10 +122,15 @@ void loop() {
 	}
 
 	if(active && send_flag) { //This is done with a flag since the send_data won't work from inside an interrupt
-		prox_val = analogRead(PROX_PIN);
+		prox_val[prox_val_pointer] = analogRead(PROX_PIN);
+		prox_val_pointer = (prox_val_pointer+1)%PROX_AVG_LEN;
 
-		if(prox_val < prox_adju) prox_val = 0;
-		else prox_val -= prox_adju;
+		avg_prox_val = 0;
+		for(uint8_t i = 0;i < PROX_AVG_LEN;i++) {
+			avg_prox_val += prox_val[i];
+		}
+
+		avg_prox_val = avg_prox_val >> 3; //Divide by 18
 
 		send_data();
 
@@ -158,8 +171,8 @@ void send_data() {
 	uint8_t outPacket[3];
 
 	outPacket[0] = PROX_PACKET;
-	outPacket[1] = uint8_t(prox_val >> 8);
-	outPacket[2] = uint8_t(prox_val);
+	outPacket[1] = uint8_t(avg_prox_val >> 8);
+	outPacket[2] = uint8_t(avg_prox_val);
 
 	tx = Tx16Request(BASE_ADDR, outPacket, 3);
 
@@ -169,6 +182,17 @@ void send_data() {
 void parse_data(uint8_t* data, uint8_t len) {
 	if(data[0] == CONF_PACKET && len > 1) {
 		setActive(data[1]);
+	} else if(data[0] == CLEAR_PACKET) {
+		rgb[0] = 0;
+		rgb[1] = 0;
+		rgb[2] = 0;
+
+		led_duty = 0;
+		led_period = 0;
+
+		vibe_level = 0;
+		vibe_period = 0;
+		vibe_duty = 0;
 	} else if(data[0] == COLOR_PACKET && len > 3) {
 		rgb[0] = data[1];
 		rgb[1] = data[2];
@@ -186,7 +210,7 @@ void parse_data(uint8_t* data, uint8_t len) {
 	} 
 }
 
-void setActive(int val) {
+void setActive(uint8_t val) {
 	if(val) {
 		active = 1;
 		statusLED(1);
@@ -208,6 +232,7 @@ void updateLEDs() {
 }
 
 /* ---- Low Level ---- */
+
 void color(unsigned char red, unsigned char green, unsigned char blue) {
 	analogWrite(RED_LED_PIN, 255-red);	 
 	analogWrite(BLUE_LED_PIN, 255-blue);
