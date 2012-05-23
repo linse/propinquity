@@ -36,7 +36,8 @@ Hardware
 Playtest
 -----------------------------
 * Sounds for particles
-* Single zone
 * Coop
+
+* Single zone
 * Boppers
 * Health
