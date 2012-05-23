@@ -2,10 +2,7 @@ package propinquity;
 
 import processing.core.PConstants;
 import propinquity.hardware.*;
-import ddf.minim.AudioPlayer;
 import java.lang.Math;
-
-import ddf.minim.AudioPlayer;
 
 public class Player implements PConstants {
 	
@@ -14,6 +11,8 @@ public class Player implements PConstants {
 	public static final int SPAWN_DELAY_LONG = 1000;
 	public static final double SPAWN_DELAY_TAU = 3000;
 
+	public static final int MAX_HEALTH = 100;
+	
 	Propinquity parent;
 
 	String name;
@@ -32,6 +31,8 @@ public class Player implements PConstants {
 	boolean[] pausePatchStates;
 
 	boolean coop;
+	
+	private int health;
 
 	public Player(Propinquity parent, Sounds sounds, String name, Color color, Patch[] patches, Glove glove) {
 		this.parent = parent;
@@ -51,13 +52,14 @@ public class Player implements PConstants {
 
 	public void reset() {
 		score.reset();
+		heal();
 
 		bestPatch = null;
 		bestPatchTime = 0;
 		bestPatchTimePauseDiff = 0;
 
 		clearPatchAndGloves();
-
+		
 		paused = true;
 	}
 
@@ -143,6 +145,10 @@ public class Player implements PConstants {
 	public Color getColor() {
 		return color;
 	}
+	
+	public int getHealth() {
+		return health;
+	}
 
 	public Glove getGlove() {
 		return glove;
@@ -150,6 +156,14 @@ public class Player implements PConstants {
 
 	public Patch[] getPatches() {
 		return patches;
+	}
+	
+	public void damage(int damage) {
+		health -= damage;
+	}
+	
+	public void heal() {
+		health = MAX_HEALTH;
 	}
 
 	public void transferScore() {
