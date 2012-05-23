@@ -43,7 +43,7 @@ public class Particle {
 		shape = new CircleDef();
 		shape.radius = parent.box2d.scalarPixelsToWorld((texture.width - 22) * scale/2f);
 		shape.density = 1.0f;
-		shape.friction = 0.01f;
+		shape.friction = 0.005f;
 		shape.restitution = 0.3f;
 		if(isNew) {
 			shape.filter.categoryBits = Fences.CAT_NEW;
@@ -88,6 +88,8 @@ public class Particle {
 	public void draw() {
 		position = parent.box2d.getBodyPixelCoord(body);
 
+		parent.noStroke();
+		
 		parent.pushMatrix();
 		parent.translate(position.x, position.y);
 		parent.scale(scale * texture.width/2f);

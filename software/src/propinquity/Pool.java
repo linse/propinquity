@@ -50,7 +50,7 @@ public class Pool {
 		for (Particle p : particles) {
 			float dist = PApplet.sq(p.position.x - parent.width / 2) + PApplet.sq(p.position.y - parent.height / 2);
 			if (dist > PApplet.sq(Fences.OUTER_RADIUS - height)) {
-				rising += 1f;
+				rising += 2f;
 				p.kill();
 				particlesToRemove.add(p);
 			}
