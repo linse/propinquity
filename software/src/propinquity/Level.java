@@ -33,15 +33,11 @@ public abstract class Level implements UIElement, ProxEventListener, LevelConsta
 
 	public abstract void close();
 
-	public abstract void proxEvent(Patch patch);
-
 	public abstract String getName();
 
 	public abstract boolean isRunning();
 	
 	public abstract void keyPressed(char key, int keyCode);
-
-	public abstract void draw();
 
 	/**
 	 * Shows the GUI.

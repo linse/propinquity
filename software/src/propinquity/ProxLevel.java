@@ -5,7 +5,7 @@ import processing.xml.*;
 import propinquity.hardware.*;
 import ddf.minim.*;
 
-public class ProxLevel extends Level implements UIElement, ProxEventListener, LevelConstants {
+public class ProxLevel extends Level {
 
 	long[] lastScoreTime;
 	long[] lastScoreTimePauseDiff;
