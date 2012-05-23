@@ -13,8 +13,7 @@ public class Logger {
 
 	PApplet parent;
 
-	boolean recording;
-	boolean logging;
+	boolean recording, logging, stdout;
 
 	PrintWriter output;
 	MovieMaker movieMaker;
@@ -27,6 +26,10 @@ public class Logger {
 	public Logger(PApplet parent) {
 		this.parent = parent;
 		parent.registerDispose(this);
+	}
+
+	public void startPrinting() {
+		stdout = true;
 	}
 
 	/**
@@ -59,12 +62,29 @@ public class Logger {
 		if(recording) movieMaker.addFrame();
 	}
 
+	public void err(String text) {
+		System.err.print(text);
+		if(logging) {
+			output.print(text);
+			output.flush();
+		}
+	}
+
+	public void errln(String text) {
+		System.err.println(text);
+		if(logging) {
+			output.println(text);
+			output.flush();
+		}
+	}
+
 	/**
 	 * Print output text to the log file.
 	 * 
 	 * @param text The string to be logged.
 	 */
 	public void print(String text) {
+		if(stdout) System.out.print(text);
 		if(logging) {
 			output.print(text);
 			output.flush();
@@ -77,6 +97,7 @@ public class Logger {
 	 * @param text The string to be logged.
 	 */
 	public void println(String text) {
+		if(stdout) System.out.println(text);
 		if(logging) {
 			output.println(text);
 			output.flush();

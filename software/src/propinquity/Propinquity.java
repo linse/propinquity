@@ -21,7 +21,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 
 	//General/Util		
 	HeapDebug heapDebug;
-	Logger logger;
+	public Logger logger;
 
 	GameState gameState;
 
@@ -63,6 +63,8 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 		//General/Util
 		heapDebug = new HeapDebug();
 		logger = new Logger(this);
+		logger.startPrinting();
+		logger.startLogging("test.txt")
 
 		sounds = new Sounds(this);
 		hud = new Hud(this);
@@ -71,29 +73,40 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 		simulator = new HardwareSimulator(this);
 		
 		xbeeBaseStation = new XBeeBaseStation();
-		xbeeBaseStation.scanBlocking();
+		xbeeBaseStation.scanBlocking(); //TODO use nonblock and resolve the timing issues with packet sending
 		xbeeManager = new XBeeManager(this, xbeeBaseStation);
 
 		hardware = xbeeBaseStation;
 		// hardware = simulator;
 
 		//Player/Player List
+		if(MAX_PLAYERS < 2) {
+			logger.errln("Fatal Error: MAX_PLAYERS must be at least 2");
+			System.exit(1);
+		}
+
 		players = new Player[MAX_PLAYERS];
 
-		for(int i = 0;i < MAX_PLAYERS;i++) {
-			Patch[] patches = new Patch[PATCH_ADDR[i].length];
+		try {
+			for(int i = 0;i < MAX_PLAYERS;i++) {
+				Patch[] patches = new Patch[PATCH_ADDR[i].length];
 
-			for(int j = 0;j < PATCH_ADDR[i].length;j++) {
-				patches[j] = new Patch(PATCH_ADDR[i][j], hardware);
-				hardware.addPatch(patches[j]);
+				for(int j = 0;j < PATCH_ADDR[i].length;j++) {
+					patches[j] = new Patch(PATCH_ADDR[i][j], hardware);
+					hardware.addPatch(patches[j]);
+				}
+
+				Glove glove = new Glove(GLOVE_ADDR[i], hardware);
+				hardware.addGlove(glove);
+
+				Color color = PLAYER_COLORS[i];
+
+				players[i] = new Player(this, sounds, null, color, patches, glove);
 			}
-
-			Glove glove = new Glove(GLOVE_ADDR[i], hardware);
-			hardware.addGlove(glove);
-
-			Color color = PLAYER_COLORS[i];
-
-			players[i] = new Player(this, sounds, null, color, patches, glove);
+		} catch(Exception e) {
+			logger.errln("Fatal Error: Malformed data structures for player patches/gloves/colors");
+			logger.errln(e.getMessage());
+			System.exit(1);
 		}
 
 		playerList = new PlayerList(this, "player.lst");
@@ -112,15 +125,19 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 					try {
 						tmp_levels.add(new Level(this, hud, sounds, LEVEL_FOLDER+name, players));
 					} catch(XMLException e) {
-						System.out.println("Level not built for file \""+name+"\" because of the following XMLException");
-						System.out.println(e.getMessage());
+						logger.errln("Warning: Level not built for file \""+name+"\" because of the following XMLException");
+						logger.errln(e.getMessage());
 					}
 				}
 			}
 		}
 
 		levels = tmp_levels.toArray(new Level[0]);
-		if(levels.length == 0) System.out.println("Warning: No valid levels were built");
+		if(levels.length == 0) {
+			logger.errln("Fatal Error: No valid levels were built ... quitting");
+			System.exit(1);
+		}
+
 		for(Level level : levels) hardware.addProxEventListener(level);
 
 		levelSelect = new LevelSelect(this, hud, levels);
@@ -197,7 +214,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 
 		gameState = newState;
 
-		logger.println("gamestate = " + gameState);
+		logger.println("Game State = " + gameState);
 	}
 
 	public void controlEvent(ControlEvent event) {
@@ -242,23 +259,26 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 			}
 		}
 
-		// switch(key) {
-		// 	case 'n': {
-		// 		if(simulator.isVisible()) simulator.hide();
-		// 		else simulator.show();
-		// 		break;
-		// 	}
+		if(gamestate != GameState.PlayerList) {
+			switch(key) {
+				case 'n': {
+					if(simulator.isVisible()) simulator.hide();
+					else simulator.show();
+					break;
+				}
 
-		// 	case 'h': {
-		// 		if(heapDebug.isRunning()) heapDebug.stop();
-		// 		else heapDebug.start();
-		// 		break;
-		// 	}
-		// }
+				case 'h': {
+					if(heapDebug.isRunning()) heapDebug.stop();
+					else heapDebug.start();
+					break;
+				}
+			}
+		}
 	}
 
 	public void stop() {
-		// for(Player player : players) player.reset();
+		logger.close();
+		for(Player player : players) player.reset();
 		for(Level level : levels) level.close();
 	}
 

@@ -1,6 +1,5 @@
 Software
 -----------------------------
-
 * Gameplay
 	* Think about and implement coop scoring. Both players should get points towards their total during coop. How should we handle score display at that time?
 	* Negative sounds?
