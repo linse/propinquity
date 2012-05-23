@@ -62,7 +62,7 @@ public class Logger {
 	/**
 	 * Print output text to the log file.
 	 * 
-	 * @param line The string to be logged.
+	 * @param text The string to be logged.
 	 */
 	public void print(String text) {
 		if(logging) {
@@ -74,7 +74,7 @@ public class Logger {
 	/**
 	 * Print output text to the log file followed by a new line.
 	 * 
-	 * @param line The string to be logged.
+	 * @param text The string to be logged.
 	 */
 	public void println(String text) {
 		if(logging) {

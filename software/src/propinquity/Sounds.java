@@ -31,9 +31,9 @@ public class Sounds {
 		complete = minim.loadFile("sounds/comp.mp3", BUFFER_SIZE);
 		complete.setGain(5);
 
-		negativeCoop = minim.loadFile("sounds/neg.mp3", BUFFER_SIZE);
+		positive = minim.loadFile("sounds/pos.mp3", BUFFER_SIZE);
 
-		negativeCoop = minim.loadFile("sounds/pos.mp3", BUFFER_SIZE);
+		negativeCoop = minim.loadFile("sounds/neg.mp3", BUFFER_SIZE);
 
 		negativePlayer = new AudioPlayer[2];
 		negativePlayer[0] = minim.loadFile("sounds/neg1.mp3", BUFFER_SIZE);
