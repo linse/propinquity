@@ -20,14 +20,17 @@ public class ProxLevel extends Level {
 
 	String name;
 
-	boolean coop;
+	boolean coop, lastCoop;
 	boolean running;
+	
+	private int coopScore;
 
 	public ProxLevel(Propinquity parent, Hud hud, Sounds sounds, String levelFile, Player[] players) throws XMLException {
 		super(parent, hud, sounds, players);
 
 		lastScoreTime = new long[players.length];
 		lastScoreTimePauseDiff = new long[players.length];
+		coopScore = 0;
 
 		XMLElement xml = new XMLElement(parent, levelFile);
 
@@ -93,7 +96,7 @@ public class ProxLevel extends Level {
 		} else {
 			throw new XMLException("Warning: XML for level \"" + name + "\" has no sequence tag and/or no step tags");
 		}
-
+		
 		reset();
 	}
 
@@ -123,7 +126,8 @@ public class ProxLevel extends Level {
 
 		lastScoreTime = new long[players.length];
 		lastScoreTimePauseDiff = new long[players.length];
-
+		coopScore = 0;
+		
 		song.rewind();
 		stepUpdate(0); //Load for banner
 	}
@@ -134,9 +138,13 @@ public class ProxLevel extends Level {
 	
 	void stepUpdate(int nextStep) {
 		currentStep = nextStep;
-
+		
 		coop = steps[currentStep].isCoop();
 		boolean[][] patchStates = steps[currentStep].getPatches();
+		
+		// Reset coop score when leaving coop step.
+		if (lastCoop && !coop)
+			coopScore = 0;
 
 		for(int i = 0;i < players.length;i++) {
 			if(i < patchStates.length) {
@@ -153,6 +161,7 @@ public class ProxLevel extends Level {
 				player.clearPatchAndGloves();
 			}
 		}
+		lastCoop = coop;
 	}
 
 	public void proxEvent(Patch patch) {
@@ -186,7 +195,14 @@ public class ProxLevel extends Level {
 
 			if(bestPatch != null && bestPatch.getZone() > 0) {
 				if(currentTime-lastScoreTime[i] > proxPlayer.getSpawnInterval()) {
-					scoringPlayer.addPoints(1);
+					if (coop) {
+						coopScore++;
+						proxPlayer.addPoints(1, Color.violet());
+						scoringPlayer.addPoints(1, Color.violet());
+					} else {
+						scoringPlayer.addPoints(1);
+					}
+					
 					lastScoreTime[i] = currentTime;
 				}
 			} else {
@@ -217,12 +233,6 @@ public class ProxLevel extends Level {
 		}
 
 		return winner;
-	}
-
-	public int getTotalPoints() {
-		int total = 0;
-		for(int i = 0; i < players.length; i++) total += players[i].getScore();
-		return total;
 	}
 
 	public boolean isRunning() {
@@ -271,7 +281,7 @@ public class ProxLevel extends Level {
 
 		//Score Banners
 		if(coop) {
-			String score = String.valueOf(getTotalPoints());
+			String score = String.valueOf(coopScore);
 			String name = "Coop";
 
 			while(parent.textWidth(score + name) < 240) name += ' ';

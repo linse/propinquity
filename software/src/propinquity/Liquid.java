@@ -43,9 +43,10 @@ public class Liquid {
 		particlesLarge = new Vector<Particle>();
 	}
 
-	public void createParticle() {
+	public void createParticle(Color color) {
+		Color newColor = color == null ? this.color : color;
 		particlesCreated.add(new Particle(parent, new Vec2(parent.width/2f, parent.height/2f),
-				color, Particle.SMALL_SIZE, true));
+				newColor, Particle.SMALL_SIZE, true));
 	}
 
 	public void transferParticles() {
@@ -63,12 +64,14 @@ public class Liquid {
 			Particle[] toMerge = new Particle[MERGE_VOLUME];
 			int k = 0;
 			for(Particle particle : particlesHeld) {
-				toMerge[k] = particle;
-				k++;
-				if(k == toMerge.length) break;
+				if(particle.color.equals(this.color)) {
+					toMerge[k] = particle;
+					k++;
+					if(k == toMerge.length) break;
+				}
 			}
 
-			if(k < toMerge.length-1) break; //Insufficient particles to merge
+			if(k < toMerge.length) break; //Insufficient particles to merge
 
 			float avgX = 0, avgY = 0;
 			

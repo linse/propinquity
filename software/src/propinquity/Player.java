@@ -204,4 +204,8 @@ public class Player implements PConstants {
 		score.addPoints(points);
 	}
 	
+	public void addPoints(int points, Color color) {
+		score.addPoints(points, color);
+	}
+	
 }
