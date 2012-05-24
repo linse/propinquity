@@ -1,9 +1,6 @@
 package propinquity;
 
-import processing.core.*;
-import processing.xml.*;
 import propinquity.hardware.*;
-import ddf.minim.*;
 
 public abstract class Level implements UIElement, ProxEventListener, LevelConstants {
 

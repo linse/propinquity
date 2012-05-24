@@ -1,8 +1,6 @@
 package propinquity;
 
-import processing.core.*;
 import propinquity.hardware.*;
-import ddf.minim.*;
 
 public class BopperLevel extends Level {
 

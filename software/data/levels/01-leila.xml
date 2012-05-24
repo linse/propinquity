@@ -10,19 +10,11 @@
 			<player patch1="0" patch2="1" patch3="1" patch4="1"/>
 			<player patch1="1" patch2="0" patch3="1" patch4="1"/>
 		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="1" patch2="0" patch3="1" patch4="1"/>
 			<player patch1="0" patch2="1" patch3="1" patch4="1"/>
 		</step>
-		<step mode="versus">
-			<player patch1="0" patch2="1" patch3="1" patch4="1"/>
-			<player patch1="1" patch2="0" patch3="1" patch4="1"/>
-		</step>
-		<step mode="versus">
-			<player patch1="1" patch2="0" patch3="1" patch4="1"/>
-			<player patch1="0" patch2="1" patch3="1" patch4="1"/>
-		</step>
-		<step mode="versus">
+		<step mode="coop">
 			<player patch1="0" patch2="1" patch3="1" patch4="1"/>
 			<player patch1="1" patch2="0" patch3="1" patch4="1"/>
 		</step>
@@ -31,6 +23,14 @@
 			<player patch1="0" patch2="1" patch3="1" patch4="1"/>
 		</step>
 		<step mode="versus">
+			<player patch1="0" patch2="1" patch3="1" patch4="1"/>
+			<player patch1="1" patch2="0" patch3="1" patch4="1"/>
+		</step>
+		<step mode="coop">
+			<player patch1="1" patch2="0" patch3="1" patch4="1"/>
+			<player patch1="0" patch2="1" patch3="1" patch4="1"/>
+		</step>
+		<step mode="coop">
 			<player patch1="0" patch2="1" patch3="1" patch4="1"/>
 			<player patch1="1" patch2="0" patch3="1" patch4="1"/>
 		</step>
