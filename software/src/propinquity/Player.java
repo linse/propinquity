@@ -11,7 +11,7 @@ public class Player implements PConstants {
 	public static final int SPAWN_DELAY_LONG = 1000;
 	public static final double SPAWN_DELAY_TAU = 3000;
 
-	public static final int MAX_HEALTH = 100;
+	public static final int MAX_HEALTH = 50;
 	
 	Propinquity parent;
 
@@ -35,7 +35,7 @@ public class Player implements PConstants {
 
 	boolean coop;
 	
-	int health;
+	int[] patchHealth;
 
 	public Player(Propinquity parent, Sounds sounds, String name, Color color, Patch[] patches, Glove glove) {
 		this.parent = parent;
@@ -45,6 +45,8 @@ public class Player implements PConstants {
 
 		this.patches = patches;
 		this.glove = glove;
+
+		patchHealth = new int[patches.length];
 
 		pausePatchStates = new boolean[patches.length];
 
@@ -160,7 +162,11 @@ public class Player implements PConstants {
 	}
 	
 	public int getHealth() {
-		return health;
+		int totalHealth = 0;
+		for(int i = 0;i < patchHealth.length;i++) {
+			totalHealth += patchHealth[i];
+		}
+		return totalHealth;
 	}
 
 	public Glove getGlove() {
@@ -171,12 +177,26 @@ public class Player implements PConstants {
 		return patches;
 	}
 	
-	public void damage(int damage) {
-		health -= damage;
+	public boolean damage(Patch p, int damage) {
+		for(int i = 0;i < patches.length;i++) {
+			if(patches[i] == p) {
+				patchHealth[i] -= damage;
+				if(patchHealth[i] < 0) {
+					patchHealth[i] = 0;
+					p.setActive(false);
+				} else {
+					p.setColor(color.r*patchHealth[i]/MAX_HEALTH, color.g*patchHealth[i]/MAX_HEALTH, color.b*patchHealth[i]/MAX_HEALTH);
+				}
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public void heal() {
-		health = MAX_HEALTH;
+		for(int i = 0;i < patchHealth.length;i++) {
+			patchHealth[i] = MAX_HEALTH;
+		}
 	}
 
 	public void transferScore() {

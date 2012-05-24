@@ -47,14 +47,9 @@ public class HealthLevel extends Level {
 		song.pause();
 		running = false;
 
-		//Clears all scores, patches and gloves, and add 100 particles per player.
 		for(Player player : players) {
-			player.reset(); 
-			
-			for(int i = 0; i < 100; i++)
-				player.score.liquid.createParticle(player.color);
-			
-			player.score.liquid.transferParticles();
+			player.reset(); //Clears all the particles, scores, patches and gloves
+			player.activatePatches();
 		}
 
 		lastScoreTime = new long[players.length];
@@ -92,16 +87,18 @@ public class HealthLevel extends Level {
 		
 		for(int i = 0;i < players.length;i++) {
 			Player proxPlayer = players[(i+1)%players.length]; //TODO wut hack sorta
+			Player scoringPlayer = players[i];
 
 			Patch bestPatch = proxPlayer.getBestPatch();
 
 			if(bestPatch != null && bestPatch.getZone() > 0) {
 				if(currentTime-lastScoreTime[i] > proxPlayer.getSpawnInterval()) {
-					proxPlayer.damage(1);
+					proxPlayer.damage(bestPatch, 1);
+					proxPlayer.addPoints(1);
 					lastScoreTime[i] = currentTime;
 				}
 			} else {
-				// lastScoreTime[i] = currentTime; //Uncomment this to block multiplier transfer
+				// lastScoreTime[i] = currentTime;
 			}
 		}
 	}
