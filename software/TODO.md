@@ -33,8 +33,11 @@ Hardware
 * XBee stress test
 * Fix Glove charger
 
-Playtest
+Playtest 2
 -----------------------------
 
-* Boppers
-* Health
+* Coop end of level patches didnt' go off??
+* Bop pause
+* Purple LED
+
+* Better time control of round length
