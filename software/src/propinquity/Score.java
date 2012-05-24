@@ -31,10 +31,8 @@ public class Score {
 		lastTime = 0;
 		liquid = new Liquid(parent, color);
 		
-		if(this.color.equals(PlayerConstants.PLAYER_COLORS[0]))
-			bubbleSound = parent.sounds.bubbleHigh;
-		else 
-			bubbleSound = parent.sounds.bubbleLow;
+		if(this.color.equals(PlayerConstants.PLAYER_COLORS[0])) bubbleSound = parent.sounds.bubbleHigh;
+		else bubbleSound = parent.sounds.bubbleLow;
 	}
 
 	public void pause() {
@@ -58,12 +56,12 @@ public class Score {
 	}
 
 	public void addPoints(int points) {
-		addPoints(points, null);
+		addPoints(points, color);
 	}
 	
 	public void addPoints(int points, Color color) {
 		tempScore += points;
-		for (int i = 0; i < points; i++) {
+		for(int i = 0; i < points; i++) {
 			liquid.createParticle(color);
 			bubbleSound.trigger();
 		}
@@ -72,7 +70,7 @@ public class Score {
 	public void update() {
 		long currentTime = parent.millis();
 
-		if (currentTime - lastTime > Score.SCORE_TIME) {
+		if(currentTime - lastTime > Score.SCORE_TIME) {
 			transfer();
 			lastTime = currentTime;
 		}

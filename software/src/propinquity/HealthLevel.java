@@ -51,7 +51,7 @@ public class HealthLevel extends Level {
 		for(Player player : players) {
 			player.reset(); 
 			
-			for (int i = 0; i < 100; i++)
+			for(int i = 0; i < 100; i++)
 				player.score.liquid.createParticle(player.color);
 			
 			player.score.liquid.transferParticles();
@@ -133,8 +133,8 @@ public class HealthLevel extends Level {
 	public boolean isDone() {
 		int playersAlive = players.length;
 		
-		for (Player player : players) {
-			if (player.getHealth() <= 0)
+		for(Player player : players) {
+			if(player.getHealth() <= 0)
 				playersAlive--;
 		}
 		

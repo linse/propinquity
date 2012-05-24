@@ -109,7 +109,14 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 
 		playerList = new PlayerList(this, "player.lst");
 		playerSelect = new PlayerSelect(this, hud, players);
+		
+		//Box 2D
+		box2d = new PBox2D(this, (float) height/worldSize);
+		box2d.createWorld(-worldSize/2f, -worldSize/2f, worldSize, worldSize);
+		box2d.setGravity(0.0f, 0.0f);
 
+		fences = new Fences(this, box2d);
+		
 		//Level/Level Select
 		Vector<Level> tmp_levels = new Vector<Level>();
 		File file = new File(dataPath(LEVEL_FOLDER));
@@ -131,7 +138,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 		}
 
 		tmp_levels.add(new BopperLevel(this, hud, sounds, "05 Leila Came Round And We Watched A Video.mp3", players));
-		// tmp_levels.add(new HealthLevel(this, hud, sounds, "05 Leila Came Round And We Watched A Video.mp3", players));
+		tmp_levels.add(new HealthLevel(this, hud, sounds, "05 Leila Came Round And We Watched A Video.mp3", players));
 
 		levels = tmp_levels.toArray(new Level[0]);
 		if(levels.length == 0) {
@@ -143,13 +150,6 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 
 		levelSelect = new LevelSelect(this, hud, levels);
 
-		//Box 2D
-		box2d = new PBox2D(this, (float) height/worldSize);
-		box2d.createWorld(-worldSize/2f, -worldSize/2f, worldSize, worldSize);
-		box2d.setGravity(0.0f, 0.0f);
-
-		fences = new Fences(this, box2d);
-		
 		//General + Util	
 		uiElements = new Vector<UIElement>();
 		uiElements.add(xbeeManager);

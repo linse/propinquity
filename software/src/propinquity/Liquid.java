@@ -13,9 +13,9 @@ public class Liquid {
 	public static final float GRAVITY_STRENGTH = 0.01f;
 	
 	/** The maximum allowable number of particles per player's liquid. */
-	public static final int MAX_PARTICLES = 30;
-	private static final int MERGE_COUNT = 5;	
-	private static final int MERGE_VOLUME = 4;
+	public static final int MAX_PARTICLES = 50;
+	private static final int MERGE_COUNT = 3;	
+	private static final int MERGE_VOLUME = 5;
 
 	private Vector<Particle> particlesCreated;
 	private Vector<Particle> particlesHeld;
@@ -44,9 +44,10 @@ public class Liquid {
 	}
 
 	public void createParticle(Color color) {
-		Color newColor = color == null ? this.color : color;
+		Color pColor = this.color;
+		if(color == null) pColor = color;
 		particlesCreated.add(new Particle(parent, new Vec2(parent.width/2f, parent.height/2f),
-				newColor, Particle.SMALL_SIZE, true));
+				pColor, Particle.SMALL_SIZE, true));
 	}
 
 	public void transferParticles() {
@@ -75,7 +76,7 @@ public class Liquid {
 
 			float avgX = 0, avgY = 0;
 			
-			for (int j = 0; j < MERGE_VOLUME; j++) {
+			for(int j = 0; j < MERGE_VOLUME; j++) {
 				avgX += toMerge[j].getPosition().x;
 				avgY += toMerge[j].getPosition().y;
 				toMerge[j].kill();
@@ -91,8 +92,8 @@ public class Liquid {
 		int playerCount = parent.level.players.length;
 		int playerIndex = 0;
 		
-		for (int i = 0; i < playerCount; i++) {
-			if (color.equals(PlayerConstants.PLAYER_COLORS[i]))
+		for(int i = 0; i < playerCount; i++) {
+			if(color.equals(PlayerConstants.PLAYER_COLORS[i]))
 				playerIndex = i;
 		}
 		
@@ -116,7 +117,7 @@ public class Liquid {
 		
 		applyGravity();
 		
-		if (particlesCreated.size() + particlesHeld.size() > MAX_PARTICLES) {
+		if(particlesCreated.size() + particlesHeld.size() > MAX_PARTICLES) {
 			mergeParticles();
 		}
 	}

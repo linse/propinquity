@@ -34,11 +34,14 @@ public class BopperLevel extends Level {
 	public void pause() {
 		song.pause();
 		running = false;
+		lastTimeDiff = parent.millis()-lastTime;
+
 		for(int i = 0;i < players.length;i++) players[i].pause();
 	}
 
 	public void start() {
 		for(int i = 0;i < players.length;i++) players[i].start();
+		lastTime = parent.millis()-lastTimeDiff;
 		running = true;
 		song.play();
 	}

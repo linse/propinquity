@@ -35,7 +35,7 @@ public class Player implements PConstants {
 
 	boolean coop;
 	
-	private int health;
+	int health;
 
 	public Player(Propinquity parent, Sounds sounds, String name, Color color, Patch[] patches, Glove glove) {
 		this.parent = parent;

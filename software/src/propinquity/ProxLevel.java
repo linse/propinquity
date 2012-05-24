@@ -197,7 +197,7 @@ public class ProxLevel extends Level {
 
 			if(bestPatch != null && bestPatch.getZone() > 0) {
 				if(currentTime-lastScoreTime[i] > proxPlayer.getSpawnInterval()) {
-					if (coop) {
+					if(coop) {
 						coopScore++;
 						proxPlayer.addPoints(1, Color.violet());
 						scoringPlayer.addPoints(1, Color.violet());
