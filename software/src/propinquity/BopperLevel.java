@@ -1,7 +1,8 @@
 package propinquity;
 
+import ddf.minim.AudioPlayer;
+import processing.core.PConstants;
 import propinquity.hardware.*;
-
 public class BopperLevel extends Level {
 
 	static int NUM_ROUNDS = 5;

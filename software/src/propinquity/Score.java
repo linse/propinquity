@@ -69,7 +69,7 @@ public class Score {
 	public void addPoints(int points, Color color) {
 		tempScore += points;
 		for (int i = 0; i < points; i++) {
-			liquid.createParticle();
+			liquid.createParticle(color);
 			bubbleSound.trigger();
 		}
 	}
