@@ -128,6 +128,12 @@ public class Player implements PConstants {
 	public void step(boolean coop, boolean[] patchStates) {
 		this.coop = coop;
 
+		for(Patch patch : patches) {
+			// if(coop) patch.setColor(PlayerConstants.NEUTRAL_COLOR);
+			if(coop) patch.setColor(Color.teal());
+			else patch.setColor(color);
+		}
+
 		for(int i = 0;i < patchStates.length;i++) {
 			if(i < patches.length) {
 				pausePatchStates[i] = patchStates[i];

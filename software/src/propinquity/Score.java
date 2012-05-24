@@ -56,7 +56,7 @@ public class Score {
 	}
 
 	public void addPoints(int points) {
-		addPoints(points, color);
+		addPoints(points, null);
 	}
 	
 	public void addPoints(int points, Color color) {

@@ -216,6 +216,11 @@ void setActive(uint8_t val) {
 		statusLED(1);
 	} else {
 		active = 0;
+		if(!active) {
+			for(uint8_t i = 0;i < PROX_AVG_LEN;i++) {
+				prox_val[i] = 0;
+			}
+		}
 		statusLED(0);
 	}
 }

@@ -163,4 +163,13 @@ public class Color {
 		return new Color(142, 20, 252);
 	}
 
+	/**
+	 * Gets a predefined color with the value R:0 G:255 B:100 A:255.
+	 * 
+	 * @return The color "teal" as a Color object.
+	 */
+	public static Color teal() {
+		return new Color(0, 255, 82);
+	}
+
 }

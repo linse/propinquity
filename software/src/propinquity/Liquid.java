@@ -45,7 +45,7 @@ public class Liquid {
 
 	public void createParticle(Color color) {
 		Color pColor = this.color;
-		if(color == null) pColor = color;
+		if(color != null) pColor = color;
 		particlesCreated.add(new Particle(parent, new Vec2(parent.width/2f, parent.height/2f),
 				pColor, Particle.SMALL_SIZE, true));
 	}
