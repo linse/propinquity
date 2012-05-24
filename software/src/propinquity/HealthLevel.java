@@ -12,7 +12,7 @@ public class HealthLevel extends Level {
 	AudioPlayer song;
 	String songFile;
 	
-	boolean running;
+	boolean running, ended;
 	
 	public HealthLevel(Propinquity parent, Hud hud, Sounds sounds, String songFile, Player[] players) {
 		super(parent, hud, sounds, players);
@@ -46,6 +46,7 @@ public class HealthLevel extends Level {
 	public void reset() {
 		song.pause();
 		running = false;
+		ended = false;
 
 		for(Player player : players) {
 			player.reset(); //Clears all the particles, scores, patches and gloves
@@ -131,11 +132,21 @@ public class HealthLevel extends Level {
 		int playersAlive = players.length;
 		
 		for(Player player : players) {
-			if(player.getHealth() <= 0)
-				playersAlive--;
+			if(player.getHealth() <= 0) playersAlive--;
 		}
 		
-		return (playersAlive <= 1);
+		if(playersAlive <= 1) {
+			if(!ended) {
+				for(Player player : players) {
+					player.clearGloves();
+					player.clearPatches();
+				}
+				ended = true;
+			}
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public void keyPressed(char key, int keyCode) {

@@ -72,12 +72,12 @@ public class BopperLevel extends Level {
 			defendingPlayer = null;
 			scoringPlayer = null;
 		} else {
-			for(Player player : players) {
-				player.clearPatches();
-			}
-
 			defendingPlayer = players[currentRound%players.length];
 			defendingPlayer.activatePatches();
+
+			for(Player player : players) {
+				if(player != defendingPlayer) player.clearPatches();
+			}
 
 			scoringPlayer = players[(currentRound+1)%players.length]; //TODO wut hack sorta
 		}
@@ -92,31 +92,33 @@ public class BopperLevel extends Level {
 	
 		long currentTime = parent.millis();
 		
-		Patch bestPatch = defendingPlayer.getBestPatch();
+		if(defendingPlayer != null && scoringPlayer != null) {
+			Patch bestPatch = defendingPlayer.getBestPatch();
 
-		if(bestPatch != null && bestPatch.getZone() > 0) {
-			if(currentTime-lastTime > BOP_TIME) {
-				scoringPlayer.addPoints(5);
+			if(bestPatch != null && bestPatch.getZone() > 0) {
+				if(currentTime-lastTime > BOP_TIME) {
+					scoringPlayer.addPoints(5);
 
-				(new Thread(new Runnable() {
-					public void run() {
-						scoringPlayer.getGlove().setVibeLevel(255);
-						try {
-							Thread.sleep(1500);
-						} catch(Exception e) {
+					(new Thread(new Runnable() {
+						public void run() {
+							scoringPlayer.getGlove().setVibeLevel(255);
+							try {
+								Thread.sleep(1500);
+							} catch(Exception e) {
 
+							}
+							scoringPlayer.getGlove().setVibeLevel(0);
 						}
-						scoringPlayer.getGlove().setVibeLevel(0);
-					}
-				})).start();
+					})).start();
 
 
-				bestPatch.setActive(false);
-				
+					bestPatch.setActive(false);
+					
+					lastTime = currentTime;
+				}
+			} else {
 				lastTime = currentTime;
 			}
-		} else {
-			lastTime = currentTime;
 		}
 
 		int nextRound = song.position()/roundInterval;

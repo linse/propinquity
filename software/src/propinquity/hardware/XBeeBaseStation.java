@@ -14,7 +14,8 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 
 	final int XBEE_BAUDRATE = 57600;
 	final int XBEE_RESPONSE_TIMEOUT = 1000;
-	final int XBEE_RETRY_COUNT = 2;
+	final int XBEE_RETRY_TIMOUT = 250;
+	final int XBEE_RETRY_COUNT = 3;
 
 	Thread scanningThread;
 
@@ -398,7 +399,7 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 				if(++retryCount > XBEE_RETRY_COUNT) break; //Give up
 
 				try {
-					Thread.sleep(100); 
+					Thread.sleep(XBEE_RETRY_TIMOUT); 
 				} catch(Exception e) {
 
 				}

@@ -11,7 +11,7 @@ public class Player implements PConstants {
 	public static final int SPAWN_DELAY_LONG = 1000;
 	public static final double SPAWN_DELAY_TAU = 3000;
 
-	public static final int MAX_HEALTH = 50;
+	public static final int MAX_HEALTH = 15;
 	
 	Propinquity parent;
 
@@ -141,6 +141,7 @@ public class Player implements PConstants {
 	public void activatePatches() {
 		for(int i = 0;i < patches.length;i++) {
 			pausePatchStates[i] = true;
+			patches[i].setColor(color);
 			if(!paused) patches[i].setActive(true);
 		}
 	}
