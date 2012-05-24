@@ -7,7 +7,7 @@ import java.lang.Math;
 public class Player implements PConstants {
 	
 	public static final int SPAWN_DELAY_SHORT = 250;
-	public static final int SPAWN_DELAY_MED = 100;
+	public static final int SPAWN_DELAY_MED = 250; //TODO Hack to make only one zone
 	public static final int SPAWN_DELAY_LONG = 1000;
 	public static final double SPAWN_DELAY_TAU = 3000;
 
@@ -24,6 +24,9 @@ public class Player implements PConstants {
 	Patch bestPatch;
 	long bestPatchTime;
 	long bestPatchTimePauseDiff;
+
+	long bopTime;
+	long bopTimeDiff;
 
 	Score score;
 	
@@ -58,12 +61,13 @@ public class Player implements PConstants {
 		bestPatchTime = 0;
 		bestPatchTimePauseDiff = 0;
 
-		clearPatchAndGloves();
+		clearPatches();
+		clearGloves();
 		
 		paused = true;
 	}
 
-	public void clearPatchAndGloves() {
+	public void clearPatches() {
 		for(int i = 0;i < patches.length;i++) {
 			pausePatchStates[i] = false;
 			patches[i].setActive(false);
@@ -71,7 +75,9 @@ public class Player implements PConstants {
 		}
 
 		setPatchesDefaults();
+	}
 
+	public void clearGloves() {
 		glove.setActive(false);
 		glove.clear();
 
@@ -127,6 +133,13 @@ public class Player implements PConstants {
 			} else {
 				break;
 			}
+		}
+	}
+
+	public void activatePatches() {
+		for(int i = 0;i < patches.length;i++) {
+			pausePatchStates[i] = true;
+			if(!paused) patches[i].setActive(true);
 		}
 	}
 	

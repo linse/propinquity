@@ -143,25 +143,27 @@ public class ProxLevel extends Level {
 		boolean[][] patchStates = steps[currentStep].getPatches();
 		
 		// Reset coop score when leaving coop step.
-		if (lastCoop && !coop)
-			coopScore = 0;
-
-		for(int i = 0;i < players.length;i++) {
-			if(i < patchStates.length) {
-				players[i].step(coop, patchStates[i]);
-			} else {
-				//TODO warning here, there are too few patchStates, shoudn't happen
-				break;
-			}
-		}
-
-		if(currentStep == steps.length-1) { //Last step is the end of the level we want all patches off
+		if(lastCoop && !coop) coopScore = 0;
+	
+		if(currentStep >= steps.length-1) { //Last step is the end of the level we want all patches off
 			for(Player player : players) {
 				player.transferScore();
-				player.clearPatchAndGloves();
+				player.clearPatches();
+				player.clearGloves();
+			}
+		} else { //Otherwise do the step
+			for(int i = 0;i < players.length;i++) {
+				if(i < patchStates.length) {
+					players[i].step(coop, patchStates[i]);
+				} else {
+					//TODO warning here, there are too few patchStates, shoudn't happen
+					break;
+				}
 			}
 		}
+
 		lastCoop = coop;
+
 	}
 
 	public void proxEvent(Patch patch) {
@@ -206,7 +208,7 @@ public class ProxLevel extends Level {
 					lastScoreTime[i] = currentTime;
 				}
 			} else {
-				// lastScoreTime[i] = currentTime; //Uncomment this to block multiplier transfer
+				// lastScoreTime[i] = currentTime;
 			}
 		}
 

@@ -6,6 +6,7 @@ import propinquity.hardware.*;
 public class BopperLevel extends Level {
 
 	static int NUM_ROUNDS = 5;
+	static int BOP_TIME = 500;
 
 	AudioPlayer song;
 	String songFile;
@@ -13,7 +14,12 @@ public class BopperLevel extends Level {
 	int roundInterval;
 	int currentRound;
 
-	boolean coop;
+	long lastTime;
+	long lastTimeDiff;
+
+	Player defendingPlayer;
+	Player scoringPlayer;
+
 	boolean running;
 
 	public BopperLevel(Propinquity parent, Hud hud, Sounds sounds, String songFile, Player[] players) {
@@ -45,7 +51,7 @@ public class BopperLevel extends Level {
 
 		song.rewind();
 
-		currentRound = 0;
+		roundUpdate(0);
 	}
 
 	public void close() {
@@ -53,26 +59,62 @@ public class BopperLevel extends Level {
 	}
 	
 	void roundUpdate(int nextRound) {
+		currentRound = nextRound;
 
+		if(currentRound >= NUM_ROUNDS*players.length) {
+			for(Player player : players) {
+				player.clearPatches();
+			}
+
+			defendingPlayer = null;
+			scoringPlayer = null;
+		} else {
+			for(Player player : players) {
+				player.clearPatches();
+			}
+
+			defendingPlayer = players[currentRound%players.length];
+			defendingPlayer.activatePatches();
+
+			scoringPlayer = players[(currentRound+1)%players.length]; //TODO wut hack sorta
+		}
 	}
 
 	public void proxEvent(Patch patch) {
-		if(!isRunning() || isDone()) return;
-		if(!patch.getActive()) return;
-		//Handle Patch feedback
+		return;
 	}
 
 	public void update() {
 		for(Player player : players) player.update();
+	
+		long currentTime = parent.millis();
+		
+		Patch bestPatch = defendingPlayer.getBestPatch();
 
-		for(int i = 0;i < players.length;i++) {
-			Glove glove = players[i].getGlove();
-			if(glove.getActive()) {
-				//Handle Glove feedback
+		if(bestPatch != null && bestPatch.getZone() > 0) {
+			if(currentTime-lastTime > BOP_TIME) {
+				scoringPlayer.addPoints(5);
+
+				(new Thread(new Runnable() {
+					public void run() {
+						scoringPlayer.getGlove().setVibeLevel(255);
+						try {
+							Thread.sleep(1500);
+						} catch(Exception e) {
+
+						}
+						scoringPlayer.getGlove().setVibeLevel(0);
+					}
+				})).start();
+
+
+				bestPatch.setActive(false);
+				
+				lastTime = currentTime;
 			}
+		} else {
+			lastTime = currentTime;
 		}
-
-		//Handle score ?
 
 		int nextRound = song.position()/roundInterval;
 		if(nextRound != currentRound) roundUpdate(nextRound);
@@ -150,22 +192,13 @@ public class BopperLevel extends Level {
 		hud.drawOuterBoundary();
 
 		//Score Banners
-		if(coop) {
-			String score = String.valueOf(getTotalPoints());
-			String name = "Coop";
+		for(int i = 0; i < players.length; i++) {
+			String score = String.valueOf(players[i].score.getScore());
+			String name = players[i].getName();
 
 			while(parent.textWidth(score + name) < 240) name += ' ';
 
-			hud.drawBannerCenter(name + score, PlayerConstants.NEUTRAL_COLOR, hud.getAngle());
-		} else {
-			for(int i = 0; i < players.length; i++) {
-				String score = String.valueOf(players[i].score.getScore());
-				String name = players[i].getName();
-
-				while(parent.textWidth(score + name) < 240) name += ' ';
-
-				hud.drawBannerSide(name + score, PlayerConstants.PLAYER_COLORS[i], hud.getAngle() - PConstants.HALF_PI + (i * PConstants.PI));
-			}
+			hud.drawBannerSide(name + score, PlayerConstants.PLAYER_COLORS[i], hud.getAngle() - PConstants.HALF_PI + (i * PConstants.PI));
 		}
 
 		//Particles and Liquid
@@ -175,10 +208,6 @@ public class BopperLevel extends Level {
 			Player winner = getWinner();
 			String text = winner != null ? winner.getName() + " won!" : "You Tied!";
 			Color color = winner != null ? winner.getColor() : PlayerConstants.NEUTRAL_COLOR;
-			if(coop) {
-				text = "";
-				color = PlayerConstants.NEUTRAL_COLOR;
-			}
 			hud.drawCenterText("", text, color, hud.getAngle());
 			hud.drawCenterImage(hud.hudPlayAgain, hud.getAngle());
 		} else if(isRunning()) { //Running

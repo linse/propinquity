@@ -13,7 +13,7 @@ public class Patch implements HardwareConstants {
 
 	public static final int MIN_RANGE = 100;
 	public static final int MAX_RANGE = 700;
-	public static final int MIN_SWEETSPOT = 500; //Disabled for now
+	public static final int MIN_SWEETSPOT = 350; //Disabled for now
 	public static final int MAX_SWEETSPOT = 500;
 
 	final int address;
@@ -284,6 +284,7 @@ public class Patch implements HardwareConstants {
 	 * @param mode the mode to put the patch in.
 	 */
 	public void setMode(int mode) {
+		if(mode > 1) mode = 1; //TODO Hack to make only 1 zone
 		switch(mode) {
 			case 0:
 			default: { //Not in range: just patch color

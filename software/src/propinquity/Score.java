@@ -10,11 +10,6 @@ public class Score {
 	 */
 	public static final int SCORE_TIME = 5000;
 
-	public static final int MIN_RANGE = 50;
-	public static final int MAX_RANGE = 650;
-	public static final int MIN_SWEETSPOT = 450;
-	public static final int MAX_SWEETSPOT = 650;
-
 	public Liquid liquid;
 
 	Propinquity parent;

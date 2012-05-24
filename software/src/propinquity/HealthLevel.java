@@ -11,28 +11,17 @@ public class HealthLevel extends Level {
 
 	AudioPlayer song;
 	String songFile;
-	int songBPM;
-	
-	String name;
 	
 	boolean running;
 	
-	public HealthLevel(Propinquity parent, Hud hud, Sounds sounds, Player[] players) {
+	public HealthLevel(Propinquity parent, Hud hud, Sounds sounds, String songFile, Player[] players) {
 		super(parent, hud, sounds, players);
 		
 		lastScoreTime = new long[players.length];
 		lastScoreTimePauseDiff = new long[players.length];
 
-		/*
-		// TODO: will there still be XML level files for just a couple name and songfile strings?
-		if(name == null)
-			this.name = "Health Level";
-		else 
-			this.name = xml.getDatName();
-
 		song = sounds.loadSong(songFile);
-		*/
-		
+
 		reset();
 	}
 
@@ -118,7 +107,7 @@ public class HealthLevel extends Level {
 	}
 
 	public String getName() {
-		return name;
+		return "Health Level";
 	}
 	
 	public Player getWinner() {
