@@ -15,11 +15,11 @@ public class Sounds {
 
 	Minim minim;
 
-	AudioPlayer bubbleLow, bubbleHigh;
-	AudioPlayer complete;
-	AudioPlayer positive;
-	AudioPlayer negativeCoop;
-	AudioPlayer[] negativePlayer;
+	AudioSample bubbleLow, bubbleHigh;
+	AudioSample complete;
+	AudioSample positive;
+	AudioSample negativeCoop;
+	AudioSample[] negativePlayer;
 
 	/**
 	 * Setup the Minim audio manager.
@@ -29,19 +29,21 @@ public class Sounds {
 	public Sounds(PApplet parent) {
 		minim = new Minim(parent);
 
-		bubbleLow = minim.loadFile("sounds/bubble350Hz.mp3", BUFFER_SIZE);
-		bubbleHigh = minim.loadFile("sounds/bubble600Hz.mp3", BUFFER_SIZE);
-		
-		complete = minim.loadFile("sounds/comp.mp3", BUFFER_SIZE);
+		bubbleLow = minim.loadSample("sounds/bubble350Hz.mp3", BUFFER_SIZE);
+		bubbleLow.setGain(0.5f);
+		bubbleHigh = minim.loadSample("sounds/bubble600Hz.mp3", BUFFER_SIZE);
+		bubbleHigh.setGain(0.5f);
+
+		complete = minim.loadSample("sounds/comp.mp3", BUFFER_SIZE);
 		complete.setGain(5);
 
-		positive = minim.loadFile("sounds/pos.mp3", BUFFER_SIZE);
+		positive = minim.loadSample("sounds/pos.mp3", BUFFER_SIZE);
 
-		negativeCoop = minim.loadFile("sounds/neg.mp3", BUFFER_SIZE);
+		negativeCoop = minim.loadSample("sounds/neg.mp3", BUFFER_SIZE);
 
-		negativePlayer = new AudioPlayer[2];
-		negativePlayer[0] = minim.loadFile("sounds/neg1.mp3", BUFFER_SIZE);
-		negativePlayer[1] = minim.loadFile("sounds/neg2.mp3", BUFFER_SIZE);
+		negativePlayer = new AudioSample[2];
+		negativePlayer[0] = minim.loadSample("sounds/neg1.mp3", BUFFER_SIZE);
+		negativePlayer[1] = minim.loadSample("sounds/neg2.mp3", BUFFER_SIZE);
 	}
 
 	/**
@@ -51,19 +53,19 @@ public class Sounds {
 		return minim.loadFile(SONG_FOLDER + file, BUFFER_SIZE);
 	}
 
-	public AudioPlayer getComplete() {
+	public AudioSample getComplete() {
 		return complete;
 	}
 
-	public AudioPlayer getPositive() {
+	public AudioSample getPositive() {
 		return positive;
 	}
 
-	public AudioPlayer getNegativeCoop() {
+	public AudioSample getNegativeCoop() {
 		return negativeCoop;
 	}
 
-	public AudioPlayer getNegativePlayer(int player) {
+	public AudioSample getNegativePlayer(int player) {
 		return negativePlayer[PApplet.constrain(player, 0, negativePlayer.length-1)];
 	}
 

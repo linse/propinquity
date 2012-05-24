@@ -68,7 +68,7 @@ public class Liquid {
 				if(k == toMerge.length) break;
 			}
 
-			if(k < toMerge.length-1) break; //Insufficient particles to merge
+			if(k < toMerge.length) break; //Insufficient particles to merge
 
 			float avgX = 0, avgY = 0;
 			

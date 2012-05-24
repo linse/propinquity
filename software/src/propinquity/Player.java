@@ -5,12 +5,10 @@ import propinquity.hardware.*;
 import ddf.minim.AudioPlayer;
 import java.lang.Math;
 
-import ddf.minim.AudioPlayer;
-
 public class Player implements PConstants {
 	
 	public static final int SPAWN_DELAY_SHORT = 250;
-	public static final int SPAWN_DELAY_MED = 500;
+	public static final int SPAWN_DELAY_MED = 100;
 	public static final int SPAWN_DELAY_LONG = 1000;
 	public static final double SPAWN_DELAY_TAU = 3000;
 
@@ -173,23 +171,23 @@ public class Player implements PConstants {
 			if(newBestPatch == null || patch.getZone() > newBestPatch.getZone()) newBestPatch = patch;
 		}
 
-		if(newBestPatch == null || bestPatch != newBestPatch) {
-			bestPatch = newBestPatch;
-			bestPatchTime = parent.millis();
-		}
+		if(bestPatch == null) bestPatchTime = parent.millis();
+		bestPatch = newBestPatch;
 	}
 
 	public long getSpawnInterval() {
 		double timediff = parent.millis()-bestPatchTime;
-		if(bestPatch.getZone() == 1) {
-			double val = SPAWN_DELAY_MED+(SPAWN_DELAY_LONG-SPAWN_DELAY_MED)*Math.exp(-timediff/SPAWN_DELAY_TAU);
-			return Math.round(val);
-		} else if(bestPatch.getZone() == 2) {
-			double val = SPAWN_DELAY_SHORT+(SPAWN_DELAY_LONG-SPAWN_DELAY_SHORT)*Math.exp(-timediff/SPAWN_DELAY_TAU);
-			return Math.round(val);
-		} else {
-			return SPAWN_DELAY_LONG;
+		if(bestPatch != null) {
+			if(bestPatch.getZone() == 1) {
+				double val = SPAWN_DELAY_MED+(SPAWN_DELAY_LONG-SPAWN_DELAY_MED)*Math.exp(-timediff/SPAWN_DELAY_TAU);
+				return Math.round(val);
+			} else if(bestPatch.getZone() == 2) {
+				double val = SPAWN_DELAY_SHORT+(SPAWN_DELAY_LONG-SPAWN_DELAY_SHORT)*Math.exp(-timediff/SPAWN_DELAY_TAU);
+				return Math.round(val);
+			}
 		}
+
+		return SPAWN_DELAY_LONG;
 	}
 
 	public Patch getBestPatch() {
