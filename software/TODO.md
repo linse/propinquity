@@ -33,7 +33,7 @@ Hardware
 * XBee stress test
 * Fix Glove charger
 
-Playtest 2
+Playtest
 -----------------------------
 
 * Coop end of level patches didnt' go off??
