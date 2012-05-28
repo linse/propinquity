@@ -140,6 +140,7 @@ public class HealthLevel extends Level {
 				for(Player player : players) {
 					player.clearGloves();
 					player.clearPatches();
+					player.bump();
 				}
 				ended = true;
 			}

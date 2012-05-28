@@ -35,7 +35,12 @@ public class Score {
 		else bubbleSound = parent.sounds.bubbleLow;
 	}
 
+	public void bump() {
+		liquid.bump();
+	}
+
 	public void pause() {
+		liquid.bump();
 		pauseDifferential = parent.millis() - lastTime;
 	}
 

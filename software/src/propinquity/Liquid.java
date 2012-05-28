@@ -11,11 +11,12 @@ public class Liquid {
 
 	/** The strength of the acceleration acting on the particles. */
 	public static final float GRAVITY_STRENGTH = 0.01f;
+	public static final float BUMP_STRENGTH = 0.01f;
 	
-	/** The maximum allowable number of particles per player's liquid. */
-	public static final int MAX_PARTICLES = 50;
-	private static final int MERGE_COUNT = 3;	
-	private static final int MERGE_VOLUME = 5;
+	/** The maximum allowable number of particles per player's  */
+	public static final int MAX_PARTICLES = 40;
+	private static final int MERGE_COUNT = 4;	
+	private static final int MERGE_VOLUME = 3;
 
 	private Vector<Particle> particlesCreated;
 	private Vector<Particle> particlesHeld;
@@ -63,15 +64,34 @@ public class Liquid {
 		for(int i = 0;i < MERGE_COUNT;i++) {
 			Particle[] toMerge = new Particle[MERGE_VOLUME];
 			int k = 0;
+
+			Particle firstParticle = particlesHeld.get(0);
+
 			for(Particle particle : particlesHeld) {
-				if(particle.color.equals(this.color)) {
+				if(particle.color.equals(firstParticle.color)) {
 					toMerge[k] = particle;
 					k++;
 					if(k == toMerge.length) break;
 				}
 			}
 
-			if(k < toMerge.length) break; //Insufficient particles to merge
+			if(k < toMerge.length) {
+				toMerge = new Particle[MERGE_VOLUME];
+				k = 0;
+
+				boolean coopDone = false;
+				if(firstParticle.color.equals(PlayerConstants.NEUTRAL_COLOR)) coopDone = true;
+
+				for(Particle particle : particlesHeld) {
+					if((coopDone && particle.color.equals(this.color)) || (!coopDone && particle.color.equals(PlayerConstants.NEUTRAL_COLOR))) {
+						toMerge[k] = particle;
+						k++;
+						if(k == toMerge.length) break;
+					}
+				}
+			}
+
+			if(k < toMerge.length) return; //Insufficient particles to merge
 
 			float avgX = 0, avgY = 0;
 			
@@ -82,12 +102,37 @@ public class Liquid {
 				particlesHeld.remove(toMerge[j]);
 			}
 			
-			particlesLarge.add(new Particle(parent, new Vec2(avgX / MERGE_VOLUME, avgY / MERGE_VOLUME), color, Particle.LARGE_SIZE, false, true));
+			particlesLarge.add(new Particle(parent, new Vec2(avgX / MERGE_VOLUME, avgY / MERGE_VOLUME), toMerge[0].color, Particle.LARGE_SIZE, false, true));
+		}
+	}
+
+	public void bump() {
+		for(Particle particle : particlesCreated) {
+			float angle = parent.random(0, parent.TWO_PI);
+			float bumpX = BUMP_STRENGTH * PApplet.cos(angle);
+			float bumpY = BUMP_STRENGTH * PApplet.sin(angle);
+			Vec2 bump = new Vec2(bumpX, bumpY);
+			particle.getBody().applyForce(bump, particle.getBody().getWorldCenter());
+		}
+
+		for(Particle particle : particlesHeld) {
+			float angle = parent.random(0, parent.TWO_PI);
+			float bumpX = BUMP_STRENGTH * PApplet.cos(angle);
+			float bumpY = BUMP_STRENGTH * PApplet.sin(angle);
+			Vec2 bump = new Vec2(bumpX, bumpY);
+			particle.getBody().applyForce(bump, particle.getBody().getWorldCenter());
+		}
+		
+		for(Particle particle : particlesLarge) {
+			float angle = parent.random(0, parent.TWO_PI);
+			float bumpX = BUMP_STRENGTH * PApplet.cos(angle);
+			float bumpY = BUMP_STRENGTH * PApplet.sin(angle);
+			Vec2 bump = new Vec2(bumpX, bumpY);
+			particle.getBody().applyForce(bump, particle.getBody().getWorldCenter());
 		}
 	}
 
 	private void applyGravity() {
-		
 		int playerCount = parent.level.players.length;
 		int playerIndex = 0;
 		
@@ -98,8 +143,8 @@ public class Liquid {
 		
 		float offset = (PConstants.PI + PConstants.TWO_PI * playerIndex) / playerCount;
 		
-		float gravX = Liquid.GRAVITY_STRENGTH * PApplet.cos(-parent.hud.angle + offset);
-		float gravY = Liquid.GRAVITY_STRENGTH * PApplet.sin(-parent.hud.angle + offset);
+		float gravX = GRAVITY_STRENGTH * PApplet.cos(-parent.hud.angle + offset);
+		float gravY = GRAVITY_STRENGTH * PApplet.sin(-parent.hud.angle + offset);
 		Vec2 gravity = new Vec2(gravX, gravY);
 
 		for(Particle particle : particlesCreated)

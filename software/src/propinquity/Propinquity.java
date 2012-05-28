@@ -64,7 +64,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 		offscreen = new GLGraphicsOffScreen(this, 1024, 768);
 		blur = new GLTextureFilter(this, "shaders/Blur.xml");
 		thres = new GLTextureFilter(this, "shaders/Thres.xml");
-		thres.setParameterValue("bright_threshold", 0.01f);
+		thres.setParameterValue("bright_threshold", 0.153f);
 
 		frameRate(FPS);
 		imageMode(PConstants.CENTER);
@@ -188,10 +188,12 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 		for(UIElement u: uiElements) u.draw();
 
 		GLTexture tex = offscreen.getTexture();
+		tex.filter(blur, tex); //TODO wider blur
 		tex.filter(blur, tex);
 		tex.filter(blur, tex);
 		tex.filter(blur, tex);
 		tex.filter(thres, tex);
+		tex.filter(blur, tex);
 		image(tex, width/2, height/2, offscreen.width, offscreen.height);
 
 

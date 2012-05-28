@@ -98,6 +98,10 @@ public class Player implements PConstants {
 		glove.setVibeDuty(HardwareConstants.DEFAULT_DUTY_CYCLE);
 	}
 
+	public void bump() {
+		score.bump();
+	}
+
 	public void pause() {
 		score.pause();
 		

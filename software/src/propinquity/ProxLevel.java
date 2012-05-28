@@ -150,6 +150,7 @@ public class ProxLevel extends Level {
 				player.transferScore();
 				player.clearPatches();
 				player.clearGloves();
+				player.bump();
 			}
 		} else { //Otherwise do the step
 			for(int i = 0;i < players.length;i++) {
@@ -196,16 +197,18 @@ public class ProxLevel extends Level {
 			Patch bestPatch = proxPlayer.getBestPatch();
 
 			if(bestPatch != null && bestPatch.getZone() > 0) {
-				if(currentTime-lastScoreTime[i] > proxPlayer.getSpawnInterval()) {
-					if(coop) {
+				if(coop) {
+					if(currentTime-lastScoreTime[i] > proxPlayer.getSpawnInterval() * 4) { //TODO COOP fudge factor
 						coopScore++;
 						proxPlayer.addPoints(1, PlayerConstants.NEUTRAL_COLOR);
 						scoringPlayer.addPoints(1, PlayerConstants.NEUTRAL_COLOR);
-					} else {
-						scoringPlayer.addPoints(1);
+						lastScoreTime[i] = currentTime;
 					}
-					
-					lastScoreTime[i] = currentTime;
+				} else {
+					if(currentTime-lastScoreTime[i] > proxPlayer.getSpawnInterval()) {
+						scoringPlayer.addPoints(1);
+						lastScoreTime[i] = currentTime;
+					}
 				}
 			} else {
 				// lastScoreTime[i] = currentTime;
@@ -279,7 +282,7 @@ public class ProxLevel extends Level {
 
 		//Particles and Liquid
 		if(!PARTICLES_ABOVE) for(int i = 0; i < players.length; i++) players[i].draw();
-		
+
 		//Outlines
 		hud.drawInnerBoundary();
 		hud.drawOuterBoundary();

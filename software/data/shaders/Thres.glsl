@@ -13,7 +13,7 @@ void main()
 	
     // Extract very bright areas of the map.
     if (lum > bright_threshold)
-        gl_FragColor = vec4(color.r, color.g, color.b, 0.9);
+        gl_FragColor = vec4(color.r, color.g, color.b, 1.0);
     else
         gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
 }

@@ -33,7 +33,7 @@ public class Particle {
 
 		this.useOffscreen = useOffscreen;
 
-		PImage imgParticle = parent.loadImage("data/particles/particle.png");
+		PImage imgParticle = parent.loadImage("data/particles/softparticle.png");
 		texture = new PGraphics();
 		texture = parent.createGraphics(imgParticle.width, imgParticle.height, PApplet.P2D);
 		texture.background(imgParticle);
@@ -87,14 +87,14 @@ public class Particle {
 	public void draw() {
 		position = parent.box2d.getBodyPixelCoord(body);
 
-		if(useOffscreen) {
+		if(useOffscreen) { //TODO less hacky method for this
 			GLGraphicsOffScreen offscreen = parent.getOffscreen();
 
 			offscreen.beginDraw();
 
 			offscreen.pushMatrix();
 			offscreen.translate(position.x, position.y);
-			offscreen.scale(scale * texture.width/2f);
+			offscreen.scale(1.3f * scale * texture.width/2f);//TODO size hack
 			offscreen.tint(color.toInt(parent));
 			offscreen.image(texture, -1, -1, 2, 2);
 			offscreen.noTint();
