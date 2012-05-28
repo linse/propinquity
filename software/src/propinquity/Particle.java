@@ -6,6 +6,7 @@ import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 
 import processing.core.*;
+import codeanticode.glgraphics.*;
 
 public class Particle {
 
@@ -20,19 +21,23 @@ public class Particle {
 	CircleDef shape;
 	PGraphics texture;
 
-	private Propinquity parent;
+	Propinquity parent;
 
-	public Particle(Propinquity parent, Vec2 position, Color color, float scale, boolean isNew) {
+	boolean useOffscreen;
+
+	public Particle(Propinquity parent, Vec2 position, Color color, float scale, boolean isNew, boolean useOffscreen) {
 		this.parent = parent;
 		this.position = position;
 		this.color = color;
 		this.scale = scale;
 
+		this.useOffscreen = useOffscreen;
+
 		PImage imgParticle = parent.loadImage("data/particles/particle.png");
 		texture = new PGraphics();
 		texture = parent.createGraphics(imgParticle.width, imgParticle.height, PApplet.P2D);
 		texture.background(imgParticle);
-		texture.mask(imgParticle);
+		// texture.mask(imgParticle);
 
 		shape = new CircleDef();
 		shape.radius = parent.box2d.scalarPixelsToWorld((texture.width - 22) * scale/2f);
@@ -82,18 +87,34 @@ public class Particle {
 	public void draw() {
 		position = parent.box2d.getBodyPixelCoord(body);
 
-		parent.pushMatrix();
-		parent.translate(position.x, position.y);
-		parent.scale(scale * texture.width/2f);
-		parent.beginShape();
-		parent.texture(texture);
-		parent.tint(color.toInt(parent));
-		parent.vertex(-1, -1, 0, 0, 0);
-		parent.vertex(1, -1, 0, 1, 0);
-		parent.vertex(1, 1, 0, 1, 1);
-		parent.vertex(-1, 1, 0, 0, 1);
-		parent.noTint();
-		parent.endShape();
-		parent.popMatrix();
+		if(useOffscreen) {
+			GLGraphicsOffScreen offscreen = parent.getOffscreen();
+
+			offscreen.beginDraw();
+
+			offscreen.pushMatrix();
+			offscreen.translate(position.x, position.y);
+			offscreen.scale(scale * texture.width/2f);
+			offscreen.tint(color.toInt(parent));
+			offscreen.image(texture, -1, -1, 2, 2);
+			offscreen.noTint();
+			offscreen.popMatrix();
+
+			offscreen.endDraw();
+		} else {
+			parent.pushMatrix();
+			parent.translate(position.x, position.y);
+			parent.scale(scale * texture.width/2f);
+			parent.beginShape();
+			parent.texture(texture);
+			parent.tint(color.toInt(parent));
+			parent.vertex(-1, -1, 0, 0, 0);
+			parent.vertex(1, -1, 0, 1, 0);
+			parent.vertex(1, 1, 0, 1, 1);
+			parent.vertex(-1, 1, 0, 0, 1);
+			parent.noTint();
+			parent.endShape();
+			parent.popMatrix();
+		}
 	}
 }

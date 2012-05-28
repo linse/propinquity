@@ -13,6 +13,8 @@ import propinquity.hardware.*;
 
 import java.util.*;
 
+import codeanticode.glgraphics.*;
+
 public class Propinquity extends PApplet implements PlayerConstants, LevelConstants {
 
 	/** Unique serialization ID. */
@@ -53,8 +55,17 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 	PBox2D box2d;
 	Fences fences;
 
+	GLGraphicsOffScreen offscreen;
+	GLTextureFilter blur, thres;
+
 	public void setup() {
-		size(1024, 768, PConstants.OPENGL);
+		size(1024, 768, GLConstants.GLGRAPHICS);
+	
+		offscreen = new GLGraphicsOffScreen(this, 1024, 768);
+		blur = new GLTextureFilter(this, "shaders/Blur.xml");
+		thres = new GLTextureFilter(this, "shaders/Thres.xml");
+		thres.setParameterValue("bright_threshold", 0.01f);
+
 		frameRate(FPS);
 		imageMode(PConstants.CENTER);
 		textureMode(PConstants.NORMAL);
@@ -71,11 +82,11 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 		simulator = new HardwareSimulator(this);
 		
 		xbeeBaseStation = new XBeeBaseStation();
-		xbeeBaseStation.scanBlocking(); //TODO use nonblock and resolve the timing issues with packet sending
+		// xbeeBaseStation.scanBlocking(); //TODO use nonblock and resolve the timing issues with packet sending
 		xbeeManager = new XBeeManager(this, xbeeBaseStation);
 
-		hardware = xbeeBaseStation;
-		// hardware = simulator;
+		// hardware = xbeeBaseStation;
+		hardware = simulator;
 
 		//Player/Player List
 		if(MAX_PLAYERS < 2) {
@@ -161,12 +172,29 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 		changeGameState(GameState.XBeeInit);
 	}
 
+	public GLGraphicsOffScreen getOffscreen() {
+		return offscreen;
+	}
+
 	public void draw() {
 		background(Color.black().toInt(this));
 
 		hud.update(hud.getAngle() + HALF_PI, TWO_PI/10000f, TWO_PI/2000f);
 
+		offscreen.beginDraw();
+		offscreen.clear(0, 0);
+		offscreen.endDraw();
+
 		for(UIElement u: uiElements) u.draw();
+
+		GLTexture tex = offscreen.getTexture();
+		tex.filter(blur, tex);
+		tex.filter(blur, tex);
+		tex.filter(blur, tex);
+		tex.filter(thres, tex);
+		image(tex, width/2, height/2, offscreen.width, offscreen.height);
+
+
 		if(gameState == GameState.Play) box2d.step();
 
 		pushMatrix();

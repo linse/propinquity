@@ -181,6 +181,9 @@ public class HealthLevel extends Level {
 	public void draw() {
 		if(!isVisible) return;
 
+		//Particles and Liquid
+		if(!PARTICLES_ABOVE) for(int i = 0; i < players.length; i++) players[i].draw();
+
 		//Outlines
 		hud.drawInnerBoundary();
 		hud.drawOuterBoundary();
@@ -196,7 +199,7 @@ public class HealthLevel extends Level {
 		}
 
 		//Particles and Liquid
-		for(int i = 0; i < players.length; i++) players[i].draw();
+		if(PARTICLES_ABOVE) for(int i = 0; i < players.length; i++) players[i].draw();
 
 		if(isDone()) { //Someone won
 			Player winner = getWinner();

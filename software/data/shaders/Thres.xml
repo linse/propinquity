@@ -1,0 +1,11 @@
+<filter name="thres">
+    <description>Thres</description>
+    <vertex>SimpleVS.glsl</vertex>
+    <fragment>Thres.glsl</fragment>
+    <textures input="1" output="1">
+        <intexture type="sampler2d" name="tex" label="Texture from thres is calculated">0</intexture>    
+    </textures>
+    <parameters>
+        <parameter type="float" name="bright_threshold" label="Brightness threshold">0.99</parameter>
+    </parameters>
+</filter>

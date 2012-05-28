@@ -6,4 +6,6 @@ public interface LevelConstants {
 
 	static final String LEVEL_FOLDER = "levels/";
 
+	static final boolean PARTICLES_ABOVE = false;
+
 }
