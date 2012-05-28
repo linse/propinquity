@@ -46,3 +46,5 @@ Playtest 3
 -----------------------------
 * Gong between the rounds
 * Vvvvv before score
+* Intro sounds
+* Multipop

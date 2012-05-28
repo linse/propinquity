@@ -196,7 +196,6 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 		tex.filter(blur, tex);
 		image(tex, width/2, height/2, offscreen.width, offscreen.height);
 
-
 		if(gameState == GameState.Play) box2d.step();
 
 		pushMatrix();
