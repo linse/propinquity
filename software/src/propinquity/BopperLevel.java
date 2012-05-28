@@ -67,6 +67,8 @@ public class BopperLevel extends Level {
 		if(currentRound >= NUM_ROUNDS*players.length) {
 			for(Player player : players) {
 				player.clearPatches();
+				player.clearGloves();
+				player.bump();
 			}
 
 			defendingPlayer = null;

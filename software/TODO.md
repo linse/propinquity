@@ -36,8 +36,8 @@ Hardware
 Playtest
 -----------------------------
 
-* Coop end of level patches didnt' go off??
-* Bop pause
-* Purple LED
+* DONE - Coop end of level patches didnt' go off?? Booper/Health
+* Bop pauses
+* Purple LEDs
 
 * Better time control of round length
