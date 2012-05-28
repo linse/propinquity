@@ -33,7 +33,7 @@ Hardware
 * XBee stress test
 * Fix Glove charger
 
-Playtest
+Playtest 2
 -----------------------------
 
 * DONE - Coop end of level patches didnt' go off?? Booper/Health
@@ -41,3 +41,8 @@ Playtest
 * Purple LEDs
 
 * Better time control of round length
+
+Playtest 3
+-----------------------------
+* Gong between the rounds
+* Vvvvv before score
