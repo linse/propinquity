@@ -35,16 +35,22 @@ Hardware
 
 Playtest 2
 -----------------------------
-
-* DONE - Coop end of level patches didnt' go off?? Booper/Health
-* Bop pauses
 * Purple LEDs
 
 * Better time control of round length
 
 Playtest 3
 -----------------------------
-* Gong between the rounds
-* Vvvvv before score
-* Intro sounds
-* Multipop
+* Intro sounds and transistion sounds
+* Prox version with coop
+	* Intro, sounds/fanfare
+	* Transition sounds between coop and versus and/or slience and/or song change
+	* Long ambient coop, short slow beat versus, medium medium/slow beat coop, medium high energy versus
+	* One patch should always be on across step transitions (same type)
+* Cerimonial Bopper
+	* Intro, sounds/fanfare, "calibration" for fixed feet
+	* Gong between the rounds (acts as a pause)
+	* Vvvvv before score
+	* Maybe health
+* Bopper Multipop
+* Health multiscore
