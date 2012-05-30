@@ -47,12 +47,12 @@ public class Liquid {
 	public void createParticle(Color color) {
 		Color pColor = this.color;
 		if(color != null) pColor = color;
-		particlesCreated.add(new Particle(parent, new Vec2(parent.width/2f, parent.height/2f), pColor, Particle.SMALL_SIZE, true, true));
+		particlesCreated.add(new Particle(parent, new Vec2(parent.width/2f, parent.height/2f), pColor, Particle.SMALL_SIZE, true));
 	}
 
 	public void transferParticles() {
 		for(Particle particle : particlesCreated) {
-			Particle newParticle = new Particle(parent, particle.getPosition(), particle.getColor(), Particle.SMALL_SIZE, false, true);
+			Particle newParticle = new Particle(parent, particle.getPosition(), particle.getColor(), Particle.SMALL_SIZE, false);
 			particlesHeld.add(newParticle);
 			particle.kill();
 		}
@@ -102,7 +102,7 @@ public class Liquid {
 				particlesHeld.remove(toMerge[j]);
 			}
 			
-			particlesLarge.add(new Particle(parent, new Vec2(avgX / MERGE_VOLUME, avgY / MERGE_VOLUME), toMerge[0].color, Particle.LARGE_SIZE, false, true));
+			particlesLarge.add(new Particle(parent, new Vec2(avgX / MERGE_VOLUME, avgY / MERGE_VOLUME), toMerge[0].color, Particle.LARGE_SIZE, false));
 		}
 	}
 

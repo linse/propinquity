@@ -25,6 +25,10 @@ public class Particle {
 
 	boolean useOffscreen;
 
+	public Particle(Propinquity parent, Vec2 position, Color color, float scale, boolean isNew) {
+		this(parent, position, color, scale, isNew, true);
+	}
+
 	public Particle(Propinquity parent, Vec2 position, Color color, float scale, boolean isNew, boolean useOffscreen) {
 		this.parent = parent;
 		this.position = position;

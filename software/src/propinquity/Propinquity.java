@@ -82,11 +82,11 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 		simulator = new HardwareSimulator(this);
 		
 		xbeeBaseStation = new XBeeBaseStation();
-		xbeeBaseStation.scanBlocking(); //TODO use nonblock and resolve the timing issues with packet sending
+		// xbeeBaseStation.scanBlocking(); //TODO use nonblock and resolve the timing issues with packet sending
 		xbeeManager = new XBeeManager(this, xbeeBaseStation);
 
-		hardware = xbeeBaseStation;
-		// hardware = simulator;
+		// hardware = xbeeBaseStation;
+		hardware = simulator;
 
 		//Player/Player List
 		if(MAX_PLAYERS < 2) {
@@ -181,20 +181,20 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 
 		hud.update(hud.getAngle() + HALF_PI, TWO_PI/10000f, TWO_PI/2000f);
 
+		GLTexture tex = offscreen.getTexture();
+
+		if(gameState == GameState.Play) {
+			for(int i = 0;i < 5;i++) tex.filter(blur, tex);
+			tex.filter(thres, tex);
+			tex.filter(blur, tex);
+		}
+		image(tex, width/2, height/2, offscreen.width, offscreen.height);
+
 		offscreen.beginDraw();
 		offscreen.clear(0, 0);
 		offscreen.endDraw();
 
 		for(UIElement u: uiElements) u.draw();
-
-		GLTexture tex = offscreen.getTexture();
-		tex.filter(blur, tex); //TODO wider blur
-		tex.filter(blur, tex);
-		tex.filter(blur, tex);
-		tex.filter(blur, tex);
-		tex.filter(thres, tex);
-		tex.filter(blur, tex);
-		image(tex, width/2, height/2, offscreen.width, offscreen.height);
 
 		if(gameState == GameState.Play) box2d.step();
 

@@ -283,8 +283,8 @@ public class Hud {
 	 * Draw the inner fence boundary circle graphic.
 	 */
 	public void drawInnerBoundary() {
-		gl.glEnable(GL.GL_BLEND);
-		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+		// gl.glEnable(GL.GL_BLEND);
+		// gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 
 		parent.pushMatrix();
 		parent.translate(parent.width/2 - 1, parent.height/2);
@@ -296,8 +296,8 @@ public class Hud {
 	 * Draw the outer fence boundary circle graphic.
 	 */
 	public void drawOuterBoundary() {
-		gl.glEnable(GL.GL_BLEND);
-		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+		// gl.glEnable(GL.GL_BLEND);
+		// gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 
 		parent.pushMatrix();
 		parent.translate(parent.width/2 - 1, parent.height/2);

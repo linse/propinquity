@@ -16,10 +16,8 @@ public class Sounds {
 	Minim minim;
 
 	AudioSample bubbleLow, bubbleHigh;
-	AudioSample complete;
-	AudioSample positive;
-	AudioSample negativeCoop;
-	AudioSample[] negativePlayer;
+	AudioSample whooshBubble;
+	AudioSample gong;
 
 	/**
 	 * Setup the Minim audio manager.
@@ -34,16 +32,8 @@ public class Sounds {
 		bubbleHigh = minim.loadSample("sounds/bubble600Hz.mp3", BUFFER_SIZE);
 		bubbleHigh.setGain(0.5f);
 
-		complete = minim.loadSample("sounds/comp.mp3", BUFFER_SIZE);
-		complete.setGain(5);
-
-		positive = minim.loadSample("sounds/pos.mp3", BUFFER_SIZE);
-
-		negativeCoop = minim.loadSample("sounds/neg.mp3", BUFFER_SIZE);
-
-		negativePlayer = new AudioSample[2];
-		negativePlayer[0] = minim.loadSample("sounds/neg1.mp3", BUFFER_SIZE);
-		negativePlayer[1] = minim.loadSample("sounds/neg2.mp3", BUFFER_SIZE);
+		whooshBubble = minim.loadSample("sounds/whooshbubble.mp3", BUFFER_SIZE);
+		gong = minim.loadSample("sounds/gong.mp3", BUFFER_SIZE);
 	}
 
 	/**
@@ -53,20 +43,20 @@ public class Sounds {
 		return minim.loadFile(SONG_FOLDER + file, BUFFER_SIZE);
 	}
 
-	public AudioSample getComplete() {
-		return complete;
+	public AudioSample getBubbleLow() {
+		return bubbleLow;
 	}
 
-	public AudioSample getPositive() {
-		return positive;
+	public AudioSample getBubbleHigh() {
+		return bubbleHigh;
 	}
 
-	public AudioSample getNegativeCoop() {
-		return negativeCoop;
+	public AudioSample getWhooshBubble() {
+		return whooshBubble;
 	}
 
-	public AudioSample getNegativePlayer(int player) {
-		return negativePlayer[PApplet.constrain(player, 0, negativePlayer.length-1)];
+	public AudioSample getGong() {
+		return gong;
 	}
 
 }

@@ -40,8 +40,8 @@ public class LevelSelect implements UIElement {
 		particles = new Particle[num];
 
 		for(int i = 0; i < num; i++) {
-			Particle p = new Particle(parent, new Vec2(PApplet.cos(PApplet.TWO_PI/particles.length * i) * radius,
-					PApplet.sin(PApplet.TWO_PI/particles.length * i) * radius), color, Particle.LARGE_SIZE, true, false);
+			Particle p = new Particle(parent, new Vec2(parent.width/2+PApplet.cos(PApplet.TWO_PI/particles.length * i) * radius,
+					parent.height/2+PApplet.sin(PApplet.TWO_PI/particles.length * i) * radius), color, Particle.LARGE_SIZE, true);
 			particles[i] = p;
 		}
 	}
@@ -53,15 +53,10 @@ public class LevelSelect implements UIElement {
 
 	void drawParticles() {
 		if(particles == null) return;
-
-		parent.pushMatrix();
-		parent.translate(parent.width/2, parent.height/2);
 		
 		for(int i = 0; i < particles.length; i++) {
 			particles[i].draw();
 		}
-		
-		parent.popMatrix();
 	}
 
 	public void draw() {

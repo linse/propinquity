@@ -31,8 +31,8 @@ public class Score {
 		lastTime = 0;
 		liquid = new Liquid(parent, color);
 		
-		if(this.color.equals(PlayerConstants.PLAYER_COLORS[0])) bubbleSound = parent.sounds.bubbleHigh;
-		else bubbleSound = parent.sounds.bubbleLow;
+		if(this.color.equals(PlayerConstants.PLAYER_COLORS[0])) bubbleSound = parent.sounds.getBubbleHigh();
+		else bubbleSound = parent.sounds.getBubbleLow();
 	}
 
 	public void bump() {
