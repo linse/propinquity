@@ -9,7 +9,7 @@ SynthDef(\whoosh, {
 	sound = MoogFF.ar(sound, pitch, lp_gain);
 	
 	Out.ar(out, sound);
-}).store;
+}).send(s);
 
 SynthDef(\bubblebub, {
 	arg out=0, t_trig=0, attack=0.01, decay=0.08, pitchcurvelen=0.1, freq=1000, doneAction=0, amp=0.1;
@@ -23,12 +23,12 @@ SynthDef(\bubblebub, {
 	son = HPF.ar(son, 500) * amp * 10;
 	
 	Out.ar(out, son);
-}).store;
+}).send(s);
 
 SynthDef(\whooshbubble, {
 	arg 
 		out=0, t_trig=0, doneAction=0, 
-		b_attack=0.01, b_decay=0.08, b_pitchcurvelen=0.1, b_freq=400, b_amp=0.1,
+		b_attack=0.015, b_decay=0.08, b_pitchcurvelen=0.1, b_freq=400, b_amp=0.1,
 		wamp=1, wlp_gain=3.8, wfreq=75;
 	var wampenv, wbtrig, w_pitch, w_sound, b_pitch, b_sound;
 	
@@ -41,6 +41,7 @@ SynthDef(\whooshbubble, {
 	w_sound = wamp * WhiteNoise.ar(1);
 	w_sound = MoogFF.ar(w_sound, w_pitch, wlp_gain);
 	
+	wbtrig = 0;
 	wbtrig = Done.kr(wampenv);
 	
 	b_amp   = b_amp * EnvGen.ar(Env.perc(b_attack, b_decay).delay(0.003), wbtrig, doneAction: doneAction);
@@ -51,19 +52,28 @@ SynthDef(\whooshbubble, {
 	b_sound = HPF.ar(b_sound, 500) * b_amp * 10;
 
 
-	Out.ar(out, w_sound+b_sound);
-}).store;
+	Out.ar(out, (w_sound+b_sound)!2);
+}).send(s);
 
+SynthDef(\MouseX, {
+	arg out, min = 0, max = 1, warp = 0, lag = 0.2;
+	Out.kr(out, MouseX.kr(min, max, warp, lag));
+}).send(s);
 
-x = Synth(\whoosh);
-x.set(\t_trig, 1);
+SynthDef(\MouseY, {
+	arg out, min = 0, max = 1, warp = 0, lag = 0.2;
+	Out.kr(out, MouseY.kr(min, max, warp, lag));
+}).send(s);
 
-y = Synth(\bubblebub);
-y.set(\t_trig, 1);
+~busX = Bus.control(s);
+~synX = Synth(\MouseX, [\out, ~busX.index]);
 
-z = Synth(\whooshbubble);
-z.set(\t_trig, 1);
+~busY = Bus.control(s);
+~synY = Synth(\MouseY, [\out, ~busY.index]);
+~synY.set(\min, 0.01);
 
-z.free;
-x.free;
-y.trig;
+~syn = Synth(\whooshbubble);
+~syn.map(\b_attack, ~busY.index);
+~syn.set(\t_trig, 1);
+~busY.get()
+~syn.free;
