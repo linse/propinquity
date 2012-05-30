@@ -1,3 +1,4 @@
+(
 SynthDef(\whoosh, {  
 	arg out=0, t_trig=0, amp=1, lp_gain=3.8, freq=75, doneAction=0;
 	var pitch, sound;
@@ -64,7 +65,7 @@ SynthDef(\MouseY, {
 	arg out, min = 0, max = 1, warp = 0, lag = 0.2;
 	Out.kr(out, MouseY.kr(min, max, warp, lag));
 }).send(s);
-
+)
 ~busX = Bus.control(s);
 ~synX = Synth(\MouseX, [\out, ~busX.index]);
 
@@ -72,8 +73,8 @@ SynthDef(\MouseY, {
 ~synY = Synth(\MouseY, [\out, ~busY.index]);
 ~synY.set(\min, 0.01);
 
+
 ~syn = Synth(\whooshbubble);
-~syn.map(\b_attack, ~busY.index);
 ~syn.set(\t_trig, 1);
-~busY.get()
+
 ~syn.free;
