@@ -46,3 +46,7 @@ Playtest 3
 	* Maybe health
 * Bopper Multipop
 * Health multiscore
+
+Playtest 4
+-----------------------------
+* Catch null pointers for wrong file name

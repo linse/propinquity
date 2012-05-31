@@ -187,7 +187,7 @@ public class ProxLevel extends Level {
 			fader.fadeIn();
 		}
 
-		System.out.println(currentStep+" - "+steps[currentStep].isCoop()+" - "+steps[currentStep].isTransition());
+		// System.out.println(currentStep+" - "+steps[currentStep].isCoop()+" - "+steps[currentStep].isTransition());
 
 		// Reset coop score when leaving coop step.
 		if(lastCoop && !coop) coopScore = 0;
