@@ -4,15 +4,23 @@ import processing.core.*;
 import processing.xml.*;
 import propinquity.hardware.*;
 import ddf.minim.*;
+import java.util.*;
 
 public class ProxLevel extends Level {
+
+	static int TOTAL_LEN = 120000; //2min;
 
 	long[] lastScoreTime;
 	long[] lastScoreTimePauseDiff;
 
 	AudioPlayer song;
+	Vector<AudioPlayer> transitionSongs; //TODO Hack
+	int transitionCount;
+
 	String songFile;
 	int songBPM;
+
+	VolumeFader fader;
 
 	Step[] steps;
 	long stepInterval;
@@ -23,7 +31,9 @@ public class ProxLevel extends Level {
 	boolean coop, lastCoop;
 	boolean running;
 	
-	private int coopScore;
+	int coopScore;
+
+	long startTime, startTimeDiff;
 
 	public ProxLevel(Propinquity parent, Hud hud, Sounds sounds, String levelFile, Player[] players) throws XMLException {
 		super(parent, hud, sounds, players);
@@ -31,6 +41,10 @@ public class ProxLevel extends Level {
 		lastScoreTime = new long[players.length];
 		lastScoreTimePauseDiff = new long[players.length];
 		coopScore = 0;
+
+		startTime = -1;
+
+		transitionSongs = new Vector<AudioPlayer>();
 
 		XMLElement xml = new XMLElement(parent, levelFile);
 
@@ -61,17 +75,28 @@ public class ProxLevel extends Level {
 		}
 
 		song = sounds.loadSong(songFile);
+		transitionSongs.add(song);
 
 		XMLElement[] step_tags = xml.getChildren("sequence/step");
 		steps = new Step[step_tags.length+1];
-		stepInterval = song.length()/(step_tags.length+1);
+		stepInterval = TOTAL_LEN/(step_tags.length+1);
 
 		if(step_tags.length > 0) {
 			for(int i = 0; i < step_tags.length; i++) {
-				String modeString = step_tags[i].getString("mode", "coop");
-				boolean coop = true;
-				if(!modeString.equals("coop"))
-					coop = false;
+				String modeString = step_tags[i].getString("mode");
+				StepType type = null;
+				if(modeString.equals("versus")) type = StepType.VERSUS;
+				else if(modeString.equals("transition")) {
+					type = StepType.TRANSITION; //TODO Hack
+					String songFile = step_tags[i].getString("file");
+					if(songFile == null || songFile.equals("")) {
+						System.err.println("Warning: XML for level \""+name+"\" step "+i+" is a transition tag with no file attribute, this might be corrent, but you should be sure");
+					} else {
+						AudioPlayer song = sounds.loadSong(songFile);
+						transitionSongs.add(song);
+					}
+				}
+				else type = StepType.COOP;
 
 				XMLElement[] player_tags = step_tags[i].getChildren("player");
 				boolean patches[][] = new boolean[player_tags.length][4];
@@ -86,17 +111,19 @@ public class ProxLevel extends Level {
 					throw new XMLException("XMLException: XML for level \"" + name + "\", step " + i + " has too few player tags.");
 				}
 
-				steps[i] = new Step(coop, patches);
+				steps[i] = new Step(type, patches);
 			}
 
 			boolean[][] tmpPatchState = new boolean[players.length][];
 			for(int i = 0;i < tmpPatchState.length;i++) tmpPatchState[i] = new boolean[] {false, false, false, false};
 
-			steps[step_tags.length] = new Step(false, tmpPatchState);
+			steps[step_tags.length] = new Step(StepType.VERSUS, tmpPatchState);
 		} else {
 			throw new XMLException("Warning: XML for level \"" + name + "\" has no sequence tag and/or no step tags");
 		}
 		
+		fader = new VolumeFader();
+
 		reset();
 	}
 
@@ -107,6 +134,7 @@ public class ProxLevel extends Level {
 			players[i].pause();
 			lastScoreTimePauseDiff[i] = parent.millis()-lastScoreTime[i];
 		}
+		startTimeDiff = parent.millis()-startTime;
 	}
 
 	public void start() {
@@ -115,12 +143,16 @@ public class ProxLevel extends Level {
 			lastScoreTime[i] = parent.millis()-lastScoreTimePauseDiff[i];
 		}
 		running = true;
+		if(startTime == -1) startTime = parent.millis();
+		else startTime = parent.millis()-startTimeDiff;
 		song.play();
 	}
 
 	public void reset() {
 		song.pause();
 		running = false;
+		
+		startTime = -1;
 
 		for(Player player : players) player.reset(); //Clears all the particles, scores, patches and gloves
 
@@ -128,7 +160,8 @@ public class ProxLevel extends Level {
 		lastScoreTimePauseDiff = new long[players.length];
 		coopScore = 0;
 		
-		song.rewind();
+		for(AudioPlayer song : transitionSongs) song.rewind();
+		song = transitionSongs.get(0);
 		stepUpdate(0); //Load for banner
 	}
 
@@ -142,6 +175,20 @@ public class ProxLevel extends Level {
 		coop = steps[currentStep].isCoop();
 		boolean[][] patchStates = steps[currentStep].getPatches();
 		
+		if(steps[currentStep].isTransition() && song.getGain() == 0) {
+			transitionCount++;
+			fader.fadeOut();
+		} else if(!steps[currentStep].isTransition() && song.getGain() != 0) {
+			if(transitionSongs.size() > transitionCount) { //TODO Hack
+				song.pause();
+				song = transitionSongs.get(transitionCount);
+				song.play();
+			}
+			fader.fadeIn();
+		}
+
+		System.out.println(currentStep+" - "+steps[currentStep].isCoop()+" - "+steps[currentStep].isTransition());
+
 		// Reset coop score when leaving coop step.
 		if(lastCoop && !coop) coopScore = 0;
 	
@@ -152,6 +199,7 @@ public class ProxLevel extends Level {
 				player.clearGloves();
 				player.bump();
 			}
+			fader.fadeOut();
 		} else { //Otherwise do the step
 			for(int i = 0;i < players.length;i++) {
 				if(i < patchStates.length) {
@@ -215,7 +263,7 @@ public class ProxLevel extends Level {
 			}
 		}
 
-		int nextStep = (int)PApplet.constrain(song.position()/stepInterval, 0, steps.length-1);
+		int nextStep = (int)PApplet.constrain((parent.millis()-startTime)/stepInterval, 0, steps.length-1);
 		if(nextStep != currentStep) stepUpdate(nextStep);
 	}
 
@@ -324,6 +372,64 @@ public class ProxLevel extends Level {
 		} else { //Pause
 			hud.drawCenterImage(hud.hudPlay, hud.getAngle());
 		}
+	}
+
+	class VolumeFader implements Runnable {
+
+		Thread thread;
+
+		boolean running, fadeIn;
+
+		public void stop() {
+			if(thread != null && thread.isAlive()) {
+				running = false;
+				thread.interrupt();
+				while(thread.isAlive()) Thread.yield();
+			}
+		}
+
+		public void fadeIn() {
+			stop();
+			fadeIn = true;
+			running = true;
+			thread = new Thread(this);
+			thread.setDaemon(true);
+			thread.start();
+		}
+
+		public void fadeOut() {
+			stop();
+			fadeIn = false;
+			running = true;
+			thread = new Thread(this);
+			thread.setDaemon(true);
+			thread.start();
+		}
+
+		public void run() {
+			if(fadeIn) {
+				for(int i = 100;i >= 0;i--) {
+					song.setGain(-(float)i/4);
+					try {
+						Thread.sleep(20);
+					} catch(Exception e) {
+
+					}
+				}
+				song.setGain(0);
+			} else {
+				for(int i = 0;i < 100;i++) {
+					song.setGain(-(float)i/4);
+					try {
+						Thread.sleep(20);
+					} catch(Exception e) {
+
+					}
+				}
+				song.setGain(-100);
+			}
+		}
+
 	}
 
 }

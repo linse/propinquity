@@ -1,19 +1,28 @@
 package propinquity;
 
-import ddf.minim.AudioPlayer;
-import processing.core.PConstants;
+import ddf.minim.*;
+import processing.core.*;
 import propinquity.hardware.*;
+
 public class BopperLevel extends Level {
 
-	static int NUM_ROUNDS = 5;
+	static int NUM_ROUNDS = 3;
+	
+	static int ROUND_TIME = 10000;
+	static int GAP_TIME = 5000;
+
 	static int BOP_TIME = 500;
 
 	AudioPlayer song;
 	String songFile;
 
-	int roundInterval;
-	int currentRound;
+	AudioSample gong;
+	AudioSample whoosh;
 
+	int currentRound;
+	boolean gap;
+
+	boolean scoring;
 	long lastTime;
 	long lastTimeDiff;
 
@@ -26,7 +35,10 @@ public class BopperLevel extends Level {
 		super(parent, hud, sounds, players);
 
 		song = sounds.loadSong(songFile);
-		roundInterval = song.length()/(NUM_ROUNDS*players.length+1);
+		song.setGain(-100);
+
+		gong = sounds.getGong();
+		whoosh = sounds.getWhooshBubble();
 
 		reset();
 	}
@@ -54,15 +66,16 @@ public class BopperLevel extends Level {
 
 		song.rewind();
 
-		roundUpdate(0);
+		roundUpdate(0, false);
 	}
 
 	public void close() {
 		song.close();
 	}
 	
-	void roundUpdate(int nextRound) {
+	void roundUpdate(int nextRound, boolean nextGap) {
 		currentRound = nextRound;
+		gap = nextGap;
 
 		if(currentRound >= NUM_ROUNDS*players.length) {
 			for(Player player : players) {
@@ -74,14 +87,26 @@ public class BopperLevel extends Level {
 			defendingPlayer = null;
 			scoringPlayer = null;
 		} else {
-			defendingPlayer = players[currentRound%players.length];
-			defendingPlayer.activatePatches();
+			if(gap) {
+				for(Player player : players) {
+					player.clearPatches();
+					player.clearGloves();
+				}
 
-			for(Player player : players) {
-				if(player != defendingPlayer) player.clearPatches();
+				defendingPlayer = null;
+				scoringPlayer = null;
+
+				gong.trigger();
+			} else {
+				defendingPlayer = players[currentRound%players.length];
+				defendingPlayer.activatePatches();
+
+				for(Player player : players) {
+					if(player != defendingPlayer) player.clearPatches();
+				}
+
+				scoringPlayer = players[(currentRound+1)%players.length]; //TODO wut hack sorta
 			}
-
-			scoringPlayer = players[(currentRound+1)%players.length]; //TODO wut hack sorta
 		}
 	}
 
@@ -98,8 +123,13 @@ public class BopperLevel extends Level {
 			Patch bestPatch = defendingPlayer.getBestPatch();
 
 			if(bestPatch != null && bestPatch.getZone() > 0) {
+				if(!scoring) {
+					whoosh.trigger();
+					scoring = true;
+				}
+
 				if(currentTime-lastTime > BOP_TIME) {
-					scoringPlayer.addPoints(5);
+					scoringPlayer.addPoints(5, false);
 
 					(new Thread(new Runnable() {
 						public void run() {
@@ -117,14 +147,23 @@ public class BopperLevel extends Level {
 					bestPatch.setActive(false);
 					
 					lastTime = currentTime;
+					scoring = false;
 				}
 			} else {
+				if(scoring) {
+					whoosh.stop();
+					scoring = false;
+				}
+
 				lastTime = currentTime;
 			}
 		}
 
-		int nextRound = song.position()/roundInterval;
-		if(nextRound != currentRound) roundUpdate(nextRound);
+		int nextRound = song.position()/(ROUND_TIME+GAP_TIME);
+		boolean nextGap = false;
+		if(song.position()-(ROUND_TIME+GAP_TIME)*nextRound > ROUND_TIME) nextGap = true;
+
+		if(nextRound != currentRound || nextGap != gap) roundUpdate(nextRound, nextGap);
 	}
 
 	public String getName() {
@@ -159,7 +198,7 @@ public class BopperLevel extends Level {
 	}
 
 	public boolean isDone() {
-		return false;
+		return (currentRound >= NUM_ROUNDS*players.length);
 	}
 	
 	public void keyPressed(char key, int keyCode) {

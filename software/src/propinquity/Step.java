@@ -2,20 +2,31 @@ package propinquity;
 
 public class Step {
 
-	boolean coop;
+	StepType type;
 	boolean[][] patches;
 
-	public Step(boolean coop, boolean[][] patches) {
-		this.coop = coop;
-		this.patches = patches;
+	public Step(StepType type, boolean[][] patches) {
+		this.type = type;
+		if(type == StepType.TRANSITION) this.patches = new boolean[2][4];
+		else this.patches = patches;
 	}
 
 	public boolean[][] getPatches() {
 		return patches;
 	}
 
+	public StepType getType() {
+		return type;
+	}
+
 	public boolean isCoop() {
-		return coop;
+		if(type == StepType.COOP) return true;
+		else return false;
+	}
+
+	public boolean isTransition() {
+		if(type == StepType.TRANSITION) return true;
+		else return false;
 	}
 
 }

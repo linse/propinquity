@@ -16,6 +16,7 @@ public class Sounds {
 	Minim minim;
 
 	AudioSample bubbleLow, bubbleHigh;
+	AudioSample whoosh;
 	AudioSample whooshBubble;
 	AudioSample gong;
 
@@ -28,9 +29,11 @@ public class Sounds {
 		minim = new Minim(parent);
 
 		bubbleLow = minim.loadSample("sounds/bubble350Hz.mp3", BUFFER_SIZE);
-		bubbleLow.setGain(0.5f);
+		bubbleLow.setGain(-2);
 		bubbleHigh = minim.loadSample("sounds/bubble600Hz.mp3", BUFFER_SIZE);
-		bubbleHigh.setGain(0.5f);
+		bubbleHigh.setGain(-2);
+
+		whoosh = minim.loadSample("sounds/whoosh.mp3", BUFFER_SIZE);
 
 		whooshBubble = minim.loadSample("sounds/whooshbubble.mp3", BUFFER_SIZE);
 		gong = minim.loadSample("sounds/gong.mp3", BUFFER_SIZE);
@@ -49,6 +52,10 @@ public class Sounds {
 
 	public AudioSample getBubbleHigh() {
 		return bubbleHigh;
+	}
+
+	public AudioSample getWhoosh() {
+		return whoosh;
 	}
 
 	public AudioSample getWhooshBubble() {

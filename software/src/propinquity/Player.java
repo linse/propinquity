@@ -261,9 +261,17 @@ public class Player implements PConstants {
 	public void addPoints(int points) {
 		score.addPoints(points);
 	}
-	
+
+	public void addPoints(int points, boolean sound) {
+		score.addPoints(points, sound);
+	}
+
 	public void addPoints(int points, Color color) {
-		score.addPoints(points, color);
+		score.addPoints(points, color, true);
+	}
+	
+	public void addPoints(int points, Color color, boolean sound) {
+		score.addPoints(points, color, sound);
 	}
 	
 }
