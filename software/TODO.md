@@ -50,3 +50,8 @@ Playtest 3
 Playtest 4
 -----------------------------
 * Catch null pointers for wrong file name
+* Blinkning is confusing
+* All on maybe?
+* Coop color is bad
+* Gong at round end
+* Bigger center holding for rounds

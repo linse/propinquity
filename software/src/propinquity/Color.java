@@ -169,7 +169,7 @@ public class Color {
 	 * @return The color "teal" as a Color object.
 	 */
 	public static Color teal() {
-		return new Color(0, 255, 82);
+		return new Color(0, 255, 255);
 	}
 
 }

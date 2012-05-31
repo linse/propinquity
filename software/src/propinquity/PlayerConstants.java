@@ -20,7 +20,7 @@ public interface PlayerConstants {
 		Color.green()
 	};
 
-	public static final Color NEUTRAL_COLOR = Color.violet();
+	public static final Color NEUTRAL_COLOR = Color.teal();
 
 
 }

@@ -8,12 +8,13 @@ import java.util.*;
 
 public class ProxLevel extends Level {
 
-	static int TOTAL_LEN = 120000; //2min;
+	static int TOTAL_LEN = 180000; //2min;
 
 	long[] lastScoreTime;
 	long[] lastScoreTimePauseDiff;
 
 	AudioPlayer song;
+	AudioSample gong;
 	Vector<AudioPlayer> transitionSongs; //TODO Hack
 	int transitionCount;
 
@@ -37,6 +38,8 @@ public class ProxLevel extends Level {
 
 	public ProxLevel(Propinquity parent, Hud hud, Sounds sounds, String levelFile, Player[] players) throws XMLException {
 		super(parent, hud, sounds, players);
+
+		gong = sounds.getGong();
 
 		lastScoreTime = new long[players.length];
 		lastScoreTimePauseDiff = new long[players.length];
@@ -148,8 +151,7 @@ public class ProxLevel extends Level {
 		song.play();
 	}
 
-	public void reset() {
-		song.pause();
+	public void reset() {		
 		running = false;
 		
 		startTime = -1;
@@ -160,7 +162,11 @@ public class ProxLevel extends Level {
 		lastScoreTimePauseDiff = new long[players.length];
 		coopScore = 0;
 		
-		for(AudioPlayer song : transitionSongs) song.rewind();
+		for(AudioPlayer song : transitionSongs) {
+			song.pause();
+			song.setGain(0);
+			song.rewind();
+		}
 		song = transitionSongs.get(0);
 		stepUpdate(0); //Load for banner
 	}
@@ -199,6 +205,7 @@ public class ProxLevel extends Level {
 				player.clearGloves();
 				player.bump();
 			}
+
 			fader.fadeOut();
 		} else { //Otherwise do the step
 			for(int i = 0;i < players.length;i++) {
@@ -319,7 +326,8 @@ public class ProxLevel extends Level {
 			}
 
 			case 'e': { //Force End 
-				song.cue(song.length()-1000);
+				// song.cue(song.length()-1000);
+				startTime = parent.millis()-179000;
 				break;
 			}
 		}
@@ -418,6 +426,8 @@ public class ProxLevel extends Level {
 				}
 				song.setGain(0);
 			} else {
+				gong.trigger();
+
 				for(int i = 0;i < 100;i++) {
 					song.setGain(-(float)i/4);
 					try {
