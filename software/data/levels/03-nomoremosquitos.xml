@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <level name="Hard">
-	<song file="08 No More Mosquitos.mp3" bpm="60"/>
-	<!-- <song file="15 Hotcha (Razz-Ma-Tazz).mp3" bpm="60"/> -->
+	<song file="More Mosquitos.mp3" bpm="60"/>
 	<sequence>
 		<step mode="versus">
 			<player patch1="1" patch2="1" patch3="0" patch4="0"/>
