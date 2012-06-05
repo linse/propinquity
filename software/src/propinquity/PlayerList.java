@@ -100,7 +100,7 @@ public class PlayerList implements PlayerConstants, UIElement {
 		else removeButton.show();
 	}
 
-	public void reset() { //TODO can we lock the fields for god sakes
+	public void reset() { //TODO: can we lock the fields for god sakes
 		while(playerFields.size() > 0) removePlayer();
 
 		// load the player list

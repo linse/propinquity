@@ -15,7 +15,7 @@ public class ProxLevel extends Level {
 
 	AudioPlayer song;
 	AudioSample gong;
-	Vector<AudioPlayer> transitionSongs; //TODO Hack
+	Vector<AudioPlayer> transitionSongs; //TODO: Hack
 	int transitionCount;
 
 	String songFile;
@@ -90,7 +90,7 @@ public class ProxLevel extends Level {
 				StepType type = null;
 				if(modeString.equals("versus")) type = StepType.VERSUS;
 				else if(modeString.equals("transition")) {
-					type = StepType.TRANSITION; //TODO Hack
+					type = StepType.TRANSITION; //TODO: Hack
 					String songFile = step_tags[i].getString("file");
 					if(songFile == null || songFile.equals("")) {
 						System.err.println("Warning: XML for level \""+name+"\" step "+i+" is a transition tag with no file attribute, this might be corrent, but you should be sure");
@@ -185,7 +185,7 @@ public class ProxLevel extends Level {
 			transitionCount++;
 			fader.fadeOut();
 		} else if(!steps[currentStep].isTransition() && song.getGain() != 0) {
-			if(transitionSongs.size() > transitionCount) { //TODO Hack
+			if(transitionSongs.size() > transitionCount) { //TODO: Hack
 				song.pause();
 				song = transitionSongs.get(transitionCount);
 				song.play();
@@ -212,7 +212,7 @@ public class ProxLevel extends Level {
 				if(i < patchStates.length) {
 					players[i].step(coop, patchStates[i]);
 				} else {
-					//TODO warning here, there are too few patchStates, shoudn't happen
+					//TODO: warning here, there are too few patchStates, shoudn't happen
 					break;
 				}
 			}
@@ -237,7 +237,7 @@ public class ProxLevel extends Level {
 			Glove glove = players[i].getGlove();
 			if(glove.getActive()) {
 				Patch bestPatch = players[(i+1)%players.length].getBestPatch();
-				if(bestPatch != null) glove.setMode(bestPatch.getZone()); //TODO wut hack sorta
+				if(bestPatch != null) glove.setMode(bestPatch.getZone()); //TODO: wut hack sorta
 				else glove.setMode(0);
 			}
 		}
@@ -246,14 +246,14 @@ public class ProxLevel extends Level {
 		long currentTime = parent.millis();
 		
 		for(int i = 0;i < players.length;i++) {
-			Player proxPlayer = players[(i+1)%players.length]; //TODO wut hack sorta
+			Player proxPlayer = players[(i+1)%players.length]; //TODO: wut hack sorta
 			Player scoringPlayer = players[i];
 
 			Patch bestPatch = proxPlayer.getBestPatch();
 
 			if(bestPatch != null && bestPatch.getZone() > 0) {
 				if(coop) {
-					if(currentTime-lastScoreTime[i] > proxPlayer.getSpawnInterval() * 4) { //TODO COOP fudge factor
+					if(currentTime-lastScoreTime[i] > proxPlayer.getSpawnInterval() * 4) { //TODO: COOP fudge factor
 						coopScore++;
 						proxPlayer.addPoints(1, PlayerConstants.NEUTRAL_COLOR);
 						scoringPlayer.addPoints(1, PlayerConstants.NEUTRAL_COLOR);
@@ -300,7 +300,7 @@ public class ProxLevel extends Level {
 	}
 
 	public boolean isDone() {
-		return (currentStep == steps.length-1); //TODO Crappy ?
+		return (currentStep == steps.length-1); //TODO: Crappy ?
 	}
 	
 	public void keyPressed(char key, int keyCode) {

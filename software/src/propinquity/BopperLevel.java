@@ -105,7 +105,7 @@ public class BopperLevel extends Level {
 					if(player != defendingPlayer) player.clearPatches();
 				}
 
-				scoringPlayer = players[(currentRound+1)%players.length]; //TODO wut hack sorta
+				scoringPlayer = players[(currentRound+1)%players.length]; //TODO: wut hack sorta
 			}
 		}
 	}

@@ -102,7 +102,7 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 
 		try {
 			System.out.print(".");
-			Thread.sleep(500); //TODO is this needed?
+			Thread.sleep(500); //TODO: is this needed?
 		} catch(Exception e) {
 
 		}
@@ -174,9 +174,9 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 			}
 
 			xbee.addPacketListener(this);
-			xbees.put(ni, xbee); //TODO Check for collision
+			xbees.put(ni, xbee); //TODO: Check for collision
 
-			break; //TODO this is temporary to only get one xbee and got quicker
+			break; //TODO: this is temporary to only get one xbee and got quicker
 		}
 
 		System.out.println("Scan Complete");

@@ -78,7 +78,7 @@ public class HealthLevel extends Level {
 			Glove glove = players[i].getGlove();
 			if(glove.getActive()) {
 				Patch bestPatch = players[(i+1)%players.length].getBestPatch();
-				if(bestPatch != null) glove.setMode(bestPatch.getZone()); //TODO wut hack sorta
+				if(bestPatch != null) glove.setMode(bestPatch.getZone()); //TODO: wut hack sorta
 				else glove.setMode(0);
 			}
 		}
@@ -87,7 +87,7 @@ public class HealthLevel extends Level {
 		long currentTime = parent.millis();
 		
 		for(int i = 0;i < players.length;i++) {
-			Player proxPlayer = players[(i+1)%players.length]; //TODO wut hack sorta
+			Player proxPlayer = players[(i+1)%players.length]; //TODO: wut hack sorta
 			Player scoringPlayer = players[i];
 
 			Patch bestPatch = proxPlayer.getBestPatch();

@@ -284,7 +284,7 @@ public class Patch implements HardwareConstants {
 	 * @param mode the mode to put the patch in.
 	 */
 	public void setMode(int mode) {
-		if(mode > 1) mode = 1; //TODO Hack to make only 1 zone
+		if(mode > 1) mode = 1; //TODO: Hack to make only 1 zone
 		switch(mode) {
 			case 0:
 			default: { //Not in range: just patch color
