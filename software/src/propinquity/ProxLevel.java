@@ -77,7 +77,11 @@ public class ProxLevel extends Level {
 			throw new XMLException("XMLException: XML for level \"" + name + "\" has no song tag");
 		}
 
-		song = sounds.loadSong(songFile);
+		try {
+			song = sounds.loadSong(songFile);
+		} catch(Exception e) {
+			throw new NullPointerException("Loading song file failed. Likely file name invalid or file missing for level "+name+". Given file name was \""+songFile+"\".");
+		}
 		transitionSongs.add(song);
 
 		XMLElement[] step_tags = xml.getChildren("sequence/step");
@@ -95,7 +99,11 @@ public class ProxLevel extends Level {
 					if(songFile == null || songFile.equals("")) {
 						System.err.println("Warning: XML for level \""+name+"\" step "+i+" is a transition tag with no file attribute, this might be corrent, but you should be sure");
 					} else {
-						AudioPlayer song = sounds.loadSong(songFile);
+						try {
+							AudioPlayer song = sounds.loadSong(songFile);
+						} catch(Exception e) {
+							throw new NullPointerException("Loading song file failed. Likely file name invalid or file missing for level "+name+". Given file name was \""+songFile+"\".");
+						}
 						transitionSongs.add(song);
 					}
 				}

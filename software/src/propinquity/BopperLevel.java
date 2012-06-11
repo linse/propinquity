@@ -34,8 +34,13 @@ public class BopperLevel extends Level {
 	public BopperLevel(Propinquity parent, Hud hud, Sounds sounds, String songFile, Player[] players) {
 		super(parent, hud, sounds, players);
 
-		song = sounds.loadSong(songFile);
-		song.setGain(-100);
+		try {
+			song = sounds.loadSong(songFile);
+		} catch(Exception e) {
+			throw new NullPointerException("Loading song file failed. Likely file name invalid or file missing for BopperLevel. Given file name was \""+songFile+"\".");
+		}
+
+		// song.setGain(-100); //To mute the music
 
 		gong = sounds.getGong();
 		whoosh = sounds.getWhooshBubble();

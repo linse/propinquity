@@ -21,7 +21,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 	static final long serialVersionUID = 6340518174717159418L;
 	public static final int FPS = 30;
 
-	//General/Util		
+	//General/Util
 	HeapDebug heapDebug;
 	public Logger logger;
 
@@ -31,6 +31,9 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 
 	Sounds sounds;
 	Hud hud;
+
+	GLGraphicsOffScreen offscreen;
+	GLTextureFilter blur, thres;
 
 	//Xbee/Hardware
 	HardwareSimulator simulator; //Testing 
@@ -55,21 +58,19 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 	PBox2D box2d;
 	Fences fences;
 
-	GLGraphicsOffScreen offscreen;
-	GLTextureFilter blur, thres;
-
 	public void setup() {
 		size(1024, 768, GLConstants.GLGRAPHICS);
-	
-		offscreen = new GLGraphicsOffScreen(this, 1024, 768);
-		blur = new GLTextureFilter(this, "shaders/Blur.xml");
-		thres = new GLTextureFilter(this, "shaders/Thres.xml");
-		thres.setParameterValue("bright_threshold", 0.153f);
 
 		frameRate(FPS);
 		imageMode(PConstants.CENTER);
 		textureMode(PConstants.NORMAL);
 		hint(PConstants.ENABLE_OPENGL_4X_SMOOTH);
+
+		//Initialize the OpenGL stuff
+		offscreen = new GLGraphicsOffScreen(this, 1024, 768);
+		blur = new GLTextureFilter(this, "shaders/Blur.xml");
+		thres = new GLTextureFilter(this, "shaders/Thres.xml");
+		thres.setParameterValue("bright_threshold", 0.153f);
 
 		//General/Util
 		heapDebug = new HeapDebug();

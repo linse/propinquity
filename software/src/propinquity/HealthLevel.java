@@ -20,8 +20,12 @@ public class HealthLevel extends Level {
 		lastScoreTime = new long[players.length];
 		lastScoreTimePauseDiff = new long[players.length];
 
-		song = sounds.loadSong(songFile);
-
+		try {
+			song = sounds.loadSong(songFile);
+		} catch(Exception e) {
+			throw new NullPointerException("Loading song file failed. Likely file name invalid or file missing for HealthLevel. Given file name was \""+songFile+"\".");
+		}
+		
 		reset();
 	}
 
