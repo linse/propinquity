@@ -4,6 +4,8 @@ import ddf.minim.*;
 import processing.core.*;
 import propinquity.hardware.*;
 
+//TODO: Specify in javadocs that this is file preliminary sketch only
+
 public class BopperLevel extends Level {
 
 	static int NUM_ROUNDS = 3;
@@ -113,7 +115,7 @@ public class BopperLevel extends Level {
 					if(player != defendingPlayer) player.clearPatches();
 				}
 
-				scoringPlayer = players[(currentRound+1)%players.length]; //TODO: wut hack sorta
+				scoringPlayer = players[(currentRound+1)%players.length]; //TODO: Hack being use to get opponent. Nothing significantly better can be done with this hardware.
 			}
 		}
 	}

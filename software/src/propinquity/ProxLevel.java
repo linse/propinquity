@@ -81,7 +81,7 @@ public class ProxLevel extends Level {
 		try {
 			song = sounds.loadSong(songFile);
 		} catch(Exception e) {
-			throw new NullPointerException("Loading song file failed. Likely file name invalid or file missing for level "+name+". Given file name was \""+songFile+"\".");
+			throw new NullPointerException("Loading song file failed. Likely file name invalid or file missing for level \""+name+"\". Given file name was \""+songFile+"\".");
 		}
 		songs.add(song);
 
@@ -95,7 +95,7 @@ public class ProxLevel extends Level {
 				StepType type = null;
 				if(modeString.equals("versus")) type = StepType.VERSUS;
 				else if(modeString.equals("transition")) {
-					type = StepType.TRANSITION; //TODO: Hack
+					type = StepType.TRANSITION; //FIXME: Rework the transision mechanism
 					String songFile = step_tags[i].getString("file");
 					if(songFile == null || songFile.equals("")) {
 						System.err.println("Warning: XML for level \""+name+"\" step "+i+" is a transition tag with no file attribute, this might be corrent, but you should be sure");
@@ -103,7 +103,7 @@ public class ProxLevel extends Level {
 						try {
 							AudioPlayer song = sounds.loadSong(songFile);
 						} catch(Exception e) {
-							throw new NullPointerException("Loading song file failed. Likely file name invalid or file missing for level "+name+". Given file name was \""+songFile+"\".");
+							throw new NullPointerException("Loading song file failed. Likely file name invalid or file missing for level \""+name+"\". Given file name was \""+songFile+"\".");
 						}
 						songs.add(song);
 					}
@@ -217,13 +217,13 @@ public class ProxLevel extends Level {
 				player.bump();
 			}
 
-			fader.fadeOut();
+			fader.fadeOut(); //Mute the sound
 		} else { //Otherwise do the step
 			for(int i = 0;i < players.length;i++) {
 				if(i < patchStates.length) {
 					players[i].step(coop, patchStates[i]);
 				} else {
-					//TODO: warning here, there are too few patchStates, shoudn't happen
+					System.err.println("Warning: There are more players than we have patch state data for in level \""+name+"\", step number "+currentStep+". Specifically we have no data for player number "+i+". We'll refrain form setting the player's patches for this step.");
 					break;
 				}
 			}
@@ -247,8 +247,8 @@ public class ProxLevel extends Level {
 		for(int i = 0;i < players.length;i++) {
 			Glove glove = players[i].getGlove();
 			if(glove.getActive()) {
-				Patch bestPatch = players[(i+1)%players.length].getBestPatch();
-				if(bestPatch != null) glove.setMode(bestPatch.getZone()); //TODO: wut hack sorta
+				Patch bestPatch = players[(i+1)%players.length].getBestPatch(); //TODO: Hack being use to get opponent. Nothing significantly better can be done with this hardware.
+				if(bestPatch != null) glove.setMode(bestPatch.getZone());
 				else glove.setMode(0);
 			}
 		}
@@ -257,14 +257,14 @@ public class ProxLevel extends Level {
 		long currentTime = parent.millis();
 		
 		for(int i = 0;i < players.length;i++) {
-			Player proxPlayer = players[(i+1)%players.length]; //TODO: wut hack sorta
+			Player proxPlayer = players[(i+1)%players.length]; //TODO: Hack being use to get opponent. Nothing significantly better can be done with this hardware.
 			Player scoringPlayer = players[i];
 
 			Patch bestPatch = proxPlayer.getBestPatch();
 
 			if(bestPatch != null && bestPatch.getZone() > 0) {
 				if(coop) {
-					if(currentTime-lastScoreTime[i] > proxPlayer.getSpawnInterval() * 4) { //TODO: COOP fudge factor
+					if(currentTime-lastScoreTime[i] > proxPlayer.getSpawnInterval() * COOP_FUDGE_FACTOR) {
 						coopScore++;
 						proxPlayer.addPoints(1, PlayerConstants.NEUTRAL_COLOR);
 						scoringPlayer.addPoints(1, PlayerConstants.NEUTRAL_COLOR);
@@ -311,7 +311,7 @@ public class ProxLevel extends Level {
 	}
 
 	public boolean isDone() {
-		return (currentStep == steps.length-1); //TODO: Crappy ?
+		return (currentStep >= steps.length-1);
 	}
 	
 	public void keyPressed(char key, int keyCode) {

@@ -83,7 +83,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 		simulator = new HardwareSimulator(this);
 		
 		xbeeBaseStation = new XBeeBaseStation();
-		xbeeBaseStation.scanBlocking(); //TODO: use nonblock and resolve the timing issues with packet sending
+		xbeeBaseStation.scanBlocking(); //FIXME: Use nonblocking and hold packets until an Xbee has been found ...
 		xbeeManager = new XBeeManager(this, xbeeBaseStation);
 
 		// hardware = xbeeBaseStation;

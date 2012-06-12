@@ -8,4 +8,6 @@ public interface LevelConstants {
 
 	static final boolean PARTICLES_ABOVE = false;
 
+	static final float COOP_FUDGE_FACTOR = 3.5f;
+
 }

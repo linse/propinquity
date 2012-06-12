@@ -4,6 +4,8 @@ import ddf.minim.AudioPlayer;
 import processing.core.PConstants;
 import propinquity.hardware.*;
 
+//TODO: Specify in javadocs that this is file preliminary sketch only
+
 public class HealthLevel extends Level {
 
 	/**
@@ -80,8 +82,6 @@ public class HealthLevel extends Level {
 	}
 	
 	public void update() {
-		// TODO: Make sure all this logic works correctly.
-
 		long currentTime = parent.millis();
 
 		if(currentTime - lastTransferTime > SCORE_TIME) {
@@ -95,14 +95,14 @@ public class HealthLevel extends Level {
 		for(int i = 0;i < players.length;i++) {
 			Glove glove = players[i].getGlove();
 			if(glove.getActive()) {
-				Patch bestPatch = players[(i+1)%players.length].getBestPatch();
-				if(bestPatch != null) glove.setMode(bestPatch.getZone()); //TODO: wut hack sorta
+				Patch bestPatch = players[(i+1)%players.length].getBestPatch(); //TODO: Hack being use to get opponent. Nothing significantly better can be done with this hardware.
+				if(bestPatch != null) glove.setMode(bestPatch.getZone());
 				else glove.setMode(0);
 			}
 		}
 				
 		for(int i = 0;i < players.length;i++) {
-			Player proxPlayer = players[(i+1)%players.length]; //TODO: wut hack sorta
+			Player proxPlayer = players[(i+1)%players.length]; //TODO: Hack being use to get opponent. Nothing significantly better can be done with this hardware.
 			Player scoringPlayer = players[i];
 
 			Patch bestPatch = proxPlayer.getBestPatch();

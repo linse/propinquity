@@ -12,6 +12,8 @@ import gnu.io.*;
  */
 public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListener {
 
+	final int NUM_XBEES_USED = 1; //In a effort to keep some multi XBee functionality I've left this in and most of the multi-XBee support.
+
 	final int XBEE_BAUDRATE = 57600;
 	final int XBEE_RESPONSE_TIMEOUT = 1000;
 	final int XBEE_RETRY_TIMOUT = 250;
@@ -102,7 +104,7 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 
 		try {
 			System.out.print(".");
-			Thread.sleep(500); //TODO: is this needed?
+			Thread.sleep(500);
 		} catch(Exception e) {
 
 		}
@@ -174,9 +176,11 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 			}
 
 			xbee.addPacketListener(this);
-			xbees.put(ni, xbee); //TODO: Check for collision
+			XBee returnedXBee = xbees.put(ni, xbee);
 
-			break; //TODO: this is temporary to only get one xbee and got quicker
+			if(returnedXBee != null) System.err.println("Warning: You have at least two XBees flashed with the same NI: \""+ni+"\". One of the duplicate XBees was dropped.");
+
+			if(xbees.size() >= NUM_XBEES_USED) break;
 		}
 
 		System.out.println("Scan Complete");

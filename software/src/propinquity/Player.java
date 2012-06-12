@@ -6,8 +6,8 @@ import java.lang.Math;
 
 public class Player implements PConstants {
 	
-	public static final int SPAWN_DELAY_SHORT = 250;
-	public static final int SPAWN_DELAY_MED = 250; //TODO: Hack to make only one zone
+	public static final int SPAWN_DELAY_SHORT = 100;
+	public static final int SPAWN_DELAY_MED = 250;
 	public static final int SPAWN_DELAY_LONG = 1000;
 	public static final double SPAWN_DELAY_TAU = 3000;
 

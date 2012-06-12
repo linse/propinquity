@@ -100,7 +100,8 @@ public class PlayerList implements PlayerConstants, UIElement {
 		else removeButton.show();
 	}
 
-	public void reset() { //TODO: can we lock the fields for god sakes
+	public void reset() {
+		//I tried to lock the text field to no avail. I give up on actually using controlP5
 		while(playerFields.size() > 0) removePlayer();
 
 		// load the player list
