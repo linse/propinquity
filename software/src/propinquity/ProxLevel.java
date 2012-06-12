@@ -17,7 +17,7 @@ public class ProxLevel extends Level {
 	AudioSample gong;
 
 	int transitionCount;
-	Vector<AudioPlayer> transitionSongs; //TODO: Hack
+	Vector<AudioPlayer> songs;
 
 	String songFile;
 	int songBPM;
@@ -48,7 +48,7 @@ public class ProxLevel extends Level {
 
 		startTime = -1;
 
-		transitionSongs = new Vector<AudioPlayer>();
+		songs = new Vector<AudioPlayer>();
 
 		XMLElement xml = new XMLElement(parent, levelFile);
 
@@ -83,7 +83,7 @@ public class ProxLevel extends Level {
 		} catch(Exception e) {
 			throw new NullPointerException("Loading song file failed. Likely file name invalid or file missing for level "+name+". Given file name was \""+songFile+"\".");
 		}
-		transitionSongs.add(song);
+		songs.add(song);
 
 		XMLElement[] step_tags = xml.getChildren("sequence/step");
 		steps = new Step[step_tags.length+1];
@@ -105,7 +105,7 @@ public class ProxLevel extends Level {
 						} catch(Exception e) {
 							throw new NullPointerException("Loading song file failed. Likely file name invalid or file missing for level "+name+". Given file name was \""+songFile+"\".");
 						}
-						transitionSongs.add(song);
+						songs.add(song);
 					}
 				}
 				else type = StepType.COOP;
@@ -171,12 +171,12 @@ public class ProxLevel extends Level {
 		lastScoreTimePauseDiff = new long[players.length];
 		coopScore = 0;
 		
-		for(AudioPlayer song : transitionSongs) {
+		for(AudioPlayer song : songs) {
 			song.pause();
 			song.setGain(0);
 			song.rewind();
 		}
-		song = transitionSongs.get(0);
+		song = songs.get(0);
 		stepUpdate(0); //Load for banner
 	}
 
@@ -190,14 +190,14 @@ public class ProxLevel extends Level {
 		coop = steps[currentStep].isCoop();
 		boolean[][] patchStates = steps[currentStep].getPatches();
 		
-		if(steps[currentStep].isTransition() && song.getGain() == 0) {
+		if(steps[currentStep].isTransition() && (currentStep == 0 || (currentStep > 0 && !steps[currentStep-1].isTransition()))) {
 			transitionCount++;
 			fader.fadeOut();
 			for(Player player : players) player.transferScore();
-		} else if(!steps[currentStep].isTransition() && song.getGain() != 0) {
-			if(transitionSongs.size() > transitionCount) { //TODO: Hack
+		} else if(!steps[currentStep].isTransition() && (currentStep == 0 || (currentStep > 0 && steps[currentStep-1].isTransition()))) {
+			if(songs.size() > transitionCount) {
 				song.pause();
-				song = transitionSongs.get(transitionCount);
+				song = songs.get(transitionCount);
 				song.play();
 			}
 			// fader.fadeIn();
