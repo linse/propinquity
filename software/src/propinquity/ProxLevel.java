@@ -83,6 +83,7 @@ public class ProxLevel extends Level {
 		} catch(Exception e) {
 			throw new NullPointerException("Loading song file failed. Likely file name invalid or file missing for level \""+name+"\". Given file name was \""+songFile+"\".");
 		}
+
 		songs.add(song);
 
 		XMLElement[] step_tags = xml.getChildren("sequence/step");
@@ -93,8 +94,9 @@ public class ProxLevel extends Level {
 			for(int i = 0; i < step_tags.length; i++) {
 				String modeString = step_tags[i].getString("mode");
 				StepType type = null;
-				if(modeString.equals("versus")) type = StepType.VERSUS;
-				else if(modeString.equals("transition")) {
+				if(modeString.equals("versus")) {
+					type = StepType.VERSUS;
+				} else if(modeString.equals("transition")) {
 					type = StepType.TRANSITION; //FIXME: Rework the transision mechanism
 					String songFile = step_tags[i].getString("file");
 					if(songFile == null || songFile.equals("")) {
@@ -102,13 +104,14 @@ public class ProxLevel extends Level {
 					} else {
 						try {
 							AudioPlayer song = sounds.loadSong(songFile);
+							songs.add(song);
 						} catch(Exception e) {
 							throw new NullPointerException("Loading song file failed. Likely file name invalid or file missing for level \""+name+"\". Given file name was \""+songFile+"\".");
 						}
-						songs.add(song);
 					}
+				} else {
+					type = StepType.COOP;
 				}
-				else type = StepType.COOP;
 
 				XMLElement[] player_tags = step_tags[i].getChildren("player");
 				boolean patches[][] = new boolean[player_tags.length][4];
@@ -192,10 +195,13 @@ public class ProxLevel extends Level {
 		
 		if(steps[currentStep].isTransition() && (currentStep == 0 || (currentStep > 0 && !steps[currentStep-1].isTransition()))) {
 			transitionCount++;
+			System.out.println("Bang "+transitionCount);
 			fader.fadeOut();
 			for(Player player : players) player.transferScore();
-		} else if(!steps[currentStep].isTransition() && (currentStep == 0 || (currentStep > 0 && steps[currentStep-1].isTransition()))) {
+		} else if(!steps[currentStep].isTransition() && currentStep > 0 && steps[currentStep-1].isTransition()) {
+			System.out.println("Bong");
 			if(songs.size() > transitionCount) {
+				System.out.println("New Song");
 				song.pause();
 				song = songs.get(transitionCount);
 				song.play();

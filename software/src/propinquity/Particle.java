@@ -24,20 +24,15 @@ public class Particle {
 	PGraphics texture;
 
 	Propinquity parent;
+	GLGraphicsOffScreen canvas;
 
-	boolean useOffscreen;
-
-	public Particle(Propinquity parent, Vec2 position, Color color, float scale, boolean isNew) {
-		this(parent, position, color, scale, isNew, true);
-	}
-
-	public Particle(Propinquity parent, Vec2 position, Color color, float scale, boolean isNew, boolean useOffscreen) {
+	public Particle(Propinquity parent, GLGraphicsOffScreen canvas, Vec2 position, Color color, float scale, boolean isNew) {
 		this.parent = parent;
 		this.position = position;
 		this.color = color;
 		this.scale = scale;
 
-		this.useOffscreen = useOffscreen;
+		this.canvas = canvas;
 
 		PImage imgParticle = parent.loadImage("data/particles/softparticle.png");
 		texture = new PGraphics();
@@ -93,34 +88,16 @@ public class Particle {
 	public void draw() {
 		position = parent.box2d.getBodyPixelCoord(body);
 
-		if(useOffscreen) { //FIXME: Make each particle hold a GLOffscreen or PApplet
-			GLGraphicsOffScreen offscreen = parent.getOffscreen();
+		canvas.beginDraw();
 
-			offscreen.beginDraw();
+		canvas.pushMatrix();
+		canvas.translate(position.x, position.y);
+		canvas.scale(METABALL_OVERSIZE_FACTOR * scale * texture.width/2f);
+		canvas.tint(color.toInt(parent));
+		canvas.image(texture, -1, -1, 2, 2);
+		canvas.noTint();
+		canvas.popMatrix();
 
-			offscreen.pushMatrix();
-			offscreen.translate(position.x, position.y);
-			offscreen.scale(METABALL_OVERSIZE_FACTOR * scale * texture.width/2f);
-			offscreen.tint(color.toInt(parent));
-			offscreen.image(texture, -1, -1, 2, 2);
-			offscreen.noTint();
-			offscreen.popMatrix();
-
-			offscreen.endDraw();
-		} else {
-			parent.pushMatrix();
-			parent.translate(position.x, position.y);
-			parent.scale(scale * texture.width/2f);
-			parent.beginShape();
-			parent.texture(texture);
-			parent.tint(color.toInt(parent));
-			parent.vertex(-1, -1, 0, 0, 0);
-			parent.vertex(1, -1, 0, 1, 0);
-			parent.vertex(1, 1, 0, 1, 1);
-			parent.vertex(-1, 1, 0, 0, 1);
-			parent.noTint();
-			parent.endShape();
-			parent.popMatrix();
-		}
+		canvas.endDraw();
 	}
 }

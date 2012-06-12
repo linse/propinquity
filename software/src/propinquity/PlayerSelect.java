@@ -66,7 +66,7 @@ public class PlayerSelect implements UIElement {
 		particles = new Particle[num];
 
 		for(int i = 0; i < num; i++) {
-			Particle p = new Particle(parent, new Vec2(parent.width/2+PApplet.cos(PApplet.TWO_PI/particles.length * i) * radius,
+			Particle p = new Particle(parent, parent.getOffscreen(), new Vec2(parent.width/2+PApplet.cos(PApplet.TWO_PI/particles.length * i) * radius,
 					parent.height/2+PApplet.sin(PApplet.TWO_PI/particles.length * i) * radius), color, Particle.LARGE_SIZE, true);
 			particles[i] = p;
 		}
