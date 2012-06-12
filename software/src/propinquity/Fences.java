@@ -21,7 +21,8 @@ public class Fences {
 	 * This denotes the number of sections into which the fence circle will be broken up to form a polygon.
 	 */
 	public static final int SECTIONS = 24;
-	public static final int INNER_RADIUS = 100;
+	public static final int INNER_RADIUS_SMALL = 100;
+	public static final int INNER_RADIUS_MEDIUM = 170;
 	public static final int OUTER_RADIUS = 350;
 	
 	public static final short CAT_NEW = 0x0001;
@@ -56,7 +57,7 @@ public class Fences {
 
 		float fenceDepth = 0.05f;
 		float worldScale = parent.height/parent.worldSize;
-		float radius = INNER_RADIUS/worldScale + fenceDepth/2 + 0.0125f;
+		float radius = INNER_RADIUS_MEDIUM/worldScale + fenceDepth/2 + 0.0125f;
 		float perimeter = 2 * PConstants.PI * radius;
 
 		innerFence = box2d.createBody(bd);

@@ -29,7 +29,7 @@ public class Hud {
 
 	public PFont font;
 
-	public PImage hudInnerBoundary, hudOuterBoundary;
+	public PImage hudInnerBoundarySmall, hudInnerBoundaryMedium, hudOuterBoundary;
 	public PImage hudPlay, hudLevelComplete, hudPlayAgain;
 	public PImage hudBannerSide, hudBannerCenter;
 
@@ -44,7 +44,8 @@ public class Hud {
 
 		font = parent.loadFont("hud/Calibri-Bold-32.vlw");
 
-		hudInnerBoundary = parent.loadImage("hud/innerBoundary.png");
+		hudInnerBoundarySmall = parent.loadImage("hud/innerBoundarySmall.png");
+		hudInnerBoundaryMedium = parent.loadImage("hud/innerBoundaryMedium.png");
 		hudOuterBoundary = parent.loadImage("hud/outerBoundary.png");
 
 		hudBannerCenter = parent.loadImage("hud/bannercenter.png");
@@ -280,15 +281,37 @@ public class Hud {
 	}
 
 	/**
-	 * Draw the inner fence boundary circle graphic.
+	 * Draw the small inner boundary circle graphic.
 	 */
 	public void drawInnerBoundary() {
+		drawInnerBoundaryMedium();
+	}
+
+
+
+	/**
+	 * Draw the small fence boundary circle graphic.
+	 */
+	public void drawInnerBoundarySmall() {
 		// gl.glEnable(GL.GL_BLEND);
 		// gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 
 		parent.pushMatrix();
 		parent.translate(parent.width/2 - 1, parent.height/2);
-		parent.image(hudInnerBoundary, 0, 0);
+		parent.image(hudInnerBoundarySmall, 0, 0);
+		parent.popMatrix();
+	}
+
+	/**
+	 * Draw the medium fence boundary circle graphic.
+	 */
+	public void drawInnerBoundaryMedium() {
+		// gl.glEnable(GL.GL_BLEND);
+		// gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+
+		parent.pushMatrix();
+		parent.translate(parent.width/2 - 1, parent.height/2);
+		parent.image(hudInnerBoundaryMedium, 0, 0);
 		parent.popMatrix();
 	}
 

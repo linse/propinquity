@@ -82,8 +82,11 @@ public class BopperLevel extends Level {
 		currentRound = nextRound;
 		gap = nextGap;
 
+		for(Player player : players) player.transferScore();
+
 		if(currentRound >= NUM_ROUNDS*players.length) {
 			for(Player player : players) {
+				player.transferScore();
 				player.clearPatches();
 				player.clearGloves();
 				player.bump();

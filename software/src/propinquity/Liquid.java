@@ -26,7 +26,6 @@ public class Liquid {
 	Color color;
 
 	public Liquid(Propinquity parent, Color color) {
-
 		this.parent = parent;
 		this.color = color;
 
@@ -158,10 +157,9 @@ public class Liquid {
 	}
 
 	public void Update() {
-		
 		applyGravity();
 		
-		if(particlesCreated.size() + particlesHeld.size() > MAX_PARTICLES) {
+		if(particlesHeld.size() > MAX_PARTICLES) {
 			mergeParticles();
 		}
 	}

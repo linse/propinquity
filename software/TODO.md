@@ -18,14 +18,13 @@ Software
 Firmware/Patch/Glove Control
 -----------------------------
 * Graceful fail (duty 0)
-* alt send mechanism (everything 5 times a sec?)
+* Alternate send mechanism (everything 5 times a sec?)
 * "Drop" patch if it hasn't been seen in a certain amount of time (to avoid points when patches spaz out)
 
 Hardware
 -----------------------------
 * Could the red/prox issue be due to current draw issues
 * XBee stress test
-* Fix chargers
 
 Playtest 2
 -----------------------------
@@ -33,25 +32,11 @@ Playtest 2
 
 Playtest 3
 -----------------------------
-* Intro sounds and transistion sounds
-* Prox version with coop
-	* Intro, sounds/fanfare
-	* DONE Transition sounds between coop and versus and/or slience and/or song change
-	* Long ambient coop, short slow beat versus, medium medium/slow beat coop, medium high energy versus
-	* One patch should always be on across step transitions (same type)
-* Cerimonial Bopper
-	* Intro, sounds/fanfare, "calibration" for fixed feet
-	* DONE Gong between the rounds (acts as a pause) 
-	* DONE Vvvvv before score
-	* Maybe health
-* Bopper Multipop
+* Bopper multipop
 * Health multiscore
 
 Playtest 4
 -----------------------------
-* Catch null pointers for wrong file name
-* Blinkning is confusing
-* All on maybe?
+* Blinking is confusing
+* All patches on maybe
 * Coop color is bad
-* Gong at round end
-* Bigger center holding for rounds

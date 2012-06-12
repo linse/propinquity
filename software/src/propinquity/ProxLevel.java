@@ -15,8 +15,9 @@ public class ProxLevel extends Level {
 
 	AudioPlayer song;
 	AudioSample gong;
-	Vector<AudioPlayer> transitionSongs; //TODO: Hack
+
 	int transitionCount;
+	Vector<AudioPlayer> transitionSongs; //TODO: Hack
 
 	String songFile;
 	int songBPM;
@@ -192,13 +193,15 @@ public class ProxLevel extends Level {
 		if(steps[currentStep].isTransition() && song.getGain() == 0) {
 			transitionCount++;
 			fader.fadeOut();
+			for(Player player : players) player.transferScore();
 		} else if(!steps[currentStep].isTransition() && song.getGain() != 0) {
 			if(transitionSongs.size() > transitionCount) { //TODO: Hack
 				song.pause();
 				song = transitionSongs.get(transitionCount);
 				song.play();
 			}
-			fader.fadeIn();
+			// fader.fadeIn();
+			song.setGain(0);
 		}
 
 		// System.out.println(currentStep+" - "+steps[currentStep].isCoop()+" - "+steps[currentStep].isTransition());

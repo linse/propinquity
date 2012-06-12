@@ -86,8 +86,8 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 		xbeeBaseStation.scanBlocking(); //TODO: use nonblock and resolve the timing issues with packet sending
 		xbeeManager = new XBeeManager(this, xbeeBaseStation);
 
-		hardware = xbeeBaseStation;
-		// hardware = simulator;
+		// hardware = xbeeBaseStation;
+		hardware = simulator;
 
 		//Player/Player List
 		if(MAX_PLAYERS < 2) {
@@ -149,8 +149,8 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 			}
 		}
 
-		tmp_levels.add(new BopperLevel(this, hud, sounds, "11 Besouro.mp3", players));
-		tmp_levels.add(new HealthLevel(this, hud, sounds, "05 Leila Came Round And We Watched A Video.mp3", players));
+		tmp_levels.add(new BopperLevel(this, hud, sounds, "Besouro.mp3", players));
+		tmp_levels.add(new HealthLevel(this, hud, sounds, "Leila Came Round And We Watched A Video.mp3", players));
 
 		levels = tmp_levels.toArray(new Level[0]);
 		if(levels.length == 0) {

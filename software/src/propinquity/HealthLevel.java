@@ -6,8 +6,15 @@ import propinquity.hardware.*;
 
 public class HealthLevel extends Level {
 
+	/**
+	 * The amount of time (in ms) that must pass before all new particles are
+	 * tallied and added to the player's permanent score.
+	 */
+	public static final int SCORE_TIME = 5000;
+
 	long[] lastScoreTime;
 	long[] lastScoreTimePauseDiff;
+	long lastTransferTime;
 
 	AudioPlayer song;
 	String songFile;
@@ -74,6 +81,13 @@ public class HealthLevel extends Level {
 	
 	public void update() {
 		// TODO: Make sure all this logic works correctly.
+
+		long currentTime = parent.millis();
+
+		if(currentTime - lastTransferTime > SCORE_TIME) {
+			for(Player player : players) player.transferScore();
+			lastTransferTime = currentTime;
+		}
 		
 		for(Player player : players) player.update();
 
@@ -86,10 +100,7 @@ public class HealthLevel extends Level {
 				else glove.setMode(0);
 			}
 		}
-		
-		// Handle health
-		long currentTime = parent.millis();
-		
+				
 		for(int i = 0;i < players.length;i++) {
 			Player proxPlayer = players[(i+1)%players.length]; //TODO: wut hack sorta
 			Player scoringPlayer = players[i];
@@ -142,6 +153,7 @@ public class HealthLevel extends Level {
 		if(playersAlive <= 1) {
 			if(!ended) {
 				for(Player player : players) {
+					player.transferScore();
 					player.clearGloves();
 					player.clearPatches();
 					player.bump();
