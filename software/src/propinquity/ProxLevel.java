@@ -178,7 +178,9 @@ public class ProxLevel extends Level {
 			song.pause();
 			song.setGain(0);
 			song.rewind();
+			//rewound
 		}
+
 		song = songs.get(0);
 		stepUpdate(0); //Load for banner
 	}
@@ -195,13 +197,10 @@ public class ProxLevel extends Level {
 		
 		if(steps[currentStep].isTransition() && (currentStep == 0 || (currentStep > 0 && !steps[currentStep-1].isTransition()))) {
 			transitionCount++;
-			System.out.println("Bang "+transitionCount);
 			fader.fadeOut();
 			for(Player player : players) player.transferScore();
 		} else if(!steps[currentStep].isTransition() && currentStep > 0 && steps[currentStep-1].isTransition()) {
-			System.out.println("Bong");
 			if(songs.size() > transitionCount) {
-				System.out.println("New Song");
 				song.pause();
 				song = songs.get(transitionCount);
 				song.play();

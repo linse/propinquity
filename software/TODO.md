@@ -43,3 +43,4 @@ Playtest 4
 * Blinking is confusing
 * All patches on maybe
 * Coop color is bad
+* Song doesn't rewind properly
