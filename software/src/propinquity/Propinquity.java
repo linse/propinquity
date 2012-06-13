@@ -15,6 +15,10 @@ import java.util.*;
 
 import codeanticode.glgraphics.*;
 
+/**
+ * This class is the processing sketch at the center of the Propinquity software. It contains the main draw loop, instatiates all primary objects and handles game state and game flow.
+ *
+ */
 public class Propinquity extends PApplet implements PlayerConstants, LevelConstants {
 
 	/** Unique serialization ID. */
