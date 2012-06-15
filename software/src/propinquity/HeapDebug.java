@@ -1,5 +1,9 @@
 package propinquity;
 
+/**
+ * This is a simple low-fi threaded utility to debug the heap size. When it is running it prints information about the heap size at regular intervals.
+ *
+ */
 public class HeapDebug implements Runnable {
 
 	static int MB = 1024*1024;

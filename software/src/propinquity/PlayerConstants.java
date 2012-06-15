@@ -1,5 +1,9 @@
 package propinquity;
 
+/**
+ * Convenient interface to hold some constants which are common the all players and may also need to be accessed elsewhere.
+ *
+ */
 public interface PlayerConstants {
 
 	static final int MIN_PLAYERS = 2;

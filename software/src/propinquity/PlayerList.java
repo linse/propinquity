@@ -4,6 +4,10 @@ import processing.core.*;
 import java.util.*;
 import controlP5.*;
 
+/**
+ * Provides an (ugly) inteface which allows you to input player names. You are provided with a, dynamically variable number of text boxes to input the player names.
+ *
+ */
 public class PlayerList implements PlayerConstants, UIElement {
 
 	final int WIDTH = 200;

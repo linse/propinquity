@@ -8,6 +8,10 @@ import org.jbox2d.dynamics.BodyDef;
 import processing.core.*;
 import codeanticode.glgraphics.*;
 
+/**
+ * Represents a particle with a scale, color and position. As well particles must be specified to draw to arbitrary offscreen canavases (used to apply opengl effects) and can be specified to addhere to different sets of fences.
+ *
+ */
 public class Particle {
 
 	public static final float SMALL_SIZE = 0.5f;

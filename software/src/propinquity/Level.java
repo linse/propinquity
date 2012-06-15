@@ -2,6 +2,12 @@ package propinquity;
 
 import propinquity.hardware.*;
 
+/**
+ * This abstract class hold common behavior and methods for all type of Level. Each type of Level may have different game mechanics, scoring, etc. However, by implementing this abstract class, the can be easily handled using generics.
+ *
+ * It would be profitable if more common behavior could be migrated in this abstract class.
+ *
+ */
 public abstract class Level implements UIElement, ProxEventListener, LevelConstants {
 
 	Propinquity parent;

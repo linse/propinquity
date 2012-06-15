@@ -6,7 +6,7 @@ import processing.core.*;
 import processing.opengl.PGraphicsOpenGL;
 
 /**
- * Handles Propinquity's Heads-Up Display, which shows player names, scores and
+ * Handles Propinquity's Heads-Up Display, which shows player names, scores, draws the rings and
  * other graphics.
  * 
  * @author Stephane Beniak, Severin Smith

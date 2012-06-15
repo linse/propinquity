@@ -4,6 +4,10 @@ import org.jbox2d.common.Vec2;
 
 import processing.core.*;
 
+/**
+ * The level select draws a circular GUI which lets the user select the level they would like to play. All the levels are displayed as dots around a ring. By using the arrow keys, they players can inspect the level names and select the level they wish to play.
+ *
+ */
 public class LevelSelect implements UIElement {
 
 	Propinquity parent;

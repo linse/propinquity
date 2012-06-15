@@ -3,7 +3,7 @@ package propinquity;
 import processing.core.PApplet;
 
 /**
- * Handles the creation, manipulation and conversion of colors.
+ * Represents a color. Handles the creation, manipulation and conversion of colors.
  * 
  * @author Stephane Beniak
  */

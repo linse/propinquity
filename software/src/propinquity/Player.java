@@ -4,6 +4,10 @@ import processing.core.PConstants;
 import propinquity.hardware.*;
 import java.lang.Math;
 
+/**
+ * Represents the player and holds his glove, patches and score. It provides some high level mechanisms to clear and set gloves and patches. It also currently provides some elements of gameplay needed for certain levels, it would be nice if this was decoupled in the future.
+ *
+ */
 public class Player implements PConstants {
 	
 	public static final int SPAWN_DELAY_SHORT = 100;
@@ -25,7 +29,7 @@ public class Player implements PConstants {
 	long bestPatchTime;
 	long bestPatchTimePauseDiff;
 
-	long bopTime;
+	long bopTime; //FIXME: There is level elements in player, is there a nice way this could be fixed? The player should be level agnostic.
 	long bopTimeDiff;
 
 	Score score;

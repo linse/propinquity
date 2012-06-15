@@ -2,6 +2,10 @@ package propinquity;
 
 import ddf.minim.AudioSample;
 
+/**
+ * Hold the player's score and it's liquid representation. This includes the total score and the temporary round score which is held in the middle pool.
+ *
+ */
 public class Score {
 
 	public Liquid liquid;

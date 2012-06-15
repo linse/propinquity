@@ -6,7 +6,7 @@ import controlP5.*;
 import propinquity.hardware.*;
 
 /**
- * XBeeManager is a simple graphical front end to wrap the XBeeBaseStation.
+ * XBeeManager is a simple graphical front end to wrap the XBeeBaseStation. It reports on the results of the XBeeBaseStation scan.
  *
  */
 public class XBeeManager implements UIElement {

@@ -5,6 +5,10 @@ import java.util.*;
 import java.awt.event.KeyEvent;
 import propinquity.*;
 
+/**
+ * Provides a simulated hardware system which can be controlled using they keyboard.
+ *
+ */
 public class HardwareSimulator implements HardwareInterface, UIElement {
 
 	PApplet p;

@@ -6,6 +6,12 @@ import propinquity.hardware.*;
 import ddf.minim.*;
 import java.util.*;
 
+/**
+ * The ProxLevel is the "original" game mechanic for Propinquity, players score by being in proximity to the opponent's patches. The opponent's patches may not be on at all times. There are also cooperative and versus rounds and there are pauses between rounds. It supports loading a level from an XML file and can have multiple songs per level.
+ *
+ * It is currently not in use, but support two scoring zones.
+ *
+ */
 public class ProxLevel extends Level {
 
 	static int TOTAL_LEN = 180000; //2min;

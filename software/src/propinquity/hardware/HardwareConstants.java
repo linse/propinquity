@@ -1,5 +1,9 @@
 package propinquity.hardware;
 
+/**
+ * Convenient interface to hold some constants which are common the all hardware and may also need to be accessed elsewhere.
+ *
+ */
 public interface HardwareConstants {
 
 	static final boolean MIN_PACK = false;

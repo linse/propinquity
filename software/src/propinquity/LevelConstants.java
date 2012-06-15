@@ -1,5 +1,9 @@
 package propinquity;
 
+/**
+ * Convenient interface to hold some constants which are common the all levels and may also need to be accessed elsewhere.
+ *
+ */
 public interface LevelConstants {
 
 	static final int DEFAULT_BPM = 120;

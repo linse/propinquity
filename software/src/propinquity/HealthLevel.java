@@ -4,8 +4,14 @@ import ddf.minim.AudioPlayer;
 import processing.core.PConstants;
 import propinquity.hardware.*;
 
-//TODO: Specify in javadocs that this is file preliminary sketch only
-
+/**
+ * <p>In the HealthLevel, each patch represents a quantity of health, being in proximity to a patch causes it to "bleed out" loosing health. When a player has no more health left on any patches he/she has lost.</p>
+ *
+ * <p>If neither player has run out of health after a certain amount of time, the player with the highest health wins.</p>
+ *
+ * <p>This implementation was only a rough sketch done for playtesting and should be reworked if it is to be used permanently.</p>
+ *
+ */
 public class HealthLevel extends Level {
 
 	/**

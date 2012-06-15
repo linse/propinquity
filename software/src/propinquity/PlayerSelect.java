@@ -5,6 +5,10 @@ import org.jbox2d.common.Vec2;
 import processing.core.*;
 import propinquity.hardware.*;
 
+/**
+ * The player select draws a circular GUI which lets each player select his/her color. All the colors are displayed as dots around a ring. By using the arrow keys, each player can select the color of the hardware he/she is wearing. This color is then illiminated before the next player is made to select his/her color.
+ *
+ */
 public class PlayerSelect implements UIElement {
 
 	Propinquity parent;

@@ -1,5 +1,9 @@
 package propinquity;
 
+/**
+ * Represents a step element from the XML level file for the ProxLevel game mechanic.
+ *
+ */
 public class Step {
 
 	StepType type;

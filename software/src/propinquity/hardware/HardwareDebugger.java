@@ -3,6 +3,10 @@ package propinquity.hardware;
 import processing.core.*;
 import controlP5.*;
 
+/**
+ * A hacky sketch to test patches or gloves, provded buttons and sliders to control active, vibe and LEDS as well as giving prox value back.
+ *
+ */
 public class HardwareDebugger extends PApplet implements ProxEventListener {
 
 	// Unique serialization ID

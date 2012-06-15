@@ -1,5 +1,9 @@
 package propinquity.hardware;
 
+/**
+ * Encodes the type of a packet and the associated command code.
+ *
+ */
 public enum PacketType {
 	
 	PROX(1),

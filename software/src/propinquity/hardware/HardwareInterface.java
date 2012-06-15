@@ -1,5 +1,9 @@
 package propinquity.hardware;
 
+/**
+ * Interface that describe what a hardware implementation must provided as external features. This is subsequently implemented by any XBee control code or hardware simluator code.
+ *
+ */
 public interface HardwareInterface {
 
 	public void addPatch(Patch patch);

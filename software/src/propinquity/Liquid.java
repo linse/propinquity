@@ -7,6 +7,10 @@ import org.jbox2d.common.Vec2;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
+/**
+ * The Liquid class provides a mechanism to create and manage a group of particles affect by a gravity which are intented to simulate a "liquid". Each instance of the liquid class supports it's own "independant" gravity. In addition it manages transfering particles between the inner "temporary" zone where they are held during rounds and the outer zone which hold the overall liquid.
+ *
+ */
 public class Liquid {
 
 	/** The strength of the acceleration acting on the particles. */
@@ -133,7 +137,7 @@ public class Liquid {
 
 	private void applyGravity() {
 		int playerCount = parent.level.players.length;
-		int playerIndex = 0;
+		int playerIndex = 0; //FIXME: There should be a standard way of determining what player we are dealing with.
 		
 		for(int i = 0; i < playerCount; i++) {
 			if(color.equals(PlayerConstants.PLAYER_COLORS[i]))

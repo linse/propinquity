@@ -1,5 +1,9 @@
 package propinquity.hardware;
 
+/**
+ * Represents a communication packet between a glove/patch and the computer.
+ *
+ */
 public class Packet {
 
 	final int dest_addr;

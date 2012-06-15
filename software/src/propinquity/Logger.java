@@ -7,6 +7,8 @@ import processing.video.MovieMaker;
 
 /**
  * Handles both text and video logging of the application as it runs.
+ *
+ * Currently the text logging is not used.
  * 
  */
 public class Logger {

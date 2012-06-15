@@ -4,8 +4,14 @@ import ddf.minim.*;
 import processing.core.*;
 import propinquity.hardware.*;
 
-//TODO: Specify in javadocs that this is file preliminary sketch only
-
+/**
+ * <p>The BopperLevel is a whack-a-mole type turn based game. In each round one player attacks and one player defends. All the defending player's patches light up and the attacking player has a fixed amount of time to "bop" the defending player's patches. Once the round has elapsed the attacking and defending players are switched.</p>
+ *
+ * <p>When a patch is "bopped" by proximity the attacking player gets a fixed number of points and the patch is turned off, thus the attacker can no longer score on that patch. Thus there is a maximum number of potential points per round.</p>
+ *
+ * <p>This implementation was only a rough sketch done for playtesting and should be reworked if it is to be used permanently.</p>
+ *
+ */
 public class BopperLevel extends Level {
 
 	static int NUM_ROUNDS = 3;

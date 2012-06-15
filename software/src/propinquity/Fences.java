@@ -11,7 +11,7 @@ import processing.core.PConstants;
 import processing.core.PApplet;
 
 /**
- * Pertains to the inner and outer fences of the Propinquity game world.
+ * Handles the inner and outer fences of the Propinquity game world with respect to the BOX2D engine.
  * 
  * @author Stephane Beniak
  */
