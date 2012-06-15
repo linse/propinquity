@@ -163,7 +163,7 @@ public class ProxLevel extends Level {
 		song.play();
 	}
 
-	public void reset() {		
+	public void reset() {
 		running = false;
 		
 		startTime = -1;
@@ -175,9 +175,9 @@ public class ProxLevel extends Level {
 		coopScore = 0;
 		
 		for(AudioPlayer song : songs) {
+			song.rewind();
 			song.pause();
 			song.setGain(0);
-			song.rewind();
 			//rewound
 		}
 
@@ -208,8 +208,6 @@ public class ProxLevel extends Level {
 			// fader.fadeIn();
 			song.setGain(0);
 		}
-
-		// System.out.println(currentStep+" - "+steps[currentStep].isCoop()+" - "+steps[currentStep].isTransition());
 
 		// Reset coop score when leaving coop step.
 		if(lastCoop && !coop) coopScore = 0;
@@ -324,8 +322,8 @@ public class ProxLevel extends Level {
 
 		switch(key) {
 			case BACKSPACE: {
-				reset(); //Make sure particles are gone
 				if(song.position() == 0) parent.changeGameState(GameState.LevelSelect);
+				else reset(); //Make sure particles are gone
 				break;
 			}
 

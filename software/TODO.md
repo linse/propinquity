@@ -18,6 +18,12 @@ Software
 * isDone() mechanisms need rework, likely as part of a whole rework of the Transition/Step mechanism or something similar. (Actually maybe it's fine ...)
 * Build particles with a specific buffer to draw too, much more agnostic
 
+Minim Gripes
+-----------------------------
+* Debug granularity
+* Rewind behavior
+* Mechanism for song ending naturally
+
 Firmware/Patch/Glove Control
 -----------------------------
 * Graceful fail (duty 0)
