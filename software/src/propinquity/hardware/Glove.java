@@ -158,8 +158,8 @@ public class Glove implements HardwareConstants {
 				break;
 			}
 			case 1: { //In range: color and vibe pulse
-				setVibeDuty(127);
-				setVibePeriod(SLOW_BLINK);
+				// setVibeDuty(127);
+				setVibePeriod(0);
 				setVibeLevel(255);
 				break;
 			}
