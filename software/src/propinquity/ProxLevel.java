@@ -181,8 +181,8 @@ public class ProxLevel extends Level {
 		coopScore = 0;
 		
 		for(AudioPlayer song : songs) {
-			song.rewind();
 			song.pause();
+			song.rewind();
 			song.setGain(0);
 			//rewound
 		}
@@ -227,6 +227,7 @@ public class ProxLevel extends Level {
 			}
 
 			fader.fadeOut(); //Mute the sound
+			song.pause();
 		} else { //Otherwise do the step
 			for(int i = 0;i < players.length;i++) {
 				if(i < patchStates.length) {
