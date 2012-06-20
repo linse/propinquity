@@ -227,7 +227,6 @@ public class ProxLevel extends Level {
 			}
 
 			fader.fadeOut(); //Mute the sound
-			song.pause();
 		} else { //Otherwise do the step
 			for(int i = 0;i < players.length;i++) {
 				if(i < patchStates.length) {
@@ -458,6 +457,7 @@ public class ProxLevel extends Level {
 					}
 				}
 				song.setGain(-100);
+				song.pause();
 			}
 		}
 
