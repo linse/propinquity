@@ -71,7 +71,7 @@ public class LevelSelect implements UIElement {
 		
 		drawParticles();
 
-		hud.drawCenterText("Select Song", hud.getAngle());
+		hud.drawCenterText("Select Level", hud.getAngle());
 		hud.drawBannerCenter(levels[selected].getName(), PlayerConstants.NEUTRAL_COLOR, PApplet.TWO_PI/levels.length*selected);
 	}
 

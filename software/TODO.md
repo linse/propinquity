@@ -17,6 +17,8 @@ Software
 
 * isDone() mechanisms need rework, likely as part of a whole rework of the Transition/Step mechanism or something similar. (Actually maybe it's fine ...)
 * Build particles with a specific buffer to draw too, much more agnostic
+* CLIPPING ON SCREEN +!+!+!+
+* RADIOSSSSZZZ
 
 Minim Gripes
 -----------------------------

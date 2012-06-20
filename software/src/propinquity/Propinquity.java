@@ -87,11 +87,11 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 		simulator = new HardwareSimulator(this);
 		
 		xbeeBaseStation = new XBeeBaseStation();
-		// xbeeBaseStation.scanBlocking(); //FIXME: Use nonblocking and hold packets until an Xbee has been found ...
+		xbeeBaseStation.scanBlocking(); //FIXME: Use nonblocking and hold packets until an Xbee has been found ...
 		xbeeManager = new XBeeManager(this, xbeeBaseStation);
 
-		// hardware = xbeeBaseStation;
-		hardware = simulator;
+		hardware = xbeeBaseStation;
+		// hardware = simulator;
 
 		//Player/Player List
 		if(MAX_PLAYERS < 2) {
@@ -153,8 +153,9 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 			}
 		}
 
-		tmp_levels.add(new BopperLevel(this, hud, sounds, "Besouro.mp3", players));
-		tmp_levels.add(new HealthLevel(this, hud, sounds, "Leila Came Round And We Watched A Video.mp3", players));
+		//TODO: Disabled for now
+		// tmp_levels.add(new BopperLevel(this, hud, sounds, "Besouro.mp3", players));
+		// tmp_levels.add(new HealthLevel(this, hud, sounds, "Leila Came Round And We Watched A Video.mp3", players));
 
 		levels = tmp_levels.toArray(new Level[0]);
 		if(levels.length == 0) {
@@ -183,6 +184,8 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 
 	public void draw() {
 		background(Color.black().toInt(this));
+
+		translate(0, 0, -42);
 
 		hud.update(hud.getAngle() + HALF_PI, TWO_PI/10000f, TWO_PI/2000f);
 
@@ -316,6 +319,6 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 	}
 
 	static public void main(String args[]) {
-		PApplet.main(new String[] { "propinquity.Propinquity" });
+		PApplet.main(new String[] { "--exclusive", "--present", "propinquity.Propinquity" });
 	}
 }
