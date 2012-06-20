@@ -65,6 +65,8 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 	public void setup() {
 		size(1024, 768, GLConstants.GLGRAPHICS);
 
+		noCursor();
+
 		frameRate(FPS);
 		imageMode(PConstants.CENTER);
 		textureMode(PConstants.NORMAL);
@@ -216,6 +218,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 
 	public void changeGameState(GameState newState) {
 		for(UIElement u: uiElements) u.hide();
+		noCursor();
 
 		switch(newState) {
 			case XBeeInit: {
@@ -226,6 +229,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 			case PlayerList: {
 				playerList.reset();
 				playerList.show();
+				cursor(ARROW);
 				break;
 			}
 
