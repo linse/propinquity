@@ -36,11 +36,6 @@ Firmware/Patch/Glove Control
 * Alternate send mechanism (everything 5 times a sec?)
 * "Drop" patch if it hasn't been seen in a certain amount of time (to avoid points when patches spaz out)
 
-Hardware
------------------------------
-* Could the red/prox issue be due to current draw issues
-* XBee stress test
-
 General and Gameplay Notes
 -----------------------------
 * If players have different sizes, the shorter player should wear his patches low. This causes the taller player to bend over a lot.
