@@ -3,5 +3,6 @@ books/
 /software/doc
 /software/data/xbees.lst
 /software/data/player.lst
+/software/data/songs/*.mp3
 *.class
 *.DS_Store
