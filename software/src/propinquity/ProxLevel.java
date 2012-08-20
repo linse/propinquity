@@ -106,7 +106,7 @@ public class ProxLevel extends Level {
 					type = StepType.TRANSITION; //FIXME: Rework the transision mechanism
 					String songFile = step_tags[i].getString("file");
 					if(songFile == null || songFile.equals("")) {
-						System.err.println("Warning: XML for level \""+name+"\" step "+i+" is a transition tag with no file attribute, this might be corrent, but you should be sure");
+						System.err.println("Warning: XML for level \""+name+"\" step "+i+" is a transition tag with no file attribute, this might be correct, but you should be sure");
 					} else {
 						try {
 							AudioPlayer song = sounds.loadSong(songFile);
@@ -210,8 +210,10 @@ public class ProxLevel extends Level {
 				song.pause();
 				song = songs.get(transitionCount);
 				song.play();
+			} else {
+				song.play();
+				fader.fadeIn();
 			}
-			// fader.fadeIn();
 			song.setGain(0);
 		}
 
