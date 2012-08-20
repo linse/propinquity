@@ -22,7 +22,8 @@ public class ProxLevel extends Level {
 	AudioPlayer song;
 	AudioSample gong;
 
-	int transitionCount;
+	int songTransitionCount;
+	boolean newSongFlag;
 	Vector<AudioPlayer> songs;
 
 	String songFile;
@@ -100,6 +101,7 @@ public class ProxLevel extends Level {
 			for(int i = 0; i < step_tags.length; i++) {
 				String modeString = step_tags[i].getString("mode");
 				StepType type = null;
+				boolean hasSong = false;
 				if(modeString.equals("versus")) {
 					type = StepType.VERSUS;
 				} else if(modeString.equals("transition")) {
@@ -111,6 +113,7 @@ public class ProxLevel extends Level {
 						try {
 							AudioPlayer song = sounds.loadSong(songFile);
 							songs.add(song);
+							hasSong = true;
 						} catch(Exception e) {
 							throw new NullPointerException("Loading song file failed. Likely file name invalid or file missing for level \""+name+"\". Given file name was \""+songFile+"\".");
 						}
@@ -132,13 +135,13 @@ public class ProxLevel extends Level {
 					throw new XMLException("XMLException: XML for level \"" + name + "\", step " + i + " has too few player tags.");
 				}
 
-				steps[i] = new Step(type, patches);
+				steps[i] = new Step(type, patches, hasSong);
 			}
 
 			boolean[][] tmpPatchState = new boolean[players.length][];
 			for(int i = 0;i < tmpPatchState.length;i++) tmpPatchState[i] = new boolean[] {false, false, false, false};
 
-			steps[step_tags.length] = new Step(StepType.VERSUS, tmpPatchState);
+			steps[step_tags.length] = new Step(StepType.VERSUS, tmpPatchState, false);
 		} else {
 			throw new XMLException("Warning: XML for level \"" + name + "\" has no sequence tag and/or no step tags");
 		}
@@ -200,21 +203,28 @@ public class ProxLevel extends Level {
 		
 		coop = steps[currentStep].isCoop();
 		boolean[][] patchStates = steps[currentStep].getPatches();
+
+		if(steps[currentStep].isTransition() && steps[currentStep].hasSong()) {
+			if(songs.size() > songTransitionCount) {
+				songTransitionCount++;
+				song.pause();
+				song = songs.get(songTransitionCount);
+				newSongFlag = true;
+			}
+		}
 		
 		if(steps[currentStep].isTransition() && (currentStep == 0 || (currentStep > 0 && !steps[currentStep-1].isTransition()))) {
-			transitionCount++;
 			fader.fadeOut();
 			for(Player player : players) player.transferScore();
 		} else if(!steps[currentStep].isTransition() && currentStep > 0 && steps[currentStep-1].isTransition()) {
-			if(songs.size() > transitionCount) {
-				song.pause();
-				song = songs.get(transitionCount);
-				song.play();
-			} else {
-				song.play();
+			song.play();
+
+			if(!newSongFlag) {
 				fader.fadeIn();
+			} else {
+				newSongFlag = false;
+				song.setGain(0);
 			}
-			song.setGain(0);
 		}
 
 		// Reset coop score when leaving coop step.

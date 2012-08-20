@@ -7,10 +7,12 @@ package propinquity;
 public class Step {
 
 	StepType type;
+	boolean hasSong;
 	boolean[][] patches;
 
-	public Step(StepType type, boolean[][] patches) {
+	public Step(StepType type, boolean[][] patches, boolean hasSong) {
 		this.type = type;
+		this.hasSong = hasSong;
 		if(type == StepType.TRANSITION) this.patches = new boolean[2][4];
 		else this.patches = patches;
 	}
@@ -33,4 +35,7 @@ public class Step {
 		else return false;
 	}
 
+	public boolean hasSong() {
+		return hasSong;
+	}
 }
