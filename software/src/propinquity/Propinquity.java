@@ -323,6 +323,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 	}
 
 	static public void main(String args[]) {
-		PApplet.main(new String[] { "--exclusive", "--present", "propinquity.Propinquity" });
+		if(args.length > 0 && args[0].equals("w")) PApplet.main(new String[] { "propinquity.Propinquity" });
+		else PApplet.main(new String[] { "--exclusive", "--present", "propinquity.Propinquity" });
 	}
 }
