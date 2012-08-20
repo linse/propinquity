@@ -14,6 +14,6 @@ public interface HardwareConstants {
 	static final int SLOW_BLINK = 15;
 	static final int FAST_BLINK = 10;
 
-	static final int DEFAULT_DUTY_CYCLE = 127;
+	static final int DEFAULT_DUTY_CYCLE = 127; // 0 - 255 How much of a blink cycle is on or off
 
 }
