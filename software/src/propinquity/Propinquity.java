@@ -151,7 +151,9 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 			for(String name : names) {
 				if(name.lastIndexOf(".xml") == name.length()-4) {
 					try {
-						tmp_levels.add(new ProxLevel(this, hud, sounds, LEVEL_FOLDER+name, players));
+						ProxLevel level = new ProxLevel(this, hud, sounds, LEVEL_FOLDER+name, players);
+						level.useBackgroundColor(true);
+						tmp_levels.add(level);
 					} catch(XMLException e) {
 						System.err.println("Warning: Level not built for file \""+name+"\" because of the following XMLException");
 						System.err.println(e.getMessage());

@@ -57,6 +57,8 @@ public class ProxLevel extends Level {
 
 		startTime = -1;
 
+		useBackgroundColor = true;
+
 		songs = new Vector<AudioPlayer>();
 
 		XMLElement xml = new XMLElement(parent, levelFile);
@@ -151,6 +153,10 @@ public class ProxLevel extends Level {
 		fader = new VolumeFader();
 
 		reset();
+	}
+
+	public void useBackgroundColor(boolean useBackgroundColor) {
+		this.useBackgroundColor = useBackgroundColor;
 	}
 
 	public void pause() {
@@ -324,7 +330,7 @@ public class ProxLevel extends Level {
 	void computeBackground() {
 		Player winner = getWinner();
 
-		if(winner == null) {
+		if(winner == null || !useBackgroundColor) {
 			parent.setBackgroundColor(Color.black());
 		} else {
 			Color winnerColor = winner.getColor();
