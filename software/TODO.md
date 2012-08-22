@@ -25,6 +25,7 @@ Software
 * Ambient background color changes were proposed to help players understand who is winning and who is loosing. Should be easy and worth trying.
 * Add smooth color fading for background colors
 * Add a build flag for simulation vs real XBees in conjuction with windowed vs normal
+* Opponents patches need to turn off when points are suppressed
 
 Minim Gripes
 -----------------------------
