@@ -203,6 +203,22 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 			return;
 		}
 
+		if(gameState == GameState.Play) {
+			if(keyPressed) {
+				if(key == 'a') {
+					players[0].suppressPoints(true);
+				} else if(key == 's') {
+					players[1].suppressPoints(true);
+				} else if(key == 'd') {
+					players[0].suppressPoints(true);
+					players[1].suppressPoints(true);
+				}
+			} else {
+				players[0].suppressPoints(false);
+				players[1].suppressPoints(false);
+			}
+		}
+
 		background(backgroundColor);
 
 		if(gameState != GameState.PlayerList) translate(0, 0, -42); //Hack so 

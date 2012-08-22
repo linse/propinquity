@@ -41,6 +41,8 @@ public class Player implements PConstants {
 	
 	int[] patchHealth;
 
+	boolean suppressPoints;
+
 	public Player(Propinquity parent, Sounds sounds, String name, Color color, Patch[] patches, Glove glove) {
 		this.parent = parent;
 		
@@ -263,19 +265,22 @@ public class Player implements PConstants {
 	}
 
 	public void addPoints(int points) {
-		score.addPoints(points);
+		if(!suppressPoints) score.addPoints(points);
 	}
 
 	public void addPoints(int points, boolean sound) {
-		score.addPoints(points, sound);
+		if(!suppressPoints) score.addPoints(points, sound);
 	}
 
 	public void addPoints(int points, Color color) {
-		score.addPoints(points, color, true);
+		if(!suppressPoints) score.addPoints(points, color, true);
 	}
 	
 	public void addPoints(int points, Color color, boolean sound) {
-		score.addPoints(points, color, sound);
+		if(!suppressPoints) score.addPoints(points, color, sound);
 	}
 	
+	public void suppressPoints(boolean suppressPoints) {
+		this.suppressPoints = suppressPoints;
+	}
 }
