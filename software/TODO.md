@@ -23,6 +23,8 @@ Software
 * New OO system for XML parsing tokens. Provide for easier extension to the current XML files.
 * There seems to be a bug where after playing all the songs they no longer play. Maybe also after a song plays through once? Needs to be tested. Probably some sort of rewind minim bug or an issue resetting some sort of sequence timing variable.
 * Ambient background color changes were proposed to help players understand who is winning and who is loosing. Should be easy and worth trying.
+* Add smooth color fading for background colors
+* Add a build flag for simulation vs real XBees in conjuction with windowed vs normal
 
 Minim Gripes
 -----------------------------
@@ -35,6 +37,7 @@ Firmware/Patch/Glove Control
 * Graceful fail (duty 0)
 * Alternate send mechanism (everything 5 times a sec?)
 * "Drop" patch if it hasn't been seen in a certain amount of time (to avoid points when patches spaz out)
+* Test/Implement a timestamping mechanism to prevent out of order packet reception which is causing erratic behavoir (see for example the PlayerSelect mode)
 
 General and Gameplay Notes
 -----------------------------

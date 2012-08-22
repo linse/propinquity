@@ -51,7 +51,7 @@ public class Score {
 	}
 
 	public int getScore() {
-		return heldScore;
+		return heldScore+tempScore; //TODO: depending on the score mechanism maybe this needs to be changed
 	}
 
 	public void addPoints(int points) {

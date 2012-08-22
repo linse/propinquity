@@ -5,7 +5,7 @@ import processing.xml.*;
 import propinquity.hardware.*;
 import ddf.minim.*;
 import java.util.*;
-
+import java.lang.Math;
 /**
  * The ProxLevel is the "original" game mechanic for Propinquity, players score by being in proximity to the opponent's patches. The opponent's patches may not be on at all times. There are also cooperative and versus rounds and there are pauses between rounds. It supports loading a level from an XML file and can have multiple songs per level.
  *
@@ -182,6 +182,8 @@ public class ProxLevel extends Level {
 		lastScoreTime = new long[players.length];
 		lastScoreTimePauseDiff = new long[players.length];
 		coopScore = 0;
+
+		parent.setBackgroundColor(Color.black());
 		
 		for(AudioPlayer song : songs) {
 			song.pause();
@@ -233,9 +235,16 @@ public class ProxLevel extends Level {
 		if(currentStep >= steps.length-1) { //Last step is the end of the level we want all patches off
 			for(Player player : players) {
 				player.transferScore();
-				player.clearPatches();
-				player.clearGloves();
 				player.bump();
+
+				player.clearGloves();
+				if(getWinner() == player) {
+					for(Patch p : player.getPatches()) {
+						p.setMode(1);
+					}
+				} else {
+					player.clearPatches();
+				}
 			}
 
 			fader.fadeOut(); //Mute the sound
@@ -290,11 +299,13 @@ public class ProxLevel extends Level {
 						proxPlayer.addPoints(1, PlayerConstants.NEUTRAL_COLOR);
 						scoringPlayer.addPoints(1, PlayerConstants.NEUTRAL_COLOR);
 						lastScoreTime[i] = currentTime;
+						computeBackground();
 					}
 				} else {
 					if(currentTime-lastScoreTime[i] > proxPlayer.getSpawnInterval()) {
 						scoringPlayer.addPoints(1);
 						lastScoreTime[i] = currentTime;
+						computeBackground();
 					}
 				}
 			} else {
@@ -304,6 +315,36 @@ public class ProxLevel extends Level {
 
 		int nextStep = (int)PApplet.constrain((parent.millis()-startTime)/stepInterval, 0, steps.length-1);
 		if(nextStep != currentStep) stepUpdate(nextStep);
+	}
+
+	void computeBackground() {
+		Player winner = getWinner();
+
+		if(winner == null) {
+			parent.setBackgroundColor(Color.black());
+		} else {
+			Color winnerColor = winner.getColor();
+
+			int totalScore = 0;
+			int numPlayers = 0;
+			
+			for(Player player : players) {
+				if(player != winner) {
+					totalScore += player.getScore();
+					numPlayers++;
+				}
+			}
+
+			totalScore = totalScore/numPlayers;
+
+			float winFactor = (float)winner.getScore()/totalScore;
+			float tau = 1.0f;
+			float saturationFactor = 0.75f;
+			float colorFactor = (float)(1-Math.exp(-(winFactor-1)/tau))*saturationFactor; //Capping saturation at 75%
+
+			Color factoredColor = new Color((int)(winnerColor.r*colorFactor), (int)(winnerColor.g*colorFactor), (int)(winnerColor.b*colorFactor));
+			parent.setBackgroundColor(factoredColor);
+		}
 	}
 
 	public String getName() {

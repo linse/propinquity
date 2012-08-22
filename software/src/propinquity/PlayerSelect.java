@@ -24,7 +24,7 @@ public class PlayerSelect implements UIElement {
 
 	boolean isVisible;
 
-	ColorHacker colorHack;
+	ColorHacker colorHack; //TODO: Hack to get the patches to come on, should be resolved maybe be with timestamps on packets.
 
 	public PlayerSelect(Propinquity parent, Hud hud, Player[] players) {
 		this.parent = parent;

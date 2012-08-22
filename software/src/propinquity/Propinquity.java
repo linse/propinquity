@@ -39,6 +39,8 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 	GLGraphicsOffScreen offscreen;
 	GLTextureFilter blur, thres;
 
+	int backgroundColor;
+
 	//Xbee/Hardware
 	HardwareSimulator simulator; //Testing 
 
@@ -84,6 +86,8 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 
 		sounds = new Sounds(this);
 		hud = new Hud(this);
+
+		backgroundColor = Color.black().toInt(this);
 
 		//Xbee/Hardware
 		simulator = new HardwareSimulator(this);
@@ -185,7 +189,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 	}
 
 	public void draw() {
-		background(Color.black().toInt(this));
+		background(backgroundColor);
 
 		translate(0, 0, -42);
 
@@ -255,6 +259,10 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 		}
 
 		gameState = newState;
+	}
+
+	public void setBackgroundColor(Color backgroundColor) {
+		this.backgroundColor = backgroundColor.toInt(this);
 	}
 
 	public void controlEvent(ControlEvent event) {
