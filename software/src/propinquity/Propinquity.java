@@ -25,6 +25,8 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 	static final long serialVersionUID = 6340518174717159418L;
 	public static final int FPS = 30;
 
+	static boolean useSimulator = false;
+
 	//General/Util
 	HeapDebug heapDebug;
 	public Logger logger;
@@ -94,11 +96,11 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 		simulator = new HardwareSimulator(this);
 		
 		xbeeBaseStation = new XBeeBaseStation();
-		xbeeBaseStation.scanBlocking(); //FIXME: Use nonblocking and hold packets until an Xbee has been found ...
+		if(!useSimulator) xbeeBaseStation.scanBlocking(); //FIXME: Use nonblocking and hold packets until an Xbee has been found ...
 		xbeeManager = new XBeeManager(this, xbeeBaseStation);
 
-		hardware = xbeeBaseStation;
-		// hardware = simulator;
+		if(useSimulator) hardware = simulator;
+		else hardware = xbeeBaseStation;
 
 		//Player/Player List
 		if(MAX_PLAYERS < 2) {
@@ -359,7 +361,13 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 	}
 
 	static public void main(String args[]) {
-		if(args.length > 0 && args[0].equals("w")) PApplet.main(new String[] { "propinquity.Propinquity" });
-		else PApplet.main(new String[] { "--exclusive", "--present", "propinquity.Propinquity" });
+		if(args.length > 0 && args[0].equals("w")) {
+			PApplet.main(new String[] { "propinquity.Propinquity" });
+		} else if(args.length > 0 && args[0].equals("s")) {
+			useSimulator = true;
+			PApplet.main(new String[] { "propinquity.Propinquity" });
+		} else {
+			PApplet.main(new String[] { "--exclusive", "--present", "propinquity.Propinquity" });
+		}
 	}
 }

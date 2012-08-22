@@ -70,6 +70,18 @@
 		</java>
 	</target>
 
+	<target name="sim" depends="compile">
+		<java classname="${propinquity-class}" fork="true">
+			<arg value="s"/>
+			<sysproperty key="java.library.path" value="${java.library.path}:${nativepath.prop}"/>
+			<jvmarg value="-d32"/>
+			<jvmarg value="-Xmx256m"/>
+			<classpath>
+				<path refid="classpath"/>
+				<path location="${build.dir}"/>
+			</classpath>
+		</java>
+	</target>
 	<target name="xbee-debug" depends="compile">
 		<java classname="${xbee-debug-class}" fork="true">
 			<sysproperty key="java.library.path" value="${java.library.path}:${nativepath.prop}"/>
