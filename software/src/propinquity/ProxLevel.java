@@ -232,13 +232,15 @@ public class ProxLevel extends Level {
 		// Reset coop score when leaving coop step.
 		if(lastCoop && !coop) coopScore = 0;
 	
-		if(currentStep >= steps.length-1) { //Last step is the end of the level we want all patches off
+		if(currentStep >= steps.length-1) { //Last step is the end of the level we want all patches off except for winner/winners
+			Player winner = getWinner();
 			for(Player player : players) {
 				player.transferScore();
 				player.bump();
 
 				player.clearGloves();
-				if(getWinner() == player) {
+
+				if(winner == null || winner == player) {
 					for(Patch p : player.getPatches()) {
 						p.setMode(1);
 					}

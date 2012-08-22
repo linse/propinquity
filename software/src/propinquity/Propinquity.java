@@ -154,6 +154,10 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 					} catch(XMLException e) {
 						System.err.println("Warning: Level not built for file \""+name+"\" because of the following XMLException");
 						System.err.println(e.getMessage());
+					} catch(NullPointerException e) {
+						System.err.println("Error Building Level, following execption was thrown");
+						System.err.println(e.getMessage());
+						System.exit(1);
 					}
 				}
 			}
