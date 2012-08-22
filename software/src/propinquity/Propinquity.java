@@ -40,6 +40,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 	GLTextureFilter blur, thres;
 
 	int backgroundColor;
+	boolean blankScreen;
 
 	//Xbee/Hardware
 	HardwareSimulator simulator; //Testing 
@@ -193,9 +194,14 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 	}
 
 	public void draw() {
+		if(blankScreen) {
+			background(0);
+			return;
+		}
+
 		background(backgroundColor);
 
-		translate(0, 0, -42);
+		if(gameState != GameState.PlayerList) translate(0, 0, -42); //Hack so 
 
 		hud.update(hud.getAngle() + HALF_PI, TWO_PI/10000f, TWO_PI/2000f);
 
@@ -255,6 +261,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 			}
 
 			case Play: {
+				blankScreen = false;
 				level = levelSelect.getSelectedLevel();
 				level.reset();
 				level.show();
@@ -284,6 +291,36 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 	}
 
 	public void keyPressed() {
+		if(gameState != GameState.PlayerList) {
+			switch(key) {
+				case ENTER:
+				case ' ': {
+					if(blankScreen) {
+						blankScreen = false;
+						return;
+					}
+					break;
+				}
+
+				case 'n': {
+					if(simulator.isVisible()) simulator.hide();
+					else simulator.show();
+					break;
+				}
+
+				case 'h': {
+					if(heapDebug.isRunning()) heapDebug.stop();
+					else heapDebug.start();
+					break;
+				}
+
+				case 'b': {
+					if(gameState == GameState.PlayerSelect || gameState == GameState.LevelSelect) blankScreen = !blankScreen;
+					break;
+				}
+			}
+		}
+
 		switch(gameState) {
 			case XBeeInit: {
 				xbeeManager.keyPressed(key, keyCode);
@@ -311,21 +348,6 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 			}
 		}
 
-		if(gameState != GameState.PlayerList) {
-			switch(key) {
-				case 'n': {
-					if(simulator.isVisible()) simulator.hide();
-					else simulator.show();
-					break;
-				}
-
-				case 'h': {
-					if(heapDebug.isRunning()) heapDebug.stop();
-					else heapDebug.start();
-					break;
-				}
-			}
-		}
 	}
 
 	public void stop() {

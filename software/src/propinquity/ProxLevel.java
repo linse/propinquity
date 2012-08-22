@@ -44,6 +44,8 @@ public class ProxLevel extends Level {
 
 	long startTime, startTimeDiff;
 
+	boolean useBackgroundColor;
+
 	public ProxLevel(Propinquity parent, Hud hud, Sounds sounds, String levelFile, Player[] players) throws XMLException {
 		super(parent, hud, sounds, players);
 
@@ -207,7 +209,7 @@ public class ProxLevel extends Level {
 		boolean[][] patchStates = steps[currentStep].getPatches();
 
 		if(steps[currentStep].isTransition() && steps[currentStep].hasSong()) {
-			if(songs.size() > songTransitionCount) {
+			if(songs.size() > (songTransitionCount+1)) {
 				songTransitionCount++;
 				song.pause();
 				song = songs.get(songTransitionCount);
@@ -383,7 +385,7 @@ public class ProxLevel extends Level {
 
 		switch(key) {
 			case BACKSPACE: {
-				if(song.position() == 0) parent.changeGameState(GameState.LevelSelect);
+				if(song.position() == 0 || isDone()) parent.changeGameState(GameState.LevelSelect);
 				else reset(); //Make sure particles are gone
 				break;
 			}
