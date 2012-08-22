@@ -385,8 +385,8 @@ public class ProxLevel extends Level {
 
 		switch(key) {
 			case BACKSPACE: {
+				reset();
 				if(song.position() == 0 || isDone()) parent.changeGameState(GameState.LevelSelect);
-				else reset(); //Make sure particles are gone
 				break;
 			}
 
