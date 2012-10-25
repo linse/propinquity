@@ -15,7 +15,7 @@ public class Player implements PConstants {
 	public static final int SPAWN_DELAY_LONG = 1000;
 	public static final double SPAWN_DELAY_TAU = 3000;
 
-	public static final int MAX_HEALTH = 15;
+	public static final int MAX_HEALTH = 1;
 	
 	Propinquity parent;
 
@@ -208,6 +208,17 @@ public class Player implements PConstants {
 			}
 		}
 		return false;
+	}
+
+	public void bufPatch() {
+		for(int i = 0;i < patches.length;i++) {
+			if(patchHealth[i] < 0) {
+				patchHealth[i] = 0;
+				patches[i].setActive(false);
+			} else {
+				patches[i].setColor(color.r*patchHealth[i]/MAX_HEALTH, color.g*patchHealth[i]/MAX_HEALTH, color.b*patchHealth[i]/MAX_HEALTH);
+			}
+		}
 	}
 	
 	public void heal() {

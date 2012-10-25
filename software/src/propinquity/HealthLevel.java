@@ -18,7 +18,7 @@ public class HealthLevel extends Level {
 	 * The amount of time (in ms) that must pass before all new particles are
 	 * tallied and added to the player's permanent score.
 	 */
-	public static final int SCORE_TIME = 5000;
+	public static final int SCORE_TIME = 300;
 
 	long[] lastScoreTime;
 	long[] lastScoreTimePauseDiff;
@@ -122,6 +122,10 @@ public class HealthLevel extends Level {
 			} else {
 				// lastScoreTime[i] = currentTime;
 			}
+		}
+
+		for(int i = 0;i < players.length;i++) {
+			players[i].bufPatch();
 		}
 	}
 
