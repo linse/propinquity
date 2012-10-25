@@ -17,7 +17,7 @@ public class PlayTest extends PApplet implements ProxEventListener {
 	};
 
 	public static final Color[] PATCH_COLORS = new Color[] {
-		Color.red(), Color.green(), Color.blue(), Color.violet(), Color.yellow(), Color.teal()
+		Color.red(), Color.green(), Color.blue(), Color.violet(), Color.blue(), Color.blue()
 	};
 
 	public static final int[] GLOVE_ADDR = new int[] {
@@ -32,6 +32,8 @@ public class PlayTest extends PApplet implements ProxEventListener {
 	Glove[] gloves;
 
 	boolean toggle = false;
+	boolean blink = true;
+	boolean ninja = false;
 
 	Thread ram;
 
@@ -99,11 +101,59 @@ public class PlayTest extends PApplet implements ProxEventListener {
 				if(!usegloves) {
 					clearGloves();
 				}
+			} else if(key == 'b') {
+				blink = !blink;
+
+				if(!blink) {
+					for(int i = 0;i < patches.length;i++) {
+						patches[i].setMode(0);
+					}
+				}
 			} else if(key >= 48 && key <= 57) {
 				int num = keyCode-49;
 				if(num == -1) num = 9;
-
-				if(toggle) {
+				if(ninja) {
+					if(num == 0) {
+						patches[0].setColor(PATCH_COLORS[num]);
+						patches[0].setActive(true);
+						patches[1].setColor(PATCH_COLORS[num]);
+						patches[1].setActive(true);
+						patches[2].setColor(PATCH_COLORS[num]);
+						patches[2].setActive(true);
+						patches[3].setColor(PATCH_COLORS[num]);
+						patches[3].setActive(true);
+						patches[4].setColor(PATCH_COLORS[num]);
+						patches[4].setActive(false);
+						patches[5].setColor(PATCH_COLORS[num]);
+						patches[6].setActive(false);
+					} else if(num == 1) {
+						patches[0].setColor(PATCH_COLORS[num]);
+						patches[0].setActive(true);
+						patches[1].setColor(PATCH_COLORS[num]);
+						patches[1].setActive(true);
+						patches[2].setColor(PATCH_COLORS[num]);
+						patches[2].setActive(false);
+						patches[3].setColor(PATCH_COLORS[num]);
+						patches[3].setActive(false);
+						patches[4].setColor(PATCH_COLORS[num]);
+						patches[4].setActive(false);
+						patches[5].setColor(PATCH_COLORS[num]);
+						patches[6].setActive(false);
+					} else if(num == 2) {
+						patches[0].setColor(PATCH_COLORS[num]);
+						patches[0].setActive(false);
+						patches[1].setColor(PATCH_COLORS[num]);
+						patches[1].setActive(false);
+						patches[2].setColor(PATCH_COLORS[num]);
+						patches[2].setActive(true);
+						patches[3].setColor(PATCH_COLORS[num]);
+						patches[3].setActive(true);
+						patches[4].setColor(PATCH_COLORS[num]);
+						patches[4].setActive(true);
+						patches[5].setColor(PATCH_COLORS[num]);
+						patches[6].setActive(true);
+					}
+				} else if(toggle) {
 					if(num < patches.length) {
 						if(patchStates[num]) {
 							patches[num].setColor(PATCH_COLORS[num]);
@@ -138,6 +188,7 @@ public class PlayTest extends PApplet implements ProxEventListener {
 
 	public void keyReleased() {
 		if(toggle) return;
+		if(ninja) return;
 		if(key != CODED) {
 			if(key >= 48 && key <= 57) {
 				int num = keyCode-49;
@@ -157,23 +208,28 @@ public class PlayTest extends PApplet implements ProxEventListener {
 	}
 
 	public void proxEvent(Patch patch) {
-		if(!usegloves) return;
 		for(int i = 0;i < patches.length;i++) {
 			if(patches[i] == patch) {
-				if(patch.getZone() > 0) {
-					if(i < patches.length/2) {
-						gloves[0].setActive(true);
-						gloves[0].setMode(1);
+				if(usegloves) {
+					if(patch.getZone() > 0) {
+						if(i < patches.length/2) {
+							gloves[0].setActive(true);
+							gloves[0].setMode(1);
+						} else {
+							gloves[1].setActive(true);
+							gloves[1].setMode(1);
+						}
 					} else {
-						gloves[1].setActive(true);
-						gloves[1].setMode(1);
+						if(i < patches.length/2) {
+							gloves[0].setActive(false);
+						} else {
+							gloves[1].setActive(false);
+						}
 					}
-				} else {
-					if(i < patches.length/2) {
-						gloves[0].setActive(false);
-					} else {
-						gloves[1].setActive(false);
-					}
+				}
+
+				if(blink) {
+					patches[i].setMode(patches[i].getZone());
 				}
 				return;
 			}
@@ -197,7 +253,7 @@ public class PlayTest extends PApplet implements ProxEventListener {
 			while(running) {
 				for(int i = 0;i < patches.length;i++) {
 					// patches[i].setActive(patchStates[i]);
-					// patches[i].setColor(PATCH_COLORS[i]);
+					// patches[i].setCol12311231123123or(PATCH_COLORS[i]);
 				}
 				try {
 					Thread.sleep(100);

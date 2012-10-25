@@ -139,8 +139,8 @@ public class Player implements PConstants {
 		this.coop = coop;
 
 		for(Patch patch : patches) {
-			// if(coop) patch.setColor(PlayerConstants.NEUTRAL_COLOR);
-			if(coop) patch.setColor(Color.teal());
+			if(coop) patch.setColor(PlayerConstants.NEUTRAL_COLOR);
+			// if(coop) patch.setColor(Color.teal());
 			else patch.setColor(color);
 		}
 
