@@ -17,7 +17,7 @@ public class PlayTest extends PApplet implements ProxEventListener {
 	};
 
 	public static final Color[] PATCH_COLORS = new Color[] {
-		Color.blue(), Color.green(), Color.green(), Color.green(), Color.green(), Color.green()
+		Color.red(), Color.green(), Color.blue(), Color.violet(), Color.yellow(), Color.teal()
 	};
 
 	public static final int[] GLOVE_ADDR = new int[] {
@@ -34,6 +34,8 @@ public class PlayTest extends PApplet implements ProxEventListener {
 	boolean toggle = false;
 
 	Thread ram;
+
+	boolean usegloves = false;
 
 	public void setup() {
 		size(500, 500);
@@ -83,7 +85,7 @@ public class PlayTest extends PApplet implements ProxEventListener {
 				stroke(150);
 				fill(75, 0, 0);
 			}
-			rect(width/patches.length*i, 30, 25, 25);
+			rect(50+width/patches.length*i, 30, 25, 25);
 		}
 	}
 	
@@ -91,6 +93,12 @@ public class PlayTest extends PApplet implements ProxEventListener {
 		if(key != CODED) {
 			if(key == 's') {
 				xbeeBaseStation.scan();
+			} else if(key == 'g') {
+				usegloves = !usegloves;
+
+				if(!usegloves) {
+					clearGloves();
+				}
 			} else if(key >= 48 && key <= 57) {
 				int num = keyCode-49;
 				if(num == -1) num = 9;
@@ -103,6 +111,7 @@ public class PlayTest extends PApplet implements ProxEventListener {
 						} else {
 							patches[num].setColor(PATCH_COLORS[num]);
 							patches[num].setActive(false);
+							clearGloves();
 						}
 
 						patchStates[num] = !patchStates[num];
@@ -119,6 +128,14 @@ public class PlayTest extends PApplet implements ProxEventListener {
 		}
 	}
 
+	public void clearGloves() {
+		for(Glove glove : gloves) {
+			glove.setActive(false);
+			glove.clear();
+			glove.setVibeDuty(HardwareConstants.DEFAULT_DUTY_CYCLE);
+		}
+	}
+
 	public void keyReleased() {
 		if(toggle) return;
 		if(key != CODED) {
@@ -132,12 +149,35 @@ public class PlayTest extends PApplet implements ProxEventListener {
 					patches[num].setActive(false);
 
 					patchStates[num] = false;
+
+					clearGloves();
 				}
 			}
 		}
 	}
 
 	public void proxEvent(Patch patch) {
+		if(!usegloves) return;
+		for(int i = 0;i < patches.length;i++) {
+			if(patches[i] == patch) {
+				if(patch.getZone() > 0) {
+					if(i < patches.length/2) {
+						gloves[0].setActive(true);
+						gloves[0].setMode(1);
+					} else {
+						gloves[1].setActive(true);
+						gloves[1].setMode(1);
+					}
+				} else {
+					if(i < patches.length/2) {
+						gloves[0].setActive(false);
+					} else {
+						gloves[1].setActive(false);
+					}
+				}
+				return;
+			}
+		}
 
 	}
 
@@ -156,8 +196,8 @@ public class PlayTest extends PApplet implements ProxEventListener {
 		public void run() {
 			while(running) {
 				for(int i = 0;i < patches.length;i++) {
-					patches[i].setActive(patchStates[i]);
-					patches[i].setColor(PATCH_COLORS[i]);
+					// patches[i].setActive(patchStates[i]);
+					// patches[i].setColor(PATCH_COLORS[i]);
 				}
 				try {
 					Thread.sleep(100);

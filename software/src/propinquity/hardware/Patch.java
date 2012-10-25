@@ -11,7 +11,7 @@ import propinquity.Color;
  */
 public class Patch implements HardwareConstants {
 
-	public static final int MIN_RANGE = 100;
+	public static final int MIN_RANGE = 250;
 	public static final int MAX_RANGE = 700;
 	public static final int MIN_SWEETSPOT = 350; //Disabled for now
 	public static final int MAX_SWEETSPOT = 500;

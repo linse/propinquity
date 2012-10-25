@@ -164,6 +164,15 @@ public class Color {
 	}
 
 	/**
+	 * Gets a predefined color with the value R:142 G:20 B:252 A:255.
+	 * 
+	 * @return The color "violet" as a Color object.
+	 */
+	public static Color yellow() {
+		return new Color(200, 200, 0);
+	}
+
+	/**
 	 * Gets a predefined color with the value R:0 G:255 B:100 A:255.
 	 * 
 	 * @return The color "teal" as a Color object.
