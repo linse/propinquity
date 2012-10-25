@@ -3,6 +3,7 @@
 	<property name="propinquity-class" value="propinquity.Propinquity"/>
 	<property name="xbee-debug-class" value="propinquity.hardware.HardwareDebugger"/>
 	<property name="hardware-sim-test-class" value="propinquity.hardware.HardwareSimTest"/>
+	<property name="playtest-class" value="propinquity.PlayTest"/>
 
 	<property name="src.dir" value="src"/>
 	<property name="build.dir" value="bin"/>
@@ -82,6 +83,7 @@
 			</classpath>
 		</java>
 	</target>
+
 	<target name="xbee-debug" depends="compile">
 		<java classname="${xbee-debug-class}" fork="true">
 			<sysproperty key="java.library.path" value="${java.library.path}:${nativepath.prop}"/>
@@ -95,6 +97,17 @@
 
 	<target name="hardware-sim-test" depends="compile">
 		<java classname="${hardware-sim-test-class}" fork="true">
+			<sysproperty key="java.library.path" value="${java.library.path}:${nativepath.prop}"/>
+			<jvmarg value="-d32"/>
+			<classpath>
+				<path refid="classpath"/>
+				<path location="${build.dir}"/>
+			</classpath>
+		</java>
+	</target>
+
+	<target name="playtest" depends="compile">
+		<java classname="${playtest-class}" fork="true">
 			<sysproperty key="java.library.path" value="${java.library.path}:${nativepath.prop}"/>
 			<jvmarg value="-d32"/>
 			<classpath>
