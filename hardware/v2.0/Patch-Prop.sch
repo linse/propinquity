@@ -12204,14 +12204,12 @@ MSOP&lt;br&gt;
 <part name="C6" library="rcl" deviceset="C-US" device="C0603" value=".1uF"/>
 <part name="GND2" library="supply1" deviceset="GND" device=""/>
 <part name="IC4" library="SparkFun" deviceset="ATMEGA168" device=""/>
-<part name="LED2" library="led" deviceset="LED" device="CHIPLED_0805"/>
 <part name="C13" library="rcl" deviceset="C-US" device="C0603" value="10uF"/>
 <part name="C14" library="rcl" deviceset="C-US" device="C0603" value=".1uF"/>
 <part name="+3V1" library="supply1" deviceset="+3V3" device=""/>
 <part name="GND4" library="supply1" deviceset="GND" device=""/>
 <part name="R7" library="rcl" deviceset="R-US_" device="R0603" value="10k"/>
 <part name="+3V4" library="supply1" deviceset="+3V3" device=""/>
-<part name="R6" library="rcl" deviceset="R-US_" device="R0603" value="470"/>
 <part name="GND5" library="supply1" deviceset="GND" device=""/>
 <part name="GND6" library="supply1" deviceset="GND" device=""/>
 <part name="+3V5" library="supply1" deviceset="+3V3" device=""/>
@@ -12231,7 +12229,6 @@ MSOP&lt;br&gt;
 <part name="T1" library="transistor" deviceset="*-NPN-" device="SOT23-EBC"/>
 <part name="T2" library="transistor" deviceset="*-NPN-" device="SOT23-EBC"/>
 <part name="GND11" library="supply1" deviceset="GND" device=""/>
-<part name="GND3" library="supply1" deviceset="GND" device=""/>
 <part name="LED1" library="led" deviceset="LED" device="CHIPLED_0805"/>
 <part name="R5" library="rcl" deviceset="R-US_" device="R0603" value="470"/>
 <part name="GND12" library="supply1" deviceset="GND" device=""/>
@@ -12284,6 +12281,10 @@ MSOP&lt;br&gt;
 <part name="SUPPLY4" library="supply2" deviceset="V+" device=""/>
 <part name="GND13" library="supply1" deviceset="GND" device=""/>
 <part name="SJ3" library="SparkFun" deviceset="SOLDERJUMPER" device="NO"/>
+<part name="R8" library="rcl" deviceset="R-US_" device="R0603" value="4.7k"/>
+<part name="R9" library="rcl" deviceset="R-US_" device="R0603" value="4.7k"/>
+<part name="+3V14" library="supply1" deviceset="+3V3" device=""/>
+<part name="+3V15" library="supply1" deviceset="+3V3" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -12317,7 +12318,8 @@ shtdwn
 for battery and prox sensor
 -Do we want a PMC?
 -Check pin layout power consump for LED Driver
--Check MSOP spacing with a print out</text>
+-Check MSOP spacing with a print out
+-Check i2C pullups</text>
 </plain>
 <instances>
 <instance part="IC1" gate="G$1" x="215.9" y="355.6"/>
@@ -12332,14 +12334,12 @@ for battery and prox sensor
 <instance part="C6" gate="G$1" x="492.76" y="353.06" rot="R90"/>
 <instance part="GND2" gate="1" x="497.84" y="322.58"/>
 <instance part="IC4" gate="G$1" x="259.08" y="78.74"/>
-<instance part="LED2" gate="G$1" x="269.24" y="210.82"/>
 <instance part="C13" gate="G$1" x="205.74" y="76.2"/>
 <instance part="C14" gate="G$1" x="215.9" y="76.2"/>
 <instance part="+3V1" gate="G$1" x="233.68" y="124.46"/>
 <instance part="GND4" gate="1" x="228.6" y="40.64"/>
 <instance part="R7" gate="G$1" x="233.68" y="114.3" rot="R90"/>
 <instance part="+3V4" gate="G$1" x="205.74" y="104.14"/>
-<instance part="R6" gate="G$1" x="269.24" y="218.44" rot="R90"/>
 <instance part="GND5" gate="1" x="215.9" y="66.04"/>
 <instance part="GND6" gate="1" x="205.74" y="66.04"/>
 <instance part="+3V5" gate="G$1" x="205.74" y="83.82"/>
@@ -12359,7 +12359,6 @@ for battery and prox sensor
 <instance part="T1" gate="G$1" x="505.46" y="335.28" rot="R270"/>
 <instance part="T2" gate="G$1" x="86.36" y="104.14"/>
 <instance part="GND11" gate="1" x="218.44" y="337.82"/>
-<instance part="GND3" gate="1" x="269.24" y="200.66"/>
 <instance part="LED1" gate="G$1" x="259.08" y="210.82"/>
 <instance part="R5" gate="G$1" x="259.08" y="218.44" rot="R90"/>
 <instance part="GND12" gate="1" x="259.08" y="200.66"/>
@@ -12413,6 +12412,10 @@ for battery and prox sensor
 <instance part="SUPPLY4" gate="1" x="538.48" y="104.14"/>
 <instance part="GND13" gate="1" x="538.48" y="81.28"/>
 <instance part="SJ3" gate="1" x="213.36" y="231.14" rot="R180"/>
+<instance part="R8" gate="G$1" x="408.94" y="233.68" rot="R90"/>
+<instance part="R9" gate="G$1" x="401.32" y="233.68" rot="R90"/>
+<instance part="+3V14" gate="G$1" x="408.94" y="243.84"/>
+<instance part="+3V15" gate="G$1" x="401.32" y="243.84"/>
 </instances>
 <busses>
 </busses>
@@ -12452,11 +12455,6 @@ for battery and prox sensor
 <wire x1="215.9" y1="71.12" x2="215.9" y2="68.58" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<wire x1="215.9" y1="195.58" x2="223.52" y2="195.58" width="0.1524" layer="91"/>
-<pinref part="GND7" gate="1" pin="GND"/>
-<wire x1="223.52" y1="195.58" x2="223.52" y2="193.04" width="0.1524" layer="91"/>
-</segment>
-<segment>
 <wire x1="317.5" y1="215.9" x2="309.88" y2="215.9" width="0.1524" layer="91"/>
 <wire x1="317.5" y1="213.36" x2="309.88" y2="213.36" width="0.1524" layer="91"/>
 <wire x1="309.88" y1="215.9" x2="309.88" y2="213.36" width="0.1524" layer="91"/>
@@ -12485,11 +12483,6 @@ for battery and prox sensor
 <wire x1="200.66" y1="342.9" x2="218.44" y2="342.9" width="0.1524" layer="91"/>
 <junction x="200.66" y="342.9"/>
 <wire x1="218.44" y1="342.9" x2="236.22" y2="342.9" width="0.1524" layer="91"/>
-</segment>
-<segment>
-<pinref part="LED2" gate="G$1" pin="C"/>
-<wire x1="269.24" y1="205.74" x2="269.24" y2="203.2" width="0.1524" layer="91"/>
-<pinref part="GND3" gate="1" pin="GND"/>
 </segment>
 <segment>
 <pinref part="GND12" gate="1" pin="GND"/>
@@ -12612,6 +12605,12 @@ for battery and prox sensor
 <pinref part="C7" gate="G$1" pin="2"/>
 <wire x1="538.48" y1="83.82" x2="538.48" y2="88.9" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="ISP1" gate="A" pin="6"/>
+<pinref part="GND7" gate="1" pin="GND"/>
+<wire x1="215.9" y1="195.58" x2="223.52" y2="195.58" width="0.1524" layer="91"/>
+<wire x1="223.52" y1="195.58" x2="223.52" y2="193.04" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="+3V3" class="0">
 <segment>
@@ -12652,11 +12651,6 @@ for battery and prox sensor
 <pinref part="+3V6" gate="G$1" pin="+3V3"/>
 <pinref part="C14" gate="G$1" pin="1"/>
 <wire x1="215.9" y1="81.28" x2="215.9" y2="78.74" width="0.1524" layer="91"/>
-</segment>
-<segment>
-<wire x1="215.9" y1="200.66" x2="223.52" y2="200.66" width="0.1524" layer="91"/>
-<pinref part="+3V7" gate="G$1" pin="+3V3"/>
-<wire x1="223.52" y1="200.66" x2="223.52" y2="205.74" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <wire x1="317.5" y1="218.44" x2="304.8" y2="218.44" width="0.1524" layer="91"/>
@@ -12707,6 +12701,22 @@ for battery and prox sensor
 <pinref part="+3V13" gate="G$1" pin="+3V3"/>
 <wire x1="269.24" y1="363.22" x2="269.24" y2="368.3" width="0.1524" layer="91"/>
 <pinref part="C4" gate="G$1" pin="1"/>
+</segment>
+<segment>
+<pinref part="+3V15" gate="G$1" pin="+3V3"/>
+<pinref part="R9" gate="G$1" pin="2"/>
+<wire x1="401.32" y1="241.3" x2="401.32" y2="238.76" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="+3V14" gate="G$1" pin="+3V3"/>
+<pinref part="R8" gate="G$1" pin="2"/>
+<wire x1="408.94" y1="241.3" x2="408.94" y2="238.76" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="ISP1" gate="A" pin="2"/>
+<pinref part="+3V7" gate="G$1" pin="+3V3"/>
+<wire x1="215.9" y1="200.66" x2="223.52" y2="200.66" width="0.1524" layer="91"/>
+<wire x1="223.52" y1="200.66" x2="223.52" y2="205.74" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="V+" class="0">
@@ -12892,31 +12902,21 @@ for battery and prox sensor
 </net>
 <net name="STATUS" class="0">
 <segment>
-<pinref part="R6" gate="G$1" pin="2"/>
-<wire x1="269.24" y1="226.06" x2="269.24" y2="223.52" width="0.1524" layer="91"/>
-<label x="269.24" y="226.06" size="1.27" layer="95" font="vector" ratio="15" rot="R90" xref="yes"/>
-</segment>
-<segment>
 <pinref part="IC4" gate="G$1" pin="PD7(AIN1)"/>
 <wire x1="284.48" y1="63.5" x2="289.56" y2="63.5" width="0.1524" layer="91"/>
 <label x="289.56" y="63.5" size="1.27" layer="95" font="vector" ratio="15" xref="yes"/>
 </segment>
 </net>
-<net name="N$4" class="0">
-<segment>
-<pinref part="LED2" gate="G$1" pin="A"/>
-<pinref part="R6" gate="G$1" pin="1"/>
-</segment>
-</net>
 <net name="MOSI" class="0">
-<segment>
-<wire x1="215.9" y1="198.12" x2="223.52" y2="198.12" width="0.1524" layer="91"/>
-<label x="223.52" y="198.12" size="1.27" layer="95" font="vector" ratio="15" xref="yes"/>
-</segment>
 <segment>
 <pinref part="IC4" gate="G$1" pin="PB3(MOSI/OC2)"/>
 <wire x1="284.48" y1="50.8" x2="289.56" y2="50.8" width="0.1524" layer="91"/>
 <label x="289.56" y="50.8" size="1.27" layer="95" font="vector" ratio="15" xref="yes"/>
+</segment>
+<segment>
+<pinref part="ISP1" gate="A" pin="4"/>
+<wire x1="215.9" y1="198.12" x2="226.06" y2="198.12" width="0.1524" layer="91"/>
+<label x="226.06" y="198.12" size="1.27" layer="95" font="vector" ratio="14" xref="yes"/>
 </segment>
 </net>
 <net name="MISO" class="0">
@@ -12969,14 +12969,14 @@ for battery and prox sensor
 </net>
 <net name="RED" class="0">
 <segment>
-<pinref part="IC4" gate="G$1" pin="PB1(OC1A)"/>
-<wire x1="284.48" y1="55.88" x2="289.56" y2="55.88" width="0.1524" layer="91"/>
-<label x="289.56" y="55.88" size="1.27" layer="95" font="vector" ratio="15" xref="yes"/>
-</segment>
-<segment>
 <pinref part="IC6" gate="G$1" pin="IN3"/>
 <wire x1="464.82" y1="88.9" x2="474.98" y2="88.9" width="0.1524" layer="91"/>
 <label x="464.82" y="88.9" size="1.27" layer="95" font="vector" ratio="15" rot="R180" xref="yes"/>
+</segment>
+<segment>
+<pinref part="IC4" gate="G$1" pin="PD5(T1)"/>
+<wire x1="284.48" y1="68.58" x2="289.56" y2="68.58" width="0.1524" layer="91"/>
+<label x="289.56" y="68.58" size="1.27" layer="95" font="vector" ratio="15" xref="yes"/>
 </segment>
 </net>
 <net name="BLUE" class="0">
@@ -13090,9 +13090,13 @@ for battery and prox sensor
 </net>
 <net name="SCL" class="0">
 <segment>
-<wire x1="441.96" y1="220.98" x2="419.1" y2="220.98" width="0.1524" layer="91"/>
-<label x="419.1" y="220.98" size="1.27" layer="95" font="vector" ratio="15" rot="R180" xref="yes"/>
+<wire x1="441.96" y1="220.98" x2="401.32" y2="220.98" width="0.1524" layer="91"/>
+<label x="393.7" y="220.98" size="1.27" layer="95" font="vector" ratio="15" rot="R180" xref="yes"/>
 <pinref part="IC3" gate="G$1" pin="SCL"/>
+<pinref part="R9" gate="G$1" pin="1"/>
+<wire x1="401.32" y1="220.98" x2="393.7" y2="220.98" width="0.1524" layer="91"/>
+<wire x1="401.32" y1="228.6" x2="401.32" y2="220.98" width="0.1524" layer="91"/>
+<junction x="401.32" y="220.98"/>
 </segment>
 <segment>
 <pinref part="IC4" gate="G$1" pin="PC5(ADC5/SCL)"/>
@@ -13102,9 +13106,13 @@ for battery and prox sensor
 </net>
 <net name="SDA" class="0">
 <segment>
-<wire x1="441.96" y1="223.52" x2="419.1" y2="223.52" width="0.1524" layer="91"/>
-<label x="419.1" y="223.52" size="1.27" layer="95" font="vector" ratio="15" rot="R180" xref="yes"/>
+<wire x1="441.96" y1="223.52" x2="408.94" y2="223.52" width="0.1524" layer="91"/>
+<label x="393.7" y="223.52" size="1.27" layer="95" font="vector" ratio="15" rot="R180" xref="yes"/>
 <pinref part="IC3" gate="G$1" pin="SDA"/>
+<pinref part="R8" gate="G$1" pin="1"/>
+<wire x1="408.94" y1="223.52" x2="393.7" y2="223.52" width="0.1524" layer="91"/>
+<wire x1="408.94" y1="228.6" x2="408.94" y2="223.52" width="0.1524" layer="91"/>
+<junction x="408.94" y="223.52"/>
 </segment>
 <segment>
 <pinref part="IC4" gate="G$1" pin="PC4(ADC4/SDA)"/>
@@ -13146,14 +13154,14 @@ for battery and prox sensor
 </net>
 <net name="GREEN" class="0">
 <segment>
-<pinref part="IC4" gate="G$1" pin="PD5(T1)"/>
-<wire x1="284.48" y1="68.58" x2="289.56" y2="68.58" width="0.1524" layer="91"/>
-<label x="289.56" y="68.58" size="1.27" layer="95" font="vector" ratio="15" xref="yes"/>
-</segment>
-<segment>
 <pinref part="IC6" gate="G$1" pin="IN2"/>
 <wire x1="474.98" y1="93.98" x2="464.82" y2="93.98" width="0.1524" layer="91"/>
 <label x="464.82" y="93.98" size="1.27" layer="95" font="vector" ratio="15" rot="R180" xref="yes"/>
+</segment>
+<segment>
+<pinref part="IC4" gate="G$1" pin="PB1(OC1A)"/>
+<wire x1="284.48" y1="55.88" x2="289.56" y2="55.88" width="0.1524" layer="91"/>
+<label x="289.56" y="55.88" size="1.27" layer="95" font="vector" ratio="15" xref="yes"/>
 </segment>
 </net>
 <net name="PGOOD" class="0">
