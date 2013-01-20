@@ -12957,7 +12957,7 @@ for battery and prox sensor
 <label x="289.56" y="104.14" size="1.27" layer="95" font="vector" ratio="15" xref="yes"/>
 </segment>
 </net>
-<net name="RED" class="0">
+<net name="GREEN" class="0">
 <segment>
 <wire x1="459.74" y1="88.9" x2="462.28" y2="88.9" width="0.1524" layer="91"/>
 <label x="459.74" y="88.9" size="1.27" layer="95" font="vector" ratio="15" rot="R180" xref="yes"/>
@@ -13134,7 +13134,7 @@ for battery and prox sensor
 <pinref part="IC3" gate="G$1" pin="INT1"/>
 </segment>
 </net>
-<net name="GREEN" class="0">
+<net name="RED" class="0">
 <segment>
 <label x="459.74" y="93.98" size="1.27" layer="95" font="vector" ratio="15" rot="R180" xref="yes"/>
 <pinref part="R10" gate="G$1" pin="2"/>
@@ -13194,9 +13194,9 @@ for battery and prox sensor
 <label x="424.18" y="45.72" size="1.27" layer="95" font="vector" ratio="15" xref="yes"/>
 </segment>
 <segment>
-<pinref part="IC6" gate="G$1" pin="OUT2"/>
-<wire x1="510.54" y1="88.9" x2="518.16" y2="88.9" width="0.1524" layer="91"/>
-<label x="518.16" y="88.9" size="1.27" layer="95" font="vector" ratio="15" xref="yes"/>
+<pinref part="IC6" gate="G$1" pin="OUT3"/>
+<wire x1="518.16" y1="83.82" x2="510.54" y2="83.82" width="0.1524" layer="91"/>
+<label x="518.16" y="83.82" size="1.27" layer="95" font="vector" ratio="15" xref="yes"/>
 </segment>
 </net>
 <net name="RED_OUT" class="0">
@@ -13221,9 +13221,9 @@ for battery and prox sensor
 <label x="424.18" y="40.64" size="1.27" layer="95" font="vector" ratio="15" xref="yes"/>
 </segment>
 <segment>
-<pinref part="IC6" gate="G$1" pin="OUT3"/>
-<wire x1="518.16" y1="83.82" x2="510.54" y2="83.82" width="0.1524" layer="91"/>
-<label x="518.16" y="83.82" size="1.27" layer="95" font="vector" ratio="15" xref="yes"/>
+<pinref part="IC6" gate="G$1" pin="OUT2"/>
+<wire x1="510.54" y1="88.9" x2="518.16" y2="88.9" width="0.1524" layer="91"/>
+<label x="518.16" y="88.9" size="1.27" layer="95" font="vector" ratio="15" xref="yes"/>
 </segment>
 </net>
 <net name="BLUE_OUT" class="0">
