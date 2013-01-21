@@ -12535,7 +12535,7 @@ MSOP&lt;br&gt;
 <part name="GND26" library="supply1" deviceset="GND" device=""/>
 <part name="SUPPLY7" library="supply2" deviceset="V+" device=""/>
 <part name="SUPPLY8" library="supply2" deviceset="V+" device=""/>
-<part name="CHRG" library="led" deviceset="LED" device="CHIPLED_0805"/>
+<part name="CHG" library="led" deviceset="LED" device="CHIPLED_0805"/>
 <part name="R2" library="rcl" deviceset="R-US_" device="R0603" value="470"/>
 <part name="R3" library="rcl" deviceset="R-US_" device="R0603" value="2k"/>
 <part name="C2" library="rcl" deviceset="C-US" device="C0603" value="4.7uF"/>
@@ -12665,7 +12665,7 @@ for battery and prox sensor
 <instance part="GND26" gate="1" x="467.36" y="76.2"/>
 <instance part="SUPPLY7" gate="1" x="401.32" y="129.54"/>
 <instance part="SUPPLY8" gate="1" x="515.62" y="106.68"/>
-<instance part="CHRG" gate="G$1" x="81.28" y="345.44" rot="R90"/>
+<instance part="CHG" gate="G$1" x="81.28" y="345.44" rot="R90"/>
 <instance part="R2" gate="G$1" x="93.98" y="345.44" rot="R180"/>
 <instance part="R3" gate="G$1" x="132.08" y="327.66" rot="R270"/>
 <instance part="C2" gate="G$1" x="139.7" y="330.2"/>
@@ -13268,7 +13268,7 @@ for battery and prox sensor
 <wire x1="91.44" y1="332.74" x2="91.44" y2="337.82" width="0.1524" layer="91"/>
 <pinref part="IC7" gate="G$1" pin="VIN"/>
 <pinref part="C1" gate="G$1" pin="1"/>
-<pinref part="CHRG" gate="G$1" pin="A"/>
+<pinref part="CHG" gate="G$1" pin="A"/>
 <wire x1="78.74" y1="345.44" x2="76.2" y2="345.44" width="0.1524" layer="91"/>
 <wire x1="76.2" y1="345.44" x2="76.2" y2="337.82" width="0.1524" layer="91"/>
 <wire x1="91.44" y1="337.82" x2="76.2" y2="337.82" width="0.1524" layer="91"/>
@@ -13298,7 +13298,7 @@ for battery and prox sensor
 <net name="N$8" class="0">
 <segment>
 <wire x1="88.9" y1="345.44" x2="86.36" y2="345.44" width="0.1524" layer="91"/>
-<pinref part="CHRG" gate="G$1" pin="C"/>
+<pinref part="CHG" gate="G$1" pin="C"/>
 <pinref part="R2" gate="G$1" pin="2"/>
 </segment>
 </net>
