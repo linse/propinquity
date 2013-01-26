@@ -1,0 +1,33 @@
+Partlist exported from /Users/sparky/Projects/propinquity/hardware/v2.0/Patch-Prop.sch at 2013-01-25 12:22
+
+Qty Value          Device                    Package        Parts                  Description                                                                         
+1                  -NPN-SOT23-EBC            SOT23-EBC      T1                     NPN Transistror                                                                     
+1                  ARDUINO_SERIAL_PROGRAMPTH 1X06           FTDI                   FTDI connector footprints                                                           
+1                  BEAD-0805                 0805           L1                                                                                                         
+1                  ISP-AVR910SMD             2X03_BORDER    ICSP                   PIN HEADER                                                                          
+2                  LEDCHIPLED_0805           CHIPLED_0805   CHG, PWR               LED                                                                                 
+1                  M02-JST-2MM-SMT           JST-2-SMD      BATT                   Header 2                                                                            
+1                  M02PTH                    1X02           VIBE                   Header 2                                                                            
+3                  M03PTH                    1X03           IO1, IO2, PROX         Header 3                                                                            
+2   .1uF           C-USC0603                 C0603          C5, C6                 CAPACITOR, American symbol                                                          
+2   0.1uF          C-USC0603                 C0603          C11, C12               CAPACITOR, American symbol                                                          
+1   100k           R-US_R0603                R0603          R6                     RESISTOR, American symbol                                                           
+1   10k            R-US_R0603                R0603          R4                     RESISTOR, American symbol                                                           
+3   10uF           C-USC0603                 C0603          C4, C8, C10            CAPACITOR, American symbol                                                          
+2   1uF            C-USC0603                 C0603          C3, C9                 CAPACITOR, American symbol                                                          
+1   2k             R-US_R0603                R0603          R3                     RESISTOR, American symbol                                                           
+3   4.7k           R-US_R0603                R0603          R7, R8, R9             RESISTOR, American symbol                                                           
+5   4.7uF          C-USC0603                 C0603          C1, C2, C7, C13, C14   CAPACITOR, American symbol                                                          
+2   470            R-US_R0603                R0603          R2, R5                 RESISTOR, American symbol                                                           
+1   ATMEGA168      ATMEGA168                 TQFP32-08      IC2                                                                                                        
+1   GP2D12_OUTLINE GP2D12_OUTLINE            GP2D12_OUTLINE SHARP                                                                                                      
+1   MCP1253        MCP1253                   MSOP8          IC3                                                                                                        
+1   MCP73831       MCP73831SMD               SOT23-5        IC7                                                                                                        
+1   MMA8452Q       MMA8452Q                  QFN-16         IC5                    Three axis I2C accelerometer.                                                       
+4   RGBLED5050     RGBLED5050                RGBLED5050     LED2, LED3, LED4, LED5 For 5050 RGB LEDs, the order of the LEDs may vary from one manufacturer to another! 
+1   RLim           R-US_R0603                R0603          R1                     RESISTOR, American symbol                                                           
+2   SOLDERJUMPERNO SOLDERJUMPERNO            SJ_2S-NO       SJ1, SJ2               Solder Jumper                                                                       
+1   TPS77033       TPS77033                  SOT23-DBV      IC1                    ULTRALOW-POWER 50-mA LOW-DROPOUT LINEAR REGULATORS                                  
+1   USBSMD         USBSMD                    USB-MINIB      USB                    USB Connectors                                                                      
+1   W2RV005RM      W2RV005RM                 MSOP8          IC6                    Constant Current IC for Driving Full Color LED                                      
+1   XBEE           XBEE                      XBEE           XBEE                                                                                                       
