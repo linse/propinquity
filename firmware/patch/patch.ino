@@ -5,15 +5,18 @@
 
 #include <XBee.h>
 #include <Timer.h>
+#include <Wire.h>
+#include "MMA8452Q.h"
 
 /* ---- Pin List ---- */
 
-#define RED_LED_PIN    8
+#define RED_LED_PIN    10
 #define GREEN_LED_PIN  9
-#define BLUE_LED_PIN   10
+#define BLUE_LED_PIN   5
+
 #define VIBE_PIN       6
-#define STATUS_LED_PIN 7
-#define PROX_PIN       4
+
+#define PROX_PIN       A7 // 21
 
 /* ---- Protocol ---- */
 
@@ -31,6 +34,10 @@
 #define VIBE_PACKET    7
 #define VIBE_DUTY_PACKET      8
 #define VIBE_PERIOD_PACKET    9
+
+/* ---- Accel ---- */
+
+#define ADDR_DEVICE 0x1C
 
 /* ---- Timer ---- */
 
@@ -76,7 +83,6 @@ void setup() {
 	pinMode(RED_LED_PIN, OUTPUT);
 	pinMode(BLUE_LED_PIN, OUTPUT);
 	pinMode(GREEN_LED_PIN, OUTPUT);
-	pinMode(STATUS_LED_PIN, OUTPUT);
 	pinMode(VIBE_PIN, OUTPUT);
 
 	setActive(0);
@@ -88,6 +94,27 @@ void setup() {
 	t.every(10, timerCallback);
 
 	xbee.begin(38400);
+
+	Wire.begin();
+
+	Wire.beginTransmission(ADDR_DEVICE);
+	Wire.write(CTRL_REG2);
+	Wire.write(1 << RST);
+	Wire.endTransmission();
+	
+	delay(1000);
+	
+	Wire.beginTransmission(ADDR_DEVICE);
+	Wire.write(XYZ_DATA_CFG);
+	Wire.write(1 << FS1 | 1 << FS0);
+	Wire.endTransmission();
+	
+	Wire.beginTransmission(ADDR_DEVICE);
+	Wire.write(CTRL_REG1);
+	Wire.write(1 << ACTIVE);
+	Wire.endTransmission();
+
+	Serial.begin(9600);
 }
 
 /**
@@ -109,6 +136,20 @@ void timerCallback() {
 
 
 void loop() {
+	// Wire.requestFrom(ADDR_DEVICE, 7);
+	
+	// byte status = Wire.read();
+
+	// int16_t data[6];
+	
+	// for(int i = 0;i < 6;i++) {
+	// 	uint16_t value = (Wire.read() << 4) | (Wire.read() >> 4);
+	// 	if(value & 0x0800) value |= 0xF000;
+	// 	data[i] = value;
+	// }
+	
+	// sendXYZ(data[0], data[1], data[2]);
+	
 	t.update();
 
 	xbee.readPacket(); // Read packet, return after 500ms timeout
@@ -146,6 +187,15 @@ void loop() {
 		vibe(0);
 		color(0, 0, 0);
 	}
+}
+
+void sendXYZ(int x, int y, int z) {
+	Serial.print(x);
+	Serial.print(" - ");
+	Serial.print(y);
+	Serial.print(" - ");
+	Serial.print(z);
+	Serial.print("\n");
 }
 
 void reset() {
@@ -213,7 +263,6 @@ void parse_data(uint8_t* data, uint8_t len) {
 void setActive(uint8_t val) {
 	if(val) {
 		active = 1;
-		statusLED(1);
 	} else {
 		active = 0;
 		if(!active) {
@@ -221,7 +270,6 @@ void setActive(uint8_t val) {
 				prox_val[i] = 0;
 			}
 		}
-		statusLED(0);
 	}
 }
 /* ---- Blinking ---- */
@@ -246,8 +294,4 @@ void color(unsigned char red, unsigned char green, unsigned char blue) {
 
 void vibe(unsigned char level) {
 	analogWrite(VIBE_PIN, level);
-}
-
-void statusLED(unsigned char state) {
-	digitalWrite(STATUS_LED_PIN, state);
 }
