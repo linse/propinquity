@@ -5,9 +5,8 @@ XBees
 
 Hardware
 -----------------------------
-* List of version 2.0 recomendations should be made regarding the failures of the current version
-* A version 1.1 could be produced to show possible corrections to version 1.0 if more were to be produced
-* Could the red/prox issue be due to current draw issues
+* Regulator footprint should have the EN polarity changed, this would be a more standard regulator package
+* Header/footprint for an on/off switch is needed
 
 Firmware
 -----------------------------
