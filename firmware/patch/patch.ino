@@ -13,20 +13,23 @@
 
 //TODO: Use enum instead and use case statement below
 
-#define BASE_ADDR      0
+#define BASE_ADDR             0
 
-#define PROX_PACKET    1
+#define PROX_PACKET           1
+#define ACCEL_XYZ_PACKET      2
+#define ACCEL_INT0_PACKET     3
+#define ACCEL_INT1_PACKET     4
 
-#define MODE_PACKET    2
-#define CLEAR_PACKET   3
+#define MODE_PACKET           5
+#define CLEAR_PACKET          6
 
-#define COLOR_PACKET   4
-#define COLOR_DUTY_PACKET     5
-#define COLOR_PERIOD_PACKET   6
+#define COLOR_PACKET          7
+#define COLOR_DUTY_PACKET     8
+#define COLOR_PERIOD_PACKET   9
 
-#define VIBE_PACKET    7
-#define VIBE_DUTY_PACKET      8
-#define VIBE_PERIOD_PACKET    9
+#define VIBE_PACKET           10
+#define VIBE_DUTY_PACKET      11
+#define VIBE_PERIOD_PACKET    12
 
 /* ---- Pin List ---- */
 
@@ -43,6 +46,9 @@
 #define ADDR_DEVICE 0x1C
 
 uint8_t accel_ok = 0;
+
+uint8_t xyz[3];
+
 uint8_t accel_flag = 0;
 uint8_t accel_period = 10;
 
@@ -103,7 +109,8 @@ void setup() {
 	pinMode(SCL, INPUT);	
 
 	reset();
-	setMode(0);
+
+	Wire.begin(); // join i2c bus
 
 	accel_reset();
 	accel_config();
@@ -147,25 +154,25 @@ void loop() {
 
 			avg_prox_val = avg_prox_val >> 3; //Divide by 8
 
-			send_data();
+			send_prox(avg_prox_val);
 
 			prox_flag = 0;
 		}
 
 		if((mode & (1 << ACCEL_XYZ_MODE)) && accel_flag) {
-			// Wire.requestFrom(ADDR_DEVICE, 7);
-			
-			// byte status = Wire.read();
+			Wire.beginTransmission(ADDR_DEVICE);
+			Wire.write(OUT_X_MSB);
+			Wire.endTransmission(false); //Do not send stop condition, this will send a repeat start instead
 
-			// int16_t data[6];
+			Wire.requestFrom(ADDR_DEVICE, 3);
+
+			for(int i = 0;i < 3;i++) {
+				xyz[i] = Wire.read();
+			}
 			
-			// for(int i = 0;i < 6;i++) {
-			// 	uint16_t value = (Wire.read() << 4) | (Wire.read() >> 4);
-			// 	if(value & 0x0800) value |= 0xF000;
-			// 	data[i] = value;
-			// }
-			
-			// sendXYZ(data[0], data[1], data[2]);
+			send_accel_XYZ(xyz[0], xyz[1], xyz[2]);
+
+			accel_flag = 0;
 		}
 
 		updateVibe();
@@ -177,8 +184,9 @@ void loop() {
  * Set the data out flag every ~10ms.
  */
 void timerCallback() {
-	if((time_counter % prox_period) == 0) prox_flag = 1; // Every 10ms
-	
+	if((time_counter % prox_period) == 0) prox_flag = 1;
+	if((time_counter % accel_period) == 0) accel_flag = 1;
+
 	if(led_period == 0 || led_duty == 255) led_on = true;
 	else if((time_counter % led_period) < (uint8_t)(led_duty*led_period/255)) led_on = true;
 	else led_on = false;
@@ -195,8 +203,8 @@ void timerCallback() {
  */
 void reset() {
 	accel_flag = 0;
-
 	prox_flag = 0;
+
 	avg_prox_val = 0;
 	for(uint8_t i = 0;i < PROX_AVG_LEN;i++) prox_val[i] = 0;
 
@@ -214,11 +222,15 @@ void reset() {
 
 	color(0, 0, 0);
 	vibe(0);
+
+	setMode(0);
 }
 
 /* ---- Accel ---- */
 
 void accel_reset() {
+	accel_ok = 0;
+
 	//Reset the accelerometer
 	accel_reg_write(CTRL_REG2, (1 << RST));
 
@@ -254,11 +266,9 @@ void accel_config() {
 
 	accel_enable(0);
 
-	//Note: I'm currently wiping out any other config in CTRL_REG1 by doing it this way
-
-	// reg_write(XYZ_DATA_CFG, (1 << HPF_OUT) | (FULL_SCALE_RANGE << FS0)); //Set range +-4g, output high pass data
-	accel_reg_write(XYZ_DATA_CFG, (1 << FS1 | 1 << FS0)); //Set range +-4g, output high pass data
-	// accel_reg_write(HP_FILTER_CUTOFF, (HIGH_PASS_CONF << SEL0)); //High pass second lowest setting
+	accel_reg_write(CTRL_REG1,  (1 << DR1) | (1 << DR0) | (1 << F_READ)); //8 bit mode
+	accel_reg_write(XYZ_DATA_CFG, (1 << HPF_OUT) | (0 << FS1) | (1 << FS0)); //Set range +-4g, output high pass data
+	accel_reg_write(HP_FILTER_CUTOFF, (1 << SEL1)); //High pass second lowest setting
 
 	//Motion
 
@@ -298,7 +308,7 @@ void accel_config() {
 }
 
 void accel_enable(uint8_t enable) {
-	uint8_t cur_val = accel_reg_read(CTRL_REG1);
+	uint8_t cur_val = accel_reg_read(CTRL_REG1); //TODO: Check that this actually "save" the previous value properly
 
 	if(enable) {
 		accel_reg_write(CTRL_REG1, cur_val | (1 << ACTIVE)); //Active mode
@@ -322,23 +332,27 @@ uint8_t accel_reg_read(uint8_t reg_addr) {
 	byte status = Wire.read();
 }
 
-void sendXYZ(int x, int y, int z) {
-	Serial.print(x);
-	Serial.print(" - ");
-	Serial.print(y);
-	Serial.print(" - ");
-	Serial.print(z);
-	Serial.print("\n");
-}
-
 /* ---- Xbee ---- */
 
-void send_data() {
+void send_accel_XYZ(uint8_t x, uint8_t y, uint8_t z) {
+	uint8_t outPacket[4];
+
+	outPacket[0] = ACCEL_XYZ_PACKET;
+	outPacket[1] = x;
+	outPacket[1] = y;
+	outPacket[1] = z;
+
+	tx = Tx16Request(BASE_ADDR, outPacket, 4);
+
+	xbee.send(tx);
+}
+
+void send_prox(uint16_t val) {
 	uint8_t outPacket[3];
 
 	outPacket[0] = PROX_PACKET;
-	outPacket[1] = uint8_t(avg_prox_val >> 8);
-	outPacket[2] = uint8_t(avg_prox_val);
+	outPacket[1] = uint8_t(val >> 8);
+	outPacket[2] = uint8_t(val);
 
 	tx = Tx16Request(BASE_ADDR, outPacket, 3);
 
