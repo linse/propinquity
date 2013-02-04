@@ -9,27 +9,29 @@
 #include "MMA8452Q.h"
 // #include <TimerOne.h>
 
+#define DEBUG
+
 /* ---- Protocol ---- */
 
-//TODO: Use enum instead and use case statement below
+ enum PacketType {
+ 	MODE_PACKET          = 0,
+ 	CLEAR_PACKET         = 1,
 
-#define BASE_ADDR             0
+	PROX_PACKET          = 2,
 
-#define PROX_PACKET           1
-#define ACCEL_XYZ_PACKET      2
-#define ACCEL_INT0_PACKET     3
-#define ACCEL_INT1_PACKET     4
+	ACCEL_XYZ_PACKET     = 3,
+	ACCEL_INT0_PACKET    = 4,
+	ACCEL_INT1_PACKET    = 5,
 
-#define MODE_PACKET           5
-#define CLEAR_PACKET          6
+	ACCEL_CONF_PACKET    = 6,
 
-#define COLOR_PACKET          7
-#define COLOR_DUTY_PACKET     8
-#define COLOR_PERIOD_PACKET   9
-
-#define VIBE_PACKET           10
-#define VIBE_DUTY_PACKET      11
-#define VIBE_PERIOD_PACKET    12
+	COLOR_PACKET         = 7,
+	COLOR_DUTY_PACKET    = 8,
+	COLOR_PERIOD_PACKET  = 9,
+	VIBE_PACKET          = 10,
+	VIBE_DUTY_PACKET     = 11,
+	VIBE_PERIOD_PACKET   = 12
+ };
 
 /* ---- Pin List ---- */
 
@@ -67,13 +69,13 @@ uint8_t prox_period = 10;
 
 uint8_t rgb[3] = {0, 0, 0};
 
-boolean led_on = true;
+uint8_t led_on = 1;
 uint8_t led_duty = 0;
 uint8_t led_period = 0;
 
 uint8_t vibe_level = 0;
 
-boolean vibe_on = true;
+uint8_t vibe_on = 1;
 uint8_t vibe_duty = 0;
 uint8_t vibe_period = 0;
 
@@ -82,6 +84,8 @@ uint8_t vibe_period = 0;
 #define EN_MODE 0
 #define PROX_MODE 1
 #define ACCEL_XYZ_MODE 2
+#define ACCEL_INT0_MODE 3
+#define ACCEL_INT1_MODE 4
 
 uint8_t mode = 0;
 
@@ -92,11 +96,13 @@ uint16_t time_counter = 0;
 
 /* ---- XBee/Wireless ---- */
 
+#define XBEE_BASE_ADDR 0
+
 XBee xbee = XBee();
 Tx16Request tx;
 Rx16Response rx = Rx16Response();
 
-void setup() {
+void setup(void) {
 	pinMode(RED_LED_PIN, OUTPUT);
 	pinMode(BLUE_LED_PIN, OUTPUT);
 	pinMode(GREEN_LED_PIN, OUTPUT);
@@ -115,18 +121,26 @@ void setup() {
 	accel_reset();
 	accel_config();
 
+	attachInterrupt(0, accel_int0, RISING);
+	attachInterrupt(0, accel_int1, RISING);
+
 	t.every(10, timerCallback);
 
 	// Timer1.initialize(1000); //1000 microseconds -> 10 milliseconds
 	// Timer1.attachInterrupt(timerCallback); // attach the service routine here
 
-	// Serial.begin(9600);
-	xbee.begin(38400);
+	#ifdef DEBUG
+	Serial.begin(9600);
+	setMode((1 << EN_MODE) | (1 << PROX_MODE) | (1 << ACCEL_XYZ_MODE));
+	#else
+	xbee.begin(38400);	
+	#endif
 }
 
-void loop() {
+void loop(void) {
 	t.update();
 
+	#ifndef DEBUG
 	xbee.readPacket(); // Read packet, return after 500ms timeout
 
 	XBeeResponse response = xbee.getResponse();
@@ -136,6 +150,7 @@ void loop() {
 			parse_data(rx.getData(), rx.getDataLength());
 		}
 	}
+	#endif
 
 	if(!(mode & (1 << EN_MODE))) {
 		//Disabled, lights and vibe off
@@ -159,20 +174,13 @@ void loop() {
 			prox_flag = 0;
 		}
 
-		if((mode & (1 << ACCEL_XYZ_MODE)) && accel_flag) {
-			Wire.beginTransmission(ADDR_DEVICE);
-			Wire.write(OUT_X_MSB);
-			Wire.endTransmission(false); //Do not send stop condition, this will send a repeat start instead
+		if(accel_ok) {
+			if((mode & (1 << ACCEL_XYZ_MODE)) && accel_flag) {
+				accel_reg_multi_read(OUT_X_MSB, xyz, 3);				
+				send_accel_XYZ(xyz[0], xyz[1], xyz[2]);
 
-			Wire.requestFrom(ADDR_DEVICE, 3);
-
-			for(int i = 0;i < 3;i++) {
-				xyz[i] = Wire.read();
+				accel_flag = 0;
 			}
-			
-			send_accel_XYZ(xyz[0], xyz[1], xyz[2]);
-
-			accel_flag = 0;
 		}
 
 		updateVibe();
@@ -183,17 +191,17 @@ void loop() {
 /**
  * Set the data out flag every ~10ms.
  */
-void timerCallback() {
+void timerCallback(void) {
 	if((time_counter % prox_period) == 0) prox_flag = 1;
 	if((time_counter % accel_period) == 0) accel_flag = 1;
 
-	if(led_period == 0 || led_duty == 255) led_on = true;
-	else if((time_counter % led_period) < (uint8_t)(led_duty*led_period/255)) led_on = true;
-	else led_on = false;
+	if(led_period == 0 || led_duty == 255) led_on = 1;
+	else if((time_counter % led_period) < (uint8_t)(led_duty*led_period/255)) led_on = 1;
+	else led_on = 0;
 
-	if(vibe_period == 0 || vibe_duty == 255) vibe_on = true;
-	else if((time_counter % vibe_period) < (uint8_t)(vibe_duty*vibe_period/255)) vibe_on = true;
-	else vibe_on = false;
+	if(vibe_period == 0 || vibe_duty == 255) vibe_on = 1;
+	else if((time_counter % vibe_period) < (uint8_t)(vibe_duty*vibe_period/255)) vibe_on = 1;
+	else vibe_on = 0;
 	
 	time_counter++;
 }
@@ -201,7 +209,7 @@ void timerCallback() {
 /**
  * Reset patch
  */
-void reset() {
+void reset(void) {
 	accel_flag = 0;
 	prox_flag = 0;
 
@@ -210,13 +218,13 @@ void reset() {
 
 	vibe_level = 0;
 
-	vibe_on = false;
+	vibe_on = 0;
 	vibe_duty = 0;
 	vibe_period = 0;
 
 	rgb[0] = rgb[1] = rgb[2] = 0;
 
-	led_on = false;
+	led_on = 0;
 	led_duty = 0;
 	led_period = 0;
 
@@ -228,8 +236,13 @@ void reset() {
 
 /* ---- Accel ---- */
 
-void accel_reset() {
-	accel_ok = 0;
+void accel_reset(void) {
+	#ifdef DEBUG
+	Serial.println("Accel Reset Started");
+	#endif
+
+	accel_ok = 1;
+	uint8_t tmp_accel_ok = 0;
 
 	//Reset the accelerometer
 	accel_reg_write(CTRL_REG2, (1 << RST));
@@ -238,8 +251,8 @@ void accel_reset() {
 	int timer = 0;
 
 	while(timer < 1000) { //Wait up to 1 second for reset
-		if((accel_reg_read(CTRL_REG2) & (1 << RST)) != 0) {
-			accel_ok = 1;
+		if((accel_reg_read(CTRL_REG2) & (1 << RST)) != 0 && accel_reg_read(WHO_AM_I) == 0x2A) {
+			tmp_accel_ok = 1;
 			break;
 		}
 
@@ -250,18 +263,26 @@ void accel_reset() {
 		delay(1);
 	}
 
+	accel_ok = tmp_accel_ok;
+
 	if(accel_ok) {
 		//Green for ok
+		#ifdef DEBUG
+		Serial.println("Reset Complete, WHO_AM_I Ok");
+		#endif
 		color(0, 40, 0);
-		delay(250);
+		delay(500);
 	} else {
 		//Red for fail
+		#ifdef DEBUG
+		Serial.println("Reset Failed, Accel disabled");
+		#endif
 		color(40, 0, 0);
-		delay(250);
+		delay(500);
 	}
 }
 
-void accel_config() {	
+void accel_config(void) {	
 	//IMPORTANT: all registers must be set with the accelerometer in STANDBY
 
 	accel_enable(0);
@@ -318,18 +339,57 @@ void accel_enable(uint8_t enable) {
 }
 
 void accel_reg_write(uint8_t reg_addr, uint8_t data) {
+	accel_reg_multi_write(reg_addr, &data, 1);
+}
+
+void accel_reg_multi_write(uint8_t reg_addr, uint8_t* data, int len) {
+	if(!accel_ok) return;
 	Wire.beginTransmission(ADDR_DEVICE);
 	Wire.write(reg_addr);
-	Wire.write(data);
-	Wire.endTransmission();
+	for(uint8_t i = 0;i < len;i++) {
+		Wire.write(data[i]);
+	}
+	if(Wire.endTransmission() > 0) {
+		accel_error();
+	}
 }
 
 uint8_t accel_reg_read(uint8_t reg_addr) { 
+	if(!accel_ok) return 0;
+	uint8_t result = 0;
+	accel_reg_multi_read(reg_addr, &result, 1);
+	return result;
+}
+
+void accel_reg_multi_read(uint8_t reg_addr, uint8_t* data, int len) { 
+	if(!accel_ok) return;
 	Wire.beginTransmission(ADDR_DEVICE);
 	Wire.write(reg_addr);
-	Wire.endTransmission(false); //Do not send stop condition, this will send a repeat start instead
-	Wire.requestFrom(ADDR_DEVICE, 1);
-	byte status = Wire.read();
+	if(Wire.endTransmission(false) > 0) { //Do not send stop condition, this will send a repeat start instead
+		accel_error();
+	}
+	Wire.requestFrom(ADDR_DEVICE, len);
+	//TODO: Implement OnReceive for less delay?
+	for(uint8_t i = 0;i < len;i++) {
+		if(Wire.available() > 0) {
+			data[i] = Wire.read();
+		} else {
+			data[i] = 0;
+			accel_error();
+		}
+	}
+}
+
+void accel_int0(void) {
+	//Nothing yet handle interrupt 2
+}
+
+void accel_int1(void) {
+	//Nothing yet handle interrupt 1
+}
+
+void accel_error() {
+	//TODO: Some sort of error_count, try reseting device or eventually disabling it
 }
 
 /* ---- Xbee ---- */
@@ -342,9 +402,17 @@ void send_accel_XYZ(uint8_t x, uint8_t y, uint8_t z) {
 	outPacket[1] = y;
 	outPacket[1] = z;
 
-	tx = Tx16Request(BASE_ADDR, outPacket, 4);
+	#ifdef DEBUG
+	Serial.print(x);
+	Serial.print(" - ");
+	Serial.print(y);
+	Serial.print(" - ");
+	Serial.println(z);
+	#else
+	tx = Tx16Request(XBEE_BASE_ADDR, outPacket, 4);
 
 	xbee.send(tx);
+	#endif
 }
 
 void send_prox(uint16_t val) {
@@ -354,38 +422,69 @@ void send_prox(uint16_t val) {
 	outPacket[1] = uint8_t(val >> 8);
 	outPacket[2] = uint8_t(val);
 
-	tx = Tx16Request(BASE_ADDR, outPacket, 3);
+	#ifdef DEBUG
+	Serial.print("\t\t\t");
+	Serial.println(val);
+	#else
+	tx = Tx16Request(XBEE_BASE_ADDR, outPacket, 3);
 
 	xbee.send(tx);
+	#endif
 }
 
 void parse_data(uint8_t* data, uint8_t len) {
-	if(data[0] == MODE_PACKET && len > 1) {
-		setMode(data[1]);
-	} else if(data[0] == CLEAR_PACKET) {
-		reset();
-	} else if(data[0] == COLOR_PACKET && len > 3) {
-		rgb[0] = data[1];
-		rgb[1] = data[2];
-		rgb[2] = data[3];
-	} else if(data[0] == COLOR_DUTY_PACKET && len > 1) {
-		led_duty = data[1];
-	} else if(data[0] == COLOR_PERIOD_PACKET && len > 1) {
-		led_period = data[1];
-	} else if(data[0] == VIBE_PACKET && len > 1) {
-		vibe_level = data[1];
-	} else if(data[0] == VIBE_DUTY_PACKET && len > 1) { 
-		vibe_duty = data[1]; 
-	} else if(data[0] == VIBE_PERIOD_PACKET && len > 1) { 
-		vibe_period = data[1]; 
-	} 
+	switch(data[0]) {
+		case MODE_PACKET: {
+			if(len == 2) setMode(data[1]);
+			break;
+		}
+		case CLEAR_PACKET: {
+			reset();
+			break;
+		}
+		case ACCEL_CONF_PACKET: {
+			if(len >= 3) accel_reg_multi_write(data[1], &data[2], len-2);
+			break;
+		}
+		case COLOR_PACKET: {
+			if(len == 4) {
+				rgb[0] = data[1];
+				rgb[1] = data[2];
+				rgb[2] = data[3];
+			}
+			break;
+		}
+		case COLOR_DUTY_PACKET: {
+			if(len == 2) led_duty = data[1];
+			break;
+		}
+		case COLOR_PERIOD_PACKET: {
+			if(len == 2) led_period = data[1];
+			break;
+		}
+		case VIBE_PACKET: {
+			if(len == 2) vibe_level = data[1];
+			break;
+		}
+		case VIBE_DUTY_PACKET: {
+			if(len == 2) vibe_duty = data[1]; 
+			break;
+		}
+		case VIBE_PERIOD_PACKET: {
+			if(len == 2) vibe_period = data[1]; 
+			break;
+		}
+		default: {
+			//Hmm invalid packet
+			break;
+		}
+	}
 }
 
 void setMode(uint8_t new_mode) {
-	if(new_mode) {
-		mode = new_mode;
-	} else {
-		mode = 0;
+	mode = new_mode;
+
+	if(!(new_mode & (1 << PROX_MODE))) {
 		for(uint8_t i = 0;i < PROX_AVG_LEN;i++) {
 			prox_val[i] = 0;
 		}
@@ -394,12 +493,12 @@ void setMode(uint8_t new_mode) {
 
 /* ---- Blinking ---- */
 
-void updateVibe() {
+void updateVibe(void) {
 	if(vibe_on) vibe(vibe_level);
 	else vibe(0);
 }
 
-void updateLEDs() {
+void updateLEDs(void) {
 	if(led_on) color(rgb[0], rgb[1], rgb[2]);
 	else color(0, 0, 0);
 }
