@@ -91,15 +91,15 @@ public class HardwareDebugger extends PApplet implements ProxEventListener, Acce
 			Slider vibe_periods_slider = controlP5.addSlider("Vibe Period "+i, 0, 255, 0, incr_width*2+obj_offset, level_3, obj_width, slider_height);
 			vibe_periods_slider.setGroup(group);
 
-			x_sliders[i] = controlP5.addSlider("X "+i, 0, 1024, 0, incr_width*0+obj_offset, level_4, obj_width, slider_height);
+			x_sliders[i] = controlP5.addSlider("X "+i, -128, 128, 0, incr_width*0+obj_offset, level_4, obj_width, slider_height);
 			x_sliders[i].lock();
 			x_sliders[i].setGroup(group);
 
-			y_sliders[i] = controlP5.addSlider("Y "+i, 0, 1024, 0, incr_width*1+obj_offset, level_4, obj_width, slider_height);
+			y_sliders[i] = controlP5.addSlider("Y "+i, -128, 128, 0, incr_width*1+obj_offset, level_4, obj_width, slider_height);
 			y_sliders[i].lock();
 			y_sliders[i].setGroup(group);
 
-			z_sliders[i] = controlP5.addSlider("Z "+i, 0, 1024, 0, incr_width*2+obj_offset, level_4, obj_width, slider_height);
+			z_sliders[i] = controlP5.addSlider("Z "+i, -128, 128, 0, incr_width*2+obj_offset, level_4, obj_width, slider_height);
 			z_sliders[i].lock();
 			z_sliders[i].setGroup(group);
 		}
@@ -141,6 +141,7 @@ public class HardwareDebugger extends PApplet implements ProxEventListener, Acce
 		xbeeBaseStation = new XBeeBaseStation();
 		xbeeBaseStation.scan();
 		xbeeBaseStation.addProxEventListener(this);
+		xbeeBaseStation.addAccelEventListener(this);
 
 		patches = new Patch[NUM_PATCHES];
 		for(int i = 0;i < NUM_PATCHES;i++) {

@@ -9,7 +9,7 @@
 #include "MMA8452Q.h"
 // #include <TimerOne.h>
 
-#define DEBUG
+// #define DEBUG
 
 /* ---- Protocol ---- */
 
@@ -116,6 +116,12 @@ void setup(void) {
 
 	reset();
 
+	#ifdef DEBUG
+	Serial.begin(9600);
+	Serial.println("Boot");
+	setMode((1 << ACTIVE_MODE) | (1 << PROX_MODE) | (1 << ACCEL_XYZ_MODE));
+	#endif
+
 	Wire.begin(); // join i2c bus
 
 	accel_reset();
@@ -126,13 +132,11 @@ void setup(void) {
 
 	t.every(10, timerCallback);
 
-	// Timer1.initialize(1000); //1000 microseconds -> 10 milliseconds
+	// Timer1.initialize(10000); //1000 microseconds -> 10 milliseconds
 	// Timer1.attachInterrupt(timerCallback); // attach the service routine here
 
-	#ifdef DEBUG
-	Serial.begin(9600);
-	setMode((1 << ACTIVE_MODE) | (1 << PROX_MODE) | (1 << ACCEL_XYZ_MODE));
-	#else
+
+	#ifndef DEBUG
 	xbee.begin(38400);	
 	#endif
 }
@@ -251,7 +255,7 @@ void accel_reset(void) {
 	int timer = 0;
 
 	while(timer < 1000) { //Wait up to 1 second for reset
-		if((accel_reg_read(CTRL_REG2) & (1 << RST)) != 0 && accel_reg_read(WHO_AM_I) == 0x2A) {
+		if((accel_reg_read(CTRL_REG2) & (1 << RST)) == 0 && accel_reg_read(WHO_AM_I) == 0x2A) {
 			tmp_accel_ok = 1;
 			break;
 		}
@@ -288,6 +292,7 @@ void accel_config(void) {
 	accel_enable(0);
 
 	accel_reg_write(CTRL_REG1,  (1 << DR1) | (1 << DR0) | (1 << F_READ)); //8 bit mode
+	// accel_reg_write(XYZ_DATA_CFG, (0 << FS1) | (1 << FS0)); //Set range +-4g, output high pass data
 	accel_reg_write(XYZ_DATA_CFG, (1 << HPF_OUT) | (0 << FS1) | (1 << FS0)); //Set range +-4g, output high pass data
 	accel_reg_write(HP_FILTER_CUTOFF, (1 << SEL1)); //High pass second lowest setting
 
@@ -399,15 +404,15 @@ void send_accel_XYZ(uint8_t x, uint8_t y, uint8_t z) {
 
 	outPacket[0] = ACCEL_XYZ_PACKET;
 	outPacket[1] = x;
-	outPacket[1] = y;
-	outPacket[1] = z;
+	outPacket[2] = y;
+	outPacket[3] = z;
 
 	#ifdef DEBUG
-	Serial.print(x);
+	Serial.print(int8_t(x));
 	Serial.print(" - ");
-	Serial.print(y);
+	Serial.print(int8_t(y));
 	Serial.print(" - ");
-	Serial.println(z);
+	Serial.println(int8_t(z));
 	#else
 	tx = Tx16Request(XBEE_BASE_ADDR, outPacket, 4);
 
