@@ -7,7 +7,7 @@ import controlP5.*;
  * A hacky sketch to test patches or gloves, provded buttons and sliders to control active, vibe and LEDS as well as giving prox value back.
  *
  */
-public class HardwareDebugger extends PApplet implements ProxEventListener {
+public class HardwareDebugger extends PApplet implements ProxEventListener, AccelEventListener {
 
 	// Unique serialization ID
 	static final long serialVersionUID = 6340508174717159418L;
@@ -27,6 +27,9 @@ public class HardwareDebugger extends PApplet implements ProxEventListener {
 	boolean show_controls = true;
 
 	Slider prox_sliders[];
+	Slider x_sliders[];
+	Slider y_sliders[];
+	Slider z_sliders[];
 
 	public void setup() {
 		size(1024, 800);
@@ -34,6 +37,9 @@ public class HardwareDebugger extends PApplet implements ProxEventListener {
 		controlP5 = new ControlP5(this);
 
 		prox_sliders = new Slider[NUM_PATCHES];
+		x_sliders = new Slider[NUM_PATCHES];
+		y_sliders = new Slider[NUM_PATCHES];
+		z_sliders = new Slider[NUM_PATCHES];
 
 		controlP5.addButton("Re-Scan", 1, 10, 10, 50, 25);
 
@@ -43,12 +49,13 @@ public class HardwareDebugger extends PApplet implements ProxEventListener {
 			int local_width = round((width-100)/NUM_PATCHES*0.95f);
 
 			int obj_width = 15;
-			int slider_height = 200;
+			int slider_height = 150;
 
 			int level_0 = -45;
 			int level_1 = 10;
-			int level_2 = 240;
-			int level_3 = 480;
+			int level_2 = level_1+(slider_height+20);
+			int level_3 = level_1+(slider_height+20)*2;
+			int level_4 = level_1+(slider_height+20)*3;
 
 			int num = 3;
 
@@ -83,6 +90,18 @@ public class HardwareDebugger extends PApplet implements ProxEventListener {
 			vibe_duties_slider.setGroup(group);
 			Slider vibe_periods_slider = controlP5.addSlider("Vibe Period "+i, 0, 255, 0, incr_width*2+obj_offset, level_3, obj_width, slider_height);
 			vibe_periods_slider.setGroup(group);
+
+			x_sliders[i] = controlP5.addSlider("X "+i, 0, 1024, 0, incr_width*0+obj_offset, level_4, obj_width, slider_height);
+			x_sliders[i].lock();
+			x_sliders[i].setGroup(group);
+
+			y_sliders[i] = controlP5.addSlider("Y "+i, 0, 1024, 0, incr_width*1+obj_offset, level_4, obj_width, slider_height);
+			y_sliders[i].lock();
+			y_sliders[i].setGroup(group);
+
+			z_sliders[i] = controlP5.addSlider("Z "+i, 0, 1024, 0, incr_width*2+obj_offset, level_4, obj_width, slider_height);
+			z_sliders[i].lock();
+			z_sliders[i].setGroup(group);
 		}
 
 		// for(int i = 0;i < NUM_GLOVES;i++) {
@@ -210,6 +229,16 @@ public class HardwareDebugger extends PApplet implements ProxEventListener {
 		for(int i = 0;i < NUM_PATCHES;i++) {
 			if(patch == patches[i]) {
 				prox_sliders[i].setValue(patch.getProx());
+			}
+		}
+	}
+
+	public void accelXYZEvent(Patch patch) {
+		for(int i = 0;i < NUM_PATCHES;i++) {
+			if(patch == patches[i]) {
+				x_sliders[i].setValue(patch.getAccelX());
+				y_sliders[i].setValue(patch.getAccelY());
+				z_sliders[i].setValue(patch.getAccelZ());
 			}
 		}
 	}

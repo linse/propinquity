@@ -20,7 +20,10 @@ public class Patch implements HardwareConstants {
 
 	boolean active;
 
-	int vibe_level, vibe_period, vibe_duty, color_period, color_duty, prox;
+	int prox_val;
+	int[] xyz;
+
+	int vibe_level, vibe_period, vibe_duty, color_period, color_duty;
 
 	int[] color;
 
@@ -40,6 +43,9 @@ public class Patch implements HardwareConstants {
 
 		active = false;
 
+		prox_val = 0;
+		xyz = new int[3];
+
 		vibe_level = 0;
 		vibe_period = 0;
 		vibe_duty = 0;
@@ -51,8 +57,6 @@ public class Patch implements HardwareConstants {
 
 		color_period = 0;
 		color_duty = 0;
-
-		prox = 0;
 
 		if(USE_DAEMON) daemon = new PatchDaemon();
 	}
@@ -84,8 +88,8 @@ public class Patch implements HardwareConstants {
 	public void setActive(boolean active) {
 		if(MIN_PACK && this.active == active) return;
 		this.active = active;
-		if(MANUAL_PACK) hardware.sendPacket(new Packet(address, PacketType.CONF, new int[] {active?1:0}));
-		if(!active) prox = 0; //Clear prox when not active
+		if(MANUAL_PACK) hardware.sendPacket(new Packet(address, PacketType.MODE, new int[] {active?7:0}));
+		if(!active) prox_val = 0; //Clear prox when not active
 	}
 
 	/**
@@ -118,7 +122,7 @@ public class Patch implements HardwareConstants {
 	 public void setVibeLevel(int level) {
 	 	if(MIN_PACK && vibe_level == level) return;
 		vibe_level = PApplet.constrain(level, 0, 255);
-		if(MANUAL_PACK) hardware.sendPacket(new Packet(address, PacketType.VIBE_LEVEL, new int[] {vibe_level}));
+		if(MANUAL_PACK) hardware.sendPacket(new Packet(address, PacketType.VIBE, new int[] {vibe_level}));
 	}
 
 	/**
@@ -192,12 +196,36 @@ public class Patch implements HardwareConstants {
 	/**
 	 * Sets the value of the prox sensor for this device. Normally this should be by the HardwareInterface which this device is registered with as the data arrives from the real device. It should only be called elsewhere for testing.
 	 *
-	 * @param prox the prox value, constrained to the range 0-1024.
+	 * @param prox_val the prox value, constrained to the range 0-1024.
 	 */
-	public void setProx(int prox) {
+	public void setProx(int prox_val) {
 		//Prevent straggler packet from changing the prox value when active if false
-		if(active) this.prox = PApplet.constrain(prox, 0, 1024);
-		else this.prox = 0;
+		if(active) this.prox_val = PApplet.constrain(prox_val, 0, 1024);
+		else this.prox_val = 0;
+	}
+
+	/**
+	 * Sets the value of the xyz accelerometer sensor for this device. Normally this should be by the HardwareInterface which this device is registered with as the data arrives from the real device. It should only be called elsewhere for testing.
+	 *
+	 * @param x the x accelerometer value.
+	 * @param y the y accelerometer value.
+	 * @param z the z accelerometer value.
+	 */
+	public void setAccelXYZ(int x, int y, int z) {
+		xyz[0] = x;
+		xyz[1] = y;
+		xyz[2] = z;
+	}
+
+	/**
+	 * Sets the value of the xyz accelerometer sensor for this device. Normally this should be by the HardwareInterface which this device is registered with as the data arrives from the real device. It should only be called elsewhere for testing.
+	 *
+	 * @param xyz the xyz accelerometer values (must contain exactly 3 values).
+	 */
+	public void setAccelXYZ(int[] xyz) {
+		if(xyz.length == 3) {
+			this.xyz = xyz;
+		}
 	}
 
 	/**
@@ -257,12 +285,48 @@ public class Patch implements HardwareConstants {
 	/**
 	 * The current value of the prox sensor, constrained to the 0-1024 range.
 	 *
-	 * @return the prox value, constrained to the 0-1024 range.
+	 * @return the prox_val value, constrained to the 0-1024 range.
 	 */
 	public int getProx() {
 		//Return 0 if not active
-		if(active) return prox;
+		if(active) return prox_val;
 		else return 0;
+	}
+
+	/**
+	 * The current values of the accerometer xyz.
+	 *
+	 * @return the xyz sensor values (returns exactly 3 values).
+	 */
+	public int[] getAccelXYZ() {
+		return xyz.clone();
+	}
+
+	/**
+	 * The current values of the accerometer x only.
+	 *
+	 * @return the x sensor values.
+	 */
+	public int getAccelX() {
+		return xyz[0];
+	}
+
+	/**
+	 * The current values of the accerometer x only.
+	 *
+	 * @return the y sensor values.
+	 */
+	public int getAccelY() {
+		return xyz[1];
+	}
+
+	/**
+	 * The current values of the accerometer x only.
+	 *
+	 * @return the z sensor values.
+	 */
+	public int getAccelZ() {
+		return xyz[2];
 	}
 
 	/**
@@ -271,8 +335,8 @@ public class Patch implements HardwareConstants {
 	 * @return 0 if there is nothing in range, 1 if something is in range, 2 if something is in the "sweet spot"
 	 */
 	public int getZone() {
-		if(prox < MIN_RANGE || prox > MAX_RANGE) return 0; //Out of range or too close
-		else if(prox > MIN_SWEETSPOT && prox < MAX_SWEETSPOT) return 2; //In the sweet spot
+		if(prox_val < MIN_RANGE || prox_val > MAX_RANGE) return 0; //Out of range or too close
+		else if(prox_val > MIN_SWEETSPOT && prox_val < MAX_SWEETSPOT) return 2; //In the sweet spot
 		else return 1; //Else normal zone
 	}
 
@@ -346,13 +410,13 @@ public class Patch implements HardwareConstants {
 
 		public void run() {
 			while(running) {
-				hardware.sendPacket(new Packet(address, PacketType.CONF, new int[] {active?1:0}));
+				hardware.sendPacket(new Packet(address, PacketType.MODE, new int[] {active?7:0}));
 
 				hardware.sendPacket(new Packet(address, PacketType.COLOR, new int[] {color[0], color[1], color[2]}));
 				hardware.sendPacket(new Packet(address, PacketType.COLOR_DUTY, new int[] {color_duty}));
 				hardware.sendPacket(new Packet(address, PacketType.COLOR_PERIOD, new int[] {color_period}));
 
-				hardware.sendPacket(new Packet(address, PacketType.VIBE_LEVEL, new int[] {vibe_level}));
+				hardware.sendPacket(new Packet(address, PacketType.VIBE, new int[] {vibe_level}));
 				hardware.sendPacket(new Packet(address, PacketType.VIBE_DUTY, new int[] {vibe_duty}));
 				hardware.sendPacket(new Packet(address, PacketType.VIBE_PERIOD, new int[] {vibe_period}));
 

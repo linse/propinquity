@@ -58,7 +58,7 @@ public class Glove implements HardwareConstants {
 	public void setActive(boolean active) {
 		if(MIN_PACK && this.active == active) return;
 		this.active = active;
-		if(MANUAL_PACK) hardware.sendPacket(new Packet(address, PacketType.CONF, new int[] {active?1:0}));
+		if(MANUAL_PACK) hardware.sendPacket(new Packet(address, PacketType.MODE, new int[] {active?1:0}));
 	}
 	/**
 	 * Gets the current state of the device, enabled or disabled
@@ -90,7 +90,7 @@ public class Glove implements HardwareConstants {
 	public void setVibeLevel(int level) {
 		if(MIN_PACK && vibe_level == level) return;
 		vibe_level = PApplet.constrain(level, 0, 255);
-		if(MANUAL_PACK) hardware.sendPacket(new Packet(address, PacketType.VIBE_LEVEL, new int[] {vibe_level}));
+		if(MANUAL_PACK) hardware.sendPacket(new Packet(address, PacketType.VIBE, new int[] {vibe_level}));
 	}
 
 	/**
@@ -201,9 +201,9 @@ public class Glove implements HardwareConstants {
 
 		public void run() {
 			while(running) {
-				hardware.sendPacket(new Packet(address, PacketType.CONF, new int[] {active?1:0}));
+				hardware.sendPacket(new Packet(address, PacketType.MODE, new int[] {active?1:0}));
 
-				hardware.sendPacket(new Packet(address, PacketType.VIBE_LEVEL, new int[] {vibe_level}));
+				hardware.sendPacket(new Packet(address, PacketType.VIBE, new int[] {vibe_level}));
 				hardware.sendPacket(new Packet(address, PacketType.VIBE_DUTY, new int[] {vibe_duty}));
 				hardware.sendPacket(new Packet(address, PacketType.VIBE_PERIOD, new int[] {vibe_period}));
 

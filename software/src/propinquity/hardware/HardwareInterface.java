@@ -18,6 +18,10 @@ public interface HardwareInterface {
 
 	public boolean removeProxEventListener(ProxEventListener listener);
 
+	public void addAccelEventListener(AccelEventListener listener);
+
+	public boolean removeAccelEventListener(AccelEventListener listener);
+
 	public void sendPacket(Packet packet);
 
 }

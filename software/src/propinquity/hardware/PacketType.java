@@ -5,20 +5,25 @@ package propinquity.hardware;
  *
  */
 public enum PacketType {
-	
-	PROX(1),
+	MODE(0),
+	CLEAR(1),
 
-	CONF(2),
-	CLEAR(3),
+	PROX(2),
 
-	COLOR(4),
-	COLOR_DUTY(5),
-	COLOR_PERIOD(6),
+	ACCEL_XYZ(3),
+	ACCEL_INT0(4),
+	ACCEL_INT1(5),
 
-	VIBE_LEVEL(7),
-	VIBE_DUTY(8),
-	VIBE_PERIOD(9);
-	
+	ACCEL_CONF(6),
+
+	COLOR(7),
+	COLOR_DUTY(8),
+	COLOR_PERIOD(9),
+
+	VIBE(10),
+	VIBE_DUTY(11),
+	VIBE_PERIOD(12);
+
 	final int code;
 
 	PacketType(int code) {

@@ -27,6 +27,7 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 	HashMap<Integer, Glove> gloves;
 	HashMap<Integer, Patch> patches;
 	Vector<ProxEventListener> proxListeners;
+	Vector<AccelEventListener> accelListeners;
 
 	int currentFrameID;
 
@@ -41,6 +42,7 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 		gloves = new HashMap<Integer, Glove>();
 		patches = new HashMap<Integer, Patch>();
 		proxListeners = new Vector<ProxEventListener>();
+		accelListeners = new Vector<AccelEventListener>();
 	}	
 
 	/**
@@ -254,6 +256,14 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 		return proxListeners.remove(listener);
 	}
 
+	public void addAccelEventListener(AccelEventListener listener) {
+		if(accelListeners.indexOf(listener) == -1) accelListeners.add(listener);
+	}
+
+	public boolean removeAccelEventListener(AccelEventListener listener) {
+		return accelListeners.remove(listener);
+	}
+
 	public void sendPacket(Packet packet) {
 		if(xbees.size() == 0) return;
 		sendPacketAsynchronous(packet);	
@@ -341,6 +351,13 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 					if(data.length > 1 && data[0] == PacketType.PROX.getCode()) {
 						patch.setProx(((data[1] & 0xFF) << 8) | (data[2] & 0xFF));
 						for(ProxEventListener listener : proxListeners) listener.proxEvent(patch);
+					} else if(data.length > 3 && data[0] == PacketType.ACCEL_XYZ.getCode()) {
+						patch.setAccelXYZ((byte)data[1], (byte)data[2], (byte)data[3]);
+						for(AccelEventListener listener : accelListeners) listener.accelXYZEvent(patch);
+					} else if(data.length > 1 && data[0] == PacketType.ACCEL_INT0.getCode()) {
+						System.out.println("Receiver ACCEL_INT0");
+					} else if(data.length > 1 && data[0] == PacketType.ACCEL_INT1.getCode()) {
+						System.out.println("Receiver ACCEL_INT1");
 					} else {
 						System.out.println("Packet form address "+addr+" seems malformed. Contains: ");
 						for(int i = 0;i < data.length;i++) {

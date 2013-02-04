@@ -81,7 +81,7 @@ uint8_t vibe_period = 0;
 
 /* ---- Global ---- */
 
-#define EN_MODE 0
+#define ACTIVE_MODE 0
 #define PROX_MODE 1
 #define ACCEL_XYZ_MODE 2
 #define ACCEL_INT0_MODE 3
@@ -131,7 +131,7 @@ void setup(void) {
 
 	#ifdef DEBUG
 	Serial.begin(9600);
-	setMode((1 << EN_MODE) | (1 << PROX_MODE) | (1 << ACCEL_XYZ_MODE));
+	setMode((1 << ACTIVE_MODE) | (1 << PROX_MODE) | (1 << ACCEL_XYZ_MODE));
 	#else
 	xbee.begin(38400);	
 	#endif
@@ -152,7 +152,7 @@ void loop(void) {
 	}
 	#endif
 
-	if(!(mode & (1 << EN_MODE))) {
+	if(!(mode & (1 << ACTIVE_MODE))) {
 		//Disabled, lights and vibe off
 		vibe(0);
 		color(0, 0, 0);
