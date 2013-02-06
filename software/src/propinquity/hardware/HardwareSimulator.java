@@ -66,6 +66,14 @@ public class HardwareSimulator implements HardwareInterface, UIElement {
 		return proxListeners.remove(listener);
 	}
 
+	public void addAccelEventListener(AccelEventListener listener) {
+		//TODO: Implement and accel sim for this
+	}
+
+	public boolean removeAccelEventListener(AccelEventListener listener) {
+		return true; //TODO: Implement an accel sim for this
+	}
+
 	public void sendPacket(Packet packet) {
 		//Do nothing
 	}

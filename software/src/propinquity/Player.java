@@ -101,6 +101,8 @@ public class Player implements PConstants {
 	}
 
 	public void setGloveDefaults() {
+		glove.setColor(color);
+		glove.setColorDuty(HardwareConstants.DEFAULT_DUTY_CYCLE);
 		glove.setVibeDuty(HardwareConstants.DEFAULT_DUTY_CYCLE);
 	}
 
@@ -139,9 +141,13 @@ public class Player implements PConstants {
 		this.coop = coop;
 
 		for(Patch patch : patches) {
-			if(coop) patch.setColor(PlayerConstants.NEUTRAL_COLOR);
-			// if(coop) patch.setColor(Color.teal());
-			else patch.setColor(color);
+			if(coop) {
+				patch.setColor(PlayerConstants.NEUTRAL_COLOR);
+				glove.setColor(PlayerConstants.NEUTRAL_COLOR);
+			} else {
+				glove.setColor(color);
+				patch.setColor(color);
+			}
 		}
 
 		for(int i = 0;i < patchStates.length;i++) {

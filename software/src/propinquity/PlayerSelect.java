@@ -88,6 +88,7 @@ public class PlayerSelect implements UIElement {
 				// patch.clear();
 				patch.setActive(false);
 			}
+			player.getGlove().setActive(false);
 		}
 
 		if(particles != null) {
@@ -204,8 +205,11 @@ public class PlayerSelect implements UIElement {
 				if(state < players.length) {
 					for(Patch patch : players[state].getPatches()) {
 						patch.setActive(true);
-						patch.setColor(players[state].getColor());
+						patch.setColor(players[state].getColor());						
 					}
+					Glove glove = players[state].getGlove();
+					glove.setActive(true);
+					glove.setColor(players[state].getColor());
 				} else {
 					running = false;
 					break;
