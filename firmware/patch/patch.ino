@@ -57,13 +57,15 @@ uint8_t accel_period = 10;
 /* ---- Prox ----*/
 
 #define PROX_AVG_LEN 8
+#define PROX_AVG_SHIFT 3
 
 uint8_t prox_val_pointer = 0;
 uint16_t avg_prox_val = 0;
 uint16_t prox_val[PROX_AVG_LEN];
 
 uint8_t prox_flag = 0;
-uint8_t prox_period = 10;
+uint8_t prox_send_period = 10;
+uint8_t prox_read_period = 1;
 
 /* ---- Vibe/LEDs ----- */
 
@@ -162,19 +164,7 @@ void loop(void) {
 		color(0, 0, 0);
 	} else {
 		if((mode & (1 << PROX_MODE)) && prox_flag) {
-			//Prox enable
-			prox_val[prox_val_pointer] = analogRead(PROX_PIN);
-			prox_val_pointer = (prox_val_pointer+1)%PROX_AVG_LEN;
-
-			avg_prox_val = 0;
-			for(uint8_t i = 0;i < PROX_AVG_LEN;i++) {
-				avg_prox_val += prox_val[i];
-			}
-
-			avg_prox_val = avg_prox_val >> 3; //Divide by 8
-
 			send_prox(avg_prox_val);
-
 			prox_flag = 0;
 		}
 
@@ -196,7 +186,21 @@ void loop(void) {
  * Set the data out flag every ~10ms.
  */
 void timerCallback(void) {
-	if((time_counter % prox_period) == 0) prox_flag = 1;
+	if((time_counter % prox_read_period) == 0) {
+		if(mode & (1 << PROX_MODE)) {
+			//Prox enable
+			prox_val[prox_val_pointer] = analogRead(PROX_PIN);
+			prox_val_pointer = (prox_val_pointer+1)%PROX_AVG_LEN;
+
+			avg_prox_val = 0;
+			for(uint8_t i = 0;i < PROX_AVG_LEN;i++) {
+				avg_prox_val += prox_val[i];
+			}
+
+			avg_prox_val = avg_prox_val >> PROX_AVG_SHIFT; //Divide by 8
+		}
+	}
+	if((time_counter % prox_send_period) == 0) prox_flag = 1;
 	if((time_counter % accel_period) == 0) accel_flag = 1;
 
 	if(led_period == 0 || led_duty == 255) led_on = 1;
@@ -510,12 +514,15 @@ void updateLEDs(void) {
 
 /* ---- Low Level ---- */
 
-void color(unsigned char red, unsigned char green, unsigned char blue) {
-	analogWrite(RED_LED_PIN, 255-red);	 
-	analogWrite(BLUE_LED_PIN, 255-blue);
-	analogWrite(GREEN_LED_PIN, 255-green);
+void color(uint8_t red, uint8_t green, uint8_t blue) {
+	if(red < 5) digitalWrite(RED_LED_PIN, HIGH);
+	else analogWrite(RED_LED_PIN, 255-red);
+	if(green < 5) digitalWrite(GREEN_LED_PIN, HIGH);
+	else analogWrite(GREEN_LED_PIN, 255-green);
+	if(blue < 5) digitalWrite(BLUE_LED_PIN, HIGH);
+	else analogWrite(BLUE_LED_PIN, 255-blue);
 }
 
-void vibe(unsigned char level) {
+void vibe(uint8_t level) {
 	analogWrite(VIBE_PIN, level);
 }
