@@ -11,10 +11,10 @@ import propinquity.Color;
  */
 public class Patch implements HardwareConstants {
 
-	public static final int MIN_RANGE = 450;
-	public static final int MAX_RANGE = 900;
-	public static final int MIN_SWEETSPOT = 740; //Disabled for now
-	public static final int MAX_SWEETSPOT = 900;
+	public static final int MIN_RANGE = 350;
+	public static final int MAX_RANGE = 800;
+	public static final int MIN_SWEETSPOT = 600; //Disabled for now
+	public static final int MAX_SWEETSPOT = 750;
 
 	final int address;
 
@@ -88,7 +88,7 @@ public class Patch implements HardwareConstants {
 	public void setActive(boolean active) {
 		if(MIN_PACK && this.active == active) return;
 		this.active = active;
-		if(MANUAL_PACK) hardware.sendPacket(new Packet(address, PacketType.MODE, new int[] {active?7:0}));
+		if(MANUAL_PACK) hardware.sendPacket(new Packet(address, PacketType.MODE, new int[] {active?3:0}));
 		if(!active) prox_val = 0; //Clear prox when not active
 	}
 
@@ -394,6 +394,7 @@ public class Patch implements HardwareConstants {
 
 		Thread thread;
 		boolean running;
+		int mode_flag = 3;
 
 		PatchDaemon() {
 			running = true;
@@ -403,6 +404,10 @@ public class Patch implements HardwareConstants {
 			thread.start();
 		}
 
+		void setModeFlag(int flag) {
+			mode_flag = flag;
+		}
+
 		void stop() {
 			running = false;
 			if(thread != null) while(thread.isAlive()) Thread.yield();
@@ -410,15 +415,15 @@ public class Patch implements HardwareConstants {
 
 		public void run() {
 			while(running) {
-				hardware.sendPacket(new Packet(address, PacketType.MODE, new int[] {active?7:0}));
+				hardware.sendPacket(new Packet(address, PacketType.MODE, new int[] {active?mode_flag:0}));
 
-				hardware.sendPacket(new Packet(address, PacketType.COLOR, new int[] {color[0], color[1], color[2]}));
-				hardware.sendPacket(new Packet(address, PacketType.COLOR_DUTY, new int[] {color_duty}));
-				hardware.sendPacket(new Packet(address, PacketType.COLOR_PERIOD, new int[] {color_period}));
+				// hardware.sendPacket(new Packet(address, PacketType.COLOR, new int[] {color[0], color[1], color[2]}));
+				// hardware.sendPacket(new Packet(address, PacketType.COLOR_DUTY, new int[] {color_duty}));
+				// hardware.sendPacket(new Packet(address, PacketType.COLOR_PERIOD, new int[] {color_period}));
 
-				hardware.sendPacket(new Packet(address, PacketType.VIBE, new int[] {vibe_level}));
-				hardware.sendPacket(new Packet(address, PacketType.VIBE_DUTY, new int[] {vibe_duty}));
-				hardware.sendPacket(new Packet(address, PacketType.VIBE_PERIOD, new int[] {vibe_period}));
+				// hardware.sendPacket(new Packet(address, PacketType.VIBE, new int[] {vibe_level}));
+				// hardware.sendPacket(new Packet(address, PacketType.VIBE_DUTY, new int[] {vibe_duty}));
+				// hardware.sendPacket(new Packet(address, PacketType.VIBE_PERIOD, new int[] {vibe_period}));
 
 				try {
 					Thread.sleep(DAEMON_PERIOD);

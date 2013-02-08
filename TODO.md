@@ -7,6 +7,11 @@ Hardware
 -----------------------------
 * Regulator footprint should have the EN polarity changed, this would be a more standard regulator package
 * Header/footprint for an on/off switch is needed
+* FTDI Vcc-> 3v3 reg
+* Bigger 3v3 reg
+* Flip transistor
+* Switch
+* Charging topology
 
 Firmware
 -----------------------------

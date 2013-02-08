@@ -44,6 +44,7 @@ public class PlayerSelect implements UIElement {
 	}
 
 	public void reset() {
+		cleanup();
 		for(Player player : players) player.setName(null);
 		stateChange(0);
 	}
@@ -88,6 +89,7 @@ public class PlayerSelect implements UIElement {
 				// patch.clear();
 				patch.setActive(false);
 			}
+			player.getGlove().setVibeLevel(0);
 			player.getGlove().setActive(false);
 		}
 

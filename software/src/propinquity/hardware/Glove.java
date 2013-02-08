@@ -18,6 +18,8 @@ public class Glove extends Patch {
 	 */
 	public Glove(int address, HardwareInterface hardware) {
 		super(address, hardware);
+
+		if(daemon != null) daemon.setModeFlag(1);
 	}
 
 	/**
@@ -56,7 +58,7 @@ public class Glove extends Patch {
 
 				// setVibeDuty(127);
 				setVibePeriod(0);
-				setVibeLevel(255);
+				setVibeLevel(150);
 				break;
 			}
 			case 2: { //Sweet stop: vibe one, fast color pulse
@@ -65,7 +67,7 @@ public class Glove extends Patch {
 				setColorDuty(127);
 
 				setVibePeriod(0);
-				setVibeLevel(255);
+				setVibeLevel(150);
 				break;
 			}
 		}
