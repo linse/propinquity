@@ -116,12 +116,18 @@ void setup(void) {
 	pinMode(SDA, INPUT);
 	pinMode(SCL, INPUT);	
 
+	pinMode(2, INPUT);
+	pinMode(3, INPUT);
+
+	digitalWrite(2, HIGH);
+	digitalWrite(3, HIGH);
+
 	reset();
 
 	#ifdef DEBUG
 	Serial.begin(9600);
 	Serial.println("Boot");
-	setMode((1 << ACTIVE_MODE) | (1 << PROX_MODE) | (1 << ACCEL_XYZ_MODE));
+	setMode((1 << ACTIVE_MODE) | (1 << ACCEL_INT1_MODE));
 	#endif
 
 	Wire.begin(); // join i2c bus
@@ -129,14 +135,13 @@ void setup(void) {
 	accel_reset();
 	accel_config();
 
-	attachInterrupt(0, accel_int0, RISING);
-	attachInterrupt(0, accel_int1, RISING);
+	// attachInterrupt(0, accel_int0, CHANGE);
+	// attachInterrupt(1, accel_int1, CHANGE);
 
 	t.every(10, timerCallback);
 
 	// Timer1.initialize(10000); //1000 microseconds -> 10 milliseconds
 	// Timer1.attachInterrupt(timerCallback); // attach the service routine here
-
 
 	#ifndef DEBUG
 	xbee.begin(38400);	
@@ -174,6 +179,17 @@ void loop(void) {
 				send_accel_XYZ(xyz[0], xyz[1], xyz[2]);
 
 				accel_flag = 0;
+			}
+
+			if((mode & (1 << ACCEL_INT0_MODE))) {
+
+			}
+
+			if((mode & (1 << ACCEL_INT1_MODE))) {
+				uint8_t tra_mt_src = accel_reg_read(TRANSIENT_SRC);
+				if(tra_mt_src & (1 << T_EA)) {
+					send_accel_int1(tra_mt_src);
+				}
 			}
 		}
 
@@ -295,44 +311,55 @@ void accel_config(void) {
 
 	accel_enable(0);
 
-	accel_reg_write(CTRL_REG1,  (1 << DR1) | (1 << DR0) | (1 << F_READ)); //8 bit mode
-	// accel_reg_write(XYZ_DATA_CFG, (0 << FS1) | (1 << FS0)); //Set range +-4g, output high pass data
-	accel_reg_write(XYZ_DATA_CFG, (1 << HPF_OUT) | (0 << FS1) | (1 << FS0)); //Set range +-4g, output high pass data
+	accel_reg_write(CTRL_REG1,  (1 << DR1) | (1 << DR0) | (1 << F_READ)); //Fast read 8 bit mode, 100Hz, Normal mode
+	accel_reg_write(XYZ_DATA_CFG, (1 << HPF_OUT) | (0 << FS1) | (1 << FS0)); //Output high pass data, set range +-4g
 	accel_reg_write(HP_FILTER_CUTOFF, (1 << SEL1)); //High pass second lowest setting
+	
+	// accel_reg_write(CTRL_REG3, (1 << IPOL) | (1 << PP_OD)); //Interrupts are active high, push-pull
+	// accel_reg_write(CTRL_REG4, (1 << INT_EN_TRANS)); //Enable FF_MT to the interrupt controller
+	// accel_reg_write(CTRL_REG5, (1 << INT_CFG_TRANS)); //Route to accel int1 -> arduino int0
 
-	//Motion
+	//Set up motion
 
 	//Set the freefall/motin configuration registers to detect motion events on XYZA
-	// accel_reg_set(FF_MT_CFG,
-	// 	(1 << FF_MT_ELE) |
-	// 	(1 << OAE) | //Dection mode 1,1 (see datasheet)
+	// accel_reg_write(FF_MT_CFG,
+	// 	(1 << FF_MT_ELE) | //Event latching, clear on read
+	// 	(1 << OAE) | //Use in motion detection mode
 	// 	(1 << ZEFE) |
 	// 	(1 << YEFE) |
 	// 	(1 << XEFE) //Enable XYZ axis
 	// );
-	// accel_reg_set(FF_MT_THS, (uint8_t)(
-	// 	(0 << DBCNTM) | //Decrement debounce counter when motion falls below threshold
-	// 	((MOTION_THRESHOLD) << THS) //Motion threshold (7 bits)
+
+	// uint8_t motion_threshold = 20; //15.87 -> 1G, value must be 7 bits, 0.063g/LSB
+	// uint8_t motion_debounce = 1; //10ms per increment, value is 8 bits
+
+	// accel_reg_write(FF_MT_THS, (uint8_t)(
+	// 	(0 << DBCNTM) | //Clear debounce counter when motion falls below threshold
+	// 	((motion_threshold & 0x7F) << THS) //Motion threshold (7 bits)
 	// ));
 	
-	// accel_reg_set(FF_MT_COUNT, MOTION_DEBOUNCE_COUNT); //Debounce count
+	// accel_reg_write(FF_MT_COUNT, motion_debounce); //Debounce count
 
 	// // Transient
 
-	// //Set the freefall/motin configuration registers to detect motion events on XYZA
-	// accel_reg_set(TRANSIENT_CFG,
-	// 	(1 << T_ELE) | //Event latching, clean on read
-	// 	(1 << ZTEFE) |
-	// 	(1 << YTEFE) |
-	// 	(1 << XTEFE) | //Enable XYZ axis
-	// 	(0 << HPF_BYP) //Keep the high pass
-	// );
-	// accel_reg_set(TRANSIENT_THS, (uint8_t)(
-	// 	(0 << DBCNTM) | //Decrement debounce counter when motion falls below threshold
-	// 	((TRANS_THRESHOLD) << THS) //Motion threshold (7 bits)
-	// ));
+	//Set the freefall/motin configuration registers to detect motion events on XYZA
+	accel_reg_write(TRANSIENT_CFG,
+		(1 << T_ELE) | //Event latching, clear on read
+		(1 << ZTEFE) |
+		(1 << YTEFE) |
+		(1 << XTEFE) | //Enable XYZ axis
+		(0 << HPF_BYP) //Keep the high pass
+	);
+
+	uint8_t transient_threshold = 20; //15.87 -> 1G, value must be 7 bits, 0.063g/LSB
+	uint8_t transient_debounce = 1; //10ms per increment, value is 8 bits
+
+	accel_reg_write(TRANSIENT_THS, (uint8_t)(
+		(0 << DBCNTM) | //Decrement debounce counter when motion falls below threshold
+		((transient_threshold & 0x7F) << THS) //Motion threshold (7 bits)
+	));
 	
-	// accel_reg_set(TRANSIENT_COUNT, TRANS_DEBOUNCE_COUNT); //Debounce count
+	accel_reg_write(TRANSIENT_COUNT, transient_debounce); //Debounce count
 
 	accel_enable(1);
 }
@@ -389,7 +416,7 @@ void accel_reg_multi_read(uint8_t reg_addr, uint8_t* data, int len) {
 	}
 }
 
-void accel_int0(void) {
+void accel_int0() {
 	//Nothing yet handle interrupt 2
 }
 
@@ -402,6 +429,22 @@ void accel_error() {
 }
 
 /* ---- Xbee ---- */
+
+void send_accel_int1(uint8_t tra_mt_src) {
+	uint8_t outPacket[2];
+
+	outPacket[0] = ACCEL_INT1_MODE;
+	outPacket[1] = tra_mt_src;
+
+	#ifdef DEBUG
+	Serial.print("int0 ");
+	Serial.println(tra_mt_src);
+	#else
+	tx = Tx16Request(XBEE_BASE_ADDR, outPacket, 2);
+
+	xbee.send(tx);
+	#endif
+}
 
 void send_accel_XYZ(uint8_t x, uint8_t y, uint8_t z) {
 	uint8_t outPacket[4];
@@ -452,7 +495,9 @@ void parse_data(uint8_t* data, uint8_t len) {
 			break;
 		}
 		case ACCEL_CONF_PACKET: {
+			accel_enable(0);
 			if(len >= 3) accel_reg_multi_write(data[1], &data[2], len-2);
+			accel_enable(1);
 			break;
 		}
 		case COLOR_PACKET: {
