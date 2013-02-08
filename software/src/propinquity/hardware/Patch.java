@@ -59,6 +59,7 @@ public class Patch implements HardwareConstants {
 		color_duty = 0;
 
 		if(USE_DAEMON) daemon = new PatchDaemon();
+		if(USE_DAEMON && DAEMON_ACTIVE_ONLY) daemon.activeOnly(true);
 	}
 
 	/**
@@ -401,11 +402,12 @@ public class Patch implements HardwareConstants {
 	class PatchDaemon implements Runnable {
 
 		Thread thread;
-		boolean running;
+		boolean running, activeOnly;
 		int mode_flag = 3;
 
 		PatchDaemon() {
 			running = true;
+			activeOnly = false;
 
 			thread = new Thread(this);
 			thread.setDaemon(true);
@@ -414,6 +416,10 @@ public class Patch implements HardwareConstants {
 
 		void setModeFlag(int flag) {
 			mode_flag = flag;
+		}
+
+		void activeOnly(boolean enable) {
+			activeOnly = enable;
 		}
 
 		void stop() {
@@ -425,13 +431,15 @@ public class Patch implements HardwareConstants {
 			while(running) {
 				hardware.sendPacket(new Packet(address, PacketType.MODE, new int[] {active?mode_flag:0}));
 
-				hardware.sendPacket(new Packet(address, PacketType.COLOR, new int[] {color[0], color[1], color[2]}));
-				hardware.sendPacket(new Packet(address, PacketType.COLOR_DUTY, new int[] {color_duty}));
-				hardware.sendPacket(new Packet(address, PacketType.COLOR_PERIOD, new int[] {color_period}));
+				if(!activeOnly) {
+					hardware.sendPacket(new Packet(address, PacketType.COLOR, new int[] {color[0], color[1], color[2]}));
+					hardware.sendPacket(new Packet(address, PacketType.COLOR_DUTY, new int[] {color_duty}));
+					hardware.sendPacket(new Packet(address, PacketType.COLOR_PERIOD, new int[] {color_period}));
 
-				hardware.sendPacket(new Packet(address, PacketType.VIBE, new int[] {vibe_level}));
-				hardware.sendPacket(new Packet(address, PacketType.VIBE_DUTY, new int[] {vibe_duty}));
-				hardware.sendPacket(new Packet(address, PacketType.VIBE_PERIOD, new int[] {vibe_period}));
+					hardware.sendPacket(new Packet(address, PacketType.VIBE, new int[] {vibe_level}));
+					hardware.sendPacket(new Packet(address, PacketType.VIBE_DUTY, new int[] {vibe_duty}));
+					hardware.sendPacket(new Packet(address, PacketType.VIBE_PERIOD, new int[] {vibe_period}));
+				}
 
 				try {
 					Thread.sleep(DAEMON_PERIOD);
