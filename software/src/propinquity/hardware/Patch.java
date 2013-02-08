@@ -66,6 +66,14 @@ public class Patch implements HardwareConstants {
 	 *
 	 */
 	public void clear() {
+		boolean clear = false;
+		
+		if(color[0] != 0 || color[1] != 0 || color[2] != 0) clear = true;
+		if(color_period != 0 || color_duty != 0) clear = true;
+		if(vibe_level != 0 || vibe_period != 0 || vibe_duty != 0) clear = true;
+
+		if(!clear && MIN_PACK) return;
+
 		hardware.sendPacket(new Packet(address, PacketType.CLEAR, new int[0]));
 
 		color[0] = 0;
@@ -417,13 +425,13 @@ public class Patch implements HardwareConstants {
 			while(running) {
 				hardware.sendPacket(new Packet(address, PacketType.MODE, new int[] {active?mode_flag:0}));
 
-				// hardware.sendPacket(new Packet(address, PacketType.COLOR, new int[] {color[0], color[1], color[2]}));
-				// hardware.sendPacket(new Packet(address, PacketType.COLOR_DUTY, new int[] {color_duty}));
-				// hardware.sendPacket(new Packet(address, PacketType.COLOR_PERIOD, new int[] {color_period}));
+				hardware.sendPacket(new Packet(address, PacketType.COLOR, new int[] {color[0], color[1], color[2]}));
+				hardware.sendPacket(new Packet(address, PacketType.COLOR_DUTY, new int[] {color_duty}));
+				hardware.sendPacket(new Packet(address, PacketType.COLOR_PERIOD, new int[] {color_period}));
 
-				// hardware.sendPacket(new Packet(address, PacketType.VIBE, new int[] {vibe_level}));
-				// hardware.sendPacket(new Packet(address, PacketType.VIBE_DUTY, new int[] {vibe_duty}));
-				// hardware.sendPacket(new Packet(address, PacketType.VIBE_PERIOD, new int[] {vibe_period}));
+				hardware.sendPacket(new Packet(address, PacketType.VIBE, new int[] {vibe_level}));
+				hardware.sendPacket(new Packet(address, PacketType.VIBE_DUTY, new int[] {vibe_duty}));
+				hardware.sendPacket(new Packet(address, PacketType.VIBE_PERIOD, new int[] {vibe_period}));
 
 				try {
 					Thread.sleep(DAEMON_PERIOD);

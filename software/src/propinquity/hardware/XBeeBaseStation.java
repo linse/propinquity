@@ -29,6 +29,9 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 	Vector<ProxEventListener> proxListeners;
 	Vector<AccelEventListener> accelListeners;
 
+	Vector<Packet> throttledPackets;
+	ThrottleDaemon throttleDaemon;
+
 	int currentFrameID;
 
 	/**
@@ -43,6 +46,9 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 		patches = new HashMap<Integer, Patch>();
 		proxListeners = new Vector<ProxEventListener>();
 		accelListeners = new Vector<AccelEventListener>();
+
+		throttledPackets = new Vector<Packet>();
+		throttleDaemon = new ThrottleDaemon();
 	}	
 
 	/**
@@ -266,7 +272,8 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 
 	public void sendPacket(Packet packet) {
 		if(xbees.size() == 0) return;
-		sendPacketAsynchronous(packet);	
+		// sendPacketAsynchronous(packet);
+		sendPacketThrottled(packet);
 	}
 
 	int getNextFrameId() {
@@ -293,7 +300,7 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 		if(oldRequestMonitor != null) oldRequestMonitor.ack();
 	}
 
-	public void sendPacketSynchrous(Packet packet) {
+	TxRequest16 generateRequest(Packet packet) {
 		XBeeAddress16 addr = new XBeeAddress16(((packet.getDestAddr() & 0xFF00) >> 8), packet.getDestAddr() & 0x00FF);
 		
 		int[] fullPayload = new int[packet.getPayload().length+1];
@@ -302,12 +309,22 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 		
 		TxRequest16 request = new TxRequest16(addr, getNextFrameId(), fullPayload);
 
+		return request;
+	}
+
+	public void sendPacketSynchrous(Packet packet) {
+		sendPacketSynchrous(packet, 10*1000);
+	}
+
+	public void sendPacketSynchrous(Packet packet, int timeout) {
+		TxRequest16 request = generateRequest(packet);
+
 		removeMonitor(request.getFrameId());
 
 		for(XBee xbee : xbees.values()) {
 			try {
-				// send a request and wait up to 10 seconds for the response
-				XBeeResponse response = xbee.sendSynchronous(request, 10*1000);
+				// send a request and wait up to timeout milliseconds for the response
+				XBeeResponse response = xbee.sendSynchronous(request, timeout);
 
 				if(response.getApiId() == ApiId.TX_STATUS_RESPONSE) {
 					TxStatusResponse tx_response = (TxStatusResponse)response;
@@ -321,16 +338,14 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 	}
 
 	public void sendPacketAsynchronous(Packet packet) {
-		XBeeAddress16 addr = new XBeeAddress16(((packet.getDestAddr() & 0xFF00) >> 8), packet.getDestAddr() & 0x00FF);
-		
-		int[] fullPayload = new int[packet.getPayload().length+1];
-		fullPayload[0] = packet.getPacketType().getCode();
-		System.arraycopy(packet.getPayload(), 0, fullPayload, 1, packet.getPayload().length);
-
-		TxRequest16 request = new TxRequest16(addr, getNextFrameId(), fullPayload);
+		TxRequest16 request = generateRequest(packet);
 		
 		//Request monitor does all the sending
 		addMonitor(packet.getPacketType(), request);
+	}
+
+	public void sendPacketThrottled(Packet packet) {
+		throttledPackets.add(packet);
 	}
 
 	public synchronized void processResponse(XBeeResponse response) {
@@ -423,6 +438,42 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 					Thread.sleep(XBEE_RETRY_TIMOUT); 
 				} catch(Exception e) {
 
+				}
+			}
+		}
+
+	}
+
+	class ThrottleDaemon implements Runnable {
+
+		Thread thread;
+		boolean running;
+
+		ThrottleDaemon() {
+			running = true;
+
+			thread = new Thread(this);
+			thread.setDaemon(true);
+			thread.start();
+		}
+
+		void stop() {
+			running = false;
+			if(thread != null) while(thread.isAlive()) Thread.yield();
+		}
+
+		public void run() {
+			while(running) {
+				if(throttledPackets.size() == 0) {
+					Thread.yield();
+				} else {
+					sendPacketAsynchronous(throttledPackets.remove(0));
+					try {
+						if(throttledPackets.size() < 75) Thread.sleep(1);
+						else Thread.sleep(0, 250000);
+					} catch(Exception e) {
+
+					}
 				}
 			}
 		}
