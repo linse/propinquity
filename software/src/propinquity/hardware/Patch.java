@@ -18,10 +18,12 @@ public class Patch implements HardwareConstants {
 
 	final int address;
 
+	int mode;
 	boolean active;
 
 	int prox_val;
 	int[] xyz;
+	int[] interrupt;
 
 	int vibe_level, vibe_period, vibe_duty, color_period, color_duty;
 
@@ -41,10 +43,12 @@ public class Patch implements HardwareConstants {
 		this.hardware = hardware;
 		this.address = address;
 
+		mode = Mode.OFF;
 		active = false;
 
 		prox_val = 0;
 		xyz = new int[3];
+        interrupt = new int[2];
 
 		vibe_level = 0;
 		vibe_period = 0;
@@ -89,16 +93,27 @@ public class Patch implements HardwareConstants {
 		vibe_duty = 0;
 	}
 
-	/**
-	 * Enables or disables the device. This will stop/start all output (vibration, color, prox sensor, other).
-	 *
-	 * @param active the new state of the device.
-	 */
 	public void setActive(boolean active) {
-		if(MIN_PACK && this.active == active) return;
-		this.active = active;
-		if(MANUAL_PACK) hardware.sendPacket(new Packet(address, PacketType.MODE, new int[] {active?3:0}));
-		if(!active) prox_val = 0; //Clear prox when not active
+      if(MIN_PACK && this.active == active) return;
+      this.active = active;
+      if(MANUAL_PACK) hardware.sendPacket(new Packet(address, PacketType.MODE, new int[] {mode | (active ? Mode.ACTIVE : Mode.OFF)}));
+      if(!active) prox_val = 0; //Clear prox when not active
+	}
+	
+	public boolean getActive() {
+	  return active;
+	}
+	
+	/**
+	 * Sends activation mode to the device. This will stop/start the selected input and activate/deactivate output
+	 *
+	 * @param mode the new mode for the device.
+	 */
+	public void setActivationMode(int mode) {
+		if(MIN_PACK && this.mode == mode) return;
+		this.mode = mode;
+		if(MANUAL_PACK) hardware.sendPacket(new Packet(address, PacketType.MODE, new int[] {mode | (active ? Mode.ACTIVE : Mode.OFF)}));
+		if((mode & Mode.PROX) == 0) prox_val = 0; //Clear prox when not active
 	}
 
 	/**
@@ -106,8 +121,8 @@ public class Patch implements HardwareConstants {
 	 *
 	 * @return true if the device is enable false otherwise.
 	 */
-	public boolean getActive() {
-		return active;
+	public int getActivationMode() {
+		return mode;
 	}
 
 	/**
@@ -213,6 +228,14 @@ public class Patch implements HardwareConstants {
 		else this.prox_val = 0;
 	}
 
+	
+//	public void setAccelConfig(ConfigData config)
+//	{
+//      if(MIN_PACK && configdata == existing config data) return;
+//      FIXME: Set config data
+//      if(MANUAL_PACK) hardware.sendPacket(new Packet(address, PacketType.ACCEL_CONF, new int[] { FIXME: Config data }));
+//	}
+	
 	/**
 	 * Sets the value of the xyz accelerometer sensor for this device. Normally this should be by the HardwareInterface which this device is registered with as the data arrives from the real device. It should only be called elsewhere for testing.
 	 *
@@ -235,6 +258,22 @@ public class Patch implements HardwareConstants {
 		if(xyz.length == 3) {
 			this.xyz = xyz;
 		}
+	}
+
+	public void setInterrupt0(int val) {
+	  this.interrupt[0] = val;
+	}
+
+	public void setInterrupt1(int val) {
+	  this.interrupt[1] = val;
+	}
+
+	public int getInterrupt0() {
+	  return this.interrupt[0];
+	}
+
+	public int getInterrupt1() {
+	  return this.interrupt[1];
 	}
 
 	/**

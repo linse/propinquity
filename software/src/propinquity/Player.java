@@ -75,6 +75,16 @@ public class Player implements PConstants {
 		paused = true;
 	}
 
+	public void configurePatches(int mode) {
+      for(int i = 0;i < patches.length;i++) {
+        patches[i].setActivationMode(mode);
+      }
+	}
+
+	public void configureGloves(int mode) {
+      glove.setActivationMode(mode);
+	}
+
 	public void clearPatches() {
 		for(int i = 0;i < patches.length;i++) {
 			pausePatchStates[i] = false;

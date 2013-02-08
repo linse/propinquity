@@ -19,6 +19,7 @@ public class Sounds {
 	AudioSample whoosh;
 	AudioSample whooshBubble;
 	AudioSample gong;
+    AudioSample dingding;
 
 	/**
 	 * Setup the Minim audio manager.
@@ -37,6 +38,7 @@ public class Sounds {
 
 		whooshBubble = minim.loadSample("sounds/whooshbubble.mp3", BUFFER_SIZE);
 		gong = minim.loadSample("sounds/gong.mp3", BUFFER_SIZE);
+        dingding = minim.loadSample("sounds/dingding.mp3", BUFFER_SIZE);
 	}
 
 	/**
@@ -66,4 +68,7 @@ public class Sounds {
 		return gong;
 	}
 
+    public AudioSample getDingDing() {
+      return dingding;
+  }
 }

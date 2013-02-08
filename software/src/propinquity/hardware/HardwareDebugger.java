@@ -15,7 +15,7 @@ public class HardwareDebugger extends PApplet implements ProxEventListener, Acce
 	static final int[] PATCH_ADDR = new int[] { 1, 2, 3, 6, 7, 8 };
 	static final int NUM_PATCHES = PATCH_ADDR.length;
 
-	static final int[] GLOVE_ADDR = new int[] { };
+	static final int[] GLOVE_ADDR = new int[] { 5, 10 };
 	static final int NUM_GLOVES = GLOVE_ADDR.length;
 
 	XBeeBaseStation xbeeBaseStation;
@@ -242,6 +242,14 @@ public class HardwareDebugger extends PApplet implements ProxEventListener, Acce
 				z_sliders[i].setValue(patch.getAccelZ());
 			}
 		}
+	}
+	
+	public void accelInterrupt0Event(Patch patch) {
+	  // FIXME: Render something
+	}
+
+	public void accelInterrupt1Event(Patch patch) {
+      // FIXME: Render something
 	}
 
 	static public void main(String args[]) {

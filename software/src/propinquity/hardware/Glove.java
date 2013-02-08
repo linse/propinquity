@@ -27,11 +27,8 @@ public class Glove extends Patch {
 	 *
 	 * @param active the new state of the device.
 	 */
-	public void setActive(boolean active) {
-		if(MIN_PACK && this.active == active) return;
-		this.active = active;
-		if(MANUAL_PACK) hardware.sendPacket(new Packet(address, PacketType.MODE, new int[] {active?1:0}));
-		if(!active) prox_val = 0; //Clear prox when not active
+	public void setActivationMode(int mode) {
+	  super.setActivationMode(mode & ~Mode.PROX); // Don't allow setting PROX mode
 	}
 
 	/**

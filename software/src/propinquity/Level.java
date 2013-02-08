@@ -8,7 +8,7 @@ import propinquity.hardware.*;
  * It would be profitable if more common behavior could be migrated in this abstract class.
  *
  */
-public abstract class Level implements UIElement, ProxEventListener, LevelConstants {
+public abstract class Level implements UIElement, ProxEventListener, AccelEventListener, LevelConstants {
 
 	Propinquity parent;
 	

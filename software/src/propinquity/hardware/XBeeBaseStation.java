@@ -370,9 +370,11 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 						patch.setAccelXYZ((byte)data[1], (byte)data[2], (byte)data[3]);
 						for(AccelEventListener listener : accelListeners) listener.accelXYZEvent(patch);
 					} else if(data.length > 1 && data[0] == PacketType.ACCEL_INT0.getCode()) {
-						System.out.println("Receiver ACCEL_INT0");
+					  patch.setInterrupt0(data[1]);
+                      for(AccelEventListener listener : accelListeners) listener.accelInterrupt0Event(patch);
 					} else if(data.length > 1 && data[0] == PacketType.ACCEL_INT1.getCode()) {
-						System.out.println("Receiver ACCEL_INT1");
+                      patch.setInterrupt1(data[1]);
+                      for(AccelEventListener listener : accelListeners) listener.accelInterrupt1Event(patch);
 					} else {
 						System.out.println("Packet form address "+addr+" seems malformed. Contains: ");
 						for(int i = 0;i < data.length;i++) {

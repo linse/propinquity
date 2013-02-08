@@ -21,6 +21,7 @@ public class ProxLevel extends Level {
 
 	AudioPlayer song;
 	AudioSample gong;
+    AudioSample dingding;
 
 	int songTransitionCount;
 	boolean newSongFlag;
@@ -50,6 +51,7 @@ public class ProxLevel extends Level {
 		super(parent, hud, sounds, players);
 
 		gong = sounds.getGong();
+        dingding = sounds.getDingDing();
 
 		lastScoreTime = new long[players.length];
 		lastScoreTimePauseDiff = new long[players.length];
@@ -185,7 +187,10 @@ public class ProxLevel extends Level {
 		
 		startTime = -1;
 
-		for(Player player : players) player.reset(); //Clears all the particles, scores, patches and gloves
+		for(Player player : players) {
+		  player.configurePatches(Mode.PROX);
+		  player.reset(); //Clears all the particles, scores, patches and gloves
+		}
 
 		lastScoreTime = new long[players.length];
 		lastScoreTimePauseDiff = new long[players.length];
@@ -224,7 +229,7 @@ public class ProxLevel extends Level {
 		}
 		
 		if(steps[currentStep].isTransition() && (currentStep == 0 || (currentStep > 0 && !steps[currentStep-1].isTransition()))) {
-			fader.fadeOut();
+		  fader.fadeOut();
 			for(Player player : players) player.transferScore();
 		} else if(!steps[currentStep].isTransition() && currentStep > 0 && steps[currentStep-1].isTransition()) {
 			song.play();
@@ -278,6 +283,18 @@ public class ProxLevel extends Level {
 		if(!patch.getActive()) return;
 		//Handle patch feedback
 		patch.setMode(patch.getZone());
+	}
+	
+	public void accelXYZEvent(Patch patch) {
+	  
+	}
+
+	public void accelInterrupt0Event(Patch patch) {
+	  
+	}
+
+	public void accelInterrupt1Event(Patch patch) {
+	  
 	}
 
 	public void update() {
@@ -499,6 +516,12 @@ public class ProxLevel extends Level {
 
 		public void run() {
 			if(fadeIn) {
+			  dingding.trigger();
+              try {
+                Thread.sleep(dingding.length());
+              } catch(Exception e) {
+
+              }
 				for(int i = 100;i >= 0;i--) {
 					song.setGain(-(float)i/4);
 					try {
