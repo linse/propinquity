@@ -60,7 +60,7 @@ public class AccelLevel extends Level {
         
         gong = sounds.getGong();
         dingding = sounds.getDingDing();
-        song = sounds.loadSong("11 Besouro.mp3");
+        song = sounds.loadSong("Besouro.mp3");
         
         lastScoreTime = new long[players.length];
         lastScoreTimePauseDiff = new long[players.length];

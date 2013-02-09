@@ -25,6 +25,8 @@ public class CultLevel extends Level {
 	long headTimersPauseDiff[];
 
 	long coolDownTimer, coolDownTimerDiff;
+
+	Player winner;
 	
 	public CultLevel(Propinquity parent, Hud hud, Sounds sounds, Player[] players) {
 		super(parent, hud, sounds, players);
@@ -74,6 +76,14 @@ public class CultLevel extends Level {
 				patches[i].setColor(100, 100, 100);
 			}
 		}
+
+		for(int i = 0;i < heartTimers.length;i++) {
+			heartTimers[i] = -1;
+		}
+
+		coolDownTimer = -1;
+
+		winner = null;
 	}
 
 	public void close() {
@@ -105,8 +115,8 @@ public class CultLevel extends Level {
 		if(coolDownTimer != -1) {
 			if(parent.millis()-coolDownTimer < COOL_DOWN_BLACK) {
 				for(int i = 0;i < players.length;i++) {
-					for(Patch p : players[i].getPatches()) {
-						p.setActive(false);
+					for(Patch patch : players[i].getPatches()) {
+						patch.setActive(false);
 					}
 				}
 				return;
@@ -162,7 +172,12 @@ public class CultLevel extends Level {
 				} else if(parent.millis()-heartTimers[i] > HEART_INTERVAL) {
 					opponent.addPoints(1);
 					heartTimers[i] = -1;
-					coolDownTimer = parent.millis();
+
+					if(opponent.getScore() == opponent.getPatches().length) {
+						win(opponent);
+					} else {
+						coolDownTimer = parent.millis();
+					}
 				}
 			} else {
 				heartTimers[i] = -1;
@@ -179,7 +194,8 @@ public class CultLevel extends Level {
 	}
 
 	public boolean isDone() {
-		return false;
+		if(winner != null) return true;
+		else return false;
 	}
 	
 	public void keyPressed(char key, int keyCode) {
@@ -206,6 +222,26 @@ public class CultLevel extends Level {
 		}
 	}
 
+	void win(Player p) {
+		winner = p;
+		Patch[] winnerPatches = p.getPatches();
+		Patch winnerHeart = winnerPatches[0];
+
+		winnerHeart.setColor(0, 255, 0);
+
+		for(int i = 1;i < winnerPatches.length;i++) {
+			winnerPatches[i].setActive(false);
+		}
+
+		for(Player player : players) {
+			if(player == winner) continue;
+			for(Patch patch : player.getPatches()) {
+				patch.setActive(false);
+			}
+		}
+
+	}
+
 	public void draw() {
 		if(!isVisible) return;
 
@@ -224,15 +260,8 @@ public class CultLevel extends Level {
 		}
 
 		if(isDone()) { //Someone won
-			// Player winner = getWinner();
-			// String text = winner != null ? winner.getName() + " won!" : "You Tied!";
-			// Color color = winner != null ? winner.getColor() : PlayerConstants.NEUTRAL_COLOR;
-			// if(coop) {
-			// 	text = "";
-			// 	color = PlayerConstants.NEUTRAL_COLOR;
-			// }
-			// hud.drawCenterText("", text, color, hud.getAngle());
-			// hud.drawCenterImage(hud.hudPlayAgain, hud.getAngle());
+			hud.drawCenterText("", "Only one cult leader remains", Color.white(), hud.getAngle());
+			hud.drawCenterImage(hud.hudPlayAgain, hud.getAngle());
 		} else if(isRunning()) { //Running
 			update();
 		} else { //Pause
