@@ -110,6 +110,8 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 
 		players = new Player[MAX_PLAYERS];
 
+		Vector<Patch> allPatch = new Vector<Patch>();
+
 		try {
 			for(int i = 0;i < MAX_PLAYERS;i++) {
 				Patch[] patches = new Patch[PATCH_ADDR[i].length];
@@ -117,6 +119,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 				for(int j = 0;j < PATCH_ADDR[i].length;j++) {
 					patches[j] = new Patch(PATCH_ADDR[i][j], hardware);
 					hardware.addPatch(patches[j]);
+					allPatch.add(patches[j]);
 				}
 
 				Glove glove = new Glove(GLOVE_ADDR[i], hardware);
@@ -131,9 +134,6 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 			System.err.println(e.getMessage());
 			System.exit(1);
 		}
-		
-		
-		
 		
 		playerList = new PlayerList(this, "player.lst");
 		playerSelect = new PlayerSelect(this, hud, players);
@@ -171,7 +171,8 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 			}
 		}
 
-		tmp_levels.add(new CultLevel(this, hud, sounds, players));
+		Patch[] allPatchArr = allPatch.toArray(new Patch[0]);
+		tmp_levels.add(new CultLevel(this, hud, sounds, players, allPatchArr));
 		tmp_levels.add(new AccelLevel(this, hud, sounds, "Orb", players));
 		// tmp_levels.add(new BopperLevel(this, hud, sounds, "Besouro.mp3", players));
 		// tmp_levels.add(new HealthLevel(this, hud, sounds, "Leila Came Round And We Watched A Video.mp3", players));

@@ -21,6 +21,12 @@ public class Sounds {
 	AudioSample gong;
 	AudioSample dingding;
 
+	AudioSample heartBeat;
+	AudioSample ekgStart;
+	AudioSample flatline;
+	AudioSample inhale;
+	AudioSample exhale;
+
 	/**
 	 * Setup the Minim audio manager.
 	 * 
@@ -39,6 +45,14 @@ public class Sounds {
 		whooshBubble = minim.loadSample("sounds/whooshbubble.mp3", BUFFER_SIZE);
 		gong = minim.loadSample("sounds/gong.mp3", BUFFER_SIZE);
 		dingding = minim.loadSample("sounds/dingding.mp3", BUFFER_SIZE);
+
+		heartBeat = minim.loadSample("sounds/beat.wav", BUFFER_SIZE);
+
+		ekgStart = minim.loadSample("sounds/ecg_slow.wav", BUFFER_SIZE);
+		flatline = minim.loadSample("sounds/flatline.wav", BUFFER_SIZE);
+
+		inhale = minim.loadSample("sounds/inhale.wav", BUFFER_SIZE);
+		exhale = minim.loadSample("sounds/exhale.wav", BUFFER_SIZE);
 	}
 
 	/**
@@ -71,4 +85,25 @@ public class Sounds {
 	public AudioSample getDingDing() {
 		return dingding;
 	}
+
+	public AudioSample getHeartBeat() {
+		return heartBeat;
+	}
+
+	public AudioSample getFlatline() {
+		return flatline;
+	}
+
+	public AudioSample getEKGStart() {
+		return ekgStart;
+	}
+
+	public AudioSample getInhale() {
+		return inhale;
+	}
+
+	public AudioSample getExhale() {
+		return exhale;
+	}
+
 }

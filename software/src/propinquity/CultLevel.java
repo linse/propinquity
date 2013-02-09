@@ -14,76 +14,110 @@ import java.lang.Math;
  */
 public class CultLevel extends Level {
 
-	static final long HEART_INTERVAL = 1000;
-	static final long COOL_DOWN_BLACK = 500;
-	static final long COOL_DOWN_WARMUP = 8000;
+	static final int BPM_INTERVAL = 500;
+	static final int CLAIMED_INTERVAL = 750;
+	static final int LEVEL_INTERVAL = 15000;
 
 	String name;
-	boolean running;
+	boolean running, done, win, start;
 
-	long heartTimers[];
-	long headTimersPauseDiff[];
+	Patch heart;
+	Patch[] lesions;
+	boolean[] lesionsState;
 
-	long coolDownTimer, coolDownTimerDiff;
+	int bpm;
+	int claimedTimer, claimedTimerDiff;
+	int bpmTimer, bpmTimerDiff;
 
-	Player winner;
+	boolean alive, claimed;
+
+	int level;
+	int levelTimer, levelTimerDiff;
 	
-	public CultLevel(Propinquity parent, Hud hud, Sounds sounds, Player[] players) {
+	Beater beater;
+
+	public CultLevel(Propinquity parent, Hud hud, Sounds sounds, Player[] players, Patch[] patches) {
 		super(parent, hud, sounds, players);
 
-		heartTimers = new long[players.length];
-		headTimersPauseDiff = new long[players.length];
+		name = "Cult Level";
 
-		for(int i = 0;i < heartTimers.length;i++) {
-			heartTimers[i] = -1;
+		heart = patches[0];
+		lesions = new Patch[patches.length-1];
+		lesionsState = new boolean[patches.length-1];
+		for(int i = 0;i < lesions.length;i++) {
+			lesions[i] = patches[i+1];
+			lesionsState[i] = false;
 		}
 
-		coolDownTimer = -1;
+		done = true;
+		running = false;
 
-		name = "Cult Level";
+		beater = new Beater();
 	}
 
 	public void pause() {
 		running = false;
-		for(int i = 0;i < players.length;i++) {
-			players[i].pause();
-			if(heartTimers[i] != -1) headTimersPauseDiff[i] = parent.millis()-heartTimers[i];
+
+		heart.setActive(false);
+
+		for(int i = 0;i < level;i++) {
+			lesions[i].setActive(false);
 		}
-		if(coolDownTimer != -1) coolDownTimerDiff = parent.millis()-coolDownTimer;
+
+		levelTimerDiff = parent.millis()-levelTimer;
+		if(claimedTimer != -1) claimedTimerDiff = parent.millis()-claimedTimer;
+		if(bpmTimer != -1) bpmTimerDiff = parent.millis()-bpmTimer;
 	}
 
 	public void start() {
-		for(int i = 0;i < players.length;i++) {
-			players[i].start();
-			if(heartTimers[i] != -1) heartTimers[i] = parent.millis()-headTimersPauseDiff[i];
+		levelTimer = parent.millis()-levelTimerDiff;
+		if(claimedTimer != -1) claimedTimer = parent.millis()-claimedTimerDiff;
+		if(bpmTimer != -1) bpmTimer = parent.millis()-bpmTimerDiff;
+
+		heart.setActive(true);
+
+		for(int i = 0;i < level;i++) {
+			lesions[i].setActive(true);
 		}
-		if(coolDownTimer != -1) coolDownTimer = parent.millis()-coolDownTimerDiff;
+
 		running = true;
 	}
 
 	public void reset() {
 		running = false;
-		
-		for(Player player : players) {
-			player.configurePatches(Mode.PROX);
-			player.reset(); //Clears all the particles, scores, patches and gloves
 
-			Patch[] patches = player.getPatches();
+		start = true;
 
-			patches[0].setColor(255, 0, 0);
-			patches[0].setActivationMode(Mode.PROX);
-			for(int i = 1;i < patches.length;i++) {
-				patches[i].setColor(100, 100, 100);
-			}
+		done = false;
+
+		claimedTimer = -1;
+		claimedTimerDiff = 0;
+
+		bpm = 60;
+		bpmTimer = -1;
+		bpmTimerDiff = 0;
+
+		alive = true;
+		claimed = false;
+
+		level = 0;
+		levelTimer = 0;
+		levelTimerDiff = 0;
+
+		heart.setColor(255, 0, 0);
+		heart.setColorPeriod(255);
+		heart.setColorWaveform(1);
+		heart.setColorDuty(127);
+
+		heart.setActivationMode(Mode.OFF);
+		heart.setActive(false);
+
+		for(int i = 0;i < lesions.length;i++) {
+			lesions[i].setColor(100, 100, 100);
+			lesions[i].setActivationMode(Mode.PROX);
+			lesions[i].setActive(false);
+			lesionsState[i] = false;
 		}
-
-		for(int i = 0;i < heartTimers.length;i++) {
-			heartTimers[i] = -1;
-		}
-
-		coolDownTimer = -1;
-
-		winner = null;
 	}
 
 	public void close() {
@@ -110,90 +144,103 @@ public class CultLevel extends Level {
 	}
 
 	public void update() {
-		//need followers low beating
+		if(done) return;
 
-		// for(Player player : players) player.update();
+		if(start) {
+			sounds.getEKGStart().trigger();
+			start =  false;
+		}
 
-		if(coolDownTimer != -1) {
-			if(parent.millis()-coolDownTimer < COOL_DOWN_BLACK) {
-				for(int i = 0;i < players.length;i++) {
-					for(Patch patch : players[i].getPatches()) {
-						patch.setActive(false);
-					}
+		boolean covered = true;
+		int active_lesions = level;
+
+		if(claimed) {
+			active_lesions++;
+		} else {
+			lesions[level].setActive(true);
+
+			if(lesions[level].getZone() != 0) { //Covered
+				lesions[level].setMode(0);
+				claimed = true;
+				claimedTimer = -1;
+				sounds.getExhale().trigger();
+				lesionsState[level] = true;
+			} else { //Not Covered
+				lesions[level].setMode(1);
+				if(claimedTimer == -1) {
+					claimedTimer = parent.millis();
+				} else if(parent.millis()-claimedTimer > CLAIMED_INTERVAL) {
+					bpm++;
+					claimedTimer = -1;
 				}
-				return;
-			} else if(parent.millis()-coolDownTimer < COOL_DOWN_WARMUP+COOL_DOWN_BLACK) {
-				for(int i = 0;i < players.length;i++) {
-					players[i].getPatches()[0].setActive(false);
-				}
-			} else {
-				coolDownTimer = -1;
+
 			}
 		}
 
-		boolean[] player_covered = {true, true};
+		for(int i = 0;i < active_lesions;i++) {
+			lesions[i].setActive(true);
 
-		for(int i = 0;i < players.length;i++) {
-			Player player = players[i];
-			Patch[] patches = player.getPatches();
-			Patch heart = patches[0];
-
-			for(int j = 1;j < patches.length;j++) {
-				if(j < players[i].getScore()+1) {
-					patches[j].setActive(true);
-					if(patches[j].getZone() != 0) {
-						//Patch is covered
-						patches[j].setMode(0);
-					} else {
-						patches[j].setMode(1);
-						player_covered[i] = false;
-					}
-				} else {
-					patches[j].setActive(false);
+			if(lesions[i].getZone() != 0) { //Covered
+				if(!lesionsState[i]) {
+					sounds.getExhale().trigger();
+					lesionsState[i] = true;
 				}
+				lesions[i].setMode(0);
+			} else { //Not Covered
+				if(lesionsState[i]) {
+					sounds.getInhale().trigger();
+					lesionsState[i] = false;
+				}
+				lesions[i].setMode(1);
+				covered = false;
 			}
+		}
 
-			if(player_covered[i]) {
+		if(!covered) {
+			if(bpmTimer == -1) {
+				bpmTimer = parent.millis();
+			} else if(parent.millis()-bpmTimer > BPM_INTERVAL) {
+				bpm++;
 				heart.setColor(255, 0, 0);
+				heart.setColorPeriod((int)PApplet.map(bpm, 60, 150, 255, 30));
 				heart.setColorWaveform(1);
-			} else {
-				heart.setColor(7, 0, 0);
-				heart.setColorWaveform(1);
+				heart.setColorDuty(127);
+				bpmTimer = -1;
 			}
 		}
 
-		if(coolDownTimer != -1) {
-			return;
-		}
+		if(parent.millis()-levelTimer > LEVEL_INTERVAL) {
+			level++;
+			levelTimer = parent.millis();
 
-		for(int i = 0;i < players.length;i++) {
-			Player opponent = players[(i+1)%2];
-			Player player = players[i];
-			Patch heart = player.getPatches()[0];
-			heart.setActive(true);
+			if(level > lesions.length-1) {
+				done = true;
+				win = true;
 
-			if(heart.getZone() != 0 && player_covered[(i+1)%2]) {
-				if(heartTimers[i] == -1) {
-					heartTimers[i] = parent.millis();
-					heart.setColorPeriod(30);
-				} else if(parent.millis()-heartTimers[i] > HEART_INTERVAL) {
-					opponent.addPoints(1);
-					heartTimers[i] = -1;
-
-					if(opponent.getScore() == opponent.getPatches().length) {
-						win(opponent);
-					} else {
-						coolDownTimer = parent.millis();
-					}
-
-					heart.setColorPeriod(255);
+				for(int i = 0;i < active_lesions;i++) {
+					lesions[i].setActive(false);
 				}
-			} else {
-				heartTimers[i] = -1;
 
+				heart.setActive(true);	
+
+				heart.setColor(255, 0, 0);
 				heart.setColorPeriod(255);
+				heart.setColorWaveform(1);
+				heart.setColorDuty(127);
+
+				return;
 			}
 		}
+
+		heart.setActive(true);	
+
+		if(bpm > 150) {
+			done = true;
+			win = false;
+			sounds.getFlatline().trigger();
+		}
+
+		// System.out.println(bpm);
 	}
 
 	public String getName() {
@@ -205,8 +252,7 @@ public class CultLevel extends Level {
 	}
 
 	public boolean isDone() {
-		if(winner != null) return true;
-		else return false;
+		return done;
 	}
 	
 	public void keyPressed(char key, int keyCode) {
@@ -233,28 +279,6 @@ public class CultLevel extends Level {
 		}
 	}
 
-	void win(Player p) {
-		winner = p;
-		Patch[] winnerPatches = p.getPatches();
-		Patch winnerHeart = winnerPatches[0];
-
-		winnerHeart.setColor(0, 255, 0);
-		winnerHeart.setColorPeriod(255);
-		winnerHeart.setColorWaveform(1);
-
-		for(int i = 1;i < winnerPatches.length;i++) {
-			winnerPatches[i].setActive(false);
-		}
-
-		for(Player player : players) {
-			if(player == winner) continue;
-			for(Patch patch : player.getPatches()) {
-				patch.setActive(false);
-			}
-		}
-
-	}
-
 	public void draw() {
 		if(!isVisible) return;
 
@@ -273,12 +297,51 @@ public class CultLevel extends Level {
 		}
 
 		if(isDone()) { //Someone won
-			hud.drawCenterText("", "Only one cult leader remains", Color.white(), hud.getAngle());
+			if(win) {
+				hud.drawCenterText("", "Win", Color.white(), hud.getAngle());
+			} else {
+				hud.drawCenterText("", "Loose", Color.white(), hud.getAngle());
+			}
 			hud.drawCenterImage(hud.hudPlayAgain, hud.getAngle());
 		} else if(isRunning()) { //Running
 			update();
 		} else { //Pause
 			hud.drawCenterImage(hud.hudPlay, hud.getAngle());
+		}
+	}
+
+
+	class Beater implements Runnable {
+
+		Thread thread;
+		boolean run;
+
+		Beater() {
+			run = true;
+
+			thread = new Thread(this);
+			thread.setDaemon(true);
+			thread.start();
+		}
+
+		void stop() {
+			run = false;
+			if(thread != null) while(thread.isAlive()) Thread.yield();
+		}
+
+		public void run() {
+			while(run) {
+				if(!isRunning() || isDone()) {
+					Thread.yield();
+				} else {
+					sounds.getHeartBeat().trigger();
+					try {
+						Thread.sleep(60*1000/bpm);
+					} catch(Exception e) {
+
+					}
+				}
+			}
 		}
 	}
 
