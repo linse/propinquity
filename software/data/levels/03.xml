@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<level name="All Bulgar">
+<level name="Bulgar">
 	<song file="Jack.mp3" bpm="60"/>
 	<sequence>
 		<step mode="coop">
