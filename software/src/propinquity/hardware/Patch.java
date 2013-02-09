@@ -19,7 +19,6 @@ public class Patch implements HardwareConstants {
 	final int address;
 
 	int mode;
-	boolean active;
 
 	int prox_val;
 	int[] xyz;
@@ -44,7 +43,6 @@ public class Patch implements HardwareConstants {
 		this.address = address;
 
 		mode = Mode.OFF;
-		active = false;
 
 		prox_val = 0;
 		xyz = new int[3];
@@ -94,14 +92,13 @@ public class Patch implements HardwareConstants {
 	}
 
 	public void setActive(boolean active) {
-      if(MIN_PACK && this.active == active) return;
-      this.active = active;
-      if(MANUAL_PACK) hardware.sendPacket(new Packet(address, PacketType.MODE, new int[] {mode | (active ? Mode.ACTIVE : Mode.OFF)}));
-      if(!active) prox_val = 0; //Clear prox when not active
+	  System.out.println("setActive: (mode was " + mode + ") " + active);
+	  if (active) setActivationMode(this.mode | Mode.ACTIVE);
+	  else setActivationMode(this.mode & ~Mode.ACTIVE);
 	}
 	
 	public boolean getActive() {
-	  return active;
+	  return (this.mode & Mode.ACTIVE) != 0;
 	}
 	
 	/**
@@ -110,9 +107,10 @@ public class Patch implements HardwareConstants {
 	 * @param mode the new mode for the device.
 	 */
 	public void setActivationMode(int mode) {
+      System.out.println("setActivationMode: " + mode);
 		if(MIN_PACK && this.mode == mode) return;
 		this.mode = mode;
-		if(MANUAL_PACK) hardware.sendPacket(new Packet(address, PacketType.MODE, new int[] {mode | (active ? Mode.ACTIVE : Mode.OFF)}));
+		if(MANUAL_PACK) hardware.sendPacket(new Packet(address, PacketType.MODE, new int[] {mode}));
 		if((mode & Mode.PROX) == 0) prox_val = 0; //Clear prox when not active
 	}
 
@@ -224,7 +222,7 @@ public class Patch implements HardwareConstants {
 	 */
 	public void setProx(int prox_val) {
 		//Prevent straggler packet from changing the prox value when active if false
-		if(active) this.prox_val = PApplet.constrain(prox_val, 0, 1024);
+		if((this.mode & Mode.PROX) != 0) this.prox_val = PApplet.constrain(prox_val, 0, 1024);
 		else this.prox_val = 0;
 	}
 
@@ -337,7 +335,7 @@ public class Patch implements HardwareConstants {
 	 */
 	public int getProx() {
 		//Return 0 if not active
-		if(active) return prox_val;
+		if((this.mode & Mode.PROX) != 0) return prox_val;
 		else return 0;
 	}
 
@@ -468,7 +466,7 @@ public class Patch implements HardwareConstants {
 
 		public void run() {
 			while(running) {
-				hardware.sendPacket(new Packet(address, PacketType.MODE, new int[] {active?mode_flag:0}));
+				hardware.sendPacket(new Packet(address, PacketType.MODE, new int[] {mode}));
 
 				if(!activeOnly) {
 					hardware.sendPacket(new Packet(address, PacketType.COLOR, new int[] {color[0], color[1], color[2]}));

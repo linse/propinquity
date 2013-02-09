@@ -163,17 +163,7 @@ public class AccelLevel extends Level {
         fader = new VolumeFader();
 
         reset();
-
-        // New stuff here
-        // Orb defender
-        this.orb = players[0].patches[0];
-        this.orb.setActivationMode(Mode.PROX | Mode.ACCEL_INT0 | Mode.ACCEL_INT1);
-        this.orb.setActive(true);
-        
-        // Attackers (treat as one single player with multiple patches)
-        players[1].configurePatches(Mode.OFF);
-        players[1].clearPatches();
-    }
+}
 
     public void useBackgroundColor(boolean useBackgroundColor) {
         this.useBackgroundColor = useBackgroundColor;
@@ -190,7 +180,9 @@ public class AccelLevel extends Level {
     }
 
     public void start() {
-        for(int i = 0;i < players.length;i++) {
+
+            
+      for(int i = 0;i < players.length;i++) {
             players[i].start();
             lastScoreTime[i] = parent.millis()-lastScoreTimePauseDiff[i];
         }
@@ -198,7 +190,24 @@ public class AccelLevel extends Level {
         if(startTime == -1) startTime = parent.millis();
         else startTime = parent.millis()-startTimeDiff;
         song.play();
-        song.setGain(-100);
+        song.setGain(-50);
+        
+
+        // New stuff here
+        // Orb defender
+        System.out.println("orb");
+        this.orb = players[0].patches[0];
+        this.orb.setActivationMode(Mode.PROX | Mode.ACCEL_INT0 | Mode.ACCEL_INT1);
+        this.orb.setColor(this.orbcolor);
+        this.orb.setActive(true);
+        
+        // Attackers (treat as one single player with multiple patches)
+        System.out.println("attackers");
+        players[1].configurePatches(Mode.OFF);
+        players[1].clearPatches();
+
+        System.out.println("start");
+
     }
 
     public void reset() {
@@ -272,10 +281,15 @@ public class AccelLevel extends Level {
     public void accelInterrupt1Event(Patch patch) {
       song.pause();
       gong.trigger();
+      System.out.println("End game");
     }
 
     public void update() {
         for(Player player : players) player.update();
+        
+        
+        long runningtime = parent.millis() - startTime;
+        System.out.println("Running time: " + runningtime);
 
     }
 

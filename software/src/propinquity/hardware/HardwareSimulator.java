@@ -173,6 +173,9 @@ public class HardwareSimulator implements HardwareInterface, UIElement {
         } else if (keycode == KeyEvent.VK_Q && e.getID() == KeyEvent.KEY_PRESSED) {
           if(current_patch >= patches.size()) return;
           Patch patch = patches.get(current_patch);
+          System.out.println("Q");
+          if (patch != null)           System.out.println("  patch");
+          System.out.println("  " + patch.getActivationMode());
           if(patch != null && patch.getActive() && ((patch.getActivationMode() & Mode.ACCEL_INT0) != 0)) {
               patch.setInterrupt0(0);
               for(AccelEventListener listener : accelListeners) listener.accelInterrupt0Event(patch);
