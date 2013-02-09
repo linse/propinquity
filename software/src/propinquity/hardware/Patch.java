@@ -474,6 +474,7 @@ public class Patch implements HardwareConstants {
 					hardware.sendPacket(new Packet(address, PacketType.COLOR, new int[] {color[0], color[1], color[2]}));
 					hardware.sendPacket(new Packet(address, PacketType.COLOR_DUTY, new int[] {color_duty}));
 					hardware.sendPacket(new Packet(address, PacketType.COLOR_PERIOD, new int[] {color_period}));
+					hardware.sendPacket(new Packet(address, PacketType.COLOR_WAVEFORM, new int[] {color_waveform}));
 
 					hardware.sendPacket(new Packet(address, PacketType.VIBE, new int[] {vibe_level}));
 					hardware.sendPacket(new Packet(address, PacketType.VIBE_DUTY, new int[] {vibe_duty}));
