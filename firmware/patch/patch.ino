@@ -433,7 +433,7 @@ void accel_error() {
 void send_accel_int1(uint8_t tra_mt_src) {
 	uint8_t outPacket[2];
 
-	outPacket[0] = ACCEL_INT1_MODE;
+	outPacket[0] = ACCEL_INT1_PACKET;
 	outPacket[1] = tra_mt_src;
 
 	#ifdef DEBUG
