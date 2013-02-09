@@ -25,7 +25,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 	static final long serialVersionUID = 6340518174717159418L;
 	public static final int FPS = 30;
 
-	static boolean useSimulator = true;
+	static boolean useSimulator = false;
 
 	//General/Util
 	HeapDebug heapDebug;
@@ -131,7 +131,10 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 			System.err.println(e.getMessage());
 			System.exit(1);
 		}
-
+		
+		
+		
+		
 		playerList = new PlayerList(this, "player.lst");
 		playerSelect = new PlayerSelect(this, hud, players);
 		
@@ -153,8 +156,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 			for(String name : names) {
 				if(name.lastIndexOf(".xml") == name.length()-4) {
 					try {
-//                      ProxLevel level = new ProxLevel(this, hud, sounds, LEVEL_FOLDER+name, players);
-						AccelLevel level = new AccelLevel(this, hud, sounds, LEVEL_FOLDER+name, players);
+					    ProxLevel level = new ProxLevel(this, hud, sounds, LEVEL_FOLDER+name, players);
 						level.useBackgroundColor(true);
 						tmp_levels.add(level);
 					} catch(XMLException e) {
@@ -172,6 +174,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 		//TODO: Disabled for now
 		// tmp_levels.add(new BopperLevel(this, hud, sounds, "Besouro.mp3", players));
                 //		tmp_levels.add(new HealthLevel(this, hud, sounds, "Leila Came Round And We Watched A Video.mp3", players));
+		tmp_levels.add(new AccelLevel(this, hud, sounds, "Orb", players));
 
 		levels = tmp_levels.toArray(new Level[0]);
 		if(levels.length == 0) {
