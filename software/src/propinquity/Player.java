@@ -76,13 +76,13 @@ public class Player implements PConstants {
 	}
 
 	public void configurePatches(int mode) {
-      for(int i = 0;i < patches.length;i++) {
-        patches[i].setActivationMode(mode);
-      }
+		for(int i = 0;i < patches.length;i++) {
+			patches[i].setActivationMode(mode);
+		}
 	}
 
 	public void configureGloves(int mode) {
-      glove.setActivationMode(mode);
+		glove.setActivationMode(mode);
 	}
 
 	public void clearPatches() {

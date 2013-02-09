@@ -46,7 +46,7 @@ public class Patch implements HardwareConstants {
 
 		prox_val = 0;
 		xyz = new int[3];
-        interrupt = new int[2];
+		interrupt = new int[2];
 
 		vibe_level = 0;
 		vibe_period = 0;
@@ -92,13 +92,12 @@ public class Patch implements HardwareConstants {
 	}
 
 	public void setActive(boolean active) {
-	  System.out.println("setActive: (mode was " + mode + ") " + active);
-	  if (active) setActivationMode(this.mode | Mode.ACTIVE);
-	  else setActivationMode(this.mode & ~Mode.ACTIVE);
+		if(active) setActivationMode(this.mode | Mode.ACTIVE);
+		else setActivationMode(this.mode & ~Mode.ACTIVE);
 	}
 	
 	public boolean getActive() {
-	  return (this.mode & Mode.ACTIVE) != 0;
+		return (this.mode & Mode.ACTIVE) != 0;
 	}
 	
 	/**
@@ -107,7 +106,6 @@ public class Patch implements HardwareConstants {
 	 * @param mode the new mode for the device.
 	 */
 	public void setActivationMode(int mode) {
-      System.out.println("setActivationMode: " + mode);
 		if(MIN_PACK && this.mode == mode) return;
 		this.mode = mode;
 		if(MANUAL_PACK) hardware.sendPacket(new Packet(address, PacketType.MODE, new int[] {mode}));
@@ -141,8 +139,8 @@ public class Patch implements HardwareConstants {
 	 *
 	 * @param level the vibration level, constrained to the range 0-255.
 	 */
-	 public void setVibeLevel(int level) {
-	 	if(MIN_PACK && vibe_level == level) return;
+	public void setVibeLevel(int level) {
+		if(MIN_PACK && vibe_level == level) return;
 		vibe_level = PApplet.constrain(level, 0, 255);
 		if(MANUAL_PACK) hardware.sendPacket(new Packet(address, PacketType.VIBE, new int[] {vibe_level}));
 	}
@@ -225,14 +223,6 @@ public class Patch implements HardwareConstants {
 		if((this.mode & Mode.PROX) != 0) this.prox_val = PApplet.constrain(prox_val, 0, 1024);
 		else this.prox_val = 0;
 	}
-
-	
-//	public void setAccelConfig(ConfigData config)
-//	{
-//      if(MIN_PACK && configdata == existing config data) return;
-//      FIXME: Set config data
-//      if(MANUAL_PACK) hardware.sendPacket(new Packet(address, PacketType.ACCEL_CONF, new int[] { FIXME: Config data }));
-//	}
 	
 	/**
 	 * Sets the value of the xyz accelerometer sensor for this device. Normally this should be by the HardwareInterface which this device is registered with as the data arrives from the real device. It should only be called elsewhere for testing.
@@ -259,19 +249,19 @@ public class Patch implements HardwareConstants {
 	}
 
 	public void setInterrupt0(int val) {
-	  this.interrupt[0] = val;
+		this.interrupt[0] = val;
 	}
 
 	public void setInterrupt1(int val) {
-	  this.interrupt[1] = val;
+		this.interrupt[1] = val;
 	}
 
 	public int getInterrupt0() {
-	  return this.interrupt[0];
+		return this.interrupt[0];
 	}
 
 	public int getInterrupt1() {
-	  return this.interrupt[1];
+		return this.interrupt[1];
 	}
 
 	/**
