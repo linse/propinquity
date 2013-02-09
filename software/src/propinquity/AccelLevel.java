@@ -159,11 +159,11 @@ public class AccelLevel extends Level {
         // We will never get prox events from player 1, so we know this is an orb event
         // Three zones: Protected (value > THRESHOLD), Warning (THRESHOLD < value < WARNING, Off (WARNING > value)
         int proxvalue = patch.getProx();
-        if (proxvalue > ORB_WARNING) { // Protected
+        if(proxvalue > ORB_WARNING) { // Protected
           this.orb.setColor(this.orbcolor);
           this.orb.setActivationMode(this.orb.getActivationMode() | Mode.ACCEL_INT0 | Mode.ACCEL_INT1);
           this.players[1].clearPatches();
-          if (proxvalue < ORB_THRESHOLD) {
+          if(proxvalue < ORB_THRESHOLD) {
 //            dingding.trigger();
             System.out.println("Warning");
           }
@@ -181,11 +181,11 @@ public class AccelLevel extends Level {
 
     // This triggers if "some" movement was detected
     public void accelInterrupt0Event(Patch patch) {
-    	if (running && parent.millis() > this.protectedUntil) {
+    	if(running && parent.millis() > this.protectedUntil) {
     		System.out.println("Hit!");
             this.protectedUntil = parent.millis() + 2000;
     		
-    		if (orblives > 0) {
+    		if(orblives > 0) {
     			orblives--;
     			switch (orblives) {
     			case 2:
@@ -226,7 +226,7 @@ public class AccelLevel extends Level {
         
         
         long runningtime = parent.millis() - startTime;
-        if (runningtime > 60000) {
+        if(runningtime > 60000) {
         	timeout = true;
         	running = false;
         	this.orbcolor = Color.white();

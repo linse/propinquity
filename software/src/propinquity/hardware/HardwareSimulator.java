@@ -170,17 +170,17 @@ public class HardwareSimulator implements HardwareInterface, UIElement {
 				patch.setProx(patch.getProx()+50);
 				for(ProxEventListener listener : proxListeners) listener.proxEvent(patch);
 			}
-		} else if (keycode == KeyEvent.VK_Q && e.getID() == KeyEvent.KEY_PRESSED) {
+		} else if(keycode == KeyEvent.VK_Q && e.getID() == KeyEvent.KEY_PRESSED) {
 			if(current_patch >= patches.size()) return;
 			Patch patch = patches.get(current_patch);
 			System.out.println("Q");
-			if (patch != null) System.out.println(" patch");
+			if(patch != null) System.out.println(" patch");
 			System.out.println(" " + patch.getActivationMode());
 			if(patch != null && patch.getActive() && ((patch.getActivationMode() & Mode.ACCEL_INT0) != 0)) {
 				patch.setInterrupt0(0);
 				for(AccelEventListener listener : accelListeners) listener.accelInterrupt0Event(patch);
 			}
-		} else if (keycode == KeyEvent.VK_W && e.getID() == KeyEvent.KEY_PRESSED) {
+		} else if(keycode == KeyEvent.VK_W && e.getID() == KeyEvent.KEY_PRESSED) {
 			if(current_patch >= patches.size()) return;
 			Patch patch = patches.get(current_patch);
 			if(patch != null && patch.getActive() && ((patch.getActivationMode() & Mode.ACCEL_INT1) != 0)) {
