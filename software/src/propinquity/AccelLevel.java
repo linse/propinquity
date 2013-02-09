@@ -14,12 +14,13 @@ import java.lang.Math;
  */
 public class AccelLevel extends Level {
 
-    static int ORB_WARNING = 500;
-    static int ORB_THRESHOLD = 800;
+    static int ORB_WARNING = 400;
+    static int ORB_THRESHOLD = 600;
   
     static int TOTAL_LEN = 180000; //2min;
 
     Color orbcolor;
+    int orblives;
     
     long[] lastScoreTime;
     long[] lastScoreTimePauseDiff;
@@ -37,10 +38,6 @@ public class AccelLevel extends Level {
 
     VolumeFader fader;
 
-    Step[] steps;
-    long stepInterval;
-    int currentStep;
-
     String name;
 
     boolean coop, lastCoop;
@@ -49,18 +46,22 @@ public class AccelLevel extends Level {
     int coopScore;
 
     long startTime, startTimeDiff;
+    long protectedUntil;
 
     boolean useBackgroundColor;
     private Patch orb;
+	private boolean timeout;
 
-    public AccelLevel(Propinquity parent, Hud hud, Sounds sounds, String levelFile, Player[] players) throws XMLException {
+    public AccelLevel(Propinquity parent, Hud hud, Sounds sounds, String levelfile, Player[] players) {
         super(parent, hud, sounds, players);
 
-        orbcolor = new Color(255,255,0);
+        orbcolor = Color.green();
+        name = levelfile;
         
         gong = sounds.getGong();
         dingding = sounds.getDingDing();
-
+        song = sounds.loadSong("11 Besouro.mp3");
+        
         lastScoreTime = new long[players.length];
         lastScoreTimePauseDiff = new long[players.length];
         coopScore = 0;
@@ -69,97 +70,6 @@ public class AccelLevel extends Level {
 
         useBackgroundColor = true;
 
-        songs = new Vector<AudioPlayer>();
-
-        XMLElement xml = new XMLElement(parent, levelFile);
-
-        name = xml.getString("name");
-
-        if(name == null) {
-            name = "Level";
-            System.err.println("Warning: XML file \""+levelFile+"\" contained no level name. Name defaulted to \"Level\"");
-        }
-
-        XMLElement[] song_tags = xml.getChildren("song");
-
-        if(song_tags.length > 0) {
-            if(song_tags.length > 1) {
-                System.err.println("Warning: XML contained multiple songs tags for a single Level. Ignoring extra tags.");
-            }
-
-            XMLElement song = song_tags[0];
-
-            songFile = song.getString("file");
-            if(songFile.equals("")) {
-                throw new XMLException("XMLException: XML song tag has empty file attribute");
-            }
-
-            songBPM = song.getInt("bpm", DEFAULT_BPM);
-        } else {
-            throw new XMLException("XMLException: XML for level \"" + name + "\" has no song tag");
-        }
-
-        try {
-            song = sounds.loadSong(songFile);
-        } catch(Exception e) {
-            throw new NullPointerException("Loading song file failed. Likely file name invalid or file missing for level \""+name+"\". Given file name was \""+songFile+"\".");
-        }
-
-        songs.add(song);
-
-        XMLElement[] step_tags = xml.getChildren("sequence/step");
-        steps = new Step[step_tags.length+1];
-        stepInterval = TOTAL_LEN/(step_tags.length+1);
-
-        if(step_tags.length > 0) {
-            for(int i = 0; i < step_tags.length; i++) {
-                String modeString = step_tags[i].getString("mode");
-                StepType type = null;
-                boolean hasSong = false;
-                if(modeString.equals("versus")) {
-                    type = StepType.VERSUS;
-                } else if(modeString.equals("transition")) {
-                    type = StepType.TRANSITION; //FIXME: Rework the transision mechanism
-                    String songFile = step_tags[i].getString("file");
-                    if(songFile == null || songFile.equals("")) {
-                        System.err.println("Warning: XML for level \""+name+"\" step "+i+" is a transition tag with no file attribute, this might be correct, but you should be sure");
-                    } else {
-                        try {
-                            AudioPlayer song = sounds.loadSong(songFile);
-                            songs.add(song);
-                            hasSong = true;
-                        } catch(Exception e) {
-                            throw new NullPointerException("Loading song file failed. Likely file name invalid or file missing for level \""+name+"\". Given file name was \""+songFile+"\".");
-                        }
-                    }
-                } else {
-                    type = StepType.COOP;
-                }
-
-                XMLElement[] player_tags = step_tags[i].getChildren("player");
-                boolean patches[][] = new boolean[player_tags.length][4];
-                if(player_tags.length >= players.length) {
-                    for(int j = 0; j < player_tags.length; j++) {
-                        patches[j][0] = (player_tags[j].getInt("patch1", 0) != 0);
-                        patches[j][1] = (player_tags[j].getInt("patch2", 0) != 0);
-                        patches[j][2] = (player_tags[j].getInt("patch3", 0) != 0);
-                        patches[j][3] = (player_tags[j].getInt("patch4", 0) != 0);
-                    }
-                } else {
-                    throw new XMLException("XMLException: XML for level \"" + name + "\", step " + i + " has too few player tags.");
-                }
-
-                steps[i] = new Step(type, patches, hasSong);
-            }
-
-            boolean[][] tmpPatchState = new boolean[players.length][];
-            for(int i = 0;i < tmpPatchState.length;i++) tmpPatchState[i] = new boolean[] {false, false, false, false};
-
-            steps[step_tags.length] = new Step(StepType.VERSUS, tmpPatchState, false);
-        } else {
-            throw new XMLException("Warning: XML for level \"" + name + "\" has no sequence tag and/or no step tags");
-        }
-        
         fader = new VolumeFader();
 
         reset();
@@ -170,7 +80,7 @@ public class AccelLevel extends Level {
     }
 
     public void pause() {
-        song.pause();
+	song.pause();
         running = false;
         for(int i = 0;i < players.length;i++) {
             players[i].pause();
@@ -195,25 +105,29 @@ public class AccelLevel extends Level {
 
         // New stuff here
         // Orb defender
-        System.out.println("orb");
         this.orb = players[0].patches[0];
         this.orb.setActivationMode(Mode.PROX | Mode.ACCEL_INT0 | Mode.ACCEL_INT1);
         this.orb.setColor(this.orbcolor);
         this.orb.setActive(true);
-        
+        this.orb.setAccelConfig(0);
+        timeout = false;
+
         // Attackers (treat as one single player with multiple patches)
-        System.out.println("attackers");
         players[1].configurePatches(Mode.OFF);
         players[1].clearPatches();
 
+        this.protectedUntil = parent.millis() + 2000;
+        
         System.out.println("start");
-
     }
 
     public void reset() {
+    	System.out.println("reset");
         running = false;
-        
+        orblives = 3;
+        timeout = false;
         startTime = -1;
+        orbcolor = Color.green();
 
         for(Player player : players) {
           player.configurePatches(Mode.PROX | Mode.ACCEL_XYZ | Mode.ACCEL_INT0 | Mode.ACCEL_INT1);
@@ -226,14 +140,9 @@ public class AccelLevel extends Level {
 
         parent.setBackgroundColor(Color.black());
         
-        for(AudioPlayer song : songs) {
             song.pause();
             song.rewind();
             song.setGain(0);
-            //rewound
-        }
-
-        song = songs.get(0);
     }
 
     public void close() {
@@ -245,18 +154,17 @@ public class AccelLevel extends Level {
         if(!isRunning() || isDone()) return;
         if(!patch.getActive()) return;
         //Handle patch feedback
-        patch.setMode(patch.getZone());
+//        patch.setMode(patch.getZone());
         
         // We will never get prox events from player 1, so we know this is an orb event
         // Three zones: Protected (value > THRESHOLD), Warning (THRESHOLD < value < WARNING, Off (WARNING > value)
         int proxvalue = patch.getProx();
-        System.out.println(proxvalue);
         if (proxvalue > ORB_WARNING) { // Protected
           this.orb.setColor(this.orbcolor);
           this.orb.setActivationMode(this.orb.getActivationMode() | Mode.ACCEL_INT0 | Mode.ACCEL_INT1);
           this.players[1].clearPatches();
           if (proxvalue < ORB_THRESHOLD) {
-            dingding.trigger();
+//            dingding.trigger();
             System.out.println("Warning");
           }
         }
@@ -273,15 +181,44 @@ public class AccelLevel extends Level {
 
     // This triggers if "some" movement was detected
     public void accelInterrupt0Event(Patch patch) {
-      dingding.trigger();
-      System.out.println("Close one...");
+    	if (running && parent.millis() > this.protectedUntil) {
+    		System.out.println("Hit!");
+            this.protectedUntil = parent.millis() + 2000;
+    		
+    		if (orblives > 0) {
+    			orblives--;
+    			switch (orblives) {
+    			case 2:
+    				this.orbcolor = Color.yellow();
+    				break;
+    			case 1:
+    				this.orbcolor = Color.red();
+    				break;
+    			case 0:
+    				this.orbcolor = Color.black();
+    				song.pause();
+    				running = false;
+
+    				for(Patch p : this.players[1].getPatches()) {
+						p.setColor(Color.white());
+						p.setColorDuty(127);
+						p.setColorPeriod(HardwareConstants.SLOW_BLINK);
+						p.setActive(true);
+					}
+    				System.out.println("End game");
+    				break;
+    			}
+    			this.orb.setColor(this.orbcolor);
+    		}
+    		
+    		gong.trigger();
+    	}
     }
 
     // This triggers if an impact-like movement was detected
     public void accelInterrupt1Event(Patch patch) {
-      song.pause();
-      gong.trigger();
-      System.out.println("End game");
+        dingding.trigger();
+        System.out.println("Close one...");
     }
 
     public void update() {
@@ -289,37 +226,12 @@ public class AccelLevel extends Level {
         
         
         long runningtime = parent.millis() - startTime;
-        System.out.println("Running time: " + runningtime);
-
-    }
-
-    void computeBackground() {
-        Player winner = getWinner();
-
-        if(winner == null || !useBackgroundColor) {
-            parent.setBackgroundColor(Color.black());
-        } else {
-            Color winnerColor = winner.getColor();
-
-            int totalScore = 0;
-            int numPlayers = 0;
-            
-            for(Player player : players) {
-                if(player != winner) {
-                    totalScore += player.getScore();
-                    numPlayers++;
-                }
-            }
-
-            totalScore = totalScore/numPlayers;
-
-            float winFactor = (float)winner.getScore()/totalScore;
-            float tau = 1.0f;
-            float saturationFactor = 0.75f;
-            float colorFactor = (float)(1-Math.exp(-(winFactor-1)/tau))*saturationFactor; //Capping saturation at 75%
-
-            Color factoredColor = new Color((int)(winnerColor.r*colorFactor), (int)(winnerColor.g*colorFactor), (int)(winnerColor.b*colorFactor));
-            parent.setBackgroundColor(factoredColor);
+        if (runningtime > 60000) {
+        	timeout = true;
+        	running = false;
+        	this.orbcolor = Color.white();
+			this.orb.setColorDuty(127);
+			this.orb.setColorPeriod(HardwareConstants.SLOW_BLINK);
         }
     }
 
@@ -328,19 +240,7 @@ public class AccelLevel extends Level {
     }
 
     public Player getWinner() {
-        Player winner = null;
-        int highScore = -1;
-
-        for(Player player : players) {
-
-            if(player.getScore() > highScore) {
-                winner = player;
-                highScore = player.getScore();
-            } else if(player.getScore() == highScore) {
-                winner = null;
-            }
-        }
-
+        Player winner = (orblives > 0) ? players[0] : players[1];
         return winner;
     }
 
@@ -349,7 +249,7 @@ public class AccelLevel extends Level {
     }
 
     public boolean isDone() {
-        return (currentStep >= steps.length-1);
+		return (orblives == 0) || timeout;
     }
     
     public void keyPressed(char key, int keyCode) {
