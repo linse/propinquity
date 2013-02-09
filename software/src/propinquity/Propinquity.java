@@ -170,6 +170,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 		}
 
 		//TODO: Disabled for now
+		tmp_levels.add(new CultLevel(this, hud, sounds, players));
 		// tmp_levels.add(new BopperLevel(this, hud, sounds, "Besouro.mp3", players));
                 //		tmp_levels.add(new HealthLevel(this, hud, sounds, "Leila Came Round And We Watched A Video.mp3", players));
 

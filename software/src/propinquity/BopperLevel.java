@@ -76,8 +76,8 @@ public class BopperLevel extends Level {
 		running = false;
 
 		for(Player player : players) {
-          player.configurePatches(Mode.PROX);
-		  player.reset(); //Clears all the particles, scores, patches and gloves
+			player.configurePatches(Mode.PROX);
+			player.reset(); //Clears all the particles, scores, patches and gloves
 		}
 
 		song.rewind();
@@ -133,17 +133,17 @@ public class BopperLevel extends Level {
 		return;
 	}
 
-    public void accelXYZEvent(Patch patch) {
-      
-    }
+	public void accelXYZEvent(Patch patch) {
 
-    public void accelInterrupt0Event(Patch patch) {
-      
-    }
+	}
 
-    public void accelInterrupt1Event(Patch patch) {
-      
-    }
+	public void accelInterrupt0Event(Patch patch) {
+
+	}
+
+	public void accelInterrupt1Event(Patch patch) {
+
+	}
 
     public void update() {
 		for(Player player : players) player.update();
