@@ -224,6 +224,13 @@ public class Patch implements HardwareConstants {
 		else this.prox_val = 0;
 	}
 	
+	public void setAccelConfig(int sensitivity)
+	{
+		hardware.sendPacket(new Packet(address, PacketType.ACCEL_CONF, new int[] { 0x1f, 0x02 }));
+		hardware.sendPacket(new Packet(address, PacketType.ACCEL_CONF, new int[] { 0x20, 0x01 }));
+	}
+
+	
 	/**
 	 * Sets the value of the xyz accelerometer sensor for this device. Normally this should be by the HardwareInterface which this device is registered with as the data arrives from the real device. It should only be called elsewhere for testing.
 	 *
