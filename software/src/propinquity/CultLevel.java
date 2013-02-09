@@ -150,8 +150,6 @@ public class CultLevel extends Level {
 			sounds.getEKGStart().trigger();
 			start =  false;
 		}
-
-		boolean covered = true;
 		int active_lesions = level;
 
 		if(claimed) {
@@ -177,6 +175,8 @@ public class CultLevel extends Level {
 			}
 		}
 
+		int num_not_covered = 0;
+
 		for(int i = 0;i < active_lesions;i++) {
 			lesions[i].setActive(true);
 
@@ -192,15 +192,16 @@ public class CultLevel extends Level {
 					lesionsState[i] = false;
 				}
 				lesions[i].setMode(1);
-				covered = false;
+				num_not_covered++;
 			}
 		}
 
-		if(!covered) {
+		if(num_not_covered > 0) {
 			if(bpmTimer == -1) {
 				bpmTimer = parent.millis();
 			} else if(parent.millis()-bpmTimer > BPM_INTERVAL) {
 				bpm++;
+				// bpm += num_not_covered;
 				heart.setColor(255, 0, 0);
 				heart.setColorPeriod((int)PApplet.map(bpm, 60, 150, 255, 30));
 				heart.setColorWaveform(1);
