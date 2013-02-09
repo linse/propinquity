@@ -15,7 +15,7 @@ import java.lang.Math;
 public class CultLevel extends Level {
 
 	static final long HEART_INTERVAL = 1000;
-	static final long COOL_DOWN_BLACK = 8000;
+	static final long COOL_DOWN_BLACK = 500;
 	static final long COOL_DOWN_WARMUP = 8000;
 
 	String name;
@@ -110,6 +110,8 @@ public class CultLevel extends Level {
 	}
 
 	public void update() {
+		//need followers low beating
+
 		// for(Player player : players) player.update();
 
 		if(coolDownTimer != -1) {
@@ -153,16 +155,16 @@ public class CultLevel extends Level {
 
 			if(player_covered[i]) {
 				heart.setColor(255, 0, 0);
-				heart.setColorPeriod(255);
 				heart.setColorWaveform(1);
 			} else {
-				heart.setColor(0, 0, 255);
-				heart.setColorPeriod(255);
+				heart.setColor(7, 0, 0);
 				heart.setColorWaveform(1);
 			}
 		}
 
-		if(coolDownTimer != -1) return;
+		if(coolDownTimer != -1) {
+			return;
+		}
 
 		for(int i = 0;i < players.length;i++) {
 			Player opponent = players[(i+1)%2];
@@ -173,6 +175,7 @@ public class CultLevel extends Level {
 			if(heart.getZone() != 0 && player_covered[(i+1)%2]) {
 				if(heartTimers[i] == -1) {
 					heartTimers[i] = parent.millis();
+					heart.setColorPeriod(30);
 				} else if(parent.millis()-heartTimers[i] > HEART_INTERVAL) {
 					opponent.addPoints(1);
 					heartTimers[i] = -1;
@@ -182,9 +185,13 @@ public class CultLevel extends Level {
 					} else {
 						coolDownTimer = parent.millis();
 					}
+
+					heart.setColorPeriod(255);
 				}
 			} else {
 				heartTimers[i] = -1;
+
+				heart.setColorPeriod(255);
 			}
 		}
 	}
