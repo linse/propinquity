@@ -17,7 +17,7 @@ public class OrbLevel extends Level {
     static int ORB_WARNING = 300;
     static int ORB_THRESHOLD = 600;
   
-    static long TIMEOUT = 120000;
+    static long TIMEOUT = 90000;
 //    static long TIMEOUT = 10000;
     static long PROTECTION_TIME = 3000;
     
@@ -59,6 +59,7 @@ public class OrbLevel extends Level {
     private Patch glove;
 	private boolean timeout;
 	private long timeOfOffEvent;
+	private long glitchtime;
 
     public OrbLevel(Propinquity parent, Hud hud, Sounds sounds, String levelfile, Player[] players) {
         super(parent, hud, sounds, players);
@@ -213,7 +214,9 @@ public class OrbLevel extends Level {
     	}
         crash.setGain(10);
         orbwon.setGain(10);
+        orbwon.stop();
         monsterswon.setGain(10);
+        monsterswon.stop();
     }
 
     public void close() {
@@ -263,11 +266,12 @@ public class OrbLevel extends Level {
           else {
               orbSetColor(this.orbcolor);
         	  orbSetFlash(false);
-        	  this.glove.setVibeLevel(0);
+        	  this.glove.setVibeLevel(100);
           }
         }
         else {        // Disable orb, enable attackers' patches        
-        	if (orbIsProtected) {
+        	if (orbIsProtected && parent.millis() > glitchtime) {
+        		glitchtime = -1;
         		System.out.println("Penalty!");
         		pauseOrbProtectedSongs();
         		playOrbCrazySongs();
@@ -276,9 +280,12 @@ public class OrbLevel extends Level {
         		this.players[1].activatePatches();
         		orbSetColor(Color.black());
         		orbEnableAcceleration(false);
-        		this.glove.setVibeLevel(255);
+        		this.glove.setVibeLevel(0);
         		timeOfOffEvent = parent.millis();
         		orbIsProtected = false;
+        	}
+        	else if (glitchtime == -1) {
+        		glitchtime = parent.millis() + 500;
         	}
         }
     }
@@ -363,7 +370,7 @@ public class OrbLevel extends Level {
         for(Player player : players) player.update();
 
     	long runningtime = parent.millis() - startTime - offTime;
-//    	System.out.println("Time: " + runningtime/1000);
+    	System.out.println("Time: " + runningtime/1000);
         if (orbIsProtected) {
         	if(runningtime > TIMEOUT) {
         		pauseOrbProtectedSongs();
@@ -375,6 +382,7 @@ public class OrbLevel extends Level {
 //            	for(Patch orb : this.players[0].getPatches()) {
             		orb.setColorDuty(127);
             		orb.setColorPeriod(HardwareConstants.SLOW_BLINK);
+            		this.glove.setVibeLevel(0);
             	//}
         	}
         }        	
