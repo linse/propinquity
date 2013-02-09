@@ -18,8 +18,6 @@ public class Glove extends Patch {
 	 */
 	public Glove(int address, HardwareInterface hardware) {
 		super(address, hardware);
-
-		if(daemon != null) daemon.setModeFlag(1);
 	}
 
 	/**

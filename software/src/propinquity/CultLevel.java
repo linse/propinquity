@@ -153,8 +153,12 @@ public class CultLevel extends Level {
 
 			if(player_covered[i]) {
 				heart.setColor(255, 0, 0);
+				heart.setColorPeriod(255);
+				heart.setColorWaveform(1);
 			} else {
 				heart.setColor(0, 0, 255);
+				heart.setColorPeriod(255);
+				heart.setColorWaveform(1);
 			}
 		}
 
@@ -228,6 +232,8 @@ public class CultLevel extends Level {
 		Patch winnerHeart = winnerPatches[0];
 
 		winnerHeart.setColor(0, 255, 0);
+		winnerHeart.setColorPeriod(255);
+		winnerHeart.setColorWaveform(1);
 
 		for(int i = 1;i < winnerPatches.length;i++) {
 			winnerPatches[i].setActive(false);

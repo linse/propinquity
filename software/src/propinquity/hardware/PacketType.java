@@ -19,6 +19,7 @@ public enum PacketType {
 	COLOR(7),
 	COLOR_DUTY(8),
 	COLOR_PERIOD(9),
+	COLOR_WAVEFORM(13),
 
 	VIBE(10),
 	VIBE_DUTY(11),

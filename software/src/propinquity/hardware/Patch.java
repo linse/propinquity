@@ -24,7 +24,7 @@ public class Patch implements HardwareConstants {
 	int[] xyz;
 	int[] interrupt;
 
-	int vibe_level, vibe_period, vibe_duty, color_period, color_duty;
+	int vibe_level, vibe_period, vibe_duty, color_period, color_duty, color_waveform;
 
 	int[] color;
 
@@ -213,6 +213,12 @@ public class Patch implements HardwareConstants {
 		if(MANUAL_PACK) hardware.sendPacket(new Packet(address, PacketType.COLOR_DUTY, new int[] {color_duty}));
 	}
 
+	public void setColorWaveform(int waveform) {
+		if(MIN_PACK && color_waveform == waveform) return;
+		color_waveform = PApplet.constrain(waveform, 0, 255);
+		if(MANUAL_PACK) hardware.sendPacket(new Packet(address, PacketType.COLOR_WAVEFORM, new int[] {color_waveform}));
+	}
+
 	/**
 	 * Sets the value of the prox sensor for this device. Normally this should be by the HardwareInterface which this device is registered with as the data arrives from the real device. It should only be called elsewhere for testing.
 	 *
@@ -323,6 +329,10 @@ public class Patch implements HardwareConstants {
 	 */
 	public int getColorDuty() {
 		return color_duty;
+	}
+
+	public int getColorWaveform() {
+		return color_waveform;
 	}
 
 	/**
@@ -437,7 +447,6 @@ public class Patch implements HardwareConstants {
 
 		Thread thread;
 		boolean running, activeOnly;
-		int mode_flag = 3;
 
 		PatchDaemon() {
 			running = true;
@@ -446,10 +455,6 @@ public class Patch implements HardwareConstants {
 			thread = new Thread(this);
 			thread.setDaemon(true);
 			thread.start();
-		}
-
-		void setModeFlag(int flag) {
-			mode_flag = flag;
 		}
 
 		void activeOnly(boolean enable) {

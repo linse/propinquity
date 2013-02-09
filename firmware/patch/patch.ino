@@ -28,9 +28,12 @@
 	COLOR_PACKET         = 7,
 	COLOR_DUTY_PACKET    = 8,
 	COLOR_PERIOD_PACKET  = 9,
+	COLOR_WAVEFORM_PACKET = 13,
+
 	VIBE_PACKET          = 10,
 	VIBE_DUTY_PACKET     = 11,
 	VIBE_PERIOD_PACKET   = 12
+
  };
 
 /* ---- Pin List ---- */
@@ -74,6 +77,7 @@ uint8_t rgb[3] = {0, 0, 0};
 uint8_t led_on = 1;
 uint8_t led_duty = 0;
 uint8_t led_period = 0;
+uint8_t led_waveform = 0;
 
 uint8_t vibe_level = 0;
 
@@ -251,6 +255,7 @@ void reset(void) {
 	led_on = 0;
 	led_duty = 0;
 	led_period = 0;
+	led_waveform = 0;
 
 	color(0, 0, 0);
 	vibe(0);
@@ -516,6 +521,10 @@ void parse_data(uint8_t* data, uint8_t len) {
 			if(len == 2) led_period = data[1];
 			break;
 		}
+		case COLOR_WAVEFORM_PACKET: {
+			if(len == 2) led_waveform = data[1];
+			break;
+		}
 		case VIBE_PACKET: {
 			if(len == 2) vibe_level = data[1];
 			break;
@@ -553,19 +562,32 @@ void updateVibe(void) {
 }
 
 void updateLEDs(void) {
-	if(led_on) color(rgb[0], rgb[1], rgb[2]);
-	else color(0, 0, 0);
+	if(!led_waveform) {
+		if(led_on) color(rgb[0], rgb[1], rgb[2]);
+		else color(0, 0, 0);
+	} else {
+		float factor = 0;
+		float duty = (float)led_duty/255.0;
+		if(led_on) {
+			factor = (float)(time_counter % led_period)/(duty*led_period);
+		} else {
+			int halfmod = (int)((time_counter % led_period)-duty*led_period);
+			if(halfmod < 0) factor = 0;
+			else factor = 1.0-(float)(halfmod)/((1.0-duty)*led_period);
+		}
+		factor = constrain(factor, 0, 1);
+		Serial.println(factor);
+
+		color(rgb[0]*factor, rgb[1]*factor, rgb[2]*factor);
+	}
 }
 
 /* ---- Low Level ---- */
 
 void color(uint8_t red, uint8_t green, uint8_t blue) {
-	if(red < 5) digitalWrite(RED_LED_PIN, HIGH);
-	else analogWrite(RED_LED_PIN, 255-red);
-	if(green < 5) digitalWrite(GREEN_LED_PIN, HIGH);
-	else analogWrite(GREEN_LED_PIN, 255-green);
-	if(blue < 5) digitalWrite(BLUE_LED_PIN, HIGH);
-	else analogWrite(BLUE_LED_PIN, 255-blue);
+	analogWrite(RED_LED_PIN, 255-red);
+	analogWrite(GREEN_LED_PIN, 255-green);
+	analogWrite(BLUE_LED_PIN, 255-blue);
 }
 
 void vibe(uint8_t level) {
