@@ -92,7 +92,6 @@ public class Patch implements HardwareConstants {
 	}
 
 	public void setActive(boolean active) {
-	  System.out.println("setActive: (mode was " + mode + ") " + active);
 	  if (active) setActivationMode(this.mode | Mode.ACTIVE);
 	  else setActivationMode(this.mode & ~Mode.ACTIVE);
 	}
@@ -107,7 +106,6 @@ public class Patch implements HardwareConstants {
 	 * @param mode the new mode for the device.
 	 */
 	public void setActivationMode(int mode) {
-      System.out.println("setActivationMode: " + mode);
 		if(MIN_PACK && this.mode == mode) return;
 		this.mode = mode;
 		if(MANUAL_PACK) hardware.sendPacket(new Packet(address, PacketType.MODE, new int[] {mode}));
@@ -227,12 +225,12 @@ public class Patch implements HardwareConstants {
 	}
 
 	
-//	public void setAccelConfig(ConfigData config)
-//	{
-//      if(MIN_PACK && configdata == existing config data) return;
-//      FIXME: Set config data
-//      if(MANUAL_PACK) hardware.sendPacket(new Packet(address, PacketType.ACCEL_CONF, new int[] { FIXME: Config data }));
-//	}
+	public void setAccelConfig(int sensitivity)
+	{
+		hardware.sendPacket(new Packet(address, PacketType.ACCEL_CONF, new int[] { 0x1f, 0x02 }));
+		hardware.sendPacket(new Packet(address, PacketType.ACCEL_CONF, new int[] { 0x20, 0x01 }));
+	}
+
 	
 	/**
 	 * Sets the value of the xyz accelerometer sensor for this device. Normally this should be by the HardwareInterface which this device is registered with as the data arrives from the real device. It should only be called elsewhere for testing.
