@@ -19,7 +19,10 @@ public class Sounds {
 	AudioSample whoosh;
 	AudioSample whooshBubble;
 	AudioSample gong;
+	AudioSample crash;
 	AudioSample dingding;
+	AudioSample orbwon;
+	AudioSample monsterswon;
 
 	AudioSample heartBeat;
 	AudioSample ekgStart;
@@ -44,6 +47,9 @@ public class Sounds {
 
 		whooshBubble = minim.loadSample("sounds/whooshbubble.mp3", BUFFER_SIZE);
 		gong = minim.loadSample("sounds/gong.mp3", BUFFER_SIZE);
+		crash = minim.loadSample("sounds/crash.wav", BUFFER_SIZE);
+		orbwon = minim.loadSample("sounds/victory_humans.mp3", BUFFER_SIZE);
+		monsterswon = minim.loadSample("sounds/victory_monsters.mp3", BUFFER_SIZE);
 		dingding = minim.loadSample("sounds/dingding.mp3", BUFFER_SIZE);
 
 		heartBeat = minim.loadSample("sounds/beat.mp3", BUFFER_SIZE);
@@ -80,6 +86,18 @@ public class Sounds {
 
 	public AudioSample getGong() {
 		return gong;
+	}
+
+	public AudioSample getCrash() {
+		return crash;
+	}
+
+	public AudioSample getOrbWon() {
+		return orbwon;
+	}
+
+	public AudioSample getMonstersWon() {
+		return monsterswon;
 	}
 
 	public AudioSample getDingDing() {
