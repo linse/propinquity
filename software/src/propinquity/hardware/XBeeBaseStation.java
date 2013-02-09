@@ -470,6 +470,7 @@ public class XBeeBaseStation implements Runnable, HardwareInterface, PacketListe
 					Thread.yield();
 				} else {
 					sendPacketAsynchronous(throttledPackets.remove(0));
+					// System.out.println(throttledPackets.size());
 					try {
 						if(throttledPackets.size() < 100) Thread.sleep(1);
 						else Thread.sleep(0, 250000);

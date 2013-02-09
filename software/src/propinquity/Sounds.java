@@ -46,13 +46,13 @@ public class Sounds {
 		gong = minim.loadSample("sounds/gong.mp3", BUFFER_SIZE);
 		dingding = minim.loadSample("sounds/dingding.mp3", BUFFER_SIZE);
 
-		heartBeat = minim.loadSample("sounds/beat.wav", BUFFER_SIZE);
+		heartBeat = minim.loadSample("sounds/beat.mp3", BUFFER_SIZE);
 
-		ekgStart = minim.loadSample("sounds/ecg_slow.wav", BUFFER_SIZE);
-		flatline = minim.loadSample("sounds/flatline.wav", BUFFER_SIZE);
+		ekgStart = minim.loadSample("sounds/ecg_slow.mp3", BUFFER_SIZE);
+		flatline = minim.loadSample("sounds/flatline.mp3", BUFFER_SIZE);
 
-		inhale = minim.loadSample("sounds/inhale.wav", BUFFER_SIZE);
-		exhale = minim.loadSample("sounds/exhale.wav", BUFFER_SIZE);
+		inhale = minim.loadSample("sounds/inhale.mp3", BUFFER_SIZE);
+		exhale = minim.loadSample("sounds/exhale.mp3", BUFFER_SIZE);
 	}
 
 	/**

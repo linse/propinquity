@@ -74,7 +74,8 @@ public class Patch implements HardwareConstants {
 		if(color[0] != 0 || color[1] != 0 || color[2] != 0) clear = true;
 		if(color_period != 0 || color_duty != 0) clear = true;
 		if(vibe_level != 0 || vibe_period != 0 || vibe_duty != 0) clear = true;
-
+		if(color_waveform != 0) clear = true;
+		
 		if(!clear && MIN_PACK) return;
 
 		hardware.sendPacket(new Packet(address, PacketType.CLEAR, new int[0]));
@@ -85,6 +86,7 @@ public class Patch implements HardwareConstants {
 
 		color_period = 0;
 		color_duty = 0;
+		color_waveform = 0;
 
 		vibe_level = 0;
 		vibe_period = 0;

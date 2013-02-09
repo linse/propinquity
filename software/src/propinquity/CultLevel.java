@@ -14,8 +14,8 @@ import java.lang.Math;
  */
 public class CultLevel extends Level {
 
-	static final int BPM_INTERVAL = 500;
-	static final int CLAIMED_INTERVAL = 750;
+	static final int BPM_INTERVAL = 400;
+	static final int CLAIMED_INTERVAL = 800;
 	static final int LEVEL_INTERVAL = 15000;
 
 	String name;
@@ -286,16 +286,6 @@ public class CultLevel extends Level {
 		hud.drawInnerBoundary();
 		hud.drawOuterBoundary();
 
-		//Score Banners
-		for(int i = 0; i < players.length; i++) {
-			String score = String.valueOf(players[i].score.getScore());
-			String name = players[i].getName();
-
-			while(parent.textWidth(score + name) < 240) name += ' ';
-
-			hud.drawBannerSide(name + score, PlayerConstants.PLAYER_COLORS[i], hud.getAngle() - PConstants.HALF_PI + (i * PConstants.PI));
-		}
-
 		if(isDone()) { //Someone won
 			if(win) {
 				hud.drawCenterText("", "Win", Color.white(), hud.getAngle());
@@ -305,6 +295,9 @@ public class CultLevel extends Level {
 			hud.drawCenterImage(hud.hudPlayAgain, hud.getAngle());
 		} else if(isRunning()) { //Running
 			update();
+			//Score Banners
+			String score = String.valueOf(bpm);
+			hud.drawCenterText("Your Heart is Beating", score +" beats per mintue", Color.white(), hud.getAngle());
 		} else { //Pause
 			hud.drawCenterImage(hud.hudPlay, hud.getAngle());
 		}
