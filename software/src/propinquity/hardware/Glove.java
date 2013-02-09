@@ -28,7 +28,7 @@ public class Glove extends Patch {
 	 * @param active the new state of the device.
 	 */
 	public void setActivationMode(int mode) {
-	  super.setActivationMode(mode & ~Mode.PROX); // Don't allow setting PROX mode
+		super.setActivationMode(mode & ~Mode.PROX); // Don't allow setting PROX mode
 	}
 
 	/**

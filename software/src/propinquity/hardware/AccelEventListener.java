@@ -7,6 +7,9 @@ package propinquity.hardware;
 public interface AccelEventListener {
 
 	public void accelXYZEvent(Patch patch);
+	
 	public void accelInterrupt0Event(Patch patch);
-    public void accelInterrupt1Event(Patch patch);
+
+	public void accelInterrupt1Event(Patch patch);
+
 }

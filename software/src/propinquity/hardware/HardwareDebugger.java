@@ -246,11 +246,11 @@ public class HardwareDebugger extends PApplet implements ProxEventListener, Acce
 	}
 	
 	public void accelInterrupt0Event(Patch patch) {
-	  // FIXME: Render something
+		// FIXME: Render something
 	}
 
 	public void accelInterrupt1Event(Patch patch) {
-      // FIXME: Render something
+		// FIXME: Render something
 	}
 
 	static public void main(String args[]) {

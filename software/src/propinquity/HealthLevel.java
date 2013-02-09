@@ -68,7 +68,7 @@ public class HealthLevel extends Level {
 		ended = false;
 
 		for(Player player : players) {
-		  player.configurePatches(Mode.PROX);
+			player.configurePatches(Mode.PROX);
 			player.reset(); //Clears all the particles, scores, patches and gloves
 			player.activatePatches();
 		}
@@ -88,19 +88,19 @@ public class HealthLevel extends Level {
 		if(!patch.getActive()) return;
 	}
 	
-    public void accelXYZEvent(Patch patch) {
-      
-    }
+	public void accelXYZEvent(Patch patch) {
 
-    public void accelInterrupt0Event(Patch patch) {
-      
-    }
+	}
 
-    public void accelInterrupt1Event(Patch patch) {
-      
-    }
+	public void accelInterrupt0Event(Patch patch) {
 
-    public void update() {
+	}
+
+	public void accelInterrupt1Event(Patch patch) {
+
+	}
+
+	public void update() {
 		long currentTime = parent.millis();
 
 		if(currentTime - lastTransferTime > SCORE_TIME) {

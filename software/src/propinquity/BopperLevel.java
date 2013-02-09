@@ -145,7 +145,7 @@ public class BopperLevel extends Level {
 
 	}
 
-    public void update() {
+	public void update() {
 		for(Player player : players) player.update();
 	
 		long currentTime = parent.millis();

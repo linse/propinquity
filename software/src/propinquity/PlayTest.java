@@ -45,7 +45,7 @@ public class PlayTest extends PApplet implements ProxEventListener, AccelEventLi
 		xbeeBaseStation = new XBeeBaseStation();
 		xbeeBaseStation.scan();
 		xbeeBaseStation.addProxEventListener(this);
-        xbeeBaseStation.addAccelEventListener(this);
+		xbeeBaseStation.addAccelEventListener(this);
 
 		patches = new Patch[PATCH_ADDR.length];
 		for(int i = 0;i < PATCH_ADDR.length;i++) {
@@ -238,20 +238,20 @@ public class PlayTest extends PApplet implements ProxEventListener, AccelEventLi
 
 	}
 
-    public void accelXYZEvent(Patch patch) {
-      
-    }
+	public void accelXYZEvent(Patch patch) {
 
-    public void accelInterrupt0Event(Patch patch) {
-      System.out.println("INT0");
-      // This triggers if "some" movement was detected
-    }
+	}
 
-    public void accelInterrupt1Event(Patch patch) {
-      System.out.println("INT1");
-      // This triggers if an impact-like movement was detected
-    }
-    
+	public void accelInterrupt0Event(Patch patch) {
+		System.out.println("INT0");
+		// This triggers if "some" movement was detected
+	}
+
+	public void accelInterrupt1Event(Patch patch) {
+		System.out.println("INT1");
+		// This triggers if an impact-like movement was detected
+	}
+
 	static public void main(String args[]) {
 		PApplet.main(new String[] { "propinquity.PlayTest" });
 	}

@@ -22,7 +22,7 @@ public class HardwareSimulator implements HardwareInterface, UIElement {
 	Vector<Glove> gloves;
 	Vector<Patch> patches;
 	Vector<ProxEventListener> proxListeners;
-    Vector<AccelEventListener> accelListeners;
+	Vector<AccelEventListener> accelListeners;
 
 	public HardwareSimulator(PApplet parent) {
 		this(parent, 500, 100);
@@ -38,8 +38,8 @@ public class HardwareSimulator implements HardwareInterface, UIElement {
 
 		gloves = new Vector<Glove>();
 		patches = new Vector<Patch>();
-        proxListeners = new Vector<ProxEventListener>();
-        accelListeners = new Vector<AccelEventListener>();
+		proxListeners = new Vector<ProxEventListener>();
+		accelListeners = new Vector<AccelEventListener>();
 
 		p.registerKeyEvent(this);
 	}
@@ -69,11 +69,11 @@ public class HardwareSimulator implements HardwareInterface, UIElement {
 	}
 
 	public void addAccelEventListener(AccelEventListener listener) {
-      if(accelListeners.indexOf(listener) == -1) accelListeners.add(listener);
+		if(accelListeners.indexOf(listener) == -1) accelListeners.add(listener);
 	}
 
 	public boolean removeAccelEventListener(AccelEventListener listener) {
-      return accelListeners.remove(listener);
+		return accelListeners.remove(listener);
 	}
 
 	public void sendPacket(Packet packet) {
@@ -166,28 +166,27 @@ public class HardwareSimulator implements HardwareInterface, UIElement {
 		} else if(keycode == KeyEvent.VK_EQUALS) {
 			if(current_patch >= patches.size()) return;
 			Patch patch = patches.get(current_patch);
-            if(patch != null && patch.getActive() && ((patch.getActivationMode() & Mode.PROX) != 0)) {
+			if(patch != null && patch.getActive() && ((patch.getActivationMode() & Mode.PROX) != 0)) {
 				patch.setProx(patch.getProx()+50);
 				for(ProxEventListener listener : proxListeners) listener.proxEvent(patch);
 			}
-        } else if (keycode == KeyEvent.VK_Q && e.getID() == KeyEvent.KEY_PRESSED) {
-          if(current_patch >= patches.size()) return;
-          Patch patch = patches.get(current_patch);
-          System.out.println("Q");
-          if (patch != null)           System.out.println("  patch");
-          System.out.println("  " + patch.getActivationMode());
-          if(patch != null && patch.getActive() && ((patch.getActivationMode() & Mode.ACCEL_INT0) != 0)) {
-              patch.setInterrupt0(0);
-              for(AccelEventListener listener : accelListeners) listener.accelInterrupt0Event(patch);
-          }
-        } else if (keycode == KeyEvent.VK_W && e.getID() == KeyEvent.KEY_PRESSED) {
-          if(current_patch >= patches.size()) return;
-          Patch patch = patches.get(current_patch);
-          if(patch != null && patch.getActive() && ((patch.getActivationMode() & Mode.ACCEL_INT1) != 0)) {
-              patch.setInterrupt1(0);
-              for(AccelEventListener listener : accelListeners) listener.accelInterrupt1Event(patch);
-          }
-        }
-		
+		} else if (keycode == KeyEvent.VK_Q && e.getID() == KeyEvent.KEY_PRESSED) {
+			if(current_patch >= patches.size()) return;
+			Patch patch = patches.get(current_patch);
+			System.out.println("Q");
+			if (patch != null) System.out.println(" patch");
+			System.out.println(" " + patch.getActivationMode());
+			if(patch != null && patch.getActive() && ((patch.getActivationMode() & Mode.ACCEL_INT0) != 0)) {
+				patch.setInterrupt0(0);
+				for(AccelEventListener listener : accelListeners) listener.accelInterrupt0Event(patch);
+			}
+		} else if (keycode == KeyEvent.VK_W && e.getID() == KeyEvent.KEY_PRESSED) {
+			if(current_patch >= patches.size()) return;
+			Patch patch = patches.get(current_patch);
+			if(patch != null && patch.getActive() && ((patch.getActivationMode() & Mode.ACCEL_INT1) != 0)) {
+				patch.setInterrupt1(0);
+				for(AccelEventListener listener : accelListeners) listener.accelInterrupt1Event(patch);
+			}
+		}
 	}
 }

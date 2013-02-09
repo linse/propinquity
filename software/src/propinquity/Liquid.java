@@ -17,7 +17,7 @@ public class Liquid {
 	public static final float GRAVITY_STRENGTH = 0.01f;
 	public static final float BUMP_STRENGTH = 0.01f;
 	
-	/** The maximum allowable number of particles per player's  */
+	/** The maximum allowable number of particles per player's */
 	public static final int MAX_PARTICLES = 40;
 	private static final int MERGE_COUNT = 4;	
 	private static final int MERGE_VOLUME = 3;
