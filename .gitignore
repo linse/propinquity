@@ -1,4 +1,5 @@
-books/
+/stash/
+/books/
 /software/bin
 /software/doc
 /software/data/xbees.lst
