@@ -1,0 +1,80 @@
+\documentclass{article}
+
+\pagestyle{empty} %Clear header and footer
+
+\usepackage{times} %Font
+\usepackage{soul} %Spacing
+
+\usepackage{graphicx} %Images
+\usepackage{subfig} %Subfigures
+
+\usepackage{hyperref} %Link everything
+
+\usepackage{enumitem}
+
+\usepackage[small,compact]{titlesec} %Save on space between titles/sections
+
+\graphicspath{{./media/}} %image folder
+
+\begin{document}
+
+\title{Propinquity - Technical Sheet \\ \vspace{-2em}}
+\date{\today}
+
+\maketitle
+
+% \clearpage
+
+\section*{Patch and Glove Features}
+
+Each patch/glove is completely independent and uniquely addressed. Sensor values and feedback can be configured on a per patch/glove basis.
+
+\subsection*{Communication}
+
+\begin{itemize}[noitemsep,nolistsep]
+	\item Xbees: bi-directional serial communication with computer.
+	\item Serial port: programing port (arduino compatible) and serial communication.
+\end{itemize}
+
+\subsection*{Sensors}
+
+\begin{itemize}[noitemsep,nolistsep]
+	\item Proximity Sensor -- Sharp GP2D120 sensor: \\ Senses proximity in a 4 to 30 cm ranges. The sensor is connected to the patch/glove by a cable and could be mounted away from the main patch/glove. \\ {\em Propinquity gloves currently do not include proximity sensors.}
+	\item Accelerometer -- MMA8452Q 3-axis accelerometer. \\ In addition to 3-axis acceleration information, the sensor has a number of built in event detection mechanisms detailed below.
+\end{itemize}
+
+\subsection*{Feedback}
+
+\begin{itemize}[noitemsep,nolistsep]
+	\item RGB LEDs. \\ 4 high brightness RGB LEDs (controlled together) are located in the corners of the patch/glove.
+	\item Vibe Motor. \\ The coin cell vibe motor is connected via a cable and mounted separately. \\ {\em Proinquity patches do not currently include vibe motors.}
+\end{itemize}
+
+\subsection*{Expansion Ports}
+
+The propinquity patches/gloves include 4 expansion ports connected to ADC pins (can also be used as digital pins). These are equivalent to the arduino A0, A1, A2 and A3 pins.
+
+\pagebreak
+
+\section*{Accelerometer Details}
+
+\subsection*{General Functionality}
+
+\begin{itemize}[noitemsep,nolistsep]
+	\item 3-axis accelerometer sensor
+	\item Adjustable sensitivity range (+- 2/4/8 G)
+\end{itemize}
+
+\subsection*{Special Functionality}
+
+The accelerometer has specical functionality built in to detect certain events. These functions provide very robust and easy detection method. Technical details are available in the data-sheet.
+
+\begin{itemize}[noitemsep,nolistsep]
+	\item {\bf Freefall Detection:} \\ Detect the acceleration magnitude falling below a threshold. Often used to detect if the accelerometer is dropped and falling freely. Additionally a minimum time before triggering can be set (debouncing), this forces the condition to occur continuously for a certain interval of time before the event is confirmed.
+	\item {\bf Motion Detection:} \\ Detect when the acceleration magnitude rises above a set threshold. Often used to detect the device being in use. Additionally a minimum time before triggering can be set (debouncing), this forces the condition to occur continuously for a certain interval of time before the event is confirmed.
+	\item {\bf Transient Detection:} \\ Similar to motion detection but optionally pre-filtered with a high pass filter. This will remove constant acceleration such as gravity.
+	\item {\bf Pulse Detection:} \\ Allows detection of pulses or taps, single or double. \\ ``Embedded single/double and directional pulse detection. This function has various customizing timers for setting the pulse time width and the latency time between pulses. There are programmable thresholds for all three axes. The pulse detection can be configured to run through the high-pass filter and also through a low-pass filter, which provides more customizing and tunable pulse-detection schemes.''
+	\item {\bf Orientation Detection:} \\ ``Orientation detection algorithm with the ability to detect all 6 orientations.''
+\end{itemize}
+
+\end{document}
