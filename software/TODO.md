@@ -27,6 +27,9 @@ Software
 * Add a build flag for simulation vs real XBees in conjuction with windowed vs normal
 * Opponents patches need to turn off when points are suppressed
 
+* Should catch more startup error and give onscreen feedback (sound loading)
+* Should give xbee search feedback
+
 Minim Gripes
 -----------------------------
 * Debug granularity

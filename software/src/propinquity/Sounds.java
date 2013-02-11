@@ -47,7 +47,7 @@ public class Sounds {
 
 		whooshBubble = minim.loadSample("sounds/whooshbubble.mp3", BUFFER_SIZE);
 		gong = minim.loadSample("sounds/gong.mp3", BUFFER_SIZE);
-		crash = minim.loadSample("sounds/crash.wav", BUFFER_SIZE);
+		crash = minim.loadSample("sounds/crash.mp3", BUFFER_SIZE);
 		orbwon = minim.loadSample("sounds/victory_humans.mp3", BUFFER_SIZE);
 		monsterswon = minim.loadSample("sounds/victory_monsters.mp3", BUFFER_SIZE);
 		dingding = minim.loadSample("sounds/dingding.mp3", BUFFER_SIZE);
