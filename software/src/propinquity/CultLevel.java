@@ -14,9 +14,9 @@ import java.lang.Math;
  */
 public class CultLevel extends Level {
 
-	static final int BPM_INTERVAL = 400;
-	static final int CLAIMED_INTERVAL = 800;
-	static final int LEVEL_INTERVAL = 15000;
+	static final int BPM_INTERVAL = 1200;
+	static final int CLAIMED_INTERVAL = 2000;
+	static final int LEVEL_INTERVAL = 11000;
 
 	String name;
 	boolean running, done, win, start;
@@ -200,8 +200,8 @@ public class CultLevel extends Level {
 			if(bpmTimer == -1) {
 				bpmTimer = parent.millis();
 			} else if(parent.millis()-bpmTimer > BPM_INTERVAL) {
-				bpm++;
-				// bpm += num_not_covered;
+				// bpm++;
+				bpm += num_not_covered;
 				heart.setColor(255, 0, 0);
 				heart.setColorPeriod((int)PApplet.map(bpm, 60, 150, 255, 30));
 				heart.setColorWaveform(1);
