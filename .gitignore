@@ -7,3 +7,5 @@
 /software/data/songs/*.mp3
 *.class
 *.DS_Store
+*.s#*
+*.b#*
