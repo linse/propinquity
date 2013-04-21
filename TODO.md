@@ -1,8 +1,8 @@
 Hardware
 -----------------------------
-* Regulator footprint should have the EN polarity changed, this would be a more standard regulator package
-* Bigger 3v3 reg
-* Header/footprint for an on/off switch is needed
+* **Done** Regulator footprint should have the EN polarity changed, this would be a more standard regulator package
+* **Done via previous** Bigger 3v3 reg
+* **Added switch that leave only the charger plugged** Header/footprint for an on/off switch is needed
 * FTDI Vcc should connect to V+ and go through the 3v3 reg
 * Flip transistor footprint
 * Stepup should run direclty off the battery
