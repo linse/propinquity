@@ -14,10 +14,7 @@
 My high level plan for the first block of time (24h) looks like this.
 
  * Review the new hardware. (8-12h)
- 	* Note all problems
- 	* Assuming it can be done quickly, make a new eagle version with corrections
  	* Make any improvements I can to the current boards (such as changing regulator etc).
- 	* Summarize limitation of new boards
  * Review software from the hackathon (4-8h)
  	* Read new code (particularly from marius)
  	* Organize and document a bit so it's a least somewhat maintainable
