@@ -1,17 +1,17 @@
+Hardware
+-----------------------------
+* Regulator footprint should have the EN polarity changed, this would be a more standard regulator package
+* Bigger 3v3 reg
+* Header/footprint for an on/off switch is needed
+* FTDI Vcc should connect to V+ and go through the 3v3 reg
+* Flip transistor footprint
+* Stepup should run direclty off the battery
+* Charging topology should be modified so that nothing is connected while charging
+
 XBees
 -----------------------------
 * XBee configuration should be saved and added to the git repo
 * A new correct spreadsheet of the XBee addresses should be added to the repo
-
-Hardware
------------------------------
-* Regulator footprint should have the EN polarity changed, this would be a more standard regulator package
-* Header/footprint for an on/off switch is needed
-* FTDI Vcc-> 3v3 reg
-* Bigger 3v3 reg
-* Flip transistor
-* Switch
-* Charging topology
 
 Firmware
 -----------------------------
@@ -42,6 +42,7 @@ Tought Dump
 * People are sometimes confused about which color they are when the patches are off. Make sure that all patches are never off.
 * It's hard to remember which song is which. Idea: Preview the songs (skip to the middle, low volume) in the selection menu.
 * Slow/fast songs: Have an indicator of speed/style in the song menu?
+* Circle is cut off
 
 * song selection/preview
 * speed
