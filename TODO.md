@@ -1,12 +1,34 @@
+Work Schedule
+-----------------------------
+My high level plan for the first block of time (24h) looks like this.
+
+ * Review the new hardware. (8-12h)
+ 	* Note all problem
+ 	* Assuming it can be done quickly, make a new eagle version with corrections
+ 	* Make any improvements I can to the current boards (such as changing regulator etc).
+ 	* Summarize limitation of new boards
+ * Review software from the hackathon (4-8h)
+ 	* Read new code (particularly from marius)
+ 	* Organize and document a bit so it's a least somewhat maintainable
+ * Examine and address what bugs I can such as those in my notes and from Marius' notes (8h+)
+ * If time remains start think about the accelerometers
+
+The other block of time (20h) was mainly for working with the accel. I'm thinking something like this.
+
+ * Provide some examples of advanced accelerometer use for future reference
+ * Consider some amendments to the Xbee protocol to work better with accel
+ * Prototype the often discussed speed limited version of the basic propinquity game
+ * Play test this prototype in the TAG lab
+
 Hardware
 -----------------------------
 * **Done** Regulator footprint should have the EN polarity changed, this would be a more standard regulator package
 * **Done via previous** Bigger 3v3 reg
-* **Added switch that leave only the charger plugged** Header/footprint for an on/off switch is needed
-* FTDI Vcc should connect to V+ and go through the 3v3 reg
-* Flip transistor footprint
-* Stepup should run direclty off the battery
-* Charging topology should be modified so that nothing is connected while charging
+* **Done: Added switch that leave only the charger plugged** Header/footprint for an on/off switch is needed
+* **Done: Unsure if safe because connected to battery, put a jumper** FTDI Vcc should connect to V+ and go through the 3v3 reg
+* **Done** Flip transistor footprint
+* **Done** Stepup should run direclty off the battery
+* **Done** Charging topology should be modified so that nothing is connected while charging
 
 XBees
 -----------------------------
