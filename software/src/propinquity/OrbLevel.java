@@ -136,7 +136,6 @@ public class OrbLevel extends Level {
 	}
 
 	public void start() {
-
 		orbwon.stop();
 		monsterswon.stop();
 			

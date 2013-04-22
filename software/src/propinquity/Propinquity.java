@@ -25,7 +25,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 	static final long serialVersionUID = 6340518174717159418L;
 	public static final int FPS = 30;
 
-	static boolean useSimulator = false;
+	static boolean useSimulator = true;
 
 	//General/Util
 	HeapDebug heapDebug;
