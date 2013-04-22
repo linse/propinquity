@@ -106,6 +106,9 @@ public class ProxLevel extends Level {
 				String modeString = step_tags[i].getString("mode");
 				StepType type = null;
 				boolean hasSong = false;
+				String pauseString = step_tags[i].getString("pause", "");
+				boolean hasPause = false;
+				if(pauseString.equals("true")) hasPause = true;
 				if(modeString.equals("versus")) {
 					type = StepType.VERSUS;
 				} else if(modeString.equals("transition")) {
@@ -139,13 +142,13 @@ public class ProxLevel extends Level {
 					throw new XMLException("XMLException: XML for level \"" + name + "\", step " + i + " has too few player tags.");
 				}
 
-				steps[i] = new Step(type, patches, hasSong);
+				steps[i] = new Step(type, patches, hasSong, hasPause);
 			}
 
 			boolean[][] tmpPatchState = new boolean[players.length][];
 			for(int i = 0;i < tmpPatchState.length;i++) tmpPatchState[i] = new boolean[] {false, false, false, false};
 
-			steps[step_tags.length] = new Step(StepType.VERSUS, tmpPatchState, false);
+			steps[step_tags.length] = new Step(StepType.VERSUS, tmpPatchState, false, false);
 		} else {
 			throw new XMLException("Warning: XML for level \"" + name + "\" has no sequence tag and/or no step tags");
 		}
@@ -274,6 +277,9 @@ public class ProxLevel extends Level {
 
 		lastCoop = coop;
 
+		if(steps[currentStep].hasPause()) {
+			pause();
+		}
 	}
 
 	public void proxEvent(Patch patch) {
