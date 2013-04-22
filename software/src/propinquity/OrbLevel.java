@@ -43,8 +43,6 @@ public class OrbLevel extends Level {
 	String songFile;
 	int songBPM;
 
-	VolumeFader fader;
-
 	String name;
 
 	boolean coop, lastCoop;
@@ -94,32 +92,30 @@ public class OrbLevel extends Level {
 
 		useBackgroundColor = true;
 
-		fader = new VolumeFader();
-
 		reset();
 	}
 
 	public void pauseOrbProtectedSongs() {
-		for (AudioPlayer f : orbprotected_songs) {
+		for(AudioPlayer f : orbprotected_songs) {
 			f.pause();
 		}
 	}
 
 	public void pauseOrbCrazySongs() {
-		for (AudioPlayer f : orbcrazy_songs) {
+		for(AudioPlayer f : orbcrazy_songs) {
 			f.pause();
 		}
 	}
 
 	public void playOrbProtectedSongs() {
-		for (AudioPlayer f : orbprotected_songs) {
+		for(AudioPlayer f : orbprotected_songs) {
 			f.play();
 			f.loop();
 		}
 	}
 
 	public void playOrbCrazySongs() {
-		for (AudioPlayer f : orbcrazy_songs) {
+		for(AudioPlayer f : orbcrazy_songs) {
 			f.play();
 			f.loop();
 		}
@@ -156,11 +152,11 @@ public class OrbLevel extends Level {
 
 		// Orb defender
 		this.orb = players[0].patches[0];
-//		for(Patch orb : this.players[0].getPatches()) {
+		// for(Patch orb : this.players[0].getPatches()) {
 			orb.setActivationMode(Mode.PROX | Mode.ACCEL_INT0 | Mode.ACCEL_INT1);
 			orb.setActive(true);
 			orb.setAccelConfig(0); // Sensitivity
-//		}
+		// }
 		orbSetColor(Color.black());
 		
 		this.glove = players[0].getGlove();
@@ -203,12 +199,12 @@ public class OrbLevel extends Level {
 
 		parent.setBackgroundColor(Color.black());
 		
-		for (AudioPlayer f : orbprotected_songs) {
+		for(AudioPlayer f : orbprotected_songs) {
 			f.pause();
 			f.rewind();
 			f.setGain(0);
 		}
-		for (AudioPlayer f : orbcrazy_songs) {
+		for(AudioPlayer f : orbcrazy_songs) {
 			f.pause();
 			f.rewind();
 			f.setGain(0);
@@ -221,11 +217,11 @@ public class OrbLevel extends Level {
 	}
 
 	public void close() {
-		for (AudioPlayer f : orbprotected_songs) {
+		for(AudioPlayer f : orbprotected_songs) {
 			f.close();
 		}
 		
-		for (AudioPlayer f : orbcrazy_songs) {
+		for(AudioPlayer f : orbcrazy_songs) {
 			f.close();
 		}
 	}
@@ -241,8 +237,8 @@ public class OrbLevel extends Level {
 
 		
 		// int bestproxval = 0;
-		// for (Patch p : this.players[0].patches) {
-			// if (p.getProx() > bestproxval) bestproxval = p.getProx();
+		// for(Patch p : this.players[0].patches) {
+			// if(p.getProx() > bestproxval) bestproxval = p.getProx();
 		// }
 		
 		// We will never get prox events from player 1, so we know this is an orb event
@@ -252,7 +248,7 @@ public class OrbLevel extends Level {
 		if(proxvalue > ORB_WARNING) { // Protected
 			orbEnableAcceleration(true);
 			this.players[1].clearPatches();
-			if (!orbIsProtected) {
+			if(!orbIsProtected) {
 				offTime += (parent.millis() - timeOfOffEvent);
 				this.invulnerableUntil = parent.millis() + PROTECTION_TIME;
 				playOrbProtectedSongs();
@@ -269,7 +265,7 @@ public class OrbLevel extends Level {
 				this.glove.setVibeLevel(100);
 			}
 		} else { // Disable orb, enable attackers' patches
-			if (orbIsProtected && parent.millis() > glitchtime) {
+			if(orbIsProtected && parent.millis() > glitchtime) {
 				glitchtime = -1;
 				System.out.println("Penalty!");
 				pauseOrbProtectedSongs();
@@ -282,7 +278,7 @@ public class OrbLevel extends Level {
 				this.glove.setVibeLevel(0);
 				timeOfOffEvent = parent.millis();
 				orbIsProtected = false;
-			} else if (glitchtime == -1) {
+			} else if(glitchtime == -1) {
 				glitchtime = parent.millis() + 500;
 			}
 		}
@@ -306,7 +302,7 @@ public class OrbLevel extends Level {
 	
 	public void orbEnableAcceleration(boolean enabled) {
 		// for(Patch orb : this.players[0].getPatches()) {
-			if (enabled) orb.setActivationMode(orb.getActivationMode() | Mode.ACCEL_INT0 | Mode.ACCEL_INT1);
+			if(enabled) orb.setActivationMode(orb.getActivationMode() | Mode.ACCEL_INT0 | Mode.ACCEL_INT1);
 			else orb.setActivationMode(orb.getActivationMode() & ~(Mode.ACCEL_INT0|Mode.ACCEL_INT1));
 		// }
 	}
@@ -318,7 +314,7 @@ public class OrbLevel extends Level {
 	public void decreaseOrbLife() {
 		this.invulnerableUntil = parent.millis() + 2000;
 		
-		if (orblives > 0) {
+		if(orblives > 0) {
 			orblives--;
 			switch (orblives) {
 			case 2:
@@ -368,7 +364,7 @@ public class OrbLevel extends Level {
 
 		long runningtime = parent.millis() - startTime - offTime;
 		System.out.println("Time: " + runningtime/1000);
-		if (orbIsProtected) {
+		if(orbIsProtected) {
 			if(runningtime > TIMEOUT) {
 				pauseOrbProtectedSongs();
 				orbwon.trigger();
@@ -392,7 +388,7 @@ public class OrbLevel extends Level {
 
 	public Player getWinner() {
 		Player winner;
-		if (orblives > 0) {
+		if(orblives > 0) {
 			winner = players[0];
 		}
 		else {
@@ -486,77 +482,6 @@ public class OrbLevel extends Level {
 			update();
 		} else { //Pause
 			hud.drawCenterImage(hud.hudPlay, hud.getAngle());
-		}
-	}
-
-	class VolumeFader implements Runnable {
-
-		Thread thread;
-
-		boolean running, fadeIn;
-
-		public void stop() {
-			if(thread != null && thread.isAlive()) {
-				running = false;
-				thread.interrupt();
-				while(thread.isAlive()) Thread.yield();
-			}
-		}
-
-		public void fadeIn() {
-			stop();
-			fadeIn = true;
-			running = true;
-			thread = new Thread(this);
-			thread.setDaemon(true);
-			thread.start();
-		}
-
-		public void fadeOut() {
-			stop();
-			fadeIn = false;
-			running = true;
-			thread = new Thread(this);
-			thread.setDaemon(true);
-			thread.start();
-		}
-
-		public void run() {
-			/* if(fadeIn) {
- 
-				// dingding.trigger();
-				// try {
-				// 	Thread.sleep(dingding.length());
-				// } catch(Exception e) {
-				// }
-				for(int i = 100;i >= 0;i--) {
-					orbprotected_song.setGain(-(float)i/4);
-					orbcrazy_song.setGain(-(float)i/4);
-					try {
-						Thread.sleep(20);
-					} catch(Exception e) {
-
-					}
-				}
-				orbprotected_song.setGain(0);
-				orbcrazy_song.setGain(0);
-			} else {
-				// gong.trigger();
-
-				for(int i = 0;i < 100;i++) {
-					orbprotected_song.setGain(-(float)i/4);
-					orbcrazy_song.setGain(-(float)i/4);
-					try {
-						Thread.sleep(20);
-					} catch(Exception e) {
-
-					}
-				}
-				orbprotected_song.setGain(-100);
-				pauseOrbProtectedSongs()
-				orbcrazy_song.setGain(-100);
-				pauseOrbCrazySongs()
-			} */
 		}
 	}
 
