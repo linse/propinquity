@@ -11,7 +11,7 @@ import ddf.minim.*;
 public class Sounds {
 
 	public static final String SONG_FOLDER = "songs/";
-	public static final int BUFFER_SIZE = 2048;
+	public static final int BUFFER_SIZE = 256;
 
 	Minim minim;
 
@@ -65,7 +65,7 @@ public class Sounds {
 	 * Load the song for the current level.
 	 */
 	public AudioPlayer loadSong(String file) {
-		return minim.loadFile(SONG_FOLDER + file, BUFFER_SIZE);
+		return minim.loadFile(SONG_FOLDER + file, 2048);
 	}
 
 	public AudioSample getBubbleLow() {

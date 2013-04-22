@@ -42,6 +42,8 @@ public abstract class Level implements UIElement, ProxEventListener, AccelEventL
 	
 	public abstract void keyPressed(char key, int keyCode);
 
+	public void mouseClicked() {} //Empty implementation
+
 	/**
 	 * Shows the GUI.
 	 * 

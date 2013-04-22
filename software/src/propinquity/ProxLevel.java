@@ -20,7 +20,7 @@ public class ProxLevel extends Level {
 	long[] lastScoreTimePauseDiff;
 
 	AudioPlayer song;
-	AudioSample gong;
+	AudioSample gong, dingding;
 
 	int songTransitionCount;
 	boolean newSongFlag;
@@ -50,6 +50,7 @@ public class ProxLevel extends Level {
 		super(parent, hud, sounds, players);
 
 		gong = sounds.getGong();
+		dingding = sounds.getDingDing();
 
 		lastScoreTime = new long[players.length];
 		lastScoreTimePauseDiff = new long[players.length];
@@ -173,6 +174,8 @@ public class ProxLevel extends Level {
 	}
 
 	public void start() {
+		dingding.trigger();
+
 		for(int i = 0;i < players.length;i++) {
 			players[i].start();
 			lastScoreTime[i] = parent.millis()-lastScoreTimePauseDiff[i];
@@ -185,7 +188,7 @@ public class ProxLevel extends Level {
 
 	public void reset() {
 		running = false;
-		
+
 		startTime = -1;
 
 		for(Player player : players) {
@@ -233,6 +236,8 @@ public class ProxLevel extends Level {
 			fader.fadeOut();
 			for(Player player : players) player.transferScore();
 		} else if(!steps[currentStep].isTransition() && currentStep > 0 && steps[currentStep-1].isTransition()) {
+			if(!steps[currentStep].hasPause()) dingding.trigger();
+
 			song.play();
 
 			if(!newSongFlag) {
@@ -370,8 +375,7 @@ public class ProxLevel extends Level {
 
 			float winFactor = (float)winner.getScore()/totalScore;
 			float tau = 1.0f;
-			float saturationFactor = 0.75f;
-			float colorFactor = (float)(1-Math.exp(-(winFactor-1)/tau))*saturationFactor; //Capping saturation at 75%
+			float colorFactor = (float)(1-Math.exp(-(winFactor-1)/tau))*LevelConstants.BACKGROUND_SAT_CAP; //Capping saturation
 
 			Color factoredColor = new Color((int)(winnerColor.r*colorFactor), (int)(winnerColor.g*colorFactor), (int)(winnerColor.b*colorFactor));
 			parent.setBackgroundColor(factoredColor);
@@ -405,6 +409,16 @@ public class ProxLevel extends Level {
 
 	public boolean isDone() {
 		return (currentStep >= steps.length-1);
+	}
+
+	public void mouseClicked() {
+		if(isDone()) {
+			reset(); //Make sure particles are gone
+			parent.changeGameState(GameState.LevelSelect);
+		} else {
+			if(isRunning()) pause();
+			else start();
+		}
 	}
 	
 	public void keyPressed(char key, int keyCode) {

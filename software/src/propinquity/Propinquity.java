@@ -319,6 +319,15 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 		}
 	}
 
+	public void mouseClicked() {
+		switch(gameState) {
+			case Play: {
+				level.mouseClicked();
+				break;
+			}
+		}
+	}
+
 	public void keyPressed() {
 		if(gameState != GameState.PlayerList) {
 			switch(key) {
