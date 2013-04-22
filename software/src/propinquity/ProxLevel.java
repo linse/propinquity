@@ -217,6 +217,13 @@ public class ProxLevel extends Level {
 		song.close();
 	}
 	
+	void jumpToStep(int step) {
+		if(step < 0) step = 0;
+		if(step > steps.length-1) step = steps.length-1;
+
+		startTime = parent.millis()-step*stepInterval;
+	}
+
 	void stepUpdate(int nextStep) {
 		currentStep = nextStep;
 		
@@ -374,7 +381,7 @@ public class ProxLevel extends Level {
 			totalScore = totalScore/numPlayers;
 
 			float winFactor = (float)winner.getScore()/totalScore;
-			float tau = 1.0f;
+			float tau = 1.5f;
 			float colorFactor = (float)(1-Math.exp(-(winFactor-1)/tau))*LevelConstants.BACKGROUND_SAT_CAP; //Capping saturation
 
 			Color factoredColor = new Color((int)(winnerColor.r*colorFactor), (int)(winnerColor.g*colorFactor), (int)(winnerColor.b*colorFactor));
@@ -445,7 +452,18 @@ public class ProxLevel extends Level {
 
 			case 'e': { //Force End 
 				// song.cue(song.length()-1000);
-				startTime = parent.millis()-179000;
+				// startTime = parent.millis()-179000;
+				jumpToStep(steps.length-1);
+				break;
+			}
+
+			case 's': {
+				for(int i = currentStep+1;i < steps.length;i++) {
+					if(steps[i].isTransition()) {
+						jumpToStep(i);
+						break;
+					}
+				}
 				break;
 			}
 		}

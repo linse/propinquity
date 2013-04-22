@@ -14,6 +14,6 @@ public interface LevelConstants {
 
 	static final float COOP_FUDGE_FACTOR = 3.5f;
 
-	static final float BACKGROUND_SAT_CAP = 0.65f;
+	static final float BACKGROUND_SAT_CAP = 0.45f;
 
 }
