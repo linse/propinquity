@@ -166,8 +166,8 @@ public class Hud {
 
 		parent.pushMatrix();
 		parent.translate(parent.width/2, parent.height/2);
-		parent.translate(PApplet.cos(angle) * (parent.height/2 - WIDTH + OFFSET), PApplet.sin(angle)
-				* (parent.height/2 - WIDTH + OFFSET));
+		parent.translate(PApplet.cos(angle) * (parent.height/2 - WIDTH + OFFSET + 2), PApplet.sin(angle)
+				* (parent.height/2 - WIDTH + OFFSET + 2));
 		parent.rotate(angle + PApplet.PI/2);
 		parent.scale(bannerImg.width/2, bannerImg.height/2);
 		parent.beginShape(PApplet.QUADS);

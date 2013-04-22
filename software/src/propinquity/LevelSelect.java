@@ -71,6 +71,10 @@ public class LevelSelect implements UIElement {
 		
 		drawParticles();
 
+		for(int i = 0;i < levels.length;i++) {
+			hud.drawBannerCenter(levels[i].getName(), new Color(255, 255, 255, 0), i*PApplet.TWO_PI/levels.length);
+		}
+
 		hud.drawCenterText("Select Level", hud.getAngle());
 		hud.drawBannerCenter(levels[selected].getName(), PlayerConstants.NEUTRAL_COLOR, PApplet.TWO_PI/levels.length*selected);
 	}

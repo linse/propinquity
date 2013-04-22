@@ -9,7 +9,7 @@ import processing.core.PApplet;
  */
 public class Color {
 
-	public final int r, g, b, a;
+	public int r, g, b, a;
 
 	/**
 	 * Create a new color with the specified channel parameters.

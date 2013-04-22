@@ -180,7 +180,6 @@ public class OrbLevel extends Level {
 	}
 
 	public void reset() {
-		System.out.println("reset");
 		running = false;
 		orblives = 3;
 		timeout = false;
