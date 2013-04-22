@@ -30,7 +30,7 @@
 			<player patch1="1" patch2="1" patch3="1" patch4="1"/>
 			<player patch1="1" patch2="1" patch3="1" patch4="1"/>
 		</step>
-		<step mode="versus">
+		<step mode="versus" pause="true">
 			<player patch1="1" patch2="1" patch3="1" patch4="1"/>
 			<player patch1="1" patch2="1" patch3="1" patch4="1"/>
 		</step>
