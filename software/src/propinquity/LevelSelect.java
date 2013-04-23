@@ -34,8 +34,15 @@ public class LevelSelect implements UIElement {
 	}
 
 	public void reset() {
+		stopAllPreviews();
 		selected = 0;
 		createParticles(levels.length, PlayerConstants.NEUTRAL_COLOR);
+	}
+
+	public void stopAllPreviews() {
+		for(int i = 0;i < levels.length;i++) {
+			levels[i].stopPreview();
+		}
 	}
 
 	void createParticles(int num, Color color) {
@@ -82,10 +89,12 @@ public class LevelSelect implements UIElement {
 	}
 
 	public void show() {
+		levels[selected].startPreview();
 		isVisible = true;
 	}
 
 	public void hide() {
+		stopAllPreviews();
 		isVisible = false;
 	}
 
@@ -116,21 +125,28 @@ public class LevelSelect implements UIElement {
 		}
 		case ENTER:
 		case ' ': {
-			select();
+			confirm();
 			break;
 		}
 		}
 	}
 
 	public void left() {
-		selected = (selected + levels.length - 1) % levels.length;
+		select((selected + levels.length - 1) % levels.length);
 	}
 
 	public void right() {
-		selected = (selected + 1) % levels.length;
+		select((selected + 1) % levels.length);
 	}
 
-	public void select() {
+	public void select(int s) {
+		levels[selected].stopPreview();
+		selected = s;
+		levels[selected].startPreview();
+	}
+
+	public void confirm() {
+		stopAllPreviews();
 		killParticles();
 		parent.changeGameState(GameState.Play);
 	}

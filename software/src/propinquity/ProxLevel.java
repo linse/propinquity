@@ -159,6 +159,15 @@ public class ProxLevel extends Level {
 		reset();
 	}
 
+	public void startPreview() {
+		song.play();
+	}
+
+	public void stopPreview() {
+		song.pause();
+		song.rewind();
+	}
+
 	public void useBackgroundColor(boolean useBackgroundColor) {
 		this.useBackgroundColor = useBackgroundColor;
 	}

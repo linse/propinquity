@@ -56,7 +56,6 @@ Reported Issues and Ideas
 * Once, the music just stopped and we needed to restart the application
 * Show some statistics in the end, e.g. round-to-round scores to give an idea of progress/dynamic
 * People are sometimes confused about which color they are when the patches are off. Make sure that all patches are never off.
-* It's hard to remember which song is which. Idea: Preview the songs (skip to the middle, low volume) in the selection menu.
 * Slow/fast songs: Have an indicator of speed/style in the song menu?
 * Countdown
 
@@ -69,3 +68,4 @@ Fixed
 * **dingding on unpause and when leaving a transition** Just stopping/starting the music isn't intuitive to everyone - add a "ding-ding"/"gong" to signify start/stop of rounds?
 * **Press 's' to skip** Have an option to stop early or skip coop mode for more experienced players
 * **Press 'a' to toggle adjustement mode, use arrow keys** Using different projectors is somewhat of a pain. Can we scale the image in software to ensure good use of screen real-estate, as well as ensure a round (not elliptical) circle?
+* **Preview built** It's hard to remember which song is which. Idea: Preview the songs (skip to the middle, low volume) in the selection menu.

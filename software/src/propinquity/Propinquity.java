@@ -1,6 +1,6 @@
 package propinquity;
 
-import controlP5.ControlEvent;
+import controlP5.*;
 
 import pbox2d.*;
 
@@ -208,6 +208,10 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 		uiElements.add(playerSelect);
 		uiElements.add(levelSelect);
 		for(Level level : levels) uiElements.add(level);
+
+		// ControlP5 controlP5 = new ControlP5(this);
+		// Slider a = controlP5.addSlider("Max", 0, 255, 0, 10, 10, 10, 300);
+		// Slider b = controlP5.addSlider("Min", 0, 255, 0, 40, 10, 10, 300);
 		
 		changeGameState(GameState.XBeeInit);
 	}

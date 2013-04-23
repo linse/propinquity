@@ -32,6 +32,10 @@ public abstract class Level implements UIElement, ProxEventListener, AccelEventL
 
 	public abstract void start();
 
+	public void startPreview() {};
+
+	public void stopPreview() {};
+
 	public abstract void reset();
 
 	public abstract void close();
