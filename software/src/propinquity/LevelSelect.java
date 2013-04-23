@@ -76,7 +76,9 @@ public class LevelSelect implements UIElement {
 		}
 
 		hud.drawCenterText("Select Level", hud.getAngle());
-		hud.drawBannerCenter(levels[selected].getName(), PlayerConstants.NEUTRAL_COLOR, PApplet.TWO_PI/levels.length*selected);
+		Color c = Color.violet();
+		c.a = 200;
+		hud.drawBannerCenter(levels[selected].getName(), c, PApplet.TWO_PI/levels.length*selected);
 	}
 
 	public void show() {

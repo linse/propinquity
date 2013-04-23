@@ -67,12 +67,18 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 	PBox2D box2d;
 	Fences fences;
 
-	float scaleX = 0.9f;
-	float scaleY = 0.9f;
-
 	boolean adjScale;
+	float[] scaling;
 
 	public void setup() {
+		this.registerDispose(this);
+
+
+		scaling = Serializer.deserialize(scaling, "data/scaling.ser");
+		if(scaling == null) {
+			scaling = new float[] {0.9f, 0.9f};
+		}
+
 		size(1024, 768, GLConstants.GLGRAPHICS);
 
 		noCursor();
@@ -221,7 +227,7 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 
 		if(gameState != GameState.PlayerList) {
 			translate(width/2, height/2);
-			scale(scaleX, scaleY);
+			scale(scaling[0], scaling[1]);
 			translate(-width/2, -height/2);
 		}
 
@@ -328,13 +334,13 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 
 		if(adjScale) {
 			if(keyCode == UP) {
-				scaleY += 0.01f;
+				scaling[1] += 0.01f;
 			} else if(keyCode == DOWN) {
-				scaleY -= 0.01f;
+				scaling[1] -= 0.01f;
 			} else if(keyCode == LEFT) {
-				scaleX -= 0.01f;
+				scaling[0] -= 0.01f;
 			} else if(keyCode == RIGHT) {
-				scaleX += 0.01f;
+				scaling[0] += 0.01f;
 			}
 			return;
 		}
@@ -395,13 +401,14 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 				break;
 			}
 		}
-
 	}
 
-	public void stop() {
+	public void dispose() {
 		logger.close();
 		for(Player player : players) player.reset();
 		for(Level level : levels) level.close();
+
+		Serializer.serialize(scaling, "data/scaling.ser");
 	}
 
 	static public void main(String args[]) {
