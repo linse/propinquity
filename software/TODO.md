@@ -54,8 +54,6 @@ Reported Issues and Ideas
 -----------------------------
 * Sensitivity of patches needs fine-tuning, but is hard to do on-site due to time pressure
 * Once, the music just stopped and we needed to restart the application
-* Have an option to stop early or skip coop mode for more experienced players
-* Using different projectors is somewhat of a pain. Can we scale the image in software to ensure good use of screen real-estate, as well as ensure a round (not elliptical) circle?
 * Show some statistics in the end, e.g. round-to-round scores to give an idea of progress/dynamic
 * People are sometimes confused about which color they are when the patches are off. Make sure that all patches are never off.
 * It's hard to remember which song is which. Idea: Preview the songs (skip to the middle, low volume) in the selection menu.
@@ -70,3 +68,5 @@ Fixed
 * **Support pause="true" on steps and added to all XML** After coop/calibration mode is finished, perhaps we should pause the game to have time to brief the players
 * **Support mouse clicks** Have a remote control to at least pause the game, and perhaps also select song. Right now we need two people, one "referee" and one person with the finger on the space bar.
 * **dingding on unpause and when leaving a transition** Just stopping/starting the music isn't intuitive to everyone - add a "ding-ding"/"gong" to signify start/stop of rounds?
+* **Press 's' to skip** Have an option to stop early or skip coop mode for more experienced players
+* **Press 'a' to toggle adjustement mode, use arrow keys** Using different projectors is somewhat of a pain. Can we scale the image in software to ensure good use of screen real-estate, as well as ensure a round (not elliptical) circle?

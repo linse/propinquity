@@ -67,6 +67,11 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 	PBox2D box2d;
 	Fences fences;
 
+	float scaleX = 0.9f;
+	float scaleY = 0.9f;
+
+	boolean adjScale;
+
 	public void setup() {
 		size(1024, 768, GLConstants.GLGRAPHICS);
 
@@ -212,25 +217,13 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 			return;
 		}
 
-		if(gameState == GameState.Play) {
-			if(keyPressed) {
-				if(key == 'a') {
-					players[0].suppressPoints(true);
-				} else if(key == 's') {
-					players[1].suppressPoints(true);
-				} else if(key == 'd') {
-					players[0].suppressPoints(true);
-					players[1].suppressPoints(true);
-				}
-			} else {
-				players[0].suppressPoints(false);
-				players[1].suppressPoints(false);
-			}
-		}
-
 		background(backgroundColor);
 
-		if(gameState != GameState.PlayerList) translate(0, 0, -42); //Hack so 
+		if(gameState != GameState.PlayerList) {
+			translate(width/2, height/2);
+			scale(scaleX, scaleY);
+			translate(-width/2, -height/2);
+		}
 
 		hud.update(hud.getAngle() + HALF_PI, TWO_PI/10000f, TWO_PI/2000f);
 
@@ -329,6 +322,23 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 	}
 
 	public void keyPressed() {
+		if(key == 'a') {
+			adjScale = !adjScale;
+		}
+
+		if(adjScale) {
+			if(keyCode == UP) {
+				scaleY += 0.01f;
+			} else if(keyCode == DOWN) {
+				scaleY -= 0.01f;
+			} else if(keyCode == LEFT) {
+				scaleX -= 0.01f;
+			} else if(keyCode == RIGHT) {
+				scaleX += 0.01f;
+			}
+			return;
+		}
+
 		if(gameState != GameState.PlayerList) {
 			switch(key) {
 				case ENTER:
