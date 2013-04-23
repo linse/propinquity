@@ -211,6 +211,8 @@ public class ProxLevel extends Level {
 
 		parent.setBackgroundColor(Color.black());
 		
+		fader.stop();
+
 		for(AudioPlayer song : songs) {
 			song.pause();
 			song.rewind();
@@ -231,6 +233,10 @@ public class ProxLevel extends Level {
 		if(step > steps.length-1) step = steps.length-1;
 
 		startTime = parent.millis()-step*stepInterval;
+	}
+
+	long stepCountdown() {
+		return (currentStep+1)*stepInterval-(parent.millis()-startTime);
 	}
 
 	void stepUpdate(int nextStep) {
@@ -260,6 +266,7 @@ public class ProxLevel extends Level {
 				fader.fadeIn();
 			} else {
 				newSongFlag = false;
+				fader.stop();
 				song.setGain(0);
 			}
 		}
@@ -526,6 +533,23 @@ public class ProxLevel extends Level {
 			hud.drawCenterImage(hud.hudPlayAgain, hud.getAngle());
 		} else if(isRunning()) { //Running
 			update();
+			if(steps[currentStep].isTransition() && (steps.length == currentStep+1 || !steps[currentStep+1].hasPause())) {
+				String countdown = (float)(stepCountdown()/100)/10+" sec";
+				hud.drawCenterText(countdown, "Next Round", Color.white(), hud.getAngle());
+
+				parent.fill(255);
+				parent.textFont(hud.font, 40);
+				
+				parent.text("Next Round", 60, 30);
+				parent.text(countdown, 60, 60);
+
+				parent.translate(-parent.width, -parent.height);
+				parent.rotate(parent.PI);
+				parent.translate(parent.width, parent.height);
+
+				parent.text("Next Round", parent.width-60, parent.height-70);
+				parent.text(countdown, parent.width-60, parent.height-40);
+			}
 		} else { //Pause
 			hud.drawCenterImage(hud.hudPlay, hud.getAngle());
 		}
@@ -535,7 +559,7 @@ public class ProxLevel extends Level {
 
 		Thread thread;
 
-		boolean running, fadeIn;
+		boolean running, fadeIn, cancel;
 
 		public void stop() {
 			if(thread != null && thread.isAlive()) {
@@ -563,9 +587,11 @@ public class ProxLevel extends Level {
 			thread.start();
 		}
 
+
 		public void run() {
 			if(fadeIn) {
 				for(int i = 100;i >= 0;i--) {
+					if(!running) return;
 					song.setGain(-(float)i/4);
 					try {
 						Thread.sleep(20);
@@ -578,6 +604,7 @@ public class ProxLevel extends Level {
 				gong.trigger();
 
 				for(int i = 0;i < 100;i++) {
+					if(!running) return;
 					song.setGain(-(float)i/4);
 					try {
 						Thread.sleep(20);
