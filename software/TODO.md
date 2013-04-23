@@ -58,8 +58,7 @@ Reported Issues and Ideas
 * People are sometimes confused about which color they are when the patches are off. Make sure that all patches are never off.
 * It's hard to remember which song is which. Idea: Preview the songs (skip to the middle, low volume) in the selection menu.
 * Slow/fast songs: Have an indicator of speed/style in the song menu?
-* Circle is cut off
-* countdown
+* Countdown
 
 Fixed
 -----------------------------

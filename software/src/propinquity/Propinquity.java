@@ -73,7 +73,6 @@ public class Propinquity extends PApplet implements PlayerConstants, LevelConsta
 	public void setup() {
 		this.registerDispose(this);
 
-
 		scaling = Serializer.deserialize(scaling, "data/scaling.ser");
 		if(scaling == null) {
 			scaling = new float[] {0.9f, 0.9f};
