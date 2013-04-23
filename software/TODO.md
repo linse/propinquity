@@ -21,9 +21,6 @@ Software
 * New broadcast mechanism for radios as alternative.
 * Better time control of round length. Load total length from XML file instead of a fixed length.
 * New OO system for XML parsing tokens. Provide for easier extension to the current XML files.
-* There seems to be a bug where after playing all the songs they no longer play. Maybe also after a song plays through once? Needs to be tested. Probably some sort of rewind minim bug or an issue resetting some sort of sequence timing variable.
-* Ambient background color changes were proposed to help players understand who is winning and who is loosing. Should be easy and worth trying.
-* Add smooth color fading for background colors
 * Add a build flag for simulation vs real XBees in conjuction with windowed vs normal
 * Opponents patches need to turn off when points are suppressed
 
@@ -46,10 +43,7 @@ Firmware/Patch/Glove Control
 Reported Issues and Ideas
 -----------------------------
 * Sensitivity of patches needs fine-tuning, but is hard to do on-site due to time pressure
-* Once, the music just stopped and we needed to restart the application
 * Show some statistics in the end, e.g. round-to-round scores to give an idea of progress/dynamic
-* People are sometimes confused about which color they are when the patches are off. Make sure that all patches are never off.
-* Countdown
 
 Fixed
 -----------------------------
@@ -62,3 +56,6 @@ Fixed
 * **Press 'a' to toggle adjustement mode, use arrow keys** Using different projectors is somewhat of a pain. Can we scale the image in software to ensure good use of screen real-estate, as well as ensure a round (not elliptical) circle?
 * **Preview built** It's hard to remember which song is which. Idea: Preview the songs (skip to the middle, low volume) in the selection menu.
 * **Showing BPM in levelselect** Slow/fast songs: Have an indicator of speed/style in the song menu?
+* **Patches are only ever off during the transistion, but that seems normal** People are sometimes confused about which color they are when the patches are off. Make sure that all patches are never off.
+* **Possibly fixed** Once, the music just stopped and we needed to restart the application
+* **Countdown in transistions done** Countdown
