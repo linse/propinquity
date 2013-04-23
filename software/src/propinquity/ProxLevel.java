@@ -27,7 +27,7 @@ public class ProxLevel extends Level {
 	Vector<AudioPlayer> songs;
 
 	String songFile;
-	int songBPM;
+	int levelBPM;
 
 	VolumeFader fader;
 
@@ -85,7 +85,7 @@ public class ProxLevel extends Level {
 				throw new XMLException("XMLException: XML song tag has empty file attribute");
 			}
 
-			songBPM = song.getInt("bpm", DEFAULT_BPM);
+			levelBPM = song.getInt("bpm", DEFAULT_BPM);
 		} else {
 			throw new XMLException("XMLException: XML for level \"" + name + "\" has no song tag");
 		}
@@ -400,6 +400,10 @@ public class ProxLevel extends Level {
 
 	public String getName() {
 		return name;
+	}
+
+	public int getBPM() {
+		return levelBPM;
 	}
 
 	public Player getWinner() {

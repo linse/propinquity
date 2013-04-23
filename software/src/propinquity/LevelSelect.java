@@ -86,6 +86,11 @@ public class LevelSelect implements UIElement {
 		Color c = Color.violet();
 		c.a = 200;
 		hud.drawBannerCenter(levels[selected].getName(), c, PApplet.TWO_PI/levels.length*selected);
+
+		parent.fill(255);
+		parent.textFont(hud.font, 30);
+		parent.text(levels[selected].getName(), 30, 30);
+		if(levels[selected].getBPM() != -1) parent.text(levels[selected].getBPM() + " BPM", 30, 60);
 	}
 
 	public void show() {

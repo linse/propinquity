@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <level name="Yacht">
-	<song file="Yacht.mp3" bpm="60"/>
+	<song file="Yacht.mp3" bpm="100"/>
 	<sequence>
 		<step mode="coop">
 			<player patch1="1" patch2="1" patch3="1" patch4="1"/>

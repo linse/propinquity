@@ -43,13 +43,6 @@ Firmware/Patch/Glove Control
 * "Drop" patch if it hasn't been seen in a certain amount of time (to avoid points when patches spaz out)
 * Test/Implement a timestamping mechanism to prevent out of order packet reception which is causing erratic behavoir (see for example the PlayerSelect mode)
 
-General and Gameplay Notes
------------------------------
-* If players have different sizes, the shorter player should wear his patches low. This causes the taller player to bend over a lot.
-* We need to sets of hardware. Complete to avoid downtime. This also means we need two full radio address spaces and a mechanism to switch between them.
-* We need music to play during the transition time between rounds just to set the mood and keep the energy up.
-* The colors for the patches need to stay on at the end of the levels so that the players can tell who won. There could also be some sort of animation to indicate the winner.
-
 Reported Issues and Ideas
 -----------------------------
 * Sensitivity of patches needs fine-tuning, but is hard to do on-site due to time pressure

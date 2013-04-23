@@ -42,6 +42,10 @@ public abstract class Level implements UIElement, ProxEventListener, AccelEventL
 
 	public abstract String getName();
 
+	public int getBPM() {
+		return -1;
+	}
+
 	public abstract boolean isRunning();
 	
 	public abstract void keyPressed(char key, int keyCode);

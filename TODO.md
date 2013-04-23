@@ -8,6 +8,7 @@
 ## XBees
 * XBee configuration should be saved and added to the git repo
 * A new correct record of the XBee addresses should be added to the repo
+* We need two full radio address spaces and a mechanism to switch between them.
 
 ## Work Schedule
 
