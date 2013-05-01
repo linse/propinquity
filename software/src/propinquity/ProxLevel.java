@@ -14,7 +14,7 @@ import java.lang.Math;
  */
 public class ProxLevel extends Level {
 
-	static int TOTAL_LEN = 180000; //2min;
+	static int TOTAL_LEN = 180000; //3min;
 
 	long[] lastScoreTime;
 	long[] lastScoreTimePauseDiff;
@@ -45,6 +45,8 @@ public class ProxLevel extends Level {
 	long startTime, startTimeDiff;
 
 	boolean useBackgroundColor;
+
+	// ScoreTracker tracker;
 
 	public ProxLevel(Propinquity parent, Hud hud, Sounds sounds, String levelFile, Player[] players) throws XMLException {
 		super(parent, hud, sounds, players);
@@ -156,6 +158,8 @@ public class ProxLevel extends Level {
 		
 		fader = new VolumeFader();
 
+		// tracker = new ScoreTracker();
+
 		reset();
 	}
 
@@ -222,6 +226,8 @@ public class ProxLevel extends Level {
 
 		song = songs.get(0);
 		stepUpdate(0); //Load for banner
+
+		// tracker.reset();
 	}
 
 	public void close() {
@@ -308,6 +314,8 @@ public class ProxLevel extends Level {
 		if(steps[currentStep].hasPause()) {
 			pause();
 		}
+
+		// tracker.click();
 	}
 
 	public void proxEvent(Patch patch) {
@@ -339,6 +347,8 @@ public class ProxLevel extends Level {
 				Patch bestPatch = players[(i+1)%players.length].getBestPatch(); //TODO: Hack being use to get opponent. Nothing significantly better can be done with this hardware.
 				if(bestPatch != null) glove.setMode(bestPatch.getZone());
 				else glove.setMode(0);
+			} else {
+				glove.setMode(0);
 			}
 		}
 
@@ -531,6 +541,8 @@ public class ProxLevel extends Level {
 			}
 			hud.drawCenterText("", text, color, hud.getAngle());
 			hud.drawCenterImage(hud.hudPlayAgain, hud.getAngle());
+
+			// tracker.draw(0, 0, steps.length, 200);
 		} else if(isRunning()) { //Running
 			update();
 			if(steps[currentStep].isTransition() && (steps.length == currentStep+1 || !steps[currentStep+1].hasPause())) {
@@ -554,6 +566,44 @@ public class ProxLevel extends Level {
 			hud.drawCenterImage(hud.hudPlay, hud.getAngle());
 		}
 	}
+
+/*	class ScoreTracker {
+
+		int pointer;
+		int max;
+		int[][] scoreHistory;
+
+		public ScoreTracker() {
+			pointer = 0;
+			max = 0;
+			scoreHistory = new int[players.length][steps.length];
+		}
+
+		public void click() {
+			for(int i = 0;i < scoreHistory.length;i++) {
+				scoreHistory[i][pointer] = players[i].getScore();
+				if(scoreHistory[i][pointer] > max) max = scoreHistory[i][pointer];
+			}
+
+			pointer++;
+			if(pointer > scoreHistory.length-1) pointer = scoreHistory.length-1;
+		}
+
+		public void reset() {
+			pointer = 0;
+			max = 0;
+		}
+
+		public void draw(int x, int y, int w, int h) {
+			for(int i = 0;i < scoreHistory.length;i++) {
+				parent.stroke(players[i].getColor().toInt(parent));
+				for(int j = 1;j <= pointer;j++) {
+					parent.line(x+parent.map(j-1, 0, pointer, 0, w), y+parent.map(scoreHistory[i][j-1], 0, max, 0, h), x+parent.map(j, 0, pointer, 0, w), y+parent.map(scoreHistory[i][j], 0, max, 0, h));
+				}
+			}
+		}
+
+	}*/
 
 	class VolumeFader implements Runnable {
 

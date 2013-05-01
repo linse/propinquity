@@ -12,7 +12,7 @@ public class HardwareDebugger extends PApplet implements ProxEventListener, Acce
 	// Unique serialization ID
 	static final long serialVersionUID = 6340508174717159418L;
 
-	static final int[] PATCH_ADDR = new int[] { 1, 4,9 };
+	static final int[] PATCH_ADDR = new int[] { 2 };
 	static final int NUM_PATCHES = PATCH_ADDR.length;
 
 	static final int[] GLOVE_ADDR = new int[] { };
