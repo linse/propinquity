@@ -42,8 +42,8 @@ Firmware/Patch/Glove Control
 
 Reported Issues and Ideas
 -----------------------------
-* Sensitivity of patches needs fine-tuning, but is hard to do on-site due to time pressure
 * Show some statistics in the end, e.g. round-to-round scores to give an idea of progress/dynamic
+* Fix skip patch colors
 
 Fixed
 -----------------------------
