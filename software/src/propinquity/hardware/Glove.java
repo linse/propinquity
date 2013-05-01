@@ -8,7 +8,7 @@ import processing.core.PApplet;
  *
  */
 public class Glove extends Patch { 
-//TODO: Think this though and probably drop the Glove class completely
+// TODO: Think this through and probably drop the Glove class completely
 
 	/**
 	 * Contruct a Glove with the specified address (usually the address of the associate XBee) and use the given HardwareInterface for low level comunication.
